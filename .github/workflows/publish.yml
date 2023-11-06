@@ -1,4 +1,5 @@
-name: Python package
+name: Publish to PYPI
+
 on:
     release:
         types: [published]
@@ -14,7 +15,7 @@ jobs:
                   virtualenvs-in-project: true
             - name: Install python dependencies
               run: |
-                  poetry install --sync --no-interaction --no-root
+                  poetry install --sync --no-interaction --no-root --with test
                   poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
 
             - name: Test
