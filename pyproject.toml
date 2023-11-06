@@ -1,7 +1,8 @@
 [tool.poetry]
 name = "modern-colorthief"
 version = "0.1.1"
-description = ""
+description = "Colorthief reimagined"
+license = "MIT"
 authors = ["baseplate-admin <61817579+baseplate-admin@users.noreply.github.com>"]
 readme = "README.md"
 classifiers = [
@@ -14,6 +15,10 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 packages = [{include = "modern_colorthief"},{ include="LICENSE.colorthief" }]
+repository = "https://github.com/baseplate-admin/modern_colorthief"
+homepage = "https://github.com/baseplate-admin/modern_colorthief"
+documentation =  "https://github.com/baseplate-admin/modern_colorthief"
+keywords = ["python","colorthief"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
