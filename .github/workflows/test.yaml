@@ -1,3 +1,4 @@
+
 name: Build and test android APK
 
 on:
@@ -10,7 +11,13 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+                python-version: [
+                        '3.8',
+                        '3.9',
+                        '3.10',
+                        '3.11',
+                        '3.12'
+                    ]
                 os:
                     - 'ubuntu-latest'
 
@@ -29,8 +36,8 @@ jobs:
                   virtualenvs-in-project: true
             - name: Install python dependencies
               run: |
-                  poetry install --sync --no-interaction --no-root --with test
+                  poetry install --sync --no-interaction --no-root
 
             - name: Test
               run: |
-                  poetry run pytest .
+                   pytest .
