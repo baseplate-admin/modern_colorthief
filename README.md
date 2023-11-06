@@ -5,8 +5,8 @@
 ## Why use `modern_colorthief` ?
 
 -   It is built on modern standards (`colorthief` uses [custom `cached_property`](https://github.com/fengsp/color-thief-py/blob/3e96a52abfa34323c798a691b2970c6df3059fda/colorthief.py#L18-L27))
--   I want innovations to happen in `colorthief`
--   I want to optimize parts of `colorthief`
+-   I want innovations to happen in `colorthief` (optimize algorithms? make everything faster?)
+-   I want to optimize parts of `colorthief` (maybe rewrite in a compiled language?)
 -   Automated [test](https://github.com/baseplate-admin/modern_colorthief/blob/7f1025c853bf9458e123a43d284099523a8a587b/tests/test_modern_colortheif_with_colorthief.py#L10-L16) to make sure `colorthief` and `modern_colorthief` gives the same output
 
 ## Why shouldn't you use `modern_colorthief` ?
