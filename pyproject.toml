@@ -14,6 +14,10 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 packages = [{include = "modern_colorthief"},{ include="LICENSE.colorthief" }]
+repository = "https://github.com/baseplate-admin/modern_colorthief"
+homepage = "https://github.com/baseplate-admin/modern_colorthief"
+documentation =  "https://github.com/baseplate-admin/modern_colorthief"
+keywords = ["python","colorthief"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
