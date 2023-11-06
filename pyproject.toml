@@ -1,7 +1,8 @@
 [tool.poetry]
 name = "modern-colorthief"
 version = "0.1.1"
-description = ""
+description = "Colorthief reimagined"
+license = "MIT"
 authors = ["baseplate-admin <61817579+baseplate-admin@users.noreply.github.com>"]
 readme = "README.md"
 classifiers = [
