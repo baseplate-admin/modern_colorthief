@@ -32,7 +32,7 @@ jobs:
                   poetry install --sync --no-interaction --no-root --with test
 
     test:
-        - name: Test
-          needs: build
-          run: |
-              poetry run pytest .
+        name: Test
+        needs: build
+        run: |
+            poetry run pytest .
