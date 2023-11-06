@@ -6,8 +6,20 @@ jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
-            - name: Build and publish to pypi
-              uses: JRubics/poetry-publish@v1.17
+            - uses: actions/checkout@v4
+            - name: Install Poetry
+              uses: snok/install-poetry@v1
               with:
-                  pypi_token: ${{ secrets.PYPI_TOKEN }}
+                  virtualenvs-create: true
+                  virtualenvs-in-project: true
+            - name: Install python dependencies
+              run: |
+                  poetry install --sync --no-interaction --no-root --with test
+                  poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+
+            - name: Test
+              run: |
+                  poetry run pytest .
+            - name: Publish
+              run: |
+                  poetry publish
