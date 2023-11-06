@@ -1,4 +1,4 @@
-name: Build and test android APK
+name: Test modern_colorthief
 
 on:
     pull_request:
