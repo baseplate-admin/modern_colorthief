@@ -14,7 +14,7 @@ jobs:
                   virtualenvs-in-project: true
             - name: Install python dependencies
               run: |
-                  poetry install --sync --no-interaction --no-root --with test
+                  poetry install --sync --no-interaction --no-root
                   poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
 
             - name: Test
@@ -22,4 +22,4 @@ jobs:
                   poetry run pytest .
             - name: Publish
               run: |
-                  poetry publish
+                  poetry publish --build

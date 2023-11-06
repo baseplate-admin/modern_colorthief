@@ -9,7 +9,7 @@
 -   I want to optimize parts of `colorthief`
 -   Automated [test](https://github.com/baseplate-admin/modern_colorthief/blob/7f1025c853bf9458e123a43d284099523a8a587b/tests/test_modern_colortheif_with_colorthief.py#L10-L16) to make sure `colorthief` and `modern_colorthief` gives the same output
 
-## Why shouldn't you use python_stip_whitespace ?
+## Why shouldn't you use `modern_colorthief` ?
 
 -   `modern_colorthief` does not support EOL python versions.
 
