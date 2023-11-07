@@ -15,7 +15,9 @@ class ColorThief:
         """
         self.image = Image.open(file)
 
-    def get_color(self, quality: int = 10) -> [int, int, int]:
+    def get_color(
+        self, quality: int = 10
+    ) -> (int, int, int,):
         """Get the dominant color.
 
         :param quality: quality settings, 1 is the highest quality, the bigger
