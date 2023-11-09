@@ -12,5 +12,4 @@ def test_colorthief_with_modern_colorthief():
 
     color_theif_original = ColorThief(image_path).get_color()
     color_theif_modern = ColorThief(image_path).get_color()
-
     assert color_theif_original == color_theif_modern

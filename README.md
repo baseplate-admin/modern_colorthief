@@ -18,6 +18,27 @@
 -   [`Pillow`](https://pypi.org/project/Pillow/)
 -   Python 3
 
+## Examples :
+
+Here is a minimal example :
+
+```python
+from modern_colorthief import ColorThief
+
+image = '' # Path to a image
+
+ColorThief(image).get_color()
+
+```
+
+<sub> If you want a comprehensive example please visit the
+
+[test](https://github.com/baseplate-admin/modern_colorthief/blob/7b1a02ca44ca1c7b8e63cd4818caf1a506c18fde/tests/test_modern_colortheif_with_colorthief.py)
+
+file
+
+</sub>
+
 ## Used Internally by :
 
 -   [`coreproject`](https://github.com/baseplate-admin/coreproject)
