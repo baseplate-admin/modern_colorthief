@@ -31,13 +31,7 @@ ColorThief(image).get_color()
 
 ```
 
-<sub> If you want a comprehensive example please visit the
-
-[test](https://github.com/baseplate-admin/modern_colorthief/blob/7b1a02ca44ca1c7b8e63cd4818caf1a506c18fde/tests/test_modern_colortheif_with_colorthief.py)
-
-file
-
-</sub>
+<sub> If you want a comprehensive example please visit the <a href="https://github.com/baseplate-admin/modern_colorthief/blob/7b1a02ca44ca1c7b8e63cd4818caf1a506c18fde/tests/test_modern_colortheif_with_colorthief.py">test</a> file</sub>
 
 ## Used Internally by :
 
