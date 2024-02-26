@@ -27,7 +27,7 @@ pillow = "^10.1.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.4.3"
-poethepoet = "^0.24.2"
+poethepoet = ">=0.24.2,<0.26.0"
 colorthief = "^0.2.1"
 pillow-avif-plugin = "^1.4.1"
 
