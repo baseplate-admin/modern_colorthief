@@ -494,12 +494,11 @@ dependencies = [
 
 [[package]]
 name = "modern_colorthief"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "color-thief",
  "image",
  "pyo3",
- "rgb",
 ]
 
 [[package]]

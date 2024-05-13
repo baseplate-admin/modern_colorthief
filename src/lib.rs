@@ -13,23 +13,24 @@ fn get_image_buffer(img: image::DynamicImage) -> (Vec<u8>, ColorFormat) {
         _ => unreachable!(),
     }
 }
-#[pyfunction]
-fn get_color(location: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
-    let img = image::open(&std::path::Path::new(&location)).unwrap();
-    let (buffer, color_type) = get_image_buffer(img);
-
-    let colors = color_thief::get_palette(&buffer, color_type, quality.unwrap_or(10), 10).unwrap();
-
-    Ok((colors[0].r, colors[0].g, colors[0].b))
-}
 
 /// Formats the sum of two numbers as string.
 #[pyfunction]
-fn get_palette(location: String) -> PyResult<Vec<(u8, u8, u8)>> {
+fn get_palette(
+    location: String,
+    color_count: Option<u8>,
+    quality: Option<u8>,
+) -> PyResult<Vec<(u8, u8, u8)>> {
     let img = image::open(&std::path::Path::new(&location)).unwrap();
     let (buffer, color_type) = get_image_buffer(img);
 
-    let colors = color_thief::get_palette(&buffer, color_type, 10, 10).unwrap();
+    let colors = color_thief::get_palette(
+        &buffer,
+        color_type,
+        quality.unwrap_or(10),
+        color_count.unwrap_or(10),
+    )
+    .unwrap();
 
     let color_vec = colors
         .iter()
@@ -37,6 +38,12 @@ fn get_palette(location: String) -> PyResult<Vec<(u8, u8, u8)>> {
         .collect();
 
     Ok(color_vec)
+}
+
+#[pyfunction]
+fn get_color(location: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
+    let palette = get_palette(location, Some(5), Some(quality.unwrap_or(10))).unwrap();
+    Ok(palette[0])
 }
 
 /// A Python module implemented in Rust.
