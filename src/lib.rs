@@ -45,7 +45,7 @@ fn get_color(location: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn modern_colorthief(_py: Python, m: &PyModule) -> PyResult<()> {
+fn modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_palette, m)?)?;
     m.add_function(wrap_pyfunction!(get_color, m)?)?;
     Ok(())
