@@ -1,39 +1,21 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "modern_colorthief"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+[tool.maturin]
+features = ["pyo3/extension-module"]
+
 [tool.poetry]
-name = "modern-colorthief"
-version = "0.1.2"
-description = "Colorthief reimagined"
-license = "MIT"
+name = "modern_colorthief"
 authors = ["baseplate-admin <61817579+baseplate-admin@users.noreply.github.com>"]
 readme = "README.md"
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-]
-packages = [{include = "modern_colorthief"},{ include="LICENSE.colorthief" }]
-repository = "https://github.com/baseplate-admin/modern_colorthief"
-homepage = "https://github.com/baseplate-admin/modern_colorthief"
-documentation =  "https://github.com/baseplate-admin/modern_colorthief"
-keywords = ["python","colorthief"]
-
-[tool.poetry.dependencies]
-python = "^3.8"
-pillow = "^10.1.0"
-
-
-[tool.poetry.group.test.dependencies]
-pytest = ">=7.4.3"
-poethepoet = ">=0.24.2,<0.27.0"
-colorthief = "^0.2.1"
-pillow-avif-plugin = "^1.4.1"
-
-[tool.poetry.group.dev.dependencies]
-black = ">=23.10.1,<25.0.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+package-mode = false
