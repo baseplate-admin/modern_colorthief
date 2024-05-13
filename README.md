@@ -33,13 +33,17 @@ print(get_color(path, 10))
 
 ```diff
 - from colorthief import ColorThief
-+ from modern_colorthief import ColorThief
++ from modern_colorthief import get_color, get_palette
 
 
 image = '' # Path to a image
 
-ColorThief(image).get_color()
+- ColorThief(image).get_color()
++ get_color(image)
 
+
+- ColorThief(image).get_palette()
++ get_palette(image)
 ```
 
 ## Used Internally by :
