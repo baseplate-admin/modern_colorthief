@@ -9,7 +9,7 @@ name = "modern_colorthief"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.20.0"
+pyo3 = "0.21.2"
 color-thief = "0.2"
 image = "0.25.1"
 
