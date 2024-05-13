@@ -13,3 +13,14 @@ pyo3 = "0.21.2"
 color-thief = "0.2"
 image = "0.25.1"
 
+[profile.release.package."*"]
+codegen-units = 1
+opt-level ='z'
+strip = true
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = "fat"
+opt-level ='z'
+strip = true
