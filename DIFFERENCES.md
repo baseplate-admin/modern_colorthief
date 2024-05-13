@@ -1,6 +1,6 @@
 The difference between `color-thief` and `modern_colorthief` is very negligible
 
-For example with this code,
+For example with this [code](https://github.com/baseplate-admin/modern_colorthief/blob/04831648767f09295abda3cdba723d6f9673e202/examples/test.py),
 
 ```python
 from modern_colorthief import get_color, get_palette
