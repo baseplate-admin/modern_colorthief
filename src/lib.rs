@@ -1,9 +1,6 @@
 use color_thief::ColorFormat;
 use pyo3::prelude::*;
 
-// get_color
-// get_palette
-
 fn get_image_buffer(img: image::DynamicImage) -> (Vec<u8>, ColorFormat) {
     match img {
         image::DynamicImage::ImageRgb8(buffer) => (buffer.to_vec(), color_thief::ColorFormat::Rgb),
