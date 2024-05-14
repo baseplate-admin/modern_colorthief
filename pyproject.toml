@@ -14,8 +14,11 @@ dynamic = ["version"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
+
+[tool.poetry.group.docs.dependencies]
 furo = "^2024.5.6"
 myst-parser = "^3.0.1"
+sphinx = "^7.3.7"
 
 [tool.poetry.group.test.dependencies]
 colorthief = "^0.2.1"
