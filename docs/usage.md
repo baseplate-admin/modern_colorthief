@@ -23,4 +23,3 @@ path = ...
 
 print(get_palette(path)) # returns list[tuple[int,int,int]]
 ```
-

@@ -4,7 +4,7 @@ Requirements:
 
 -   Python 3.12
 
-# Methods:
+## Methods:
 
 Install with pip:
 
