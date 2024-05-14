@@ -1,6 +1,6 @@
 # Differences
 
-# With `fast-colorthief`
+## With `fast-colorthief`
 
 -   Supports more architectures. ( `pybind11` vs `pyo3` )
 -   Doesn't have a hard dependency on `numpy`
@@ -8,7 +8,7 @@
 -   Automated tooling powered by `maturin` and `github-actions`
 -   The size of `fast-colorthief` is 52kb-60kb.
 
-# With `color-thief-py`
+## With `color-thief-py`
 
 -   Superior execution time (nearly 100x)
 -   Doesn't have a hard dependency on `pillow`
