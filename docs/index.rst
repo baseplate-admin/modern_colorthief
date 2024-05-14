@@ -11,7 +11,11 @@ Welcome to Modern Colorthief's documentation!
    :caption: Contents:
    
    installation
+   usage
    api
+   differences
+   roadmaps
+   
 
 
 
