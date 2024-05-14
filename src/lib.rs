@@ -43,9 +43,17 @@ fn get_color(location: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
     Ok(palette[0])
 }
 
+fn get_version() -> &'static str {
+    static VERSION :  std::sync::OnceLock<String> =  std::sync::OnceLock::new();
+
+    VERSION.get_or_init(||{
+        env!("CARGO_PKG_VERSION").to_owned()
+    })
+}
 /// A Python module implemented in Rust.
 #[pymodule]
 fn modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add("__version__",get_version())?;
     m.add_function(wrap_pyfunction!(get_palette, m)?)?;
     m.add_function(wrap_pyfunction!(get_color, m)?)?;
     Ok(())
