@@ -11,7 +11,7 @@ fn get_image_buffer(img: image::DynamicImage) -> (Vec<u8>, ColorFormat) {
     }
 }
 
-/// Formats the sum of two numbers as string.
+/// Returns the pallette given an image
 #[pyfunction]
 fn get_palette(
     location: String,
@@ -37,6 +37,7 @@ fn get_palette(
     Ok(color_vec)
 }
 
+// Gets the dominant color given an image
 #[pyfunction]
 fn get_color(location: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
     let palette = get_palette(location, Some(5), Some(quality.unwrap_or(10))).unwrap();
@@ -44,16 +45,14 @@ fn get_color(location: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
 }
 
 fn get_version() -> &'static str {
-    static VERSION :  std::sync::OnceLock<String> =  std::sync::OnceLock::new();
+    static VERSION: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
-    VERSION.get_or_init(||{
-        env!("CARGO_PKG_VERSION").to_owned()
-    })
+    VERSION.get_or_init(|| env!("CARGO_PKG_VERSION").to_owned())
 }
 /// A Python module implemented in Rust.
 #[pymodule]
 fn modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add("__version__",get_version())?;
+    m.add("__version__", get_version())?;
     m.add_function(wrap_pyfunction!(get_palette, m)?)?;
     m.add_function(wrap_pyfunction!(get_color, m)?)?;
     Ok(())

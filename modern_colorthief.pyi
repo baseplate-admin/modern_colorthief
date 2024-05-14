@@ -1,3 +1,5 @@
+__version__: str
+
 def get_color(
     location: str,
     quality: int | None = 10,
