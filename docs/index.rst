@@ -13,6 +13,7 @@ Welcome to Modern Colorthief's documentation!
    installation
    usage
    api
+   benchmarks
    differences
    roadmaps
    
