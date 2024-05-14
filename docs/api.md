@@ -1,12 +1,9 @@
 # API
 
 ```{eval-rst}
-.. autoclass:: modern_colorthief.get_palette
-    :members:
+.. autofunction:: modern_colorthief.get_palette
 
-.. autoclass:: modern_colorthief.get_color
-    :members:
+.. autofunction:: modern_colorthief.get_color
 
 .. autoclass:: modern_colorthief.__version__
-    :members:
 ```
