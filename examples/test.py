@@ -1,4 +1,4 @@
-from modern_colorthief import get_color, get_palette
+from python.modern_colorthief.modern_colorthief import get_color, get_palette
 from colorthief import ColorThief
 from pathlib import Path
 import os
