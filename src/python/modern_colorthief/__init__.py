@@ -4,8 +4,7 @@ import io
 from .modern_colorthief import *
 
 __doc__ = modern_colorthief.__doc__
-if hasattr(modern_colorthief, "__all__"):
-    __all__ = modern_colorthief.__all__
+__version__ = modern_colorthief.__version__
 
 
 def get_palette(
@@ -14,7 +13,7 @@ def get_palette(
     quality: int | None = 10,
 ) -> list[tuple[int, int, int]]:
     if isinstance(image, str):
-        return _get_palette_given_string(image, color_count, quality)
+        return _get_palette_given_location(image, color_count, quality)
 
     if isinstance(image, bytes):
         return _get_palette_given_bytes(image, color_count, quality)
