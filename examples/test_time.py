@@ -1,4 +1,4 @@
-from python.modern_colorthief.modern_colorthief import get_color, get_palette
+from modern_colorthief import get_color, get_palette
 from fast_colorthief import get_dominant_color, get_palette as f_get_palette
 import timeit
 from colorthief import ColorThief

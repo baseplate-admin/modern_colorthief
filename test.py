@@ -11,6 +11,6 @@ img.save(img_byte_arr, format="PNG")
 import modern_colorthief
 
 
-x = modern_colorthief.get_color(img_byte_arr)
+x = modern_colorthief.get_palette(img_byte_arr)
 
-print(isinstance(img_byte_arr, io.BytesIO))
+print(x)
