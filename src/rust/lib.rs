@@ -14,11 +14,11 @@ fn get_image_buffer(img: image::DynamicImage) -> (Vec<u8>, ColorFormat) {
 /// Returns the pallette given an image
 #[pyfunction]
 fn get_palette(
-    location: String,
+    image: String,
     color_count: Option<u8>,
     quality: Option<u8>,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
-    let img = image::open(&std::path::Path::new(&location)).unwrap();
+    let img = image::open(&std::path::Path::new(&image)).unwrap();
     let (buffer, color_type) = get_image_buffer(img);
 
     let colors = color_thief::get_palette(
@@ -39,8 +39,8 @@ fn get_palette(
 
 // Gets the dominant color given an image
 #[pyfunction]
-fn get_color(location: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
-    let palette = get_palette(location, Some(5), Some(quality.unwrap_or(10))).unwrap();
+fn get_color(image: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
+    let palette = get_palette(image, Some(5), Some(quality.unwrap_or(10))).unwrap();
     Ok(palette[0])
 }
 
