@@ -14,6 +14,7 @@ Welcome to Modern Colorthief's documentation!
    usage
    api
    benchmarks
+   parity
    differences
    roadmaps
    
