@@ -5,7 +5,7 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import modern_colorthief
+import python.modern_colorthief.modern_colorthief as modern_colorthief
 import datetime
 
 project = "Modern Colorthief"

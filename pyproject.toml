@@ -27,6 +27,7 @@ fast-colorthief = "^0.0.5"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+python-source = "src/python"
 
 [tool.poetry]
 name = "modern_colorthief"
