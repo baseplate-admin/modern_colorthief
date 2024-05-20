@@ -10,7 +10,7 @@ if hasattr(modern_colorthief, "__all__"):
 
 def get_palette(
     image: str | bytes | io.BytesIO,
-    color_count: int = 10,
+    color_count: int | None = 10,
     quality: int | None = 10,
 ) -> list[tuple[int, int, int]]:
     if isinstance(image, str):
