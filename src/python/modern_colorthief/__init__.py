@@ -4,7 +4,7 @@ import io
 from .modern_colorthief import *
 
 __doc__ = modern_colorthief.__doc__
-__version__ = modern_colorthief
+__version__ = modern_colorthief.__version__
 
 
 def get_palette(
