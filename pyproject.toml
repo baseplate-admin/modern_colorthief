@@ -12,6 +12,11 @@ classifiers = [
 ]
 dynamic = ["version"]
 
+[project.urls]
+homepage = "github.com/baseplate-admin/modern_colorthief"
+documentation = "modern-colorthief.readthedocs.io"
+repository = "github.com/baseplate-admin/modern_colorthief"
+
 [tool.poetry.dependencies]
 python = "^3.12"
 
