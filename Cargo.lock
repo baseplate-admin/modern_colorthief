@@ -389,6 +389,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "jobserver"
 version = "0.1.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -494,10 +503,11 @@ dependencies = [
 
 [[package]]
 name = "modern_colorthief"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "color-thief",
  "image",
+ "itertools 0.13.0",
  "pyo3",
 ]
 
@@ -798,7 +808,7 @@ dependencies = [
  "built",
  "cfg-if",
  "interpolate_name",
- "itertools",
+ "itertools 0.12.1",
  "libc",
  "libfuzzer-sys",
  "log",
