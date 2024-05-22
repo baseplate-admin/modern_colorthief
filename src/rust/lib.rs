@@ -1,5 +1,6 @@
 use color_thief::ColorFormat;
 use image::DynamicImage;
+use itertools::Itertools;
 use pyo3::prelude::*;
 
 fn get_image_buffer(img: image::DynamicImage) -> (Vec<u8>, ColorFormat) {
@@ -66,9 +67,10 @@ fn get_palette(
     )
     .unwrap();
 
-    let color_vec = colors
+    let color_vec: Vec<(u8, u8, u8)> = colors
         .iter()
         .map(|color| (color.r, color.g, color.b))
+        .unique()
         .collect();
 
     Ok(color_vec)

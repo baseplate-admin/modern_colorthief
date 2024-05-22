@@ -13,6 +13,7 @@ path = "src/rust/lib.rs"
 pyo3 = "0.21.2"
 color-thief = "0.2"
 image = "0.25.1"
+itertools = "0.13.0"
 
 [profile.release.package."*"]
 codegen-units = 1
