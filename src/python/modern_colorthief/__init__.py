@@ -21,7 +21,7 @@ __all__ = [
 
 
 def get_palette(
-    image: str | bytes | io.BytesIO | "np.array",
+    image: str | bytes | io.BytesIO | np.array,
     color_count: int | None = 10,
     quality: int | None = 10,
 ) -> list[tuple[int, int, int]]:
@@ -54,7 +54,7 @@ def get_color(
 
     if isinstance(image, io.BytesIO):
         return _get_color_given_bytes(image.getvalue(), quality)
-    
+
     if isinstance(image, np.array):
         img = im.fromarray(image)
         image_bytes = io.BytesIO()
