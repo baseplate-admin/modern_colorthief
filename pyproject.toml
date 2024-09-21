@@ -1,10 +1,14 @@
+[[tool.poetry.source]]
+name = "pypi-public"
+url = "https://pypi.org/simple/"
+
 [build-system]
 requires = ["maturin>=1.5,<2.0"]
 build-backend = "maturin"
 
 [project]
 name = "modern_colorthief"
-requires-python = ">3.8"
+requires-python = ">3.9"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -18,7 +22,7 @@ documentation = "https://modern-colorthief.readthedocs.io"
 repository = "https://github.com/baseplate-admin/modern_colorthief"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 
 
 [tool.poetry.group.docs.dependencies]
