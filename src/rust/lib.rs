@@ -15,6 +15,7 @@ fn get_image_buffer(img: image::DynamicImage) -> (Vec<u8>, ColorFormat) {
 /// Returns the pallette given an bytes object
 
 #[pyfunction]
+#[pyo3(signature = (image, color_count=None, quality=None))]
 fn _get_palette_given_bytes(
     image: Vec<u8>,
     color_count: Option<u8>,
@@ -28,6 +29,7 @@ fn _get_palette_given_bytes(
 
 /// Returns the pallette given an image path
 #[pyfunction]
+#[pyo3(signature = (image, color_count=None, quality=None))]
 fn _get_palette_given_location(
     image: String,
     color_count: Option<u8>,
@@ -40,12 +42,14 @@ fn _get_palette_given_location(
 
 // Gets the dominant color given an image
 #[pyfunction]
+#[pyo3(signature = (image, quality=None))]
 fn _get_color_given_location(image: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
     let palette = _get_palette_given_location(image, Some(5), Some(quality.unwrap_or(10))).unwrap();
     Ok(palette[0])
 }
 
 #[pyfunction]
+#[pyo3(signature = (image, quality=None))]
 fn _get_color_given_bytes(image: Vec<u8>, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
     let palette =
         _get_palette_given_bytes(image.to_owned(), Some(5), Some(quality.unwrap_or(10))).unwrap();
