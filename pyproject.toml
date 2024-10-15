@@ -22,7 +22,7 @@ documentation = "https://modern-colorthief.readthedocs.io"
 repository = "https://github.com/baseplate-admin/modern_colorthief"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.14"
 
 
 [tool.poetry.group.docs.dependencies]
