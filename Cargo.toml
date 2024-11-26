@@ -17,12 +17,12 @@ itertools = "0.13.0"
 
 [profile.release.package."*"]
 codegen-units = 1
-opt-level ='s'
+opt-level = 's'
 strip = true
 
 [profile.release]
 panic = "abort"
 codegen-units = 1
 lto = "fat"
-opt-level ='s'
+opt-level = 's'
 strip = true
