@@ -12,7 +12,7 @@ path = "src/rust/lib.rs"
 [dependencies]
 pyo3 = "0.23.2"
 color-thief = "0.2"
-image = "0.25.4"
+image = "0.25.5"
 itertools = "0.13.0"
 
 [profile.release.package."*"]
