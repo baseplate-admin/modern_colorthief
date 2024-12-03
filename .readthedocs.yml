@@ -23,7 +23,7 @@ build:
             # Install dependencies with 'docs' dependency group
             # https://python-poetry.org/docs/managing-dependencies/#dependency-groups
             - poetry lock
-            - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry install --with docs
+            - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry install --only docs
 
 python:
     install:
