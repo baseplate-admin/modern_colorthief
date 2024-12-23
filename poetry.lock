@@ -878,13 +878,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "shibuya"
-version = "2024.12.15"
+version = "2024.12.21"
 description = "A clean, responsive, and customizable Sphinx documentation theme with light/dark mode."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "shibuya-2024.12.15-py3-none-any.whl", hash = "sha256:1047f68dbf202571f13ef3a9e88327aab9655733f1e18d0a0889d5e56c517205"},
-    {file = "shibuya-2024.12.15.tar.gz", hash = "sha256:0faadf00ae5bbd3d9ea18e7acc56230b2e6652c43d5534b8875ffbbb4ccd437c"},
+    {file = "shibuya-2024.12.21-py3-none-any.whl", hash = "sha256:22019c8b86c5814ac9e5c88432176c47df1e9d60051ba979ba4541b4e7e0d995"},
+    {file = "shibuya-2024.12.21.tar.gz", hash = "sha256:d021b4494e5968e4195593c3f45a0e0e4fba37472230da5560c0603e2eb3bd7d"},
 ]
 
 [package.dependencies]
