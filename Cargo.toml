@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 path = "src/rust/lib.rs"
 
 [dependencies]
-pyo3 = "0.23.5"
+pyo3 = "0.24.0"
 color-thief = "0.2"
 image = "0.25.5"
 itertools = "0.14.0"
