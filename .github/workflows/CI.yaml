@@ -108,7 +108,7 @@ jobs:
               uses: PyO3/maturin-action@v1
               with:
                   target: ${{ matrix.platform.target }}
-                  args: --release --out dist -i 3.8 3.9 3.10 3.11 3.12 3.13 3.14
+                  args: --release --out dist -i 3.9 3.10 3.11 3.12 3.13 3.14
                   sccache: 'true'
             - name: Upload wheels
               uses: actions/upload-artifact@v4
@@ -121,9 +121,9 @@ jobs:
         strategy:
             matrix:
                 platform:
-                    - runner: macos-13
+                    - runner: macos-15
                       target: x86_64
-                    - runner: macos-14
+                    - runner: macos-15
                       target: aarch64
         steps:
             - uses: actions/checkout@v4
@@ -183,4 +183,6 @@ jobs:
               with:
                   command: upload
                   args: --non-interactive --skip-existing wheels-*/*
+
+
 
