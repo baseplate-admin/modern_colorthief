@@ -784,6 +784,26 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
+name = "pygments-styles"
+version = "0.3.0"
+description = "A curated collection of Pygments styles based on VS Code themes."
+optional = false
+python-versions = ">=3.9"
+groups = ["docs"]
+files = [
+    {file = "pygments_styles-0.3.0-py3-none-any.whl", hash = "sha256:c6c45e9939eb7590345bc9084113bac46c45f12b009d13422be02e80e84a034c"},
+    {file = "pygments_styles-0.3.0.tar.gz", hash = "sha256:67746b8fc6ff72c1179ca4d9a8bc89c7f54c196c2ff9d087f07392cd6fde3ecf"},
+]
+
+[package.dependencies]
+pygments = "*"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
+
+[[package]]
 name = "pytest"
 version = "8.4.2"
 description = "pytest: simple powerful testing with Python"
@@ -909,17 +929,18 @@ reference = "pypi-public"
 
 [[package]]
 name = "shibuya"
-version = "2024.12.21"
+version = "2025.10.21"
 description = "A clean, responsive, and customizable Sphinx documentation theme with light/dark mode."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["docs"]
 files = [
-    {file = "shibuya-2024.12.21-py3-none-any.whl", hash = "sha256:22019c8b86c5814ac9e5c88432176c47df1e9d60051ba979ba4541b4e7e0d995"},
-    {file = "shibuya-2024.12.21.tar.gz", hash = "sha256:d021b4494e5968e4195593c3f45a0e0e4fba37472230da5560c0603e2eb3bd7d"},
+    {file = "shibuya-2025.10.21-py3-none-any.whl", hash = "sha256:916e48c97ba5cc4b1949742beac19cf48923e12965a0d1689fda460d363f4d82"},
+    {file = "shibuya-2025.10.21.tar.gz", hash = "sha256:a668f2a33c8b57d33d78bd6edf723eece5734d01f129f973333e7096ad6b3690"},
 ]
 
 [package.dependencies]
+pygments-styles = "*"
 Sphinx = "*"
 
 [package.source]
@@ -1186,4 +1207,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "8bf7c59496ed13dfcec528869f10a34d7a0514f0678287889b43930385c6c691"
+content-hash = "cb2c12c405f0c9cd2afd60fbede749e5f90f0b3922af626bad8b43857f47febe"
