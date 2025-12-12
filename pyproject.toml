@@ -26,7 +26,7 @@ python = ">3.9"
 
 
 [tool.poetry.group.docs.dependencies]
-shibuya = "^2024.6.23"
+shibuya = ">=2024.6.23,<2026.0.0"
 myst-parser = "^3.0.1"
 sphinx = "^7.3.7"
 
