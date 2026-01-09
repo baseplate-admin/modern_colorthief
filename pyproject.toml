@@ -1,14 +1,10 @@
-[[tool.poetry.source]]
-name = "pypi-public"
-url = "https://pypi.org/simple/"
-
-[build-system]
-requires = ["maturin>=1.5,<2.0"]
-build-backend = "maturin"
-
 [project]
 name = "modern_colorthief"
+authors = [
+    { name = "baseplate-admin", email = "61817579+baseplate-admin@users.noreply.github.com" },
+]
 requires-python = ">3.9"
+readme = "README.md"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -21,26 +17,30 @@ homepage = "https://github.com/baseplate-admin/modern_colorthief"
 documentation = "https://modern-colorthief.readthedocs.io"
 repository = "https://github.com/baseplate-admin/modern_colorthief"
 
-[tool.poetry.dependencies]
-python = ">3.9"
+[dependency-groups]
+docs = [
+    "shibuya>=2024.6.23,<2026.0.0",
+    "myst-parser>=3.0.1,<4",
+    "sphinx>=7.3.7,<8",
+]
+test = [
+    "colorthief>=0.2.1,<0.3",
+    "fast-colorthief>=0.0.5,<0.0.6",
+    "pytest>=8.2.1,<9",
+]
 
+[tool.uv]
+package = false
+default-groups = ["docs", "test"]
 
-[tool.poetry.group.docs.dependencies]
-shibuya = ">=2024.6.23,<2026.0.0"
-myst-parser = "^3.0.1"
-sphinx = "^7.3.7"
+[[tool.uv.index]]
+name = "pypi-public"
+url = "https://pypi.org/simple/"
 
-[tool.poetry.group.test.dependencies]
-colorthief = "^0.2.1"
-fast-colorthief = "^0.0.5"
-pytest = "^8.2.1"
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
 python-source = "src/python"
-
-[tool.poetry]
-name = "modern_colorthief"
-authors = ["baseplate-admin <61817579+baseplate-admin@users.noreply.github.com>"]
-readme = "README.md"
-package-mode = false
