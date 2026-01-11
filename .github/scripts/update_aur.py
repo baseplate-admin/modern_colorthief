@@ -30,12 +30,25 @@ manylinux_wheels = [w for w in wheels if "manylinux" in w]
 if not manylinux_wheels:
     print("No manylinux wheels found! Cannot update bin package.")
 else:
-    # Sort to find a suitable wheel
-    # We'll just take the first one after reverse sort to align with previous behavior
-    manylinux_wheels.sort(reverse=True)
-    best_wheel_path = manylinux_wheels[0]
-    best_wheel_name = os.path.basename(best_wheel_path)
-    print(f"Selected wheel: {best_wheel_name}")
+        # Separate CPython and PyPy wheels
+        cpython_wheels = [w for w in manylinux_wheels if "-cp" in os.path.basename(w)]
+        pypy_wheels = [w for w in manylinux_wheels if "-pp" in os.path.basename(w)]
+
+        # Sort to find a suitable wheel
+        if cpython_wheels:
+            # Sort CPython wheels (reverse=True picks highest version, e.g. cp311 > cp310)
+            cpython_wheels.sort(reverse=True)
+            best_wheel_path = cpython_wheels[0]
+        elif pypy_wheels:
+            pypy_wheels.sort(reverse=True)
+            best_wheel_path = pypy_wheels[0]
+        else:
+             # Fallback if naming convention doesn't match expected cp/pp
+            manylinux_wheels.sort(reverse=True)
+            best_wheel_path = manylinux_wheels[0]
+            
+        best_wheel_name = os.path.basename(best_wheel_path)
+        print(f"Selected wheel: {best_wheel_name}")
 
     # Calculate SHA256 of local file
     sha256_hash = hashlib.sha256()
@@ -58,7 +71,7 @@ else:
         content = f.read()
 
     # Update version, source, checksum
-    content = re.sub(r"^pkgver=.*", f"pkgver={version}", content, flags=re.MULTILINE)
+    # content = re.sub(r"^pkgver=.*", f"pkgver={version}", content, flags=re.MULTILINE)
     content = re.sub(
         r"^source=\(.*?\)", f'source=("{download_url}")', content, flags=re.MULTILINE
     )
