@@ -17,6 +17,7 @@ Welcome to Modern Colorthief's documentation!
    parity
    differences
    roadmaps
+   license
    
 
 
