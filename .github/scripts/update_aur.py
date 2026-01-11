@@ -63,49 +63,61 @@ else:
             pypy_wheels.append(w)
 
     # Sort to find a suitable wheel
+    selected_wheels = []
     if cpython_wheels:
         # Sort CPython wheels (reverse=True picks highest version, e.g. cp311 > cp310)
         cpython_wheels.sort(reverse=True)
-        best_wheel_path = cpython_wheels[0]
+        selected_wheels = cpython_wheels[:3]
     elif pypy_wheels:
         pypy_wheels.sort(reverse=True)
-        best_wheel_path = pypy_wheels[0]
+        selected_wheels = pypy_wheels[:3]
     else:
         # Fallback if naming convention doesn't match expected cp/pp
         manylinux_wheels.sort(reverse=True)
-        best_wheel_path = manylinux_wheels[0]
+        selected_wheels = manylinux_wheels[:3]
 
-    best_wheel_name = os.path.basename(best_wheel_path)
-    print(f"Selected wheel: {best_wheel_name}")
+    print(f"Selected wheels: {[os.path.basename(w) for w in selected_wheels]}")
 
-    # Calculate SHA256 of local file
-    sha256_hash = hashlib.sha256()
-    with open(best_wheel_path, "rb") as f:
-        for byte_block in iter(lambda: f.read(4096), b""):
-            sha256_hash.update(byte_block)
-    sha256 = sha256_hash.hexdigest()
-    print(f"SHA256: {sha256}")
+    wheel_data = []
 
-    # Construct download URL for PKGBUILD
-    # https://github.com/<owner>/<repo>/releases/download/<tag>/<filename>
-    download_url = (
-        f"https://github.com/{repo}/releases/download/{version}/{best_wheel_name}"
-    )
-    print(f"Download URL: {download_url}")
+    for wheel_path in selected_wheels:
+        best_wheel_name = os.path.basename(wheel_path)
+
+        # Calculate SHA256 of local file
+        sha256_hash = hashlib.sha256()
+        with open(wheel_path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256_hash.update(byte_block)
+        sha256 = sha256_hash.hexdigest()
+        print(f"SHA256 ({best_wheel_name}): {sha256}")
+
+        # Construct download URL for PKGBUILD
+        # https://github.com/<owner>/<repo>/releases/download/<tag>/<filename>
+        download_url = (
+            f"https://github.com/{repo}/releases/download/{version}/{best_wheel_name}"
+        )
+        wheel_data.append((download_url, sha256))
 
     # Update PKGBUILD
     pkgbuild_path = "aur/modern-colorthief/PKGBUILD"
     with open(pkgbuild_path, "r", encoding="utf-8") as f:
         content = f.read()
 
+    sources_str = "source=(" + " ".join([f'"{url}"' for url, _ in wheel_data]) + ")"
+    shas_str = "sha256sums=(" + " ".join([f"'{sha}'" for _, sha in wheel_data]) + ")"
+
     # Update version, source, checksum
     # content = re.sub(r"^pkgver=.*", f"pkgver={version}", content, flags=re.MULTILINE)
-    content = re.sub(
-        r"^source=\(.*?\)", f'source=("{download_url}")', content, flags=re.MULTILINE
-    )
-    content = re.sub(
-        r"^sha256sums=\(.*?\)", f"sha256sums=('{sha256}')", content, flags=re.MULTILINE
-    )
+    content = re.sub(r"^source=\(.*?\)", sources_str, content, flags=re.MULTILINE)
+    content = re.sub(r"^sha256sums=\(.*?\)", shas_str, content, flags=re.MULTILINE)
+
+    # Update package step to select correct wheel based on python version
+    if 'python -m installer --destdir="$pkgdir" *.whl' in content:
+        new_cmd = """_pyver="cp$(python -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+    python -m installer --destdir="$pkgdir" *"${_pyver}"*.whl"""
+        content = content.replace(
+            'python -m installer --destdir="$pkgdir" *.whl', new_cmd
+        )
 
     with open(pkgbuild_path, "w", encoding="utf-8") as f:
         f.write(content)
