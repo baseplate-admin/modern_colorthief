@@ -1,0 +1,109 @@
+name: Publish to AUR
+
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+
+jobs:
+    aur:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+      - name: Prepare and Publish AUR Packages
+        uses: actions/github-script@v7
+        env:
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          AUR_USERNAME: ${{ secrets.AUR_USERNAME }}
+          AUR_EMAIL: ${{ secrets.AUR_EMAIL }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { execSync } = require('child_process');
+            
+            // Helper to run shell commands
+            const run = (cmd) => {
+              console.log(`Running: ${cmd}`);
+              try {
+                execSync(cmd, { stdio: 'inherit', shell: '/bin/bash' });
+              } catch (error) {
+                console.error(`Command failed: ${cmd}`);
+                process.exit(1);
+              }
+            };
+            
+            // Get release info
+            const version = context.ref.replace('refs/tags/v', '');
+            console.log(`Detected version: ${version}`);
+            
+            // Fetch release assets
+            const release = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: context.ref.replace('refs/tags/', '')
+            });
+            
+            const assets = release.data.assets;
+            
+            // --- HANDLE BIN PACKAGE (WHEEL) ---
+            console.log("Processing modern-colorthief-bin...");
+            
+            // Find a suitable manylinux wheel. Prefer higher python versions (lexicographically cp39 < cp312 usually works if format is cp3X).
+            // Format: modern_colorthief-0.1.8-cp312-cp312-manylinux...whl
+            const wheels = assets.filter(a => a.name.endsWith('.whl') && a.name.includes('manylinux'));
+            
+            if (wheels.length === 0) {
+              console.error("No manylinux wheels found! Cannot update bin package.");
+            } else {
+              // Sort to find "latest" python version. 
+              wheels.sort((a, b) => {
+                return b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' });
+              });
+              
+              const bestWheel = wheels[0];
+              console.log(`Selected wheel: ${bestWheel.name} (${bestWheel.browser_download_url})`);
+              
+              // Download to calc hash
+              run(`curl -L -o artifact.whl "${bestWheel.browser_download_url}"`);
+              const sha256 = execSync(`sha256sum artifact.whl | awk '{print $1}'`).toString().trim();
+              console.log(`SHA256: ${sha256}`);
+              
+              // Update PKGBUILD
+              const binPkgbuildPath = 'aur/modern-colorthief-bin/PKGBUILD';
+              let binContent = fs.readFileSync(binPkgbuildPath, 'utf8');
+              
+              binContent = binContent.replace(/^pkgver=.*/m, `pkgver=${version}`);
+              binContent = binContent.replace(/^source=\(".*"\)/m, `source=("${bestWheel.browser_download_url}")`);
+              binContent = binContent.replace(/^sha256sums=\('.*'\)/m, `sha256sums=('${sha256}')`);
+              
+              fs.writeFileSync(binPkgbuildPath, binContent);
+            }
+            
+            // --- HANDLE GIT PACKAGE ---
+            console.log("Processing modern-colorthief-git...");
+            // No strict changes needed for git package, but we ensure it exists.
+      
+      - name: Deploy -bin package to AUR
+        if: success()
+        uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
+        with:
+          pkgname: modern-colorthief-bin
+          pkgbuild: ./aur/modern-colorthief-bin/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Update to v${{ github.ref_name }}
+          force_push: true
+          
+      - name: Deploy -git package to AUR
+        if: success()
+        uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
+        with:
+          pkgname: modern-colorthief-git
+          pkgbuild: ./aur/modern-colorthief-git/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Sync with release v${{ github.ref_name }}
