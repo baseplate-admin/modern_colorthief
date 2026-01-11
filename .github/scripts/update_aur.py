@@ -24,32 +24,40 @@ if not os.path.exists(dist_dir):
 wheels = glob.glob(os.path.join(dist_dir, "*.whl"))
 print(f"Found wheels: {wheels}")
 
-# Filter for manylinux
-manylinux_wheels = [w for w in wheels if "manylinux" in w]
+# Filter for manylinux, x86_64, CPython (no PyPy, no free-threaded)
+wheels_to_consider = [
+    w
+    for w in wheels
+    if "manylinux" in w
+    and "x86_64" in w
+    and "-cp" in os.path.basename(w)
+    and "-pp" not in os.path.basename(w)
+    and not re.search(r"cp\d+t", os.path.basename(w))
+]
 
-if not manylinux_wheels:
-    print("No manylinux wheels found! Cannot update bin package.")
+if not wheels_to_consider:
+    print("No suitable manylinux x86_64 CPython wheels found!")
+    # Fallback or exit? If strict, we might want to just proceed with empty list or error.
+    # But usually update scripts should fail if they can't find what they need.
+    pass
 else:
-    # Prefer CPython wheels
-    cpython_wheels = [
-        w
-        for w in manylinux_wheels
-        if "-cp" in os.path.basename(w) and "-pp" not in os.path.basename(w)
-    ]
-    if cpython_wheels:
-        # Filter out free-threaded (t) builds
-        regular_cpython = [
-            w for w in cpython_wheels if not re.search(r"cp\d+t", os.path.basename(w))
-        ]
-        if regular_cpython:
-            cpython_wheels = regular_cpython
-        wheels_to_consider = cpython_wheels
-    else:
-        wheels_to_consider = manylinux_wheels
-
-    # Sort to find suitable wheels (top 3)
+    # Sort to find suitable wheels
     wheels_to_consider.sort(reverse=True)
-    selected_wheels = wheels_to_consider[:3]
+
+    # Allow picking specific python version via env var
+    target_py = os.environ.get("TARGET_PYTHON_VERSION")
+    if target_py:
+        print(f"Filtering wheels for {target_py}...")
+        cpython_wheels_filtered = [
+            w for w in wheels_to_consider if target_py in os.path.basename(w)
+        ]
+        if cpython_wheels_filtered:
+            wheels_to_consider = cpython_wheels_filtered
+        else:
+            print(f"Warning: No wheels found for {target_py}")
+
+    # Select only the single best match (Top 1)
+    selected_wheels = wheels_to_consider[:1]
     print(f"Selected wheels: {[os.path.basename(w) for w in selected_wheels]}")
 
     wheel_data = []
@@ -86,8 +94,8 @@ else:
 
     # Update package step to select correct wheel based on python version
     if 'python -m installer --destdir="$pkgdir" *.whl' in content:
-        new_cmd = """_pyver="cp$(python -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
-    python -m installer --destdir="$pkgdir" *"${_pyver}"*.whl"""
+        new_cmd = """_pyver="cp$(${PYTHON:-python} -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+    ${PYTHON:-python} -m installer --destdir="$pkgdir" *"${_pyver}"*.whl"""
         content = content.replace(
             'python -m installer --destdir="$pkgdir" *.whl', new_cmd
         )

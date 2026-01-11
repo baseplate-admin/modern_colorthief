@@ -208,6 +208,7 @@ jobs:
                   AUR_USERNAME: ${{ secrets.AUR_USERNAME }}
                   AUR_EMAIL: ${{ secrets.AUR_EMAIL }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TARGET_PYTHON_VERSION: cp313
               run: python .github/scripts/update_aur.py
 
             - name: Deploy -bin package to AUR
