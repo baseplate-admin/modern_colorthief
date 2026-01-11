@@ -25,30 +25,58 @@ wheels = glob.glob(os.path.join(dist_dir, "*.whl"))
 print(f"Found wheels: {wheels}")
 
 # Filter for manylinux
-manylinux_wheels = [w for w in wheels if "manylinux" in w]
+# We prioritize x86_64 as it's the standard Arch architecture.
+manylinux_wheels = [w for w in wheels if "manylinux" in w and "x86_64" in w]
+if not manylinux_wheels:
+    print("No x86_64 manylinux wheels found! Falling back to all manylinux wheels.")
+    manylinux_wheels = [w for w in wheels if "manylinux" in w]
 
 if not manylinux_wheels:
     print("No manylinux wheels found! Cannot update bin package.")
+    sys.exit(1)
 else:
-        # Separate CPython and PyPy wheels
-        cpython_wheels = [w for w in manylinux_wheels if "-cp" in os.path.basename(w)]
-        pypy_wheels = [w for w in manylinux_wheels if "-pp" in os.path.basename(w)]
+    # Separate CPython and PyPy wheels
+    cpython_wheels = []
+    pypy_wheels = []
 
-        # Sort to find a suitable wheel
-        if cpython_wheels:
-            # Sort CPython wheels (reverse=True picks highest version, e.g. cp311 > cp310)
-            cpython_wheels.sort(reverse=True)
-            best_wheel_path = cpython_wheels[0]
-        elif pypy_wheels:
-            pypy_wheels.sort(reverse=True)
-            best_wheel_path = pypy_wheels[0]
-        else:
-             # Fallback if naming convention doesn't match expected cp/pp
-            manylinux_wheels.sort(reverse=True)
-            best_wheel_path = manylinux_wheels[0]
-            
-        best_wheel_name = os.path.basename(best_wheel_path)
-        print(f"Selected wheel: {best_wheel_name}")
+    for w in manylinux_wheels:
+        base = os.path.basename(w)
+        if "-cp" in base:
+            # Check for free-threaded ABI (e.g. cp313t) which are not compatible with standard python
+            # We want to exclude these unless no other option?
+            # Heuristic: part starts with 'cp', ends with 't', and middle is digits.
+            parts = base.split("-")
+            is_free_threaded = False
+            for part in parts:
+                if (
+                    part.startswith("cp")
+                    and part.endswith("t")
+                    and len(part) > 3
+                    and part[2:-1].isdigit()
+                ):
+                    is_free_threaded = True
+                    break
+
+            if not is_free_threaded:
+                cpython_wheels.append(w)
+        elif "-pp" in base:
+            pypy_wheels.append(w)
+
+    # Sort to find a suitable wheel
+    if cpython_wheels:
+        # Sort CPython wheels (reverse=True picks highest version, e.g. cp311 > cp310)
+        cpython_wheels.sort(reverse=True)
+        best_wheel_path = cpython_wheels[0]
+    elif pypy_wheels:
+        pypy_wheels.sort(reverse=True)
+        best_wheel_path = pypy_wheels[0]
+    else:
+        # Fallback if naming convention doesn't match expected cp/pp
+        manylinux_wheels.sort(reverse=True)
+        best_wheel_path = manylinux_wheels[0]
+
+    best_wheel_name = os.path.basename(best_wheel_path)
+    print(f"Selected wheel: {best_wheel_name}")
 
     # Calculate SHA256 of local file
     sha256_hash = hashlib.sha256()
