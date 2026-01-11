@@ -12,6 +12,7 @@ Welcome to Modern Colorthief's documentation!
    
    installation
    usage
+   cli
    api
    benchmarks
    parity
