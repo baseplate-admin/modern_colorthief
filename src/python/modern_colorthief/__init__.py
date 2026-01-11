@@ -1,10 +1,10 @@
 import io
 
 # Rust import
-from .modern_colorthief import *
+from ._modern_colorthief import *
 
-__doc__ = modern_colorthief.__doc__
-__version__ = modern_colorthief.__version__
+__doc__ = _modern_colorthief.__doc__
+__version__ = _modern_colorthief.__version__
 
 
 def get_palette(

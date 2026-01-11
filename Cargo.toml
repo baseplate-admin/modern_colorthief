@@ -5,7 +5,7 @@ edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "modern_colorthief"
+name = "_modern_colorthief"
 crate-type = ["cdylib"]
 path = "src/rust/lib.rs"
 

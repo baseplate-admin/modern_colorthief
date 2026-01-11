@@ -47,3 +47,4 @@ build-backend = "maturin"
 [tool.maturin]
 features = ["pyo3/extension-module"]
 python-source = "src/python"
+module-name = "modern_colorthief._modern_colorthief"

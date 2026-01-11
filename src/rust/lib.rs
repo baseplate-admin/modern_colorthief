@@ -96,7 +96,7 @@ fn get_version() -> &'static str {
 }
 /// A Python module implemented in Rust.
 #[pymodule]
-fn modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn _modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("__version__", get_version())?;
 
     // Palette utils
