@@ -22,9 +22,14 @@ fn _get_palette_given_bytes(
     quality: Option<u8>,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
     let mut _image = image;
-    let img = image::load_from_memory(&_image).unwrap();
+    let img = image::load_from_memory(&_image).map_err(|e| {
+        pyo3::exceptions::PyValueError::new_err(format!("Failed to load image from memory: {}", e))
+    })?;
 
-    Ok(get_palette(img, color_count, quality).unwrap())
+    match get_palette(img, color_count, quality) {
+        Ok(p) => Ok(p),
+        Err(e) => Err(pyo3::exceptions::PyValueError::new_err(e)),
+    }
 }
 
 /// Returns the pallette given an image path
@@ -35,24 +40,28 @@ fn _get_palette_given_location(
     color_count: Option<u8>,
     quality: Option<u8>,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
-    let img = image::open(&std::path::Path::new(&image)).unwrap();
+    let img = image::open(&std::path::Path::new(&image)).map_err(|e| {
+        pyo3::exceptions::PyValueError::new_err(format!("Failed to open image at {}: {}", image, e))
+    })?;
 
-    Ok(get_palette(img, color_count, quality).unwrap())
+    match get_palette(img, color_count, quality) {
+        Ok(p) => Ok(p),
+        Err(e) => Err(pyo3::exceptions::PyValueError::new_err(e)),
+    }
 }
 
 // Gets the dominant color given an image
 #[pyfunction]
 #[pyo3(signature = (image, quality=None))]
 fn _get_color_given_location(image: String, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
-    let palette = _get_palette_given_location(image, Some(5), Some(quality.unwrap_or(10))).unwrap();
+    let palette = _get_palette_given_location(image, Some(5), Some(quality.unwrap_or(10)))?;
     Ok(palette[0])
 }
 
 #[pyfunction]
 #[pyo3(signature = (image, quality=None))]
 fn _get_color_given_bytes(image: Vec<u8>, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
-    let palette =
-        _get_palette_given_bytes(image.to_owned(), Some(5), Some(quality.unwrap_or(10))).unwrap();
+    let palette = _get_palette_given_bytes(image.to_owned(), Some(5), Some(quality.unwrap_or(10)))?;
     Ok(palette[0])
 }
 
