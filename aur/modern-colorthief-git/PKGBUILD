@@ -22,7 +22,7 @@ depends=('python' 'python-color-thief' 'python-image' 'python-itertools') # Chec
 depends=('python')
 makedepends=('python-build' 'python-installer' 'python-wheel' 'maturin' 'cargo' 'git')
 provides=("$_name")
-conflicts=("$_name" "$_name-bin")
+conflicts=("$_name")
 source=("git+https://github.com/baseplate-admin/modern_colorthief.git")
 sha256sums=('SKIP')
 

@@ -1,16 +1,15 @@
 # Maintainer: baseplate-admin <61817579+baseplate-admin@users.noreply.github.com>
-pkgname=modern-colorthief-bin
+pkgname=modern-colorthief
 _name=modern_colorthief
 pkgver=0.1.8
 pkgrel=1
-pkgdesc="A modern color thief (binary version)"
+pkgdesc="A modern color thief"
 arch=('x86_64')
 url="https://github.com/baseplate-admin/modern_colorthief"
 license=('MIT')
 depends=('python')
 makedepends=('python-installer')
-provides=("$_name")
-conflicts=("$_name" "$_name-git")
+conflicts=("$_name-git")
 source=("placeholder_url")
 sha256sums=('SKIP')
 
