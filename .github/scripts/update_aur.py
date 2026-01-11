@@ -107,7 +107,7 @@ else:
     shas_str = "sha256sums=(" + " ".join([f"'{sha}'" for _, sha in wheel_data]) + ")"
 
     # Update version, source, checksum
-    # content = re.sub(r"^pkgver=.*", f"pkgver={version}", content, flags=re.MULTILINE)
+    content = re.sub(r"^pkgver=.*", f"pkgver={version}", content, flags=re.MULTILINE)
     content = re.sub(r"^source=\(.*?\)", sources_str, content, flags=re.MULTILINE)
     content = re.sub(r"^sha256sums=\(.*?\)", shas_str, content, flags=re.MULTILINE)
 
