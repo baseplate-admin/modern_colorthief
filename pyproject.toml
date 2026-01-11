@@ -17,7 +17,12 @@ homepage = "https://github.com/baseplate-admin/modern_colorthief"
 documentation = "https://modern-colorthief.readthedocs.io"
 repository = "https://github.com/baseplate-admin/modern_colorthief"
 
+[project.scripts]
+modern-colorthief = "modern_colorthief.cli:main"
+
+
 [dependency-groups]
+build = ["maturin>=1.11.5"]
 docs = [
     "shibuya>=2024.6.23,<2026.0.0",
     "myst-parser>=3.0.1,<4",
@@ -30,16 +35,14 @@ test = [
 ]
 
 [tool.uv]
-package = false
+package = true
 default-groups = ["docs", "test"]
 
-[[tool.uv.index]]
-name = "pypi-public"
-url = "https://pypi.org/simple/"
 
 [build-system]
-requires = ["maturin>=1.5,<2.0"]
+requires = ["maturin>=1.4,<2.0"]
 build-backend = "maturin"
+
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
