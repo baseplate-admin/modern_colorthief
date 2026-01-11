@@ -1,7 +1,7 @@
 # Maintainer: baseplate-admin <61817579+baseplate-admin@users.noreply.github.com>
 pkgname=modern-colorthief
 _name=modern_colorthief
-pkgver=0.1.9-2
+pkgver=0.1.10-1
 pkgrel=1
 pkgdesc="A modern color thief"
 arch=('x86_64')
