@@ -25,63 +25,37 @@ wheels = glob.glob(os.path.join(dist_dir, "*.whl"))
 print(f"Found wheels: {wheels}")
 
 # Filter for manylinux
-# We prioritize x86_64 as it's the standard Arch architecture.
-manylinux_wheels = [w for w in wheels if "manylinux" in w and "x86_64" in w]
-if not manylinux_wheels:
-    print("No x86_64 manylinux wheels found! Falling back to all manylinux wheels.")
-    manylinux_wheels = [w for w in wheels if "manylinux" in w]
+manylinux_wheels = [w for w in wheels if "manylinux" in w]
 
 if not manylinux_wheels:
     print("No manylinux wheels found! Cannot update bin package.")
-    sys.exit(1)
 else:
-    # Separate CPython and PyPy wheels
-    cpython_wheels = []
-    pypy_wheels = []
-
-    for w in manylinux_wheels:
-        base = os.path.basename(w)
-        if "-cp" in base:
-            # Check for free-threaded ABI (e.g. cp313t) which are not compatible with standard python
-            # We want to exclude these unless no other option?
-            # Heuristic: part starts with 'cp', ends with 't', and middle is digits.
-            parts = base.split("-")
-            is_free_threaded = False
-            for part in parts:
-                if (
-                    part.startswith("cp")
-                    and part.endswith("t")
-                    and len(part) > 3
-                    and part[2:-1].isdigit()
-                ):
-                    is_free_threaded = True
-                    break
-
-            if not is_free_threaded:
-                cpython_wheels.append(w)
-        elif "-pp" in base:
-            pypy_wheels.append(w)
-
-    # Sort to find a suitable wheel
-    selected_wheels = []
+    # Prefer CPython wheels
+    cpython_wheels = [
+        w
+        for w in manylinux_wheels
+        if "-cp" in os.path.basename(w) and "-pp" not in os.path.basename(w)
+    ]
     if cpython_wheels:
-        # Sort CPython wheels (reverse=True picks highest version, e.g. cp311 > cp310)
-        cpython_wheels.sort(reverse=True)
-        selected_wheels = cpython_wheels[:3]
-    elif pypy_wheels:
-        pypy_wheels.sort(reverse=True)
-        selected_wheels = pypy_wheels[:3]
+        # Filter out free-threaded (t) builds
+        regular_cpython = [
+            w for w in cpython_wheels if not re.search(r"cp\d+t", os.path.basename(w))
+        ]
+        if regular_cpython:
+            cpython_wheels = regular_cpython
+        wheels_to_consider = cpython_wheels
     else:
-        # Fallback if naming convention doesn't match expected cp/pp
-        manylinux_wheels.sort(reverse=True)
-        selected_wheels = manylinux_wheels[:3]
+        wheels_to_consider = manylinux_wheels
 
+    # Sort to find suitable wheels (top 3)
+    wheels_to_consider.sort(reverse=True)
+    selected_wheels = wheels_to_consider[:3]
     print(f"Selected wheels: {[os.path.basename(w) for w in selected_wheels]}")
 
     wheel_data = []
 
     for wheel_path in selected_wheels:
-        best_wheel_name = os.path.basename(wheel_path)
+        wheel_name = os.path.basename(wheel_path)
 
         # Calculate SHA256 of local file
         sha256_hash = hashlib.sha256()
@@ -89,12 +63,11 @@ else:
             for byte_block in iter(lambda: f.read(4096), b""):
                 sha256_hash.update(byte_block)
         sha256 = sha256_hash.hexdigest()
-        print(f"SHA256 ({best_wheel_name}): {sha256}")
+        print(f"SHA256 ({wheel_name}): {sha256}")
 
-        # Construct download URL for PKGBUILD
-        # https://github.com/<owner>/<repo>/releases/download/<tag>/<filename>
+        # Construct download URL
         download_url = (
-            f"https://github.com/{repo}/releases/download/{version}/{best_wheel_name}"
+            f"https://github.com/{repo}/releases/download/{version}/{wheel_name}"
         )
         wheel_data.append((download_url, sha256))
 
