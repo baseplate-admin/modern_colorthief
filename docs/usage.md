@@ -2,6 +2,8 @@
 
 `modern_colorthief` exposes two functions `get_color` and `get_palette`
 
+## Image Path
+
 How to use with image path:
 
 ```python
@@ -15,6 +17,8 @@ print(modern_colorthief.get_color(path)) # returns tuple[int,int,int]
 
 
 ```
+
+## BytesIO
 
 How to use `modern_colorthief` with a `BytesIO` object:
 
@@ -31,6 +35,8 @@ dominant_color = modern_colorthief.get_color(image_bytes)
 dominant_palette = modern_colorthief.get_palette(image_bytes)
 ```
 
+## Pillow Object
+
 How to use `modern_colorthief` with a `Pillow` object:
 
 ```python
@@ -41,6 +47,25 @@ import modern_colorthief
 
 path = ...
 img = Image.open(path, mode="r")
+
+image_bytes = io.BytesIO()
+img.save(image_bytes, format="PNG")
+
+dominant_color = modern_colorthief.get_color(image_bytes)
+dominant_palette = modern_colorthief.get_palette(image_bytes)
+```
+
+## Numpy Array
+
+How to use `modern_colorthief` with `numpy` array (needs `Pillow`):
+
+```python
+import numpy as np
+from PIL import Image
+
+arr = ... # Numpy Array
+
+img = Image.fromarray(arr)
 
 image_bytes = io.BytesIO()
 img.save(image_bytes, format="PNG")
