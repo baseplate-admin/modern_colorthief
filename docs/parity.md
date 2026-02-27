@@ -24,5 +24,4 @@ img.save(image_bytes, format="PNG")
 
 dominant_color = modern_colorthief.get_color(image_bytes)
 dominant_palette = modern_colorthief.get_palette(image_bytes)
-
 ```

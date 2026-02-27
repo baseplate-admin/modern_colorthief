@@ -14,8 +14,6 @@ path = ...
 
 print(modern_colorthief.get_palette(path)) # returns list[tuple[int,int,int]]
 print(modern_colorthief.get_color(path)) # returns tuple[int,int,int]
-
-
 ```
 
 ## BytesIO

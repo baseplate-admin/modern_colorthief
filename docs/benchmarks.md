@@ -45,7 +45,6 @@ start_time = timeit.default_timer()
 o = f_get_palette(path)
 elapsed = timeit.default_timer() - start_time
 print(f"CPP Took:\t\t{elapsed}")
-
 ```
 
 It retuns this:
