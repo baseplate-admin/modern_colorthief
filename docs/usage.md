@@ -75,5 +75,20 @@ dominant_palette = modern_colorthief.get_palette(image_bytes)
 ```
 
 ```{eval-rst}
+
+.. caution:
+    Data Type Must Be uint8
+
+    Pillow expects:
+
+    dtype=np.uint8
+
+    Values between 0–255
+
+    If your array is float (e.g., 0–1):
+
+```
+
+```{eval-rst}
 If there is a difference in the colors returned by `modern_colorthief` check the :doc:`parity <../parity>` documentation
 ```

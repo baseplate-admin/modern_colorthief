@@ -429,10 +429,6 @@ source = { editable = "." }
 build = [
     { name = "maturin" },
 ]
-dev = [
-    { name = "shibuya", version = "2025.10.21", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "shibuya", version = "2025.12.19", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-]
 docs = [
     { name = "myst-parser" },
     { name = "shibuya", version = "2025.10.21", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -448,15 +444,14 @@ test = [
 
 [package.metadata.requires-dev]
 build = [{ name = "maturin", specifier = ">=1.11.5" }]
-dev = [{ name = "shibuya", specifier = ">=2025.10.21" }]
 docs = [
-    { name = "myst-parser", specifier = ">=3.0.1,<4" },
-    { name = "shibuya", specifier = ">=2024.6.23,<2026.0.0" },
-    { name = "sphinx", specifier = ">=7.3.7,<8" },
+    { name = "myst-parser", specifier = ">=3.0.1" },
+    { name = "shibuya", specifier = ">=2025.10.21" },
+    { name = "sphinx", specifier = ">=7.3.7" },
 ]
 test = [
-    { name = "colorthief", specifier = ">=0.2.1,<0.3" },
-    { name = "pytest", specifier = ">=8.2.1,<9" },
+    { name = "colorthief", specifier = ">=0.2.1" },
+    { name = "pytest", specifier = ">=8.2.1" },
 ]
 
 [[package]]
