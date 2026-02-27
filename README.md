@@ -12,9 +12,6 @@
 
 -   `modern_colorthief` does not support EOL python versions.
 
-## Requirements :
-
--   Python 3
 
 ## Examples :
 
@@ -56,8 +53,9 @@ image = '' # Path to a image
 
 If you like this project add a star.
 If you have problems or suggestions please put them in the [Issue Tracker](https://github.com/baseplate-admin/modern_colorthief/issues)
-If you like to add features. Fork this repo and submit a Pull Request. 😛
+If you like to add features. Fork this repo and submit a Pull Request. 
 
 # Roadmap :
 
 You tell me. If i have free time, I will implement it.
+
