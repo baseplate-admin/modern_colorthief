@@ -23,15 +23,8 @@ modern-colorthief = "modern_colorthief.cli:main"
 
 [dependency-groups]
 build = ["maturin>=1.11.5"]
-docs = [
-    "shibuya>=2024.6.23,<2026.0.0",
-    "myst-parser>=3.0.1,<4",
-    "sphinx>=7.3.7,<8",
-]
-test = [
-    "colorthief>=0.2.1,<0.3",
-    "pytest>=8.2.1,<9",
-]
+docs = ["shibuya>=2025.10.21", "myst-parser>=3.0.1", "sphinx>=7.3.7"]
+test = ["colorthief>=0.2.1", "pytest>=8.2.1"]
 
 [tool.uv]
 package = true
@@ -39,7 +32,7 @@ default-groups = ["docs", "test"]
 
 
 [build-system]
-requires = ["maturin>=1.4,<2.0"]
+requires = ["maturin>=1.4"]
 build-backend = "maturin"
 
 
