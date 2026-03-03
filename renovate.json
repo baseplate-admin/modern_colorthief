@@ -1,6 +1,9 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["mergeConfidence:all-badges", "config:recommended"],
+    "extends": [
+        "mergeConfidence:all-badges",
+        "config:recommended"
+    ],
     "prConcurrentLimit": 100,
     "lockFileMaintenance": {
         "enabled": true
@@ -8,7 +11,9 @@
     "packageRules": [
         {
             "groupName": "all dependencies",
-            "matchPackagePatterns": ["*"]
+            "matchPackageNames": [
+                "*"
+            ]
         }
     ]
 }
