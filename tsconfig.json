@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "strict": true,
+    "lib": ["ES2020", "DOM"]
+  },
+  "include": ["packages/modern-colorthief-wasm/src/**/*.ts", "packages/modern-colorthief-wasm/src/**/*.d.ts"]
+}

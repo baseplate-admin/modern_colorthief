@@ -4,7 +4,7 @@ authors = [
     { name = "baseplate-admin", email = "61817579+baseplate-admin@users.noreply.github.com" },
 ]
 requires-python = ">3.9"
-readme = "README.md"
+readme = "../../README.md"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -23,7 +23,12 @@ modern-colorthief = "modern_colorthief.cli:main"
 
 [dependency-groups]
 build = ["maturin>=1.11.5"]
-docs = ["shibuya>=2025.10.21", "myst-parser>=3.0.1", "sphinx>=7.3.7"]
+docs = [
+    "shibuya>=2025.10.21",
+    "myst-parser>=3.0.1",
+    "sphinx>=7.3.7",
+    "sphinx-js>=5.0.2",
+]
 test = ["colorthief>=0.2.1", "pytest>=8.2.1"]
 
 [tool.uv]

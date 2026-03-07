@@ -1,0 +1,10 @@
+{
+    "name": "modern-colorthief",
+    "version": "0.1.13",
+    "description": "WebAssembly bindings for modern_colorthief",
+    "type": "module",
+    "devDependencies": {
+        "typedoc": "^0.28.0",
+        "typescript": "^5.0.0"
+    }
+}

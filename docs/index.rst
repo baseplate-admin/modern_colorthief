@@ -14,6 +14,7 @@ Welcome to Modern Colorthief's documentation!
    usage
    cli
    api
+   wasm-api
    benchmarks
    parity
    differences

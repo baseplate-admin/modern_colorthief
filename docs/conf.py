@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
+    "sphinx_js",
 ]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -29,6 +30,16 @@ source_suffix = {
     ".md": "markdown",
 }
 autodoc_typehints = "description"
+
+# -- sphinx-js (WASM / TypeScript API) --------------------------------------
+js_language = "typescript"
+# Path to the TypeScript source that documents the WASM API,
+# relative to this conf.py file.
+js_source_path = "../src/wasm"
+# Point sphinx-js at the typedoc.json at the project root.
+jsdoc_config_path = "../typedoc.json"
+# TypeScript compiler settings for TypeDoc.
+jsdoc_tsconfig_path = "../tsconfig.json"
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 

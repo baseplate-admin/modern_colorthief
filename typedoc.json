@@ -1,0 +1,7 @@
+{
+  "entryPoints": ["src/wasm/modern_colorthief_wasm.d.ts"],
+  "out": "docs/_build/typedoc",
+  "tsconfig": "tsconfig.json",
+  "plugin": [],
+  "readme": "none"
+}
