@@ -4,14 +4,6 @@
 
 [`ColorThief`](https://github.com/fengsp/color-thief-py) reimagined
 
-## Why use `modern_colorthief` ?
-
--   It's backend is written in `rust`
-
-## Why shouldn't you use `modern_colorthief` ?
-
--   `modern_colorthief` does not support EOL python versions.
-
 
 ## Examples :
 
