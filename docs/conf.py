@@ -22,6 +22,10 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
 ]
+myst_enable_extensions = [
+    "strikethrough",
+]
+
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = {
