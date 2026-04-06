@@ -1,3 +1,5 @@
+# Api Differences
+
 ## With `color-thief`
 
 The difference between `color-thief` and `modern_colorthief` is very negligible
