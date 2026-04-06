@@ -3,7 +3,7 @@ name = "modern_colorthief"
 authors = [
     { name = "baseplate-admin", email = "61817579+baseplate-admin@users.noreply.github.com" },
 ]
-requires-python = ">3.9"
+requires-python = ">3.10"
 readme = "README.md"
 classifiers = [
     "Programming Language :: Rust",
