@@ -14,6 +14,7 @@ Welcome to Modern Colorthief's documentation!
    usage
    cli
    api
+   api_differences
    benchmarks
    parity
    differences
