@@ -95,7 +95,7 @@ fn get_version() -> &'static str {
     VERSION.get_or_init(|| env!("CARGO_PKG_VERSION").to_owned())
 }
 /// A Python module implemented in Rust.
-#[pymodule]
+#[pymodule(gil_used = false)]
 fn _modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("__version__", get_version())?;
 
