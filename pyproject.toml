@@ -24,11 +24,12 @@ modern-colorthief = "modern_colorthief.cli:main"
 [dependency-groups]
 build = ["maturin>=1.11.5"]
 docs = ["shibuya>=2025.10.21", "myst-parser>=3.0.1", "sphinx>=7.3.7"]
-test = ["colorthief>=0.2.1", "pytest>=8.2.1"]
+test = ["pytest>=8.2.1"]
+bench = ["fast-colorthief>=0.0.5", "colorthief>=0.2.1"]
 
 [tool.uv]
 package = true
-default-groups = ["docs", "test"]
+default-groups = ["docs", "test", 'bench']
 
 
 [build-system]

@@ -13,17 +13,13 @@ Welcome to Modern Colorthief's documentation!
    installation
    usage
    cli
+   benchmarks
+   differences
    api
    api_differences
-   benchmarks
-   parity
-   differences
-   roadmaps
    mmcq
+   roadmaps
    license
-   
-
-
 
 
 Indices and tables
