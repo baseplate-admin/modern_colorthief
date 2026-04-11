@@ -41,3 +41,6 @@ build-backend = "maturin"
 features = ["pyo3/extension-module"]
 python-source = "src/python"
 module-name = "modern_colorthief._modern_colorthief"
+
+[tool.maturin.generate-ci.github]
+platforms = ["manylinux", "musllinux", "windows", "macos", "android"]
