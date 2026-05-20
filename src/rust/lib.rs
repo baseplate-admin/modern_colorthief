@@ -4,12 +4,10 @@ use itertools::Itertools;
 use pyo3::prelude::*;
 
 fn get_image_buffer(img: image::DynamicImage) -> (Vec<u8>, ColorFormat) {
-    match img {
-        image::DynamicImage::ImageRgb8(buffer) => (buffer.to_vec(), color_thief::ColorFormat::Rgb),
-        image::DynamicImage::ImageRgba8(buffer) => {
-            (buffer.to_vec(), color_thief::ColorFormat::Rgba)
-        }
-        _ => unreachable!(),
+    if img.color().has_alpha() {
+        (img.to_rgba8().into_raw(), color_thief::ColorFormat::Rgba)
+    } else {
+        (img.to_rgb8().into_raw(), color_thief::ColorFormat::Rgb)
     }
 }
 /// Returns the pallette given an bytes object
@@ -78,7 +76,7 @@ fn get_palette(
         quality.unwrap_or(10),
         color_count.unwrap_or(10),
     )
-    .unwrap();
+    .map_err(|e| format!("color_thief failed: {e}"))?;
 
     let color_vec: Vec<(u8, u8, u8)> = colors
         .iter()
