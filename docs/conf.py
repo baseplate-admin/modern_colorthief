@@ -21,8 +21,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
-    "sphinx.ext.highlighting",
-    "sphinx.ext.todo",
+     "sphinx.ext.todo",
     "sphinx_copybutton",
 ]
 
