@@ -10,8 +10,9 @@ Rust-based Python extension for extracting dominant colors and color palettes fr
 ## Tech Stack
 
 - **Rust** (edition 2024): Core image processing via `color_thief` + `image` crates
+- **rayon**: Parallel pixel processing, uses all available CPU cores
 - **Python** (>3.10): Wrapper layer, public API (`get_palette`, `get_color`), CLI
-- **PyO3** 0.28: FFI bindings, `gil_used = false` (ABI3-free mode)
+- **PyO3** 0.28: FFI bindings, `gil_used = false`, `py.detach()` releases GIL during heavy work
 - **maturin**: Build system (Rust cdylib → Python wheel)
 - **uv**: Package manager, dependency resolution
 - **Sphinx + Shibuya**: Documentation (RST only, no Markdown)
@@ -36,6 +37,9 @@ examples/               # Usage examples
 
 ## Rust Conventions
 
+- Functions take `py: Python<'_>` as first param, use `py.detach(move || { ... })` to release GIL during heavy computation
+- Inside detached blocks: rayon's `into_par_iter()` parallelizes pixel processing across all CPU cores
+- Works on WASM (rayon degrades to sequential), Android (native threads), and standard Python
 - Functions are `#[pyfunction]` with `#[pyo3(signature = (...))]` for defaults
 - Path functions take `&str`, bytes functions take `&[u8]` (zero-copy at FFI boundary)
 - Errors use `.map_err(PyValueError::new_err(...))` pattern

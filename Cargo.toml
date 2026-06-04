@@ -14,6 +14,7 @@ pyo3 = "0.28.2"
 color-thief = "0.2"
 image = "0.25.9"
 itertools = "0.14.0"
+rayon = "1.10"
 
 [profile.release.package."*"]
 codegen-units = 1

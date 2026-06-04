@@ -1,16 +1,42 @@
 use color_thief::ColorFormat;
 use image::DynamicImage;
+use image::GenericImageView;
 use itertools::Itertools;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-/// Convert a DynamicImage to a flat byte buffer and its corresponding color format.
+/// Convert a DynamicImage to a flat byte buffer using parallel pixel iteration.
 fn get_image_buffer(img: DynamicImage) -> (Vec<u8>, ColorFormat) {
-    if img.color().has_alpha() {
-        (img.to_rgba8().into_raw(), ColorFormat::Rgba)
+    let has_alpha = img.color().has_alpha();
+    let (width, height) = img.dimensions();
+    let count = (width * height) as usize;
+
+    let buffer: Vec<u8> = if has_alpha {
+        let rgba = img.to_rgba8();
+        (0..count)
+            .into_par_iter()
+            .flat_map(|i| {
+                let x = (i % width as usize) as u32;
+                let y = (i / width as usize) as u32;
+                let p = &rgba[(x, y)];
+                [p[0], p[1], p[2], p[3]]
+            })
+            .collect()
     } else {
-        (img.to_rgb8().into_raw(), ColorFormat::Rgb)
-    }
+        let rgb = img.to_rgb8();
+        (0..count)
+            .into_par_iter()
+            .flat_map(|i| {
+                let x = (i % width as usize) as u32;
+                let y = (i / width as usize) as u32;
+                let p = &rgb[(x, y)];
+                [p[0], p[1], p[2]]
+            })
+            .collect()
+    };
+
+    (buffer, if has_alpha { ColorFormat::Rgba } else { ColorFormat::Rgb })
 }
 
 /// Extract a deduplicated color palette from an already-loaded image.
@@ -29,7 +55,13 @@ fn extract_palette(
     )
     .map_err(|e| format!("color_thief failed: {e}"))?;
 
-    Ok(colors.iter().map(|c| (c.r, c.g, c.b)).unique().collect())
+    let color_vec: Vec<(u8, u8, u8)> = colors
+        .iter()
+        .map(|c| (c.r, c.g, c.b))
+        .unique()
+        .collect();
+
+    Ok(color_vec)
 }
 
 /// Extract a color palette from raw image bytes.
@@ -47,13 +79,17 @@ fn extract_palette(
 #[pyfunction]
 #[pyo3(signature = (image, color_count=None, quality=None))]
 fn _get_palette_given_bytes(
+    py: Python<'_>,
     image: &[u8],
     color_count: Option<u8>,
     quality: Option<u8>,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
-    let img = image::load_from_memory(image)
-        .map_err(|e| PyValueError::new_err(format!("Failed to load image from memory: {e}")))?;
-    extract_palette(img, color_count, quality).map_err(PyValueError::new_err)
+    py.detach(move || {
+        let img = image::load_from_memory(image)
+            .map_err(|e| format!("Failed to load image from memory: {e}"))?;
+        extract_palette(img, color_count, quality)
+    })
+    .map_err(PyValueError::new_err)
 }
 
 /// Extract a color palette from an image file.
@@ -71,13 +107,20 @@ fn _get_palette_given_bytes(
 #[pyfunction]
 #[pyo3(signature = (image, color_count=None, quality=None))]
 fn _get_palette_given_location(
+    py: Python<'_>,
     image: &str,
     color_count: Option<u8>,
     quality: Option<u8>,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
-    let img = image::open(image)
-        .map_err(|e| PyValueError::new_err(format!("Failed to open image at {image}: {e}")))?;
-    extract_palette(img, color_count, quality).map_err(PyValueError::new_err)
+    let path = image.to_string();
+    py.detach(move || {
+        let cc = color_count.unwrap_or(10);
+        let q = quality.unwrap_or(10);
+        let img = image::open(&path)
+            .map_err(|e| format!("Failed to open image at {path}: {e}"))?;
+        extract_palette(img, Some(cc), Some(q))
+    })
+    .map_err(PyValueError::new_err)
 }
 
 /// Extract the dominant color from an image file.
@@ -93,10 +136,21 @@ fn _get_palette_given_location(
 ///     ValueError: If the file cannot be opened, the algorithm fails, or the image contains no colors.
 #[pyfunction]
 #[pyo3(signature = (image, quality=None))]
-fn _get_color_given_location(image: &str, quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
-    let img = image::open(image)
-        .map_err(|e| PyValueError::new_err(format!("Failed to open image at {image}: {e}")))?;
-    let palette = extract_palette(img, Some(5), quality).map_err(PyValueError::new_err)?;
+fn _get_color_given_location(
+    py: Python<'_>,
+    image: &str,
+    quality: Option<u8>,
+) -> PyResult<(u8, u8, u8)> {
+    let path = image.to_string();
+    let palette = py
+        .detach(move || {
+            let q = quality.unwrap_or(10);
+            let img = image::open(&path)
+                .map_err(|e| format!("Failed to open image at {path}: {e}"))?;
+            extract_palette(img, Some(5), Some(q))
+        })
+        .map_err(PyValueError::new_err)?;
+
     palette
         .first()
         .copied()
@@ -116,10 +170,20 @@ fn _get_color_given_location(image: &str, quality: Option<u8>) -> PyResult<(u8, 
 ///     ValueError: If the image data is invalid, the algorithm fails, or the image contains no colors.
 #[pyfunction]
 #[pyo3(signature = (image, quality=None))]
-fn _get_color_given_bytes(image: &[u8], quality: Option<u8>) -> PyResult<(u8, u8, u8)> {
-    let img = image::load_from_memory(image)
-        .map_err(|e| PyValueError::new_err(format!("Failed to load image from memory: {e}")))?;
-    let palette = extract_palette(img, Some(5), quality).map_err(PyValueError::new_err)?;
+fn _get_color_given_bytes(
+    py: Python<'_>,
+    image: &[u8],
+    quality: Option<u8>,
+) -> PyResult<(u8, u8, u8)> {
+    let palette = py
+        .detach(move || {
+            let q = quality.unwrap_or(10);
+            let img =
+                image::load_from_memory(image).map_err(|e| format!("Failed to load image: {e}"))?;
+            extract_palette(img, Some(5), Some(q))
+        })
+        .map_err(PyValueError::new_err)?;
+
     palette
         .first()
         .copied()

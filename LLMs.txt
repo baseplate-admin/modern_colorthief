@@ -1,7 +1,7 @@
 # Modern Colorthief
 
 Rust-based Python extension for extracting dominant colors and color palettes from images.
-~100x faster than pure Python colorthief.
+~100x faster than pure Python colorthief. Uses all available CPU cores via rayon parallelism.
 
 Version: 0.2.1 | License: MIT | Python: >3.10 | Rust Edition: 2024
 Docs: https://modern-colorthief.readthedocs.io
@@ -218,6 +218,8 @@ On a sample JPEG image (approximate timings):
 | Extracting Palette | 0.202956 s        | 0.023626 s            | **0.018661 s**           |
 
 ~100x speedup over pure Python. Matches or exceeds C++ implementation.
+Pixel processing is parallelized across all available CPU cores using rayon.
+On WASM, parallelism degrades gracefully to sequential execution.
 
 ---
 

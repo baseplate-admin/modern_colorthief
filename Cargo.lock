@@ -483,6 +483,7 @@ dependencies = [
  "image",
  "itertools",
  "pyo3",
+ "rayon",
 ]
 
 [[package]]
