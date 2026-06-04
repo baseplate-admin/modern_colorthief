@@ -5,6 +5,7 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
 import modern_colorthief
 import datetime
 
@@ -17,24 +18,96 @@ release = modern_colorthief.__version__
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
+    "sphinx.ext.highlighting",
+    "sphinx.ext.todo",
+    "sphinx_copybutton",
 ]
-myst_enable_extensions = [
-    "strikethrough",
-]
+
+# Render todo items as visible checklists
+todo_include_todos = True
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+# Only RST source files -- no markdown
 source_suffix = {
     ".rst": "restructuredtext",
-    ".md": "markdown",
 }
+
 autodoc_typehints = "description"
+
+# -- Options for copybutton --------------------------------------------------
+# https://sphinx-copybutton.readthedocs.io/
+
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \\\d+: | {2,5}\\.\.\.: "
+copybutton_prompt_is_regexp = True
+copybutton_line_continuation_marker = "..."
+copybutton_here_doc_delimiter = "EOF"
+copybutton_include_children = False
+copybutton_selector = "div.highlight"
+copybutton_copy_empty_lines = True
+copybutton_remove_prompts = True
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "shibuya"
 html_static_path = ["_static"]
+html_css_files = [
+    "custom.css",
+]
+
+# Shibuya theme options -- custom color scheme, layout, and features
+html_theme_options = {
+    # Branding
+    "sidebar_primary_name": "Modern Colorthief",
+    "sidebar_hide_name": False,
+
+    # Accent color -- violet matches our indigo-based custom palette
+    "accent_color": "violet",
+
+    # Dark code blocks for contrast
+    "dark_code": True,
+
+    # Light/dark mode default
+    "color_mode": "auto",
+
+    # Layout
+    "page_layout": "default",
+    "page_width_exceeded": "wrap",
+    "code_header_reflow": True,
+
+    # Sidebar icon links
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/baseplate-admin/modern_colorthief",
+            "icon": "fa-brands fa-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/modern_colorthief",
+            "icon": "fa-solid fa-box",
+            "type": "fontawesome",
+        },
+        {
+            "name": "Documentation",
+            "url": "https://modern-colorthief.readthedocs.io",
+            "icon": "fa-solid fa-book",
+            "type": "fontawesome",
+        },
+    ],
+    "icon_links_label": "Links",
+
+    # Sidebar spacing
+    "sidebar_header_spacing": True,
+}
+
+# -- Intersphinx mapping -----------------------------------------------------
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+}

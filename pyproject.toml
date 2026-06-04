@@ -23,7 +23,7 @@ modern-colorthief = "modern_colorthief.cli:main"
 
 [dependency-groups]
 build = ["maturin>=1.11.5"]
-docs = ["shibuya>=2025.10.21", "myst-parser>=3.0.1", "sphinx>=7.3.7"]
+docs = ["shibuya>=2025.10.21", "sphinx-copybutton>=0.5.2", "sphinx>=7.3.7"]
 test = ["pytest>=8.2.1"]
 bench = ["fast-colorthief>=0.0.5", "colorthief>=0.2.1"]
 

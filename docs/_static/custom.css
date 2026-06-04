@@ -1,0 +1,46 @@
+/* Subtle green radial glow from the top */
+body {
+  background-image: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgba(45, 164, 78, 0.09) 0%,
+    transparent 60%
+  );
+  background-attachment: fixed;
+}
+
+html[data-mode="dark"] body {
+  background-image: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgba(63, 185, 80, 0.09) 0%,
+    transparent 60%
+  );
+}
+
+/* Tighten hero spacing */
+.yue {
+  padding-bottom: 1rem !important;
+}
+
+.yue section:first-of-type h1 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* Badges, tagline, buttons */
+div.badges {
+  margin-bottom: 0.75rem;
+}
+
+p.lead {
+  margin-bottom: 0.25rem;
+}
+
+div.buttons {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+p.rubric {
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
