@@ -5,6 +5,7 @@ authors = [
 ]
 requires-python = ">3.10"
 readme = "README.md"
+dependencies = ["Pillow>=10.0.0"]
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -23,7 +24,6 @@ modern-colorthief = "modern_colorthief.cli:main"
 [dependency-groups]
 dev = ["maturin>=1.11.5"]
 test = ["pytest>=8.2.1"]
-bench = ["fast-colorthief>=0.0.5", "colorthief>=0.2.1"]
 
 [build-system]
 requires = ["maturin>=1.4"]
@@ -33,6 +33,3 @@ build-backend = "maturin"
 features = ["pyo3/extension-module"]
 python-source = "python"
 module-name = "modern_colorthief._modern_colorthief"
-
-[tool.maturin.generate-ci.github]
-platforms = ["manylinux", "musllinux", "windows", "macos", "android"]

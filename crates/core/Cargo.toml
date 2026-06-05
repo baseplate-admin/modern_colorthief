@@ -4,5 +4,4 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-color-thief.workspace = true
-itertools.workspace = true
+rayon = "1.10"

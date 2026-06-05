@@ -1,13 +1,14 @@
 [package]
-name = "modern_colorthief"
+name = "colorthief-node"
 version.workspace = true
 edition.workspace = true
 
 [lib]
-name = "_modern_colorthief"
 crate-type = ["cdylib"]
 
 [dependencies]
 colorthief-core.workspace = true
-rayon = "1.10"
-pyo3 = { version = "0.28.2", features = ["abi3-py310"] }
+napi = { version = "3.1", default-features = false }
+
+[build-dependencies]
+napi-build = "2.1"
