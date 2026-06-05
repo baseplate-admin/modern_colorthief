@@ -1,0 +1,16 @@
+[package]
+name = "modern_colorthief"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "_modern_colorthief"
+crate-type = ["cdylib"]
+
+[dependencies]
+colorthief-core.workspace = true
+color-thief.workspace = true
+image.workspace = true
+itertools.workspace = true
+rayon.workspace = true
+pyo3.workspace = true

@@ -1,67 +1,36 @@
-use color_thief::ColorFormat;
+use colorthief_core::extract_palette_from_buffer;
 use image::DynamicImage;
 use image::GenericImageView;
-use itertools::Itertools;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
-/// Convert a DynamicImage to a flat byte buffer using parallel pixel iteration.
-fn get_image_buffer(img: DynamicImage) -> (Vec<u8>, ColorFormat) {
-    let has_alpha = img.color().has_alpha();
+/// Convert a DynamicImage to a flat RGBA byte buffer using parallel pixel iteration.
+fn to_rgba_buffer(img: &DynamicImage) -> Vec<u8> {
     let (width, height) = img.dimensions();
     let count = (width * height) as usize;
+    let rgba = img.to_rgba8();
 
-    let buffer: Vec<u8> = if has_alpha {
-        let rgba = img.to_rgba8();
-        (0..count)
-            .into_par_iter()
-            .flat_map(|i| {
-                let x = (i % width as usize) as u32;
-                let y = (i / width as usize) as u32;
-                let p = &rgba[(x, y)];
-                [p[0], p[1], p[2], p[3]]
-            })
-            .collect()
-    } else {
-        let rgb = img.to_rgb8();
-        (0..count)
-            .into_par_iter()
-            .flat_map(|i| {
-                let x = (i % width as usize) as u32;
-                let y = (i / width as usize) as u32;
-                let p = &rgb[(x, y)];
-                [p[0], p[1], p[2]]
-            })
-            .collect()
-    };
-
-    (buffer, if has_alpha { ColorFormat::Rgba } else { ColorFormat::Rgb })
+    (0..count)
+        .into_par_iter()
+        .flat_map(|i| {
+            let x = (i % width as usize) as u32;
+            let y = (i / width as usize) as u32;
+            let p = &rgba[(x, y)];
+            [p[0], p[1], p[2], p[3]]
+        })
+        .collect()
 }
 
-/// Extract a deduplicated color palette from an already-loaded image.
+/// Extract a deduplicated color palette from a DynamicImage.
 fn extract_palette(
-    image: DynamicImage,
-    color_count: Option<u8>,
-    quality: Option<u8>,
+    img: DynamicImage,
+    color_count: u8,
+    quality: u8,
 ) -> Result<Vec<(u8, u8, u8)>, String> {
-    let (buffer, color_format) = get_image_buffer(image);
-
-    let colors = color_thief::get_palette(
-        &buffer,
-        color_format,
-        quality.unwrap_or(10),
-        color_count.unwrap_or(10),
-    )
-    .map_err(|e| format!("color_thief failed: {e}"))?;
-
-    let color_vec: Vec<(u8, u8, u8)> = colors
-        .iter()
-        .map(|c| (c.r, c.g, c.b))
-        .unique()
-        .collect();
-
-    Ok(color_vec)
+    let buffer = to_rgba_buffer(&img);
+    let (width, height) = img.dimensions();
+    extract_palette_from_buffer(&buffer, width, height, color_count, quality)
 }
 
 /// Extract a color palette from raw image bytes.
@@ -87,7 +56,7 @@ fn _get_palette_given_bytes(
     py.detach(move || {
         let img = image::load_from_memory(image)
             .map_err(|e| format!("Failed to load image from memory: {e}"))?;
-        extract_palette(img, color_count, quality)
+        extract_palette(img, color_count.unwrap_or(10), quality.unwrap_or(10))
     })
     .map_err(PyValueError::new_err)
 }
@@ -114,11 +83,9 @@ fn _get_palette_given_location(
 ) -> PyResult<Vec<(u8, u8, u8)>> {
     let path = image.to_string();
     py.detach(move || {
-        let cc = color_count.unwrap_or(10);
-        let q = quality.unwrap_or(10);
         let img = image::open(&path)
             .map_err(|e| format!("Failed to open image at {path}: {e}"))?;
-        extract_palette(img, Some(cc), Some(q))
+        extract_palette(img, color_count.unwrap_or(10), quality.unwrap_or(10))
     })
     .map_err(PyValueError::new_err)
 }
@@ -144,10 +111,9 @@ fn _get_color_given_location(
     let path = image.to_string();
     let palette = py
         .detach(move || {
-            let q = quality.unwrap_or(10);
             let img = image::open(&path)
                 .map_err(|e| format!("Failed to open image at {path}: {e}"))?;
-            extract_palette(img, Some(5), Some(q))
+            extract_palette(img, 5, quality.unwrap_or(10))
         })
         .map_err(PyValueError::new_err)?;
 
@@ -177,10 +143,9 @@ fn _get_color_given_bytes(
 ) -> PyResult<(u8, u8, u8)> {
     let palette = py
         .detach(move || {
-            let q = quality.unwrap_or(10);
             let img =
                 image::load_from_memory(image).map_err(|e| format!("Failed to load image: {e}"))?;
-            extract_palette(img, Some(5), Some(q))
+            extract_palette(img, 5, quality.unwrap_or(10))
         })
         .map_err(PyValueError::new_err)?;
 

@@ -1,46 +1,7 @@
 [project]
-name = "modern_colorthief"
-authors = [
-    { name = "baseplate-admin", email = "61817579+baseplate-admin@users.noreply.github.com" },
-]
+name = "modern_colorthief-workspace"
+version = "0.3.0"
 requires-python = ">3.10"
-readme = "README.md"
-classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
-]
-dynamic = ["version"]
-
-[project.urls]
-homepage = "https://github.com/baseplate-admin/modern_colorthief"
-documentation = "https://modern-colorthief.readthedocs.io"
-repository = "https://github.com/baseplate-admin/modern_colorthief"
-
-[project.scripts]
-modern-colorthief = "modern_colorthief.cli:main"
-
 
 [dependency-groups]
-build = ["maturin>=1.11.5"]
 docs = ["shibuya>=2025.10.21", "sphinx-copybutton>=0.5.2", "sphinx>=7.3.7"]
-test = ["pytest>=8.2.1"]
-bench = ["fast-colorthief>=0.0.5", "colorthief>=0.2.1"]
-
-[tool.uv]
-package = true
-default-groups = ["docs", "test", 'bench']
-
-
-[build-system]
-requires = ["maturin>=1.4"]
-build-backend = "maturin"
-
-
-[tool.maturin]
-features = ["pyo3/extension-module"]
-python-source = "src/python"
-module-name = "modern_colorthief._modern_colorthief"
-
-[tool.maturin.generate-ci.github]
-platforms = ["manylinux", "musllinux", "windows", "macos", "android"]

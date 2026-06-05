@@ -1,20 +1,37 @@
-[package]
-name = "modern_colorthief"
+[workspace]
+members = [
+    "crates/core",
+    "crates/python-bindings",
+    "crates/wasm-bindings",
+]
+resolver = "2"
+
+[workspace.package]
 version = "0.3.0"
 edition = "2024"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[lib]
-name = "_modern_colorthief"
-crate-type = ["cdylib"]
-path = "src/rust/lib.rs"
-
-[dependencies]
-pyo3 = "0.28.2"
+[workspace.dependencies]
 color-thief = "0.2"
-image = "0.25.9"
+colorthief-core = { path = "crates/core" }
 itertools = "0.14.0"
 rayon = "1.10"
+image = { version = "0.25.9", default-features = true }
+pyo3 = { version = "0.28.2", features = ["abi3-py310"] }
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = [
+    "Window",
+    "Document",
+    "HtmlDocument",
+    "HtmlElement",
+    "HtmlCanvasElement",
+    "HtmlImageElement",
+    "Node",
+    "CanvasRenderingContext2d",
+    "ImageData",
+    "Blob",
+    "Url",
+] }
 
 [profile.release.package."*"]
 codegen-units = 1
