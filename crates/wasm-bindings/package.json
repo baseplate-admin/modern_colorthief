@@ -1,5 +1,5 @@
 {
-    "name": "colorthief-wasm",
+    "name": "@modern_colorthief/wasm",
     "version": "0.3.0",
     "type": "module",
     "description": "Modern color extraction from images, compiled to WebAssembly",
@@ -15,7 +15,7 @@
         "remove": "rimraf pkg",
         "build:wasm": "wasm-pack build --release",
         "build": "npm run remove && npm run build:wasm",
-        "test": "vitest"
+        "test": "vitest run"
     },
     "devDependencies": {
         "@types/node": "^24.10.1",

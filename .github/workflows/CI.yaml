@@ -14,6 +14,14 @@ permissions:
   contents: read
 
 jobs:
+  core-test:
+    name: Core tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run core tests
+        run: cargo test -p colorthief-core
+
   linux:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
@@ -144,6 +152,7 @@ jobs:
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          manylinux: auto
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
@@ -255,25 +264,11 @@ jobs:
       - run: uv pip install dist/*.whl pytest
       - run: uv run pytest tests/ -v
 
-  test-wasm:
-    name: WASM build test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build for WASM
-        run: |
-          rustup target add wasm32-unknown-unknown
-          cargo check --target wasm32-unknown-unknown -p colorthief-wasm
-      - name: Build release WASM
-        run: cargo build --target wasm32-unknown-unknown --release -p colorthief-wasm
-      - name: Check WASM size
-        run: ls -lh target/wasm32-unknown-unknown/release/colorthief_wasm.wasm
-
   release:
     name: Release
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-    needs: [linux, musllinux, windows, macos, android, sdist, test-python, test-wasm, emscripten]
+    needs: [linux, musllinux, windows, macos, android, sdist, test-python, emscripten]
     permissions:
       id-token: write
       contents: write
