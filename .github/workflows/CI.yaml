@@ -33,7 +33,7 @@ jobs:
             target: ppc64le
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: wheels-linux-${{ matrix.platform.target }}
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
 
   musllinux:
     runs-on: ${{ matrix.platform.runner }}
@@ -67,7 +67,7 @@ jobs:
             target: armv7
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -84,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: wheels-musllinux-${{ matrix.platform.target }}
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
@@ -102,7 +102,7 @@ jobs:
             python_arch: arm64
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -119,7 +119,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: wheels-windows-${{ matrix.platform.target }}
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -132,7 +132,7 @@ jobs:
             target: aarch64
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -148,13 +148,13 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: wheels-macos-${{ matrix.platform.target }}
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
 
   emscripten:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - name: Install uv and pyodide-build
@@ -162,7 +162,7 @@ jobs:
         with:
           enable-cache: true
       - run: uv pip install --system pyodide-build
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
       - name: Get Emscripten and Python version info
         shell: bash
         run: |
@@ -186,7 +186,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: wasm-wheels
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
 
   android:
     runs-on: ${{ matrix.platform.runner }}
@@ -199,7 +199,7 @@ jobs:
             target: x86_64-linux-android
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - name: Build wheels
@@ -212,13 +212,13 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: wheels-android-${{ matrix.platform.target }}
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
 
   sdist:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - name: Build sdist
@@ -230,7 +230,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: wheels-sdist
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
 
   test-python:
     name: Python tests
@@ -238,7 +238,7 @@ jobs:
     needs: [linux]
     defaults:
       run:
-        working-directory: crates/python_bindings
+        working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
@@ -251,7 +251,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           pattern: wheels-linux-x86_64
-          path: crates/python_bindings/dist
+          path: crates/python-bindings/dist
       - run: uv pip install dist/*.whl pytest
       - run: uv run pytest tests/ -v
 
