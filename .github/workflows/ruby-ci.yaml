@@ -21,3 +21,7 @@ jobs:
           ruby-version: '3.4'
       - run: cargo build --release -p modern-colorthief-ruby
       - run: test -f target/release/libmodern_colorthief_ruby.so
+      - working-directory: crates/ruby-bindings
+        run: |
+          bundle install
+          RUBYLIB=target/release:$RUBYLIB bundle exec rspec spec/
