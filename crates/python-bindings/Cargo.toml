@@ -1,13 +1,12 @@
 [package]
-name = "modern_colorthief"
+name = "modern-colorthief-python"
 version.workspace = true
 edition.workspace = true
 
 [lib]
-name = "_modern_colorthief"
 crate-type = ["cdylib"]
 
 [dependencies]
 modern-colorthief-core.workspace = true
-rayon = "1.10"
-pyo3 = { version = "0.28.2", features = ["abi3-py310"] }
+pyo3.workspace = true
+rayon.workspace = true

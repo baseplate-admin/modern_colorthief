@@ -4,4 +4,4 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-rayon = "1.10"
+rayon.workspace = true

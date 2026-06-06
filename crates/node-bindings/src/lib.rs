@@ -8,7 +8,7 @@ use napi::bindgen_prelude::*;
 /// @param colorCount - Number of colors to extract (default: 10)
 /// @param quality - Sampling quality, higher is faster but less accurate (default: 10)
 /// @returns Array of [R, G, B] color tuples
-#[napi]
+#[napi_derive::napi]
 pub fn get_palette(
     pixels: Uint8Array,
     width: u32,
@@ -38,7 +38,7 @@ pub fn get_palette(
 /// @param height - Image height in pixels
 /// @param quality - Sampling quality, higher is faster but less accurate (default: 10)
 /// @returns [R, G, B] color tuple
-#[napi]
+#[napi_derive::napi]
 pub fn get_color(
     pixels: Uint8Array,
     width: u32,

@@ -5,11 +5,16 @@ members = [
     "crates/core_gpu",
     "crates/python-bindings",
     "crates/wasm-bindings",
+    "crates/wasm-bindings-gpu",
     "crates/node-bindings",
-    "crates/jvm-bindings",
-    "crates/ruby-bindings",
-    "crates/python-bindings-gpu",
     "crates/node-bindings-gpu",
+    "crates/jvm-bindings",
+    "crates/jvm-bindings-gpu",
+    "crates/ruby-bindings",
+    "crates/ruby-bindings-gpu",
+    "crates/php-bindings",
+    "crates/php-bindings-gpu",
+    "crates/python-bindings-gpu",
 ]
 resolver = "2"
 
@@ -18,10 +23,38 @@ version = "0.3.0"
 edition = "2024"
 
 [workspace.dependencies]
+# Internal crates
 modern-colorthief-core = { path = "crates/core" }
 modern-colorthief-core-cpu = { path = "crates/core_cpu" }
 modern-colorthief-core-gpu = { path = "crates/core_gpu" }
+
+# Parallelism
 rayon = "1.10"
+
+# Python bindings
+pyo3 = { version = "0.28", features = ["abi3-py39"] }
+
+# Node.js bindings
+napi = { version = "3.1", features = ["full"] }
+napi-derive = "3"
+napi-build = "2"
+
+# WASM bindings
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["Window", "Document", "HtmlImageElement", "HtmlCanvasElement", "CanvasRenderingContext2d", "ImageData", "Blob", "Url", "console"] }
+
+# JVM bindings
+jni = "0.21"
+
+# Ruby bindings
+magnus = "0.6"
+
+# PHP bindings
+ext-php-rs = "0.15"
+
+# GPU
+ash = "0.38"
 
 [profile.release.package."*"]
 codegen-units = 1

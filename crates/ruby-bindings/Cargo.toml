@@ -9,5 +9,5 @@ name = "modern_colorthief"
 
 [dependencies]
 modern-colorthief-core.workspace = true
-magnus = "0.6"
+magnus.workspace = true
 rayon.workspace = true

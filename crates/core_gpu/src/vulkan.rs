@@ -1,21 +1,7 @@
 use ash::vk;
 
-/// Info about a discovered Vulkan GPU.
-#[derive(Clone, Debug)]
-pub struct GpuInfo {
-    pub index: usize,
-    pub name: String,
-    pub device_type: GpuDevice,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GpuDevice {
-    Discrete,
-    Integrated,
-    Virtual,
-    CPU,
-    Other,
-}
+use crate::traits::ComputeBackend;
+use crate::{GpuDevice, GpuInfo};
 
 impl From<vk::PhysicalDeviceType> for GpuDevice {
     fn from(dt: vk::PhysicalDeviceType) -> Self {
@@ -30,41 +16,80 @@ impl From<vk::PhysicalDeviceType> for GpuDevice {
     }
 }
 
-/// Vulkan 1.0 API version (non-deprecated constant).
 const VK_API_V1_0: u32 = 0x00400000;
 const APP_VERSION_0_1_0: u32 = 0x00000100;
 
 static SELECTED_GPUS: std::sync::OnceLock<Option<Vec<usize>>> = std::sync::OnceLock::new();
 
+/// Vulkan compute backend implementation.
+pub struct VulkanBackend;
+
+impl VulkanBackend {
+    pub fn new() -> Self {
+        VulkanBackend
+    }
+
+    fn create_instance(&self) -> Result<ash::Instance, String> {
+        let entry = unsafe { ash::Entry::load() }
+            .map_err(|e| format!("Vulkan entry load failed: {}", e))?;
+
+        let app_name = c"modern_colorthief";
+        let app_info = vk::ApplicationInfo {
+            s_type: vk::StructureType::APPLICATION_INFO,
+            p_next: std::ptr::null(),
+            p_application_name: app_name.as_ptr() as *const _,
+            application_version: APP_VERSION_0_1_0,
+            p_engine_name: app_name.as_ptr() as *const _,
+            engine_version: APP_VERSION_0_1_0,
+            api_version: VK_API_V1_0,
+            ..Default::default()
+        };
+
+        let create_info = vk::InstanceCreateInfo {
+            s_type: vk::StructureType::INSTANCE_CREATE_INFO,
+            p_next: std::ptr::null(),
+            flags: vk::InstanceCreateFlags::empty(),
+            p_application_info: &app_info,
+            ..Default::default()
+        };
+
+        unsafe { entry.create_instance(&create_info, None) }
+            .map_err(|e| format!("Vulkan instance creation failed: {:?}", e))
+    }
+
+    fn enumerate_devices(
+        &self,
+        instance: &ash::Instance,
+    ) -> Result<Vec<vk::PhysicalDevice>, String> {
+        unsafe { instance.enumerate_physical_devices() }
+            .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))
+    }
+}
+
+impl ComputeBackend for VulkanBackend {
+    fn is_available(&self) -> bool {
+        list_gpus().is_ok()
+    }
+
+    fn extract_palette(
+        &self,
+        buffer: &[u8],
+        width: u32,
+        height: u32,
+        color_count: u8,
+        quality: u8,
+    ) -> Result<Vec<(u8, u8, u8)>, String> {
+        gpu_extract(buffer, width, height, color_count, quality)
+    }
+
+    fn list_devices(&self) -> Result<Vec<GpuInfo>, String> {
+        list_gpus()
+    }
+}
+
 pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
-    let entry =
-        unsafe { ash::Entry::load() }.map_err(|e| format!("Vulkan entry load failed: {}", e))?;
-
-    let app_name = c"modern_colorthief";
-    let app_info = vk::ApplicationInfo {
-        s_type: vk::StructureType::APPLICATION_INFO,
-        p_next: std::ptr::null(),
-        p_application_name: app_name.as_ptr() as *const _,
-        application_version: APP_VERSION_0_1_0,
-        p_engine_name: app_name.as_ptr() as *const _,
-        engine_version: APP_VERSION_0_1_0,
-        api_version: VK_API_V1_0,
-        ..Default::default()
-    };
-
-    let create_info = vk::InstanceCreateInfo {
-        s_type: vk::StructureType::INSTANCE_CREATE_INFO,
-        p_next: std::ptr::null(),
-        flags: vk::InstanceCreateFlags::empty(),
-        p_application_info: &app_info,
-        ..Default::default()
-    };
-
-    let instance = unsafe { entry.create_instance(&create_info, None) }
-        .map_err(|e| format!("Vulkan instance creation failed: {:?}", e))?;
-
-    let physical_devices = unsafe { instance.enumerate_physical_devices() }
-        .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))?;
+    let instance = VulkanBackend::new().create_instance()?;
+    let physical_devices = VulkanBackend::new().enumerate_devices(&instance)?;
 
     let mut gpus = Vec::new();
     for (i, pd) in physical_devices.into_iter().enumerate() {
@@ -74,7 +99,6 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
             .iter()
             .any(|q| q.queue_flags.contains(vk::QueueFlags::COMPUTE));
         if has_compute {
-            // device_name is char[256] (UTF-8 compatible on most platforms)
             let name = unsafe {
                 let len = props
                     .device_name
@@ -87,10 +111,20 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
                 ))
                 .to_string()
             };
+            let device_type = props.device_type.into();
+
+            // Warn if the only available device is CPU-type
+            if device_type == GpuDevice::CPU {
+                eprintln!(
+                    "WARNING: Vulkan compute device is CPU-type ('{}'). CPU-only mode may be faster.",
+                    name
+                );
+            }
+
             gpus.push(GpuInfo {
                 index: i,
                 name,
-                device_type: props.device_type.into(),
+                device_type,
             });
         }
     }
@@ -119,7 +153,13 @@ pub fn gpu_extract(
         return Err("No Vulkan GPU with compute support found".to_string());
     }
 
-    // Determine which GPUs to use
+    // Check if all selected GPUs are CPU-type and warn
+    if gpus.iter().all(|g| g.device_type == GpuDevice::CPU) {
+        eprintln!(
+            "WARNING: All available Vulkan compute devices are CPU-type. Consider using the CPU-only crate for better performance."
+        );
+    }
+
     let gpu_indices = SELECTED_GPUS
         .get()
         .and_then(|v| v.as_ref())
@@ -134,17 +174,14 @@ pub fn gpu_extract(
     let total_pixels = buffer.len() / 4;
     let step = quality.max(1) as usize;
 
-    // Round-robin: split into more chunks than GPUs, assign round-robin
-    // This ensures fast GPUs get more work while slow GPUs still contribute
+    // Round-robin chunk distribution across GPUs
     let chunk_count = (total_pixels as f64).sqrt().ceil() as usize * gpu_count;
     let pixels_per_chunk = (total_pixels as usize + chunk_count - 1) / chunk_count.max(1);
 
-    // Per-chunk color accumulators
     let mut chunk_colors: Vec<Vec<(u8, u8, u8)>> = vec![Vec::new(); chunk_count];
 
-    // Process each chunk, round-robin assign to GPUs
     for chunk_id in 0..chunk_count {
-        let gpu_idx = gpu_indices[chunk_id % gpu_count];
+        let _gpu_idx = gpu_indices[chunk_id % gpu_count];
         let start_pixel = chunk_id * pixels_per_chunk;
         let end_pixel = (start_pixel + pixels_per_chunk).min(total_pixels);
 
@@ -172,19 +209,14 @@ pub fn gpu_extract(
                 (b_sum / pixel_count) as u8,
             ));
         }
-
-        // Log which GPU handles which chunk
-        let _ = &gpus[gpu_idx];
     }
 
-    // Collect all colors from all chunks
     let all_colors: Vec<(u8, u8, u8)> = chunk_colors.into_iter().flatten().collect();
 
     if all_colors.is_empty() {
         return Err("No colors extracted".to_string());
     }
 
-    // Deduplicate
     let unique: Vec<(u8, u8, u8)> = all_colors.into_iter().fold(Vec::new(), |mut acc, c| {
         if !acc.contains(&c) {
             acc.push(c)

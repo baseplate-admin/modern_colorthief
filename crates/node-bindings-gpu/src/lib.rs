@@ -2,7 +2,7 @@ use napi::bindgen_prelude::*;
 
 /// GPU-accelerated palette extraction (Vulkan Compute backend).
 /// Falls back to CPU if no Vulkan device is available.
-#[napi]
+#[napi_derive::napi]
 pub fn get_palette_gpu(
     pixels: Uint8Array,
     width: u32,
@@ -23,7 +23,7 @@ pub fn get_palette_gpu(
 }
 
 /// GPU-accelerated dominant color extraction.
-#[napi]
+#[napi_derive::napi]
 pub fn get_color_gpu(
     pixels: Uint8Array,
     width: u32,

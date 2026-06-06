@@ -1,15 +1,11 @@
 [package]
-name = "modern_colorthief_gpu"
+name = "modern-colorthief-python-gpu"
 version.workspace = true
 edition.workspace = true
 
 [lib]
-name = "_modern_colorthief_gpu"
 crate-type = ["cdylib"]
 
 [dependencies]
-modern-colorthief-core.workspace = true
-pyo3 = { version = "0.28.2", features = ["abi3-py310"] }
-ash = "0.38"
-glow = "0.16"
-rayon.workspace = true
+modern-colorthief-core-gpu.workspace = true
+pyo3.workspace = true

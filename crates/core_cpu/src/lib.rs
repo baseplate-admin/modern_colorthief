@@ -168,14 +168,12 @@ pub fn extract_palette_from_buffer(
         })
         .collect();
 
-    let unique: Vec<(u8, u8, u8)> = colors
-        .into_iter()
-        .fold(Vec::new(), |mut acc, c| {
-            if !acc.contains(&c) {
-                acc.push(c);
-            }
-            acc
-        });
+    let unique: Vec<(u8, u8, u8)> = colors.into_iter().fold(Vec::new(), |mut acc, c| {
+        if !acc.contains(&c) {
+            acc.push(c);
+        }
+        acc
+    });
 
     Ok(unique)
 }

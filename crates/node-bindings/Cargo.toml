@@ -8,7 +8,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 modern-colorthief-core.workspace = true
-napi = { version = "3.1", features = ["full"] }
+napi.workspace = true
+napi-derive.workspace = true
+rayon.workspace = true
 
 [build-dependencies]
-napi-build = "2.1"
+napi-build.workspace = true

@@ -1,5 +1,5 @@
 [package]
-name = "modern-colorthief-node-gpu"
+name = "modern-colorthief-jvm-gpu"
 version.workspace = true
 edition.workspace = true
 
@@ -8,8 +8,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 modern-colorthief-core-gpu.workspace = true
-napi.workspace = true
-napi-derive.workspace = true
-
-[build-dependencies]
-napi-build.workspace = true
+jni.workspace = true

@@ -1,15 +1,12 @@
 [package]
-name = "modern-colorthief-node-gpu"
+name = "modern-colorthief-ruby-gpu"
 version.workspace = true
 edition.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
+name = "modern_colorthief_gpu"
 
 [dependencies]
 modern-colorthief-core-gpu.workspace = true
-napi.workspace = true
-napi-derive.workspace = true
-
-[build-dependencies]
-napi-build.workspace = true
+magnus.workspace = true
