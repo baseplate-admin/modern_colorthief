@@ -1,11 +1,16 @@
-use crate::GpuInfo;
+use modern_colorthief_core::PaletteExtractor;
 
-/// Trait for GPU compute backends. Implement this for new backends (e.g. DX12, Metal, WebGPU).
-pub trait ComputeBackend: Send + Sync {
-    /// Check if this backend is available.
-    fn is_available(&self) -> bool;
+/// GPU backend that implements the shared PaletteExtractor trait.
+pub struct GpuExtractor;
 
-    /// Extract palette using GPU compute.
+impl GpuExtractor {
+    pub fn new() -> Self {
+        GpuExtractor
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl PaletteExtractor for GpuExtractor {
     fn extract_palette(
         &self,
         buffer: &[u8],
@@ -13,8 +18,21 @@ pub trait ComputeBackend: Send + Sync {
         height: u32,
         color_count: u8,
         quality: u8,
-    ) -> Result<Vec<(u8, u8, u8)>, String>;
+    ) -> Result<Vec<(u8, u8, u8)>, String> {
+        crate::vulkan::gpu_extract(buffer, width, height, color_count, quality)
+    }
+}
 
-    /// List available devices for this backend.
-    fn list_devices(&self) -> Result<Vec<GpuInfo>, String>;
+#[cfg(target_arch = "wasm32")]
+impl PaletteExtractor for GpuExtractor {
+    fn extract_palette(
+        &self,
+        _buffer: &[u8],
+        _width: u32,
+        _height: u32,
+        _color_count: u8,
+        _quality: u8,
+    ) -> Result<Vec<(u8, u8, u8)>, String> {
+        Err("WebGPU backend not yet implemented".to_string())
+    }
 }

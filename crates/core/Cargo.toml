@@ -2,12 +2,3 @@
 name = "modern-colorthief-core"
 version.workspace = true
 edition.workspace = true
-
-[features]
-default = ["cpu"]
-cpu = ["dep:modern-colorthief-core-cpu"]
-gpu = ["dep:modern-colorthief-core-gpu"]
-
-[dependencies]
-modern-colorthief-core-cpu = { workspace = true, optional = true }
-modern-colorthief-core-gpu = { workspace = true, optional = true }

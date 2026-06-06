@@ -1,3 +1,4 @@
+use modern_colorthief_core::PaletteExtractor;
 use rayon::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -176,6 +177,22 @@ pub fn extract_palette_from_buffer(
     });
 
     Ok(unique)
+}
+
+/// CPU backend that implements the shared PaletteExtractor trait.
+pub struct CpuExtractor;
+
+impl PaletteExtractor for CpuExtractor {
+    fn extract_palette(
+        &self,
+        buffer: &[u8],
+        width: u32,
+        height: u32,
+        color_count: u8,
+        quality: u8,
+    ) -> Result<Vec<(u8, u8, u8)>, String> {
+        extract_palette_from_buffer(buffer, width, height, color_count, quality)
+    }
 }
 
 #[cfg(test)]

@@ -1,0 +1,29 @@
+name: PHP CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-php@v4
+        with:
+          php-version: '8.2'
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release -p modern-colorthief-php
+      - name: Verify shared library exists
+        run: |
+          if [ -f target/release/libmodern_colorthief_php.so ]; then
+            echo "Found .so file"
+          elif [ -f target/release/modern_colorthief_php.dll ]; then
+            echo "Found .dll file"
+          else
+            echo "No shared library found"
+            ls -la target/release/ | grep -i colorthief || true
+            exit 1
+          fi

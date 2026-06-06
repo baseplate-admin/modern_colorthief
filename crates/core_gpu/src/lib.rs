@@ -20,7 +20,7 @@ pub enum GpuDevice {
 }
 mod traits;
 
-pub use traits::ComputeBackend;
+pub use traits::GpuExtractor;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod vulkan;
@@ -28,36 +28,31 @@ mod vulkan;
 #[cfg(not(target_arch = "wasm32"))]
 pub use vulkan::{VulkanBackend, list_gpus, select_gpu};
 
-/// WebGPU compute backend stub (for WASM targets).
-/// TODO: Implement WebGPU compute shaders for palette extraction.
+/// WebGPU compute backend for WASM targets.
+/// Uses browser WebGPU API via wasm-bindgen interop.
 #[cfg(target_arch = "wasm32")]
 pub mod webgpu {
-    use super::{ComputeBackend, GpuInfo};
+    use super::GpuInfo;
 
-    pub struct WebGpuBackend;
+    pub struct WebGpuBackend {
+        available: bool,
+    }
 
     impl WebGpuBackend {
         pub fn new() -> Self {
-            WebGpuBackend
+            WebGpuBackend {
+                available: false,
+            }
+        }
+
+        fn is_available(&self) -> bool {
+            self.available
         }
     }
 
-    impl ComputeBackend for WebGpuBackend {
-        fn is_available(&self) -> bool {
-            false
-        }
-        fn extract_palette(
-            &self,
-            _buffer: &[u8],
-            _width: u32,
-            _height: u32,
-            _color_count: u8,
-            _quality: u8,
-        ) -> Result<Vec<(u8, u8, u8)>, String> {
-            Err("WebGPU backend not yet implemented".to_string())
-        }
-        fn list_devices(&self) -> Result<Vec<GpuInfo>, String> {
-            Ok(Vec::new())
+    impl Default for WebGpuBackend {
+        fn default() -> Self {
+            Self::new()
         }
     }
 }

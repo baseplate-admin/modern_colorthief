@@ -59,7 +59,7 @@ fn extract_palette_jvm<'a>(
 
     let u8_data: Vec<u8> = pixel_data.iter().copied().map(|b| b as u8).collect();
 
-    let colors = modern_colorthief_core::extract_palette_from_buffer(
+    let colors = modern_colorthief_core_cpu::extract_palette_from_buffer(
         &u8_data,
         width,
         height,
@@ -94,7 +94,7 @@ fn extract_color_jvm<'a>(
 
     let u8_data: Vec<u8> = pixel_data.iter().copied().map(|b| b as u8).collect();
 
-    let colors = modern_colorthief_core::extract_palette_from_buffer(
+    let colors = modern_colorthief_core_cpu::extract_palette_from_buffer(
         &u8_data,
         width,
         height,

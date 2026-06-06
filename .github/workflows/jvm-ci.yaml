@@ -22,6 +22,11 @@ jobs:
           java-version: '26'
       - run: cargo build --release -p modern-colorthief-jvm
       - run: test -f target/release/libmodern_colorthief_jvm.so || true
+      - name: Run JUnit tests
+        working-directory: crates/jvm-bindings/tests
+        run: |
+          cp ../../target/release/libmodern_colorthief_jvm.so /tmp/
+          JAVA_OPTS="-Djava.library.path=/tmp" ./gradlew test
 
   kotlin-build:
     name: Kotlin build

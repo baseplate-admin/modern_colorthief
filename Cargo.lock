@@ -1030,15 +1030,12 @@ dependencies = [
 [[package]]
 name = "modern-colorthief-core"
 version = "0.3.0"
-dependencies = [
- "modern-colorthief-core-cpu",
- "modern-colorthief-core-gpu",
-]
 
 [[package]]
 name = "modern-colorthief-core-cpu"
 version = "0.3.0"
 dependencies = [
+ "modern-colorthief-core",
  "rayon",
 ]
 
@@ -1047,6 +1044,7 @@ name = "modern-colorthief-core-gpu"
 version = "0.3.0"
 dependencies = [
  "ash",
+ "modern-colorthief-core",
 ]
 
 [[package]]
@@ -1054,7 +1052,7 @@ name = "modern-colorthief-jvm"
 version = "0.3.0"
 dependencies = [
  "jni",
- "modern-colorthief-core",
+ "modern-colorthief-core-cpu",
  "rayon",
 ]
 
@@ -1070,7 +1068,7 @@ dependencies = [
 name = "modern-colorthief-node"
 version = "0.3.0"
 dependencies = [
- "modern-colorthief-core",
+ "modern-colorthief-core-cpu",
  "napi",
  "napi-build",
  "napi-derive",
@@ -1108,7 +1106,7 @@ dependencies = [
 name = "modern-colorthief-python"
 version = "0.3.0"
 dependencies = [
- "modern-colorthief-core",
+ "modern-colorthief-core-cpu",
  "pyo3",
  "rayon",
 ]
@@ -1143,7 +1141,7 @@ name = "modern-colorthief-wasm"
 version = "0.3.0"
 dependencies = [
  "js-sys",
- "modern-colorthief-core",
+ "modern-colorthief-core-cpu",
  "wasm-bindgen",
  "web-sys",
 ]

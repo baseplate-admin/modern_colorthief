@@ -1,4 +1,4 @@
-use modern_colorthief_core::extract_palette_from_buffer;
+use modern_colorthief_core_cpu::extract_palette_from_buffer;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
@@ -8,6 +8,10 @@ fn resolve(p: &js_sys::Function, val: &JsValue) {
 
 fn reject(p: &js_sys::Function, msg: &str) {
     let _ = p.call1(&JsValue::UNDEFINED, &JsValue::from_str(msg));
+}
+
+fn reject_err(p: &js_sys::Function, msg: String) {
+    let _ = p.call1(&JsValue::UNDEFINED, &JsValue::from_str(&msg));
 }
 
 /// Extract a palette of dominant colors from an image.
@@ -41,10 +45,10 @@ pub fn get_palette_promise(image: &JsValue, color_count: u8, quality: u8) -> js_
                         }
                         resolve(&res_fn, &result);
                     }
-                    Err(e) => reject(&rej_fn, &e),
+                    Err(e) => reject_err(&rej_fn, e),
                 }
             }
-            Err(e) => reject(&rej_fn, &e),
+            Err(e) => reject_err(&rej_fn, e),
         }
     })
 }
@@ -80,10 +84,10 @@ pub fn get_color_promise(image: &JsValue, quality: u8) -> js_sys::Promise {
                             reject(&rej_fn, "Image contains no extractable colors");
                         }
                     }
-                    Err(e) => reject(&rej_fn, &e),
+                    Err(e) => reject_err(&rej_fn, e),
                 }
             }
-            Err(e) => reject(&rej_fn, &e),
+            Err(e) => reject_err(&rej_fn, e),
         }
     })
 }
@@ -108,7 +112,7 @@ pub fn decode_image_promise(image: &JsValue) -> js_sys::Promise {
                 let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("height"), &JsValue::from(height));
                 resolve(&res_fn, &obj);
             }
-            Err(e) => reject(&rej_fn, &e),
+            Err(e) => reject_err(&rej_fn, e),
         }
     })
 }

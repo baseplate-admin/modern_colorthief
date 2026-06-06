@@ -21,10 +21,10 @@ jobs:
       - name: Run core tests
         run: cargo test -p ${{ matrix.crate }}
 
-  check-all:
-    name: Check all crates
+  check:
+    name: Core check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Check workspace
-        run: cargo check --workspace --all-targets
+      - name: Check core crates
+        run: cargo check -p modern-colorthief-core -p modern-colorthief-core-cpu

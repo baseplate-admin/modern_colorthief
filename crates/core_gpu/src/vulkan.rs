@@ -1,6 +1,5 @@
 use ash::vk;
 
-use crate::traits::ComputeBackend;
 use crate::{GpuDevice, GpuInfo};
 
 impl From<vk::PhysicalDeviceType> for GpuDevice {
@@ -141,27 +140,6 @@ impl VulkanBackend {
     ) -> Result<Vec<vk::PhysicalDevice>, String> {
         unsafe { instance.enumerate_physical_devices() }
             .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))
-    }
-}
-
-impl ComputeBackend for VulkanBackend {
-    fn is_available(&self) -> bool {
-        list_gpus().is_ok()
-    }
-
-    fn extract_palette(
-        &self,
-        buffer: &[u8],
-        width: u32,
-        height: u32,
-        color_count: u8,
-        quality: u8,
-    ) -> Result<Vec<(u8, u8, u8)>, String> {
-        gpu_extract(buffer, width, height, color_count, quality)
-    }
-
-    fn list_devices(&self) -> Result<Vec<GpuInfo>, String> {
-        list_gpus()
     }
 }
 

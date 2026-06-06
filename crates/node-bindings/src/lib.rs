@@ -20,7 +20,7 @@ pub fn get_palette(
     let color_count = color_count.unwrap_or(10);
     let quality = quality.unwrap_or(10);
 
-    modern_colorthief_core::extract_palette_from_buffer(
+    modern_colorthief_core_cpu::extract_palette_from_buffer(
         &pixels,
         width,
         height,
@@ -49,7 +49,7 @@ pub fn get_color(
     let quality = quality.unwrap_or(10);
 
     let palette =
-        modern_colorthief_core::extract_palette_from_buffer(&pixels, width, height, 5, quality)
+        modern_colorthief_core_cpu::extract_palette_from_buffer(&pixels, width, height, 5, quality)
             .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e))?;
 
     palette

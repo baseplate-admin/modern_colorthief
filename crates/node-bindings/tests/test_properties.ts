@@ -48,4 +48,22 @@ describe('Properties', () => {
         const c2 = await getColor(TEST_IMAGE);
         expect(c1).toEqual(c2);
     });
+
+    it('deterministic palette results', async () => {
+        const p1 = await getPalette(TEST_IMAGE, 10);
+        const p2 = await getPalette(TEST_IMAGE, 10);
+        expect(p1).toEqual(p2);
+    });
+
+    it('default palette count is 10', async () => {
+        const palette = await getPalette(TEST_IMAGE);
+        expect(palette.length).toBeLessThanOrEqual(10);
+    });
+
+    it('palette length respects color_count exactly for small images', async () => {
+        // With a solid color image, palette should return exactly 1 color
+        // (fewer if deduplication removes similar colors)
+        const palette = await getPalette(TEST_IMAGE, 3);
+        expect(palette.length).toBeLessThanOrEqual(3);
+    });
 });

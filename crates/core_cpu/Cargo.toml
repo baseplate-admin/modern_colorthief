@@ -4,4 +4,5 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+modern-colorthief-core = { path = "../core" }
 rayon.workspace = true
