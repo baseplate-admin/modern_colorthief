@@ -165,6 +165,22 @@ impl ComputeBackend for VulkanBackend {
     }
 }
 
+fn vendor_name(vendor_id: u32) -> &'static str {
+    match vendor_id {
+        0x10DE => "NVIDIA",
+        0x1002 => "AMD",
+        0x8086 => "Intel",
+        0x1028 => "VMware",
+        0x1234 => "Mesa (llvmpipe/swrast)",
+        0x106B => "Apple (MoltenVK)",
+        0x5143 => "Qualcomm (Adreno)",
+        0x13B5 => "ARM (Mali/Bifrost)",
+        0x1022 => "ATI (legacy AMD)",
+        0x14E4 => "Samsung",
+        _ => "Unknown",
+    }
+}
+
 pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
     let instance = VulkanBackend::new().create_instance()?;
     let physical_devices = VulkanBackend::new().enumerate_devices(&instance)?;
@@ -190,6 +206,7 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
                 .to_string()
             };
             let device_type = props.device_type.into();
+            let vendor = vendor_name(props.vendor_id);
 
             // Warn if the only available device is CPU-type
             if device_type == GpuDevice::CPU {
@@ -203,6 +220,7 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
                 index: i,
                 name,
                 device_type,
+                vendor_name: vendor.to_string(),
             });
         }
     }

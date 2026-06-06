@@ -1,0 +1,39 @@
+name: Check All
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-workspace:
+    name: Check workspace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check all crates
+        run: cargo check --workspace --all-targets
+      - name: Check clippy
+        run: cargo clippy --workspace -- -D warnings
+
+  check-cross-platform:
+    name: Cross-platform check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - wasm32-unknown-unknown
+          - aarch64-linux-android
+          - x86_64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v6
+      - run: rustup target add ${{ matrix.target }}
+      - name: Check core crates
+        run: cargo check --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - name: Check Node bindings
+        if: matrix.target != 'aarch64-linux-android'
+        run: cargo check --target ${{ matrix.target }} -p modern-colorthief-node

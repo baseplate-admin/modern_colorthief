@@ -1,0 +1,204 @@
+2026-06-06T13:17:08.8707037Z Current runner version: '2.334.0'
+2026-06-06T13:17:08.8734492Z ##[group]Runner Image Provisioner
+2026-06-06T13:17:08.8735360Z Hosted Compute Agent
+2026-06-06T13:17:08.8736065Z Version: 20260520.533
+2026-06-06T13:17:08.8736798Z Commit: 189110e25284a9812c124fd27b339e2fb4f2f9db
+2026-06-06T13:17:08.8737596Z Build Date: 2026-05-20T17:44:04Z
+2026-06-06T13:17:08.8738504Z Worker ID: {bb2bdd12-fe09-4e33-8417-8d7d9aad877c}
+2026-06-06T13:17:08.8739245Z Azure Region: eastus
+2026-06-06T13:17:08.8739885Z ##[endgroup]
+2026-06-06T13:17:08.8742119Z ##[group]Operating System
+2026-06-06T13:17:08.8742781Z Ubuntu
+2026-06-06T13:17:08.8743440Z 24.04.4
+2026-06-06T13:17:08.8743976Z LTS
+2026-06-06T13:17:08.8744538Z ##[endgroup]
+2026-06-06T13:17:08.8745169Z ##[group]Runner Image
+2026-06-06T13:17:08.8745837Z Image: ubuntu-24.04
+2026-06-06T13:17:08.8746470Z Version: 20260525.161.1
+2026-06-06T13:17:08.8747801Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260525.161/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-06T13:17:08.8749724Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260525.161
+2026-06-06T13:17:08.8750707Z ##[endgroup]
+2026-06-06T13:17:08.8751929Z ##[group]GITHUB_TOKEN Permissions
+2026-06-06T13:17:08.8754246Z Contents: read
+2026-06-06T13:17:08.8754986Z Metadata: read
+2026-06-06T13:17:08.8755570Z ##[endgroup]
+2026-06-06T13:17:08.8757700Z Secret source: Actions
+2026-06-06T13:17:08.8759076Z Prepare workflow directory
+2026-06-06T13:17:08.9099955Z Prepare all required actions
+2026-06-06T13:17:08.9138303Z Getting action download info
+2026-06-06T13:17:09.2129382Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+2026-06-06T13:17:09.4029490Z Download action repository 'actions/setup-node@v6' (SHA:48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e)
+2026-06-06T13:17:09.5065195Z Download action repository 'actions/upload-artifact@v7' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+2026-06-06T13:17:09.6833667Z Complete job name: Build node bindings
+2026-06-06T13:17:09.7564231Z ##[group]Run actions/checkout@v6
+2026-06-06T13:17:09.7565070Z with:
+2026-06-06T13:17:09.7565565Z   repository: baseplate-admin/modern_colorthief
+2026-06-06T13:17:09.7570564Z   token: ***
+2026-06-06T13:17:09.7571011Z   ssh-strict: true
+2026-06-06T13:17:09.7571458Z   ssh-user: git
+2026-06-06T13:17:09.7571896Z   persist-credentials: true
+2026-06-06T13:17:09.7572380Z   clean: true
+2026-06-06T13:17:09.7572825Z   sparse-checkout-cone-mode: true
+2026-06-06T13:17:09.7573340Z   fetch-depth: 1
+2026-06-06T13:17:09.7573767Z   fetch-tags: false
+2026-06-06T13:17:09.7574200Z   show-progress: true
+2026-06-06T13:17:09.7574631Z   lfs: false
+2026-06-06T13:17:09.7575036Z   submodules: false
+2026-06-06T13:17:09.7575473Z   set-safe-directory: true
+2026-06-06T13:17:09.7576387Z ##[endgroup]
+2026-06-06T13:17:09.8637189Z Syncing repository: baseplate-admin/modern_colorthief
+2026-06-06T13:17:09.8639516Z ##[group]Getting Git version info
+2026-06-06T13:17:09.8640422Z Working directory is '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-06T13:17:09.8641547Z [command]/usr/bin/git version
+2026-06-06T13:17:09.8702848Z git version 2.54.0
+2026-06-06T13:17:09.8728178Z ##[endgroup]
+2026-06-06T13:17:09.8745885Z Temporarily overriding HOME='/home/runner/work/_temp/4f33601a-add1-45e2-af78-f36523e864f6' before making global git config changes
+2026-06-06T13:17:09.8748600Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-06T13:17:09.8753473Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-06T13:17:09.8809436Z Deleting the contents of '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-06T13:17:09.8814284Z ##[group]Determining repository object format
+2026-06-06T13:17:09.8816534Z ##[endgroup]
+2026-06-06T13:17:09.8817686Z ##[group]Initializing the repository
+2026-06-06T13:17:09.8823258Z [command]/usr/bin/git init /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-06T13:17:09.8931523Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-06T13:17:09.8932992Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-06T13:17:09.8933932Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-06T13:17:09.8934653Z hint: call:
+2026-06-06T13:17:09.8935048Z hint:
+2026-06-06T13:17:09.8935562Z hint: 	git config --global init.defaultBranch <name>
+2026-06-06T13:17:09.8936168Z hint:
+2026-06-06T13:17:09.8936728Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-06T13:17:09.8937628Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-06T13:17:09.8938507Z hint:
+2026-06-06T13:17:09.8939112Z hint: 	git branch -m <name>
+2026-06-06T13:17:09.8939794Z hint:
+2026-06-06T13:17:09.8940427Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-06T13:17:09.8945720Z Initialized empty Git repository in /home/runner/work/modern_colorthief/modern_colorthief/.git/
+2026-06-06T13:17:09.8959612Z [command]/usr/bin/git remote add origin https://github.com/baseplate-admin/modern_colorthief
+2026-06-06T13:17:09.9009066Z ##[endgroup]
+2026-06-06T13:17:09.9009865Z ##[group]Disabling automatic garbage collection
+2026-06-06T13:17:09.9014479Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-06T13:17:09.9051167Z ##[endgroup]
+2026-06-06T13:17:09.9052601Z ##[group]Setting up auth
+2026-06-06T13:17:09.9053453Z Removing SSH command configuration
+2026-06-06T13:17:09.9059950Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-06T13:17:09.9098240Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-06T13:17:09.9470310Z Removing HTTP extra header
+2026-06-06T13:17:09.9478256Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-06T13:17:09.9515511Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-06T13:17:09.9773100Z Removing includeIf entries pointing to credentials config files
+2026-06-06T13:17:09.9779622Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-06T13:17:09.9819699Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-06T13:17:10.0068025Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-06T13:17:10.0109880Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:10.0145227Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:10.0183001Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:10.0214109Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:10.0244878Z ##[endgroup]
+2026-06-06T13:17:10.0246140Z ##[group]Fetching the repository
+2026-06-06T13:17:10.0255373Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a1a1bff9d3bbec7ff0fad57e7fed7193b631ccd6:refs/remotes/pull/125/merge
+2026-06-06T13:17:10.2441155Z From https://github.com/baseplate-admin/modern_colorthief
+2026-06-06T13:17:10.2443602Z  * [new ref]         a1a1bff9d3bbec7ff0fad57e7fed7193b631ccd6 -> pull/125/merge
+2026-06-06T13:17:10.2485217Z ##[endgroup]
+2026-06-06T13:17:10.2486455Z ##[group]Determining the checkout info
+2026-06-06T13:17:10.2487547Z ##[endgroup]
+2026-06-06T13:17:10.2494113Z [command]/usr/bin/git sparse-checkout disable
+2026-06-06T13:17:10.2546506Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-06T13:17:10.2584539Z ##[group]Checking out the ref
+2026-06-06T13:17:10.2590109Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/125/merge
+2026-06-06T13:17:10.2746083Z Note: switching to 'refs/remotes/pull/125/merge'.
+2026-06-06T13:17:10.2747335Z 
+2026-06-06T13:17:10.2748169Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-06-06T13:17:10.2750313Z changes and commit them, and you can discard any commits you make in this
+2026-06-06T13:17:10.2752221Z state without impacting any branches by switching back to a branch.
+2026-06-06T13:17:10.2753362Z 
+2026-06-06T13:17:10.2754198Z If you want to create a new branch to retain commits you create, you may
+2026-06-06T13:17:10.2755973Z do so (now or later) by using -c with the switch command. Example:
+2026-06-06T13:17:10.2757043Z 
+2026-06-06T13:17:10.2757529Z   git switch -c <new-branch-name>
+2026-06-06T13:17:10.2758590Z 
+2026-06-06T13:17:10.2759093Z Or undo this operation with:
+2026-06-06T13:17:10.2759887Z 
+2026-06-06T13:17:10.2760302Z   git switch -
+2026-06-06T13:17:10.2760920Z 
+2026-06-06T13:17:10.2761803Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-06-06T13:17:10.2763185Z 
+2026-06-06T13:17:10.2764769Z HEAD is now at a1a1bff Merge 17e1ff34664b811b44def0b2982b7520f1f1c08e into 8d6bba43780d18fda9b761bb215684cc975eda73
+2026-06-06T13:17:10.2769689Z ##[endgroup]
+2026-06-06T13:17:10.2801514Z [command]/usr/bin/git log -1 --format=%H
+2026-06-06T13:17:10.2826881Z a1a1bff9d3bbec7ff0fad57e7fed7193b631ccd6
+2026-06-06T13:17:10.3268892Z ##[group]Run actions/setup-node@v6
+2026-06-06T13:17:10.3270058Z with:
+2026-06-06T13:17:10.3270888Z   node-version: 22
+2026-06-06T13:17:10.3271813Z   check-latest: false
+2026-06-06T13:17:10.3282912Z   token: ***
+2026-06-06T13:17:10.3283801Z   package-manager-cache: true
+2026-06-06T13:17:10.3284827Z ##[endgroup]
+2026-06-06T13:17:10.4904870Z Found in cache @ /opt/hostedtoolcache/node/22.22.3/x64
+2026-06-06T13:17:10.4910834Z ##[group]Environment details
+2026-06-06T13:17:10.8627436Z node: v22.22.3
+2026-06-06T13:17:10.8628080Z npm: 10.9.8
+2026-06-06T13:17:10.8629138Z yarn: 1.22.22
+2026-06-06T13:17:10.8630563Z ##[endgroup]
+2026-06-06T13:17:10.8783086Z ##[group]Run npm ci && npx napi build --platform --release
+2026-06-06T13:17:10.8783862Z [36;1mnpm ci && npx napi build --platform --release[0m
+2026-06-06T13:17:10.8825205Z shell: /usr/bin/bash -e {0}
+2026-06-06T13:17:10.8825720Z ##[endgroup]
+2026-06-06T13:17:11.4835889Z npm error code EUSAGE
+2026-06-06T13:17:11.4836775Z npm error
+2026-06-06T13:17:11.4837469Z npm error The `npm ci` command can only install with an existing package-lock.json or
+2026-06-06T13:17:11.4838263Z npm error npm-shrinkwrap.json with lockfileVersion >= 1. Run an install with npm@5 or
+2026-06-06T13:17:11.4839703Z npm error later to generate a package-lock.json file, then try again.
+2026-06-06T13:17:11.4840300Z npm error
+2026-06-06T13:17:11.4840746Z npm error Clean install a project
+2026-06-06T13:17:11.4841075Z npm error
+2026-06-06T13:17:11.4841306Z npm error Usage:
+2026-06-06T13:17:11.4841548Z npm error npm ci
+2026-06-06T13:17:11.4841770Z npm error
+2026-06-06T13:17:11.4842046Z npm error Options:
+2026-06-06T13:17:11.4842874Z npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+2026-06-06T13:17:11.4843742Z npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+2026-06-06T13:17:11.4844449Z npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+2026-06-06T13:17:11.4845197Z npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+2026-06-06T13:17:11.4846057Z npm error [--no-bin-links] [--no-fund] [--dry-run]
+2026-06-06T13:17:11.4846637Z npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+2026-06-06T13:17:11.4847258Z npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+2026-06-06T13:17:11.4847650Z npm error
+2026-06-06T13:17:11.4848052Z npm error aliases: clean-install, ic, install-clean, isntall-clean
+2026-06-06T13:17:11.4848699Z npm error
+2026-06-06T13:17:11.4849051Z npm error Run "npm help ci" for more info
+2026-06-06T13:17:11.4849761Z npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-06-06T13_17_10_940Z-debug-0.log
+2026-06-06T13:17:11.5233174Z ##[error]Process completed with exit code 1.
+2026-06-06T13:17:11.5359104Z Post job cleanup.
+2026-06-06T13:17:11.6231058Z [command]/usr/bin/git version
+2026-06-06T13:17:11.6269846Z git version 2.54.0
+2026-06-06T13:17:11.6309099Z Temporarily overriding HOME='/home/runner/work/_temp/b83ba378-db03-4814-819a-6cdf53f1ec62' before making global git config changes
+2026-06-06T13:17:11.6311224Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-06T13:17:11.6315330Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-06T13:17:11.6350564Z Removing SSH command configuration
+2026-06-06T13:17:11.6357366Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-06T13:17:11.6395620Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-06T13:17:11.6642526Z Removing HTTP extra header
+2026-06-06T13:17:11.6647965Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-06T13:17:11.6684585Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-06T13:17:11.6930551Z Removing includeIf entries pointing to credentials config files
+2026-06-06T13:17:11.6960096Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-06T13:17:11.6976589Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-06T13:17:11.6977749Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-06T13:17:11.6978804Z includeif.gitdir:/github/workspace/.git.path
+2026-06-06T13:17:11.6979579Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-06T13:17:11.6989570Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-06T13:17:11.7015830Z /home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7031269Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7074138Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-06T13:17:11.7101418Z /home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7113534Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7151026Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-06-06T13:17:11.7176482Z /github/runner_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7184184Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7219303Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-06T13:17:11.7243658Z /github/runner_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7253932Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config
+2026-06-06T13:17:11.7294110Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-06T13:17:11.7547453Z Removing credentials config '/home/runner/work/_temp/git-credentials-ffedec66-a2d1-48b7-871f-79332f40468f.config'
+2026-06-06T13:17:11.7694549Z Cleaning up orphan processes

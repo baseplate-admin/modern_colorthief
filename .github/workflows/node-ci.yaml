@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
       - working-directory: crates/node-bindings
-        run: npm ci && npx napi build --platform --release
+        run: npm install && npx napi build --platform --release
       - uses: actions/upload-artifact@v7
         with:
           name: node-native
@@ -40,7 +40,7 @@ jobs:
           name: node-native
           path: crates/node-bindings/artifacts
       - working-directory: crates/node-bindings
-        run: npm ci && npx vitest run
+        run: npm install && npx vitest run
 
   deno-test:
     name: Deno

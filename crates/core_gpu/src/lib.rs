@@ -7,6 +7,7 @@ pub struct GpuInfo {
     pub index: usize,
     pub name: String,
     pub device_type: GpuDevice,
+    pub vendor_name: String,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
