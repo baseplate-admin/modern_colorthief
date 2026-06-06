@@ -98,7 +98,8 @@ mod tests {
         assert!(result.is_err());
     }
 
-    #[test]
+   #[test]
+    #[ignore]
     fn test_gpu_or_not_available() {
         let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(25);
         let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);

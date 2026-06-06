@@ -29,7 +29,85 @@ impl VulkanBackend {
         VulkanBackend
     }
 
+    /// Platform-specific error message when Vulkan is not found.
+    fn vulkan_not_found_error() -> String {
+        #[cfg(target_os = "windows")]
+        return "Vulkan not found. modern_colorthief GPU mode requires Vulkan ICD loader.\n\
+                \n\
+                Fix: Install GPU drivers from your hardware vendor:\n\
+                • NVIDIA: https://www.nvidia.com/Download/index.aspx\n\
+                • AMD: https://www.amd.com/en/support\n\
+                • Intel: https://www.intel.com/content/www/us/en/download-center/home.html\n\
+                \n\
+                Vulkan ICD (vulkan-1.dll) is included with modern GPU drivers."
+        .to_string();
+        #[cfg(target_os = "linux")]
+        return "Vulkan not found. modern_colorthief GPU mode requires the Vulkan loader.\n\
+                \n\
+                Fix: Install the Vulkan loader package:\n\
+                • Debian/Ubuntu: sudo apt install libvulkan1\n\
+                • Fedora: sudo dnf install vulkan-loader\n\
+                • Arch: sudo pacman -S vulkan-loader\n\
+                • openSUSE: sudo zypper install vulkan-loader\n\
+                \n\
+                Also install GPU-specific Vulkan drivers (e.g., mesa-vulkan-drivers)."
+        .to_string();
+        #[cfg(target_os = "macos")]
+        return "Vulkan not found. macOS does not include native Vulkan support.\n\
+                \n\
+                Fix: Install MoltenVK to translate Vulkan to Metal:\n\
+                • Homebrew: brew install molten-vk\n\
+                • Then run: MoltenVKHelper --accept-sla\n\
+                \n\
+                MoltenVK provides Vulkan ICD on top of Metal."
+        .to_string();
+        #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
+        {
+            "Vulkan not supported on this platform.".to_string()
+        }
+    }
+
+    /// Check if Vulkan loader is available on this system.
+    fn vulkan_loader_available() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            let vulkan_dll = std::path::Path::new("vulkan-1.dll");
+            if vulkan_dll.exists() { return true; }
+            std::env::var("SystemRoot").ok().map_or(false, |r| {
+                std::path::Path::new(&format!("{}\\System32\\vulkan-1.dll", r)).exists()
+            }) || std::env::var("VULKAN_SDK").ok().map_or(false, |sdk| {
+                std::path::Path::new(&format!("{}\\Bin\\vulkan-1.dll", sdk)).exists()
+            })
+        }
+        #[cfg(target_os = "linux")]
+        {
+            std::fs::metadata("libvulkan.so").is_ok()
+                || std::fs::metadata("/usr/lib/libvulkan.so").is_ok()
+                || std::fs::metadata("/usr/lib/x86_64-linux-gnu/libvulkan.so").is_ok()
+                || std::env::var("VULKAN_SDK").ok().map_or(false, |sdk| {
+                    std::path::Path::new(&format!("{}/lib/libvulkan.so", sdk)).exists()
+                })
+        }
+        #[cfg(target_os = "macos")]
+        {
+            // Check for MoltenVK installation
+            std::fs::metadata("/usr/local/lib/libMoltenVK.dylib").is_ok()
+                || std::fs::metadata("/opt/homebrew/lib/libMoltenVK.dylib").is_ok()
+                || std::fs::metadata("libMoltenVK.dylib").is_ok()
+                || std::env::var("MOLTENVK_ROOT").ok().map_or(false, |root| {
+                    std::path::Path::new(&format!("{}/libMoltenVK.dylib", root)).exists()
+                })
+        }
+        #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
+        {
+            false
+        }
+    }
+
     fn create_instance(&self) -> Result<ash::Instance, String> {
+        if !Self::vulkan_loader_available() {
+            return Err(Self::vulkan_not_found_error());
+        }
         let entry = unsafe { ash::Entry::load() }
             .map_err(|e| format!("Vulkan entry load failed: {}", e))?;
 

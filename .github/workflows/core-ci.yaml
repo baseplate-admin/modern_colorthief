@@ -1,0 +1,30 @@
+name: Core
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  core-test:
+    name: Core tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        crate: [modern-colorthief-core, modern-colorthief-core-cpu]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run core tests
+        run: cargo test -p ${{ matrix.crate }}
+
+  check-all:
+    name: Check all crates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check workspace
+        run: cargo check --workspace --all-targets

@@ -1,0 +1,22 @@
+name: GPU
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  gpu-test:
+    name: GPU tests (Vulkan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: humbletim/setup-vulkan-sdk@v1
+        with:
+          vulkan-install-method: VULKAN_SDK
+      - name: Run GPU tests
+        run: cargo test -p modern-colorthief-core-gpu -- --include-ignored
