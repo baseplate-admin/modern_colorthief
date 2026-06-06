@@ -1090,7 +1090,7 @@ name = "modern-colorthief-php"
 version = "0.3.0"
 dependencies = [
  "ext-php-rs",
- "modern-colorthief-core",
+ "modern-colorthief-core-cpu",
  "rayon",
 ]
 
@@ -1124,7 +1124,7 @@ name = "modern-colorthief-ruby"
 version = "0.3.0"
 dependencies = [
  "magnus",
- "modern-colorthief-core",
+ "modern-colorthief-core-cpu",
  "rayon",
 ]
 

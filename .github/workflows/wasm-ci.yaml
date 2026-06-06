@@ -33,7 +33,7 @@ jobs:
       - working-directory: crates/wasm-bindings
         run: wasm-pack build --release
       - working-directory: crates/wasm-bindings
-        run: npm ci && npm test
+        run: npm install && npm test
 
   publish:
     name: Publish to npm

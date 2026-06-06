@@ -6,7 +6,7 @@
     "main": "index.js",
     "types": "index.d.ts",
     "napi": {
-        "name": "modern-colorthief-node-gpu",
+        "binaryName": "modern_colorthief_gpu",
         "triples": {}
     },
     "dependencies": {

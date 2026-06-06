@@ -44,30 +44,30 @@ describe('API surface', () => {
     // -- Solid color detection (port of Python implicit test) --
 
     it('detects solid red color', async () => {
-        const redImage = sharp({
+        const buffer = await sharp({
             create: { width: 100, height: 100, channels: 3, background: { r: 255, g: 0, b: 0 } },
-        });
-        const color = await getColor(redImage.toBuffer());
+        }).toBuffer();
+        const color = await getColor(buffer);
         expect(color[0]).toBeGreaterThan(200); // red dominant
         expect(color[1]).toBeLessThan(55);
         expect(color[2]).toBeLessThan(55);
     });
 
     it('detects solid blue color', async () => {
-        const blueImage = sharp({
+        const buffer = await sharp({
             create: { width: 100, height: 100, channels: 3, background: { r: 0, g: 0, b: 255 } },
-        });
-        const color = await getColor(blueImage.toBuffer());
+        }).toBuffer();
+        const color = await getColor(buffer);
         expect(color[0]).toBeLessThan(55);
         expect(color[1]).toBeLessThan(55);
         expect(color[2]).toBeGreaterThan(200); // blue dominant
     });
 
     it('detects solid green color', async () => {
-        const greenImage = sharp({
+        const buffer = await sharp({
             create: { width: 100, height: 100, channels: 3, background: { r: 0, g: 255, b: 0 } },
-        });
-        const color = await getColor(greenImage.toBuffer());
+        }).toBuffer();
+        const color = await getColor(buffer);
         expect(color[0]).toBeLessThan(55);
         expect(color[1]).toBeGreaterThan(200); // green dominant
         expect(color[2]).toBeLessThan(55);
@@ -77,20 +77,20 @@ describe('API surface', () => {
 
     it('detects two dominant colors from split image', async () => {
         // Create an image with top half red, bottom half blue
-        const top = sharp({
+        const topBuffer = await sharp({
             create: { width: 100, height: 50, channels: 3, background: { r: 255, g: 0, b: 0 } },
-        });
-        const bottom = sharp({
+        }).toBuffer();
+        const bottomBuffer = await sharp({
             create: { width: 100, height: 50, channels: 3, background: { r: 0, g: 0, b: 255 } },
-        });
+        }).toBuffer();
         const composite = sharp()
             .composite([
-                { input: await top.toBuffer(), top: 0, left: 0 },
-                { input: await bottom.toBuffer(), top: 50, left: 0 },
+                { input: topBuffer, top: 0, left: 0 },
+                { input: bottomBuffer, top: 50, left: 0 },
             ])
             .resize(100, 100);
 
-        const palette = await getPalette(composite.toBuffer(), 2);
+        const palette = await getPalette(await composite.toBuffer(), 2);
         expect(palette.length).toBeLessThanOrEqual(2);
         expect(palette.length).toBeGreaterThan(0);
 
@@ -103,10 +103,10 @@ describe('API surface', () => {
     // -- get_color returns correct dominant color --
 
     it('get_color returns the most frequent color for solid image', async () => {
-        const orangeImage = sharp({
+        const buffer = await sharp({
             create: { width: 50, height: 50, channels: 3, background: { r: 255, g: 165, b: 0 } },
-        });
-        const color = await getColor(orangeImage.toBuffer());
+        }).toBuffer();
+        const color = await getColor(buffer);
         expect(color[0]).toBeGreaterThan(200); // orange-red
         expect(color[1]).toBeGreaterThan(100); // orange-green
         expect(color[2]).toBeLessThan(80);     // low blue

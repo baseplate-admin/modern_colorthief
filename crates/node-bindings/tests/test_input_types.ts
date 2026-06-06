@@ -37,4 +37,16 @@ describe('Input types', () => {
         await getPalette(buffer);
         expect(buffer.equals(copy)).toBe(true);
     });
+
+    it('path and buffer produce same dominant color', async () => {
+        const colorFromPath = await getColor(TEST_IMAGE);
+        const colorFromBuffer = await getColor(readFileSync(TEST_IMAGE));
+        expect(colorFromPath).toEqual(colorFromBuffer);
+    });
+
+    it('path and buffer produce same palette', async () => {
+        const paletteFromPath = await getPalette(TEST_IMAGE, 10);
+        const paletteFromBuffer = await getPalette(readFileSync(TEST_IMAGE), 10);
+        expect(paletteFromPath).toEqual(paletteFromBuffer);
+    });
 });

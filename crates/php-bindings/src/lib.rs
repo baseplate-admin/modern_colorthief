@@ -6,7 +6,7 @@ fn get_palette(pixels: &[u8], width: u32, height: u32, color_count: Option<u8>, 
     let color_count = color_count.unwrap_or(10);
     let quality = quality.unwrap_or(10);
 
-    modern_colorthief_core::extract_palette_from_buffer(pixels, width, height, color_count, quality)
+    modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, color_count, quality)
         .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
         .map_err(|e| Exception::new_fn("Exception", e))
 }
@@ -16,7 +16,7 @@ fn get_palette(pixels: &[u8], width: u32, height: u32, color_count: Option<u8>, 
 fn get_color(pixels: &[u8], width: u32, height: u32, quality: Option<u8>) -> Result<Vec<u8>, Exception> {
     let quality = quality.unwrap_or(10);
 
-    let palette = modern_colorthief_core::extract_palette_from_buffer(pixels, width, height, 5, quality)
+    let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
         .map_err(|e| Exception::new_fn("Exception", e))?;
 
     palette

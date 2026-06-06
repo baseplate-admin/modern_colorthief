@@ -8,6 +8,6 @@ crate-type = ["cdylib"]
 name = "modern_colorthief"
 
 [dependencies]
-modern-colorthief-core.workspace = true
+modern-colorthief-core-cpu.workspace = true
 ext-php-rs.workspace = true
 rayon.workspace = true

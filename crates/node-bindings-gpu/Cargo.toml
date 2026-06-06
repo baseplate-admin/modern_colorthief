@@ -13,3 +13,6 @@ napi-derive.workspace = true
 
 [build-dependencies]
 napi-build.workspace = true
+
+[package.metadata.napi]
+binaryName = "modern_colorthief_gpu"

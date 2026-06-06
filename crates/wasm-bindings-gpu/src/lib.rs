@@ -9,6 +9,10 @@ fn reject(p: &js_sys::Function, msg: &str) {
     let _ = p.call1(&JsValue::UNDEFINED, &JsValue::from_str(msg));
 }
 
+fn reject_err(p: &js_sys::Function, msg: String) {
+    let _ = p.call1(&JsValue::UNDEFINED, &JsValue::from_str(&msg));
+}
+
 /// Extract a palette of dominant colors from raw pixel data using the GPU backend.
 ///
 /// Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).
@@ -43,7 +47,7 @@ pub fn get_palette_gpu_promise(
                 }
                 resolve(&res_fn, &result);
             }
-            Err(e) => reject(&rej_fn, &e),
+            Err(e) => reject_err(&rej_fn, e),
         }
     })
 }
@@ -82,7 +86,7 @@ pub fn get_color_gpu_promise(
                     reject(&rej_fn, "Image contains no extractable colors");
                 }
             }
-            Err(e) => reject(&rej_fn, &e),
+            Err(e) => reject_err(&rej_fn, e),
         }
     })
 }
