@@ -1,0 +1,312 @@
+2026-06-06T12:21:29.7520878Z Current runner version: '2.334.0'
+2026-06-06T12:21:29.7555291Z ##[group]Runner Image Provisioner
+2026-06-06T12:21:29.7556562Z Hosted Compute Agent
+2026-06-06T12:21:29.7557660Z Version: 20260520.533
+2026-06-06T12:21:29.7558703Z Commit: 189110e25284a9812c124fd27b339e2fb4f2f9db
+2026-06-06T12:21:29.7559869Z Build Date: 2026-05-20T17:44:04Z
+2026-06-06T12:21:29.7561126Z Worker ID: {ef1dbd88-11dc-44c6-8b85-3d5c7173bcf1}
+2026-06-06T12:21:29.7562349Z Azure Region: eastus
+2026-06-06T12:21:29.7563737Z ##[endgroup]
+2026-06-06T12:21:29.7566529Z ##[group]Operating System
+2026-06-06T12:21:29.7567620Z Ubuntu
+2026-06-06T12:21:29.7568576Z 24.04.4
+2026-06-06T12:21:29.7569440Z LTS
+2026-06-06T12:21:29.7570343Z ##[endgroup]
+2026-06-06T12:21:29.7571232Z ##[group]Runner Image
+2026-06-06T12:21:29.7572299Z Image: ubuntu-24.04
+2026-06-06T12:21:29.7573592Z Version: 20260525.161.1
+2026-06-06T12:21:29.7575759Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260525.161/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-06T12:21:29.7578413Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260525.161
+2026-06-06T12:21:29.7580122Z ##[endgroup]
+2026-06-06T12:21:29.7582046Z ##[group]GITHUB_TOKEN Permissions
+2026-06-06T12:21:29.7585965Z Contents: read
+2026-06-06T12:21:29.7586906Z Metadata: read
+2026-06-06T12:21:29.7587765Z ##[endgroup]
+2026-06-06T12:21:29.7591209Z Secret source: Actions
+2026-06-06T12:21:29.7593156Z Prepare workflow directory
+2026-06-06T12:21:29.8073773Z Prepare all required actions
+2026-06-06T12:21:29.8129473Z Getting action download info
+2026-06-06T12:21:30.0582292Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+2026-06-06T12:21:30.3560694Z Complete job name: Android check
+2026-06-06T12:21:30.4275286Z ##[group]Run actions/checkout@v6
+2026-06-06T12:21:30.4276234Z with:
+2026-06-06T12:21:30.4276755Z   repository: baseplate-admin/modern_colorthief
+2026-06-06T12:21:30.4281331Z   token: ***
+2026-06-06T12:21:30.4281788Z   ssh-strict: true
+2026-06-06T12:21:30.4282268Z   ssh-user: git
+2026-06-06T12:21:30.4282947Z   persist-credentials: true
+2026-06-06T12:21:30.4283478Z   clean: true
+2026-06-06T12:21:30.4283949Z   sparse-checkout-cone-mode: true
+2026-06-06T12:21:30.4284504Z   fetch-depth: 1
+2026-06-06T12:21:30.4284950Z   fetch-tags: false
+2026-06-06T12:21:30.4285412Z   show-progress: true
+2026-06-06T12:21:30.4285891Z   lfs: false
+2026-06-06T12:21:30.4286319Z   submodules: false
+2026-06-06T12:21:30.4286782Z   set-safe-directory: true
+2026-06-06T12:21:30.4287553Z ##[endgroup]
+2026-06-06T12:21:30.5293836Z Syncing repository: baseplate-admin/modern_colorthief
+2026-06-06T12:21:30.5295760Z ##[group]Getting Git version info
+2026-06-06T12:21:30.5296730Z Working directory is '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-06T12:21:30.5297880Z [command]/usr/bin/git version
+2026-06-06T12:21:30.5388696Z git version 2.54.0
+2026-06-06T12:21:30.5413157Z ##[endgroup]
+2026-06-06T12:21:30.5427644Z Temporarily overriding HOME='/home/runner/work/_temp/06d17cd6-6551-4c61-8eac-a96aa6ba47b3' before making global git config changes
+2026-06-06T12:21:30.5429127Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-06T12:21:30.5433540Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-06T12:21:30.5486128Z Deleting the contents of '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-06T12:21:30.5490567Z ##[group]Determining repository object format
+2026-06-06T12:21:30.5493065Z ##[endgroup]
+2026-06-06T12:21:30.5494005Z ##[group]Initializing the repository
+2026-06-06T12:21:30.5498062Z [command]/usr/bin/git init /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-06T12:21:30.5629953Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-06T12:21:30.5631674Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-06T12:21:30.5633151Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-06T12:21:30.5634233Z hint: call:
+2026-06-06T12:21:30.5634683Z hint:
+2026-06-06T12:21:30.5635491Z hint: 	git config --global init.defaultBranch <name>
+2026-06-06T12:21:30.5636658Z hint:
+2026-06-06T12:21:30.5637886Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-06T12:21:30.5639835Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-06T12:21:30.5640740Z hint:
+2026-06-06T12:21:30.5641217Z hint: 	git branch -m <name>
+2026-06-06T12:21:30.5641754Z hint:
+2026-06-06T12:21:30.5642461Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-06T12:21:30.5644298Z Initialized empty Git repository in /home/runner/work/modern_colorthief/modern_colorthief/.git/
+2026-06-06T12:21:30.5650610Z [command]/usr/bin/git remote add origin https://github.com/baseplate-admin/modern_colorthief
+2026-06-06T12:21:30.5695077Z ##[endgroup]
+2026-06-06T12:21:30.5695913Z ##[group]Disabling automatic garbage collection
+2026-06-06T12:21:30.5698526Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-06T12:21:30.5726773Z ##[endgroup]
+2026-06-06T12:21:30.5727937Z ##[group]Setting up auth
+2026-06-06T12:21:30.5728693Z Removing SSH command configuration
+2026-06-06T12:21:30.5734342Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-06T12:21:30.5768868Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-06T12:21:30.6125423Z Removing HTTP extra header
+2026-06-06T12:21:30.6129901Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-06T12:21:30.6160490Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-06T12:21:30.6369348Z Removing includeIf entries pointing to credentials config files
+2026-06-06T12:21:30.6374783Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-06T12:21:30.6404603Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-06T12:21:30.6622969Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-06T12:21:30.6658233Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:30.6686602Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:30.6719166Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:30.6749337Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:30.6778556Z ##[endgroup]
+2026-06-06T12:21:30.6779347Z ##[group]Fetching the repository
+2026-06-06T12:21:30.6787637Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d181726e853f799873181855afa6ba576f9bdc7f:refs/remotes/pull/125/merge
+2026-06-06T12:21:30.8851882Z From https://github.com/baseplate-admin/modern_colorthief
+2026-06-06T12:21:30.8853415Z  * [new ref]         d181726e853f799873181855afa6ba576f9bdc7f -> pull/125/merge
+2026-06-06T12:21:30.8894114Z ##[endgroup]
+2026-06-06T12:21:30.8895317Z ##[group]Determining the checkout info
+2026-06-06T12:21:30.8896754Z ##[endgroup]
+2026-06-06T12:21:30.8900757Z [command]/usr/bin/git sparse-checkout disable
+2026-06-06T12:21:30.8947888Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-06T12:21:30.8976551Z ##[group]Checking out the ref
+2026-06-06T12:21:30.8980180Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/125/merge
+2026-06-06T12:21:30.9126522Z Note: switching to 'refs/remotes/pull/125/merge'.
+2026-06-06T12:21:30.9127539Z 
+2026-06-06T12:21:30.9128268Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-06-06T12:21:30.9129850Z changes and commit them, and you can discard any commits you make in this
+2026-06-06T12:21:30.9131417Z state without impacting any branches by switching back to a branch.
+2026-06-06T12:21:30.9132059Z 
+2026-06-06T12:21:30.9132459Z If you want to create a new branch to retain commits you create, you may
+2026-06-06T12:21:30.9134076Z do so (now or later) by using -c with the switch command. Example:
+2026-06-06T12:21:30.9134741Z 
+2026-06-06T12:21:30.9134977Z   git switch -c <new-branch-name>
+2026-06-06T12:21:30.9135338Z 
+2026-06-06T12:21:30.9135558Z Or undo this operation with:
+2026-06-06T12:21:30.9135892Z 
+2026-06-06T12:21:30.9136115Z   git switch -
+2026-06-06T12:21:30.9136385Z 
+2026-06-06T12:21:30.9136789Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-06-06T12:21:30.9137382Z 
+2026-06-06T12:21:30.9138347Z HEAD is now at d181726 Merge e9baa890bc5c1d16457c2b8d2bb7ff0507027bb4 into 8d6bba43780d18fda9b761bb215684cc975eda73
+2026-06-06T12:21:30.9140563Z ##[endgroup]
+2026-06-06T12:21:30.9174749Z [command]/usr/bin/git log -1 --format=%H
+2026-06-06T12:21:30.9197839Z d181726e853f799873181855afa6ba576f9bdc7f
+2026-06-06T12:21:30.9411874Z ##[group]Run rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+2026-06-06T12:21:30.9413798Z [36;1mrustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android[0m
+2026-06-06T12:21:30.9444676Z shell: /usr/bin/bash -e {0}
+2026-06-06T12:21:30.9445239Z ##[endgroup]
+2026-06-06T12:21:31.0542425Z info: downloading component rust-std
+2026-06-06T12:21:33.0720279Z info: downloading component rust-std
+2026-06-06T12:21:34.8052145Z info: downloading component rust-std
+2026-06-06T12:21:36.7093044Z info: downloading component rust-std
+2026-06-06T12:21:38.6289914Z ##[group]Run cargo check --target aarch64-linux-android -p modern-colorthief
+2026-06-06T12:21:38.6290572Z [36;1mcargo check --target aarch64-linux-android -p modern-colorthief[0m
+2026-06-06T12:21:38.6317953Z shell: /usr/bin/bash -e {0}
+2026-06-06T12:21:38.6318269Z ##[endgroup]
+2026-06-06T12:21:41.3019288Z     Updating crates.io index
+2026-06-06T12:21:41.8977943Z  Downloading crates ...
+2026-06-06T12:21:41.9455059Z   Downloaded android_system_properties v0.1.5
+2026-06-06T12:21:41.9725588Z   Downloaded semver v1.0.28
+2026-06-06T12:21:41.9760956Z   Downloaded bitflags v2.11.1
+2026-06-06T12:21:41.9821368Z   Downloaded scopeguard v1.2.0
+2026-06-06T12:21:41.9840155Z   Downloaded strsim v0.11.1
+2026-06-06T12:21:41.9865699Z   Downloaded wasm-bindgen-macro v0.2.122
+2026-06-06T12:21:41.9892479Z   Downloaded wasm-bindgen-shared v0.2.122
+2026-06-06T12:21:41.9915183Z   Downloaded seq-macro v0.3.6
+2026-06-06T12:21:41.9948662Z   Downloaded napi-build v2.3.2
+2026-06-06T12:21:41.9968530Z   Downloaded version_check v0.9.5
+2026-06-06T12:21:41.9997809Z   Downloaded walkdir v2.5.0
+2026-06-06T12:21:42.0035000Z   Downloaded crossbeam-utils v0.8.21
+2026-06-06T12:21:42.0070289Z   Downloaded zmij v1.0.21
+2026-06-06T12:21:42.0096074Z   Downloaded inventory v0.3.24
+2026-06-06T12:21:42.0193964Z   Downloaded futures-executor v0.3.32
+2026-06-06T12:21:42.0194671Z   Downloaded libloading v0.8.9
+2026-06-06T12:21:42.0195225Z   Downloaded unicode-ident v1.0.24
+2026-06-06T12:21:42.0219914Z   Downloaded tempfile v3.27.0
+2026-06-06T12:21:42.0253279Z   Downloaded wasm-bindgen v0.2.122
+2026-06-06T12:21:42.0286881Z   Downloaded serde_derive v1.0.228
+2026-06-06T12:21:42.0323990Z   Downloaded serde v1.0.228
+2026-06-06T12:21:42.0365138Z   Downloaded wasm-bindgen-macro-support v0.2.122
+2026-06-06T12:21:42.0390648Z   Downloaded unicode-segmentation v1.13.3
+2026-06-06T12:21:42.0425619Z   Downloaded cesu8 v1.1.0
+2026-06-06T12:21:42.0436956Z   Downloaded futures-task v0.3.32
+2026-06-06T12:21:42.0455272Z   Downloaded rb-sys-env v0.1.2
+2026-06-06T12:21:42.0470219Z   Downloaded napi-derive v3.5.6
+2026-06-06T12:21:42.0493889Z   Downloaded serde_json v1.0.150
+2026-06-06T12:21:42.0571063Z   Downloaded rb-sys v0.9.128
+2026-06-06T12:21:42.0605963Z   Downloaded lock_api v0.4.14
+2026-06-06T12:21:42.0625153Z   Downloaded crossbeam-deque v0.8.6
+2026-06-06T12:21:42.0643995Z   Downloaded camino v1.2.2
+2026-06-06T12:21:42.0675644Z   Downloaded rb-sys-build v0.9.128
+2026-06-06T12:21:42.0698929Z   Downloaded pyo3-build-config v0.28.3
+2026-06-06T12:21:42.0718202Z   Downloaded syn v2.0.117
+2026-06-06T12:21:42.0827060Z   Downloaded quote v1.0.45
+2026-06-06T12:21:42.0861481Z   Downloaded num-traits v0.2.19
+2026-06-06T12:21:42.0892511Z   Downloaded cexpr v0.6.0
+2026-06-06T12:21:42.0917524Z   Downloaded regex-syntax v0.8.10
+2026-06-06T12:21:42.0988810Z   Downloaded rayon-core v1.13.0
+2026-06-06T12:21:42.1032760Z   Downloaded pyo3-macros-backend v0.28.3
+2026-06-06T12:21:42.1153104Z   Downloaded memchr v2.8.0
+2026-06-06T12:21:42.1214946Z   Downloaded pulldown-cmark v0.9.6
+2026-06-06T12:21:42.1309681Z   Downloaded rustix v1.1.4
+2026-06-06T12:21:42.1581683Z   Downloaded itertools v0.13.0
+2026-06-06T12:21:42.1659208Z   Downloaded napi v3.9.0
+2026-06-06T12:21:42.1730628Z   Downloaded regex-automata v0.4.14
+2026-06-06T12:21:42.1871403Z   Downloaded rayon v1.12.0
+2026-06-06T12:21:42.1969211Z   Downloaded magnus v0.6.4
+2026-06-06T12:21:42.2060590Z   Downloaded futures-util v0.3.32
+2026-06-06T12:21:42.2193933Z   Downloaded bindgen v0.72.1
+2026-06-06T12:21:42.2264348Z   Downloaded ext-php-rs v0.15.15
+2026-06-06T12:21:42.2409722Z   Downloaded web-sys v0.3.99
+2026-06-06T12:21:42.3556336Z   Downloaded ext-php-rs-bindgen v0.72.1-extphprs.2
+2026-06-06T12:21:42.3626274Z   Downloaded chrono v0.4.44
+2026-06-06T12:21:42.3695457Z   Downloaded regex v1.12.3
+2026-06-06T12:21:42.3750037Z   Downloaded itertools v0.14.0
+2026-06-06T12:21:42.3821337Z   Downloaded combine v4.6.7
+2026-06-06T12:21:42.3875943Z   Downloaded nom v7.1.3
+2026-06-06T12:21:42.3930037Z   Downloaded minimal-lexical v0.2.1
+2026-06-06T12:21:42.3985515Z   Downloaded bumpalo v3.20.3
+2026-06-06T12:21:42.4012261Z   Downloaded bytes v1.11.1
+2026-06-06T12:21:42.4055429Z   Downloaded js-sys v0.3.99
+2026-06-06T12:21:42.4086473Z   Downloaded ash v0.38.0+1.3.281
+2026-06-06T12:21:42.4239686Z   Downloaded ext-php-rs-derive v0.11.14
+2026-06-06T12:21:42.4270218Z   Downloaded proc-macro2 v1.0.106
+2026-06-06T12:21:42.4303115Z   Downloaded jni v0.21.1
+2026-06-06T12:21:42.4371244Z   Downloaded darling_core v0.23.0
+2026-06-06T12:21:42.4427861Z   Downloaded clang-sys v1.8.1
+2026-06-06T12:21:42.4453883Z   Downloaded tokio v1.52.3
+2026-06-06T12:21:42.4895509Z   Downloaded log v0.4.32
+2026-06-06T12:21:42.4921093Z   Downloaded darling v0.23.0
+2026-06-06T12:21:42.4975973Z   Downloaded cargo_metadata v0.14.2
+2026-06-06T12:21:42.4991694Z   Downloaded once_cell v1.21.4
+2026-06-06T12:21:42.5019077Z   Downloaded napi-derive-backend v5.0.4
+2026-06-06T12:21:42.5040952Z   Downloaded futures v0.3.32
+2026-06-06T12:21:42.5090597Z   Downloaded cc v1.2.62
+2026-06-06T12:21:42.5121050Z   Downloaded pyo3-ffi v0.28.3
+2026-06-06T12:21:42.5193349Z   Downloaded parking_lot v0.12.5
+2026-06-06T12:21:42.5219692Z   Downloaded libloading v0.9.0
+2026-06-06T12:21:42.5245355Z   Downloaded futures-channel v0.3.32
+2026-06-06T12:21:42.5266012Z   Downloaded pyo3-macros v0.28.3
+2026-06-06T12:21:42.5275140Z   Downloaded libc v0.2.186
+2026-06-06T12:21:42.5667450Z   Downloaded prettyplease v0.2.37
+2026-06-06T12:21:42.5706666Z   Downloaded parking_lot_core v0.9.12
+2026-06-06T12:21:42.5730190Z   Downloaded iana-time-zone v0.1.65
+2026-06-06T12:21:42.5759609Z   Downloaded either v1.16.0
+2026-06-06T12:21:42.5776969Z   Downloaded pin-project-lite v0.2.17
+2026-06-06T12:21:42.5836722Z   Downloaded magnus-macros v0.6.0
+2026-06-06T12:21:42.5846748Z   Downloaded jobserver v0.1.34
+2026-06-06T12:21:42.5869054Z   Downloaded getrandom v0.4.2
+2026-06-06T12:21:42.5912860Z   Downloaded ctor v1.0.7
+2026-06-06T12:21:42.5939129Z   Downloaded autocfg v1.5.1
+2026-06-06T12:21:42.5959981Z   Downloaded jni-sys v0.4.1
+2026-06-06T12:21:42.5971555Z   Downloaded glob v0.3.3
+2026-06-06T12:21:42.5987829Z   Downloaded convert_case v0.11.0
+2026-06-06T12:21:42.6011283Z   Downloaded cargo-platform v0.1.9
+2026-06-06T12:21:42.6025007Z   Downloaded errno v0.3.14
+2026-06-06T12:21:42.6041405Z   Downloaded futures-macro v0.3.32
+2026-06-06T12:21:42.6052711Z   Downloaded pyo3 v0.28.3
+2026-06-06T12:21:42.6336057Z   Downloaded itoa v1.0.18
+2026-06-06T12:21:42.6351477Z   Downloaded ext-php-rs-build v0.1.1
+2026-06-06T12:21:42.6359171Z   Downloaded darling_macro v0.23.0
+2026-06-06T12:21:42.6367856Z   Downloaded serde_core v1.0.228
+2026-06-06T12:21:42.6395734Z   Downloaded nohash-hasher v0.2.0
+2026-06-06T12:21:42.6405817Z   Downloaded ident_case v1.0.1
+2026-06-06T12:21:42.6414744Z   Downloaded futures-sink v0.3.32
+2026-06-06T12:21:42.6425016Z   Downloaded futures-io v0.3.32
+2026-06-06T12:21:42.6434911Z   Downloaded anyhow v1.0.102
+2026-06-06T12:21:42.6476344Z   Downloaded smallvec v1.15.1
+2026-06-06T12:21:42.6498496Z   Downloaded jni-sys-macros v0.4.1
+2026-06-06T12:21:42.6506049Z   Downloaded encoding_rs v0.8.35
+2026-06-06T12:21:42.6702243Z   Downloaded fastrand v2.4.1
+2026-06-06T12:21:42.6718030Z   Downloaded shlex v1.3.0
+2026-06-06T12:21:42.6730770Z   Downloaded lazy_static v1.5.0
+2026-06-06T12:21:42.6748650Z   Downloaded jni-sys v0.3.1
+2026-06-06T12:21:42.6759859Z   Downloaded crossbeam-epoch v0.9.18
+2026-06-06T12:21:42.6784962Z   Downloaded unicase v2.9.0
+2026-06-06T12:21:42.6799596Z   Downloaded thiserror-impl v1.0.69
+2026-06-06T12:21:42.6812946Z   Downloaded thiserror v1.0.69
+2026-06-06T12:21:42.6869756Z   Downloaded target-lexicon v0.13.5
+2026-06-06T12:21:42.6885149Z   Downloaded slab v0.4.12
+2026-06-06T12:21:42.6897948Z   Downloaded skeptic v0.13.7
+2026-06-06T12:21:42.6907298Z   Downloaded rustversion v1.0.22
+2026-06-06T12:21:42.6935119Z   Downloaded shell-words v1.1.1
+2026-06-06T12:21:42.6944682Z   Downloaded heck v0.5.0
+2026-06-06T12:21:42.6957978Z   Downloaded error-chain v0.12.4
+2026-06-06T12:21:42.6979147Z   Downloaded same-file v1.0.6
+2026-06-06T12:21:42.6992068Z   Downloaded find-msvc-tools v0.1.9
+2026-06-06T12:21:42.7007818Z   Downloaded rustc-hash v2.1.2
+2026-06-06T12:21:42.7021090Z   Downloaded futures-core v0.3.32
+2026-06-06T12:21:42.7034450Z   Downloaded bytecount v0.6.9
+2026-06-06T12:21:42.7053773Z   Downloaded napi-sys v3.2.1
+2026-06-06T12:21:42.7062320Z   Downloaded cfg-if v1.0.4
+2026-06-06T12:21:42.7075764Z   Downloaded aho-corasick v1.1.4
+2026-06-06T12:21:42.7176338Z   Downloaded linux-raw-sys v0.12.1
+2026-06-06T12:21:42.8227826Z error: package ID specification `modern-colorthief` did not match any packages
+2026-06-06T12:21:42.8324766Z ##[error]Process completed with exit code 101.
+2026-06-06T12:21:42.8443126Z Post job cleanup.
+2026-06-06T12:21:42.9270898Z [command]/usr/bin/git version
+2026-06-06T12:21:42.9307184Z git version 2.54.0
+2026-06-06T12:21:42.9350313Z Temporarily overriding HOME='/home/runner/work/_temp/92148864-3188-4584-a685-fe14b9aba5a7' before making global git config changes
+2026-06-06T12:21:42.9351758Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-06T12:21:42.9356911Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-06T12:21:42.9387218Z Removing SSH command configuration
+2026-06-06T12:21:42.9394094Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-06T12:21:42.9428310Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-06T12:21:42.9678017Z Removing HTTP extra header
+2026-06-06T12:21:42.9683642Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-06T12:21:42.9717677Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-06T12:21:42.9934235Z Removing includeIf entries pointing to credentials config files
+2026-06-06T12:21:42.9940820Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-06T12:21:42.9968334Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-06T12:21:42.9969298Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-06T12:21:42.9969831Z includeif.gitdir:/github/workspace/.git.path
+2026-06-06T12:21:42.9970195Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-06T12:21:42.9977564Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-06T12:21:42.9999790Z /home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0012063Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0047647Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-06T12:21:43.0069271Z /home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0078222Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0108019Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-06-06T12:21:43.0128114Z /github/runner_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0135870Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0167873Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-06T12:21:43.0188986Z /github/runner_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0199064Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config
+2026-06-06T12:21:43.0232965Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-06T12:21:43.0445247Z Removing credentials config '/home/runner/work/_temp/git-credentials-ef25e05e-3ae4-49fd-8107-a487e9fbfeea.config'
+2026-06-06T12:21:43.0581237Z Cleaning up orphan processes

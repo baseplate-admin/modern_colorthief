@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: rustup target add wasm32-unknown-unknown
-      - run: cargo check --target wasm32-unknown-unknown -p colorthief-wasm
-      - run: cargo build --target wasm32-unknown-unknown --release -p colorthief-wasm
-      - run: ls -lh target/wasm32-unknown-unknown/release/colorthief_wasm.wasm
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-wasm
+      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-wasm
+      - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
 
   wasm-pack-build:
     name: wasm-pack build + test
