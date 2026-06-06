@@ -2,30 +2,22 @@ name: Ruby CI
 
 on:
   push:
-    branches:
-      - main
-      - master
-    tags:
-      - '*'
-  pull_request
-  workflow_dispatch
+    branches: [ main, master ]
+    tags: [ '*' ]
+  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  ruby-test:
-    name: Ruby test
+  ruby-build:
+    name: Ruby build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: crates/ruby-bindings
     steps:
       - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
-      - name: Build
-        run: cargo build --release -p colorthief-ruby
-      - name: Verify library
-        run: file target/release/libcolorthief_ruby.so || true
+      - run: cargo build --release -p modern-colorthief-ruby
+      - run: test -f target/release/libmodern_colorthief_ruby.so

@@ -1,0 +1,9 @@
+[package]
+name = "colorthief-core-gpu"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ash = "0.38"
+glow = "0.16"
+rayon = "1.10"

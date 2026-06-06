@@ -1,0 +1,7 @@
+[package]
+name = "colorthief-core-cpu"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+rayon = "1.10"

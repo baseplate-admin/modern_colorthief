@@ -6,6 +6,8 @@ members = [
     "crates/node-bindings",
     "crates/jvm-bindings",
     "crates/ruby-bindings",
+    "crates/python-bindings-gpu",
+    "crates/node-bindings-gpu",
 ]
 resolver = "2"
 

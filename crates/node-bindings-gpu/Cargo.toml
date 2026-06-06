@@ -1,5 +1,5 @@
 [package]
-name = "modern-colorthief-jvm"
+name = "colorthief_node_gpu"
 version.workspace = true
 edition.workspace = true
 
@@ -8,5 +8,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 colorthief-core.workspace = true
-jni = "0.21"
+napi = { version = "3.1", default-features = false }
+ash = "0.38"
 rayon.workspace = true
+
+[build-dependencies]
+napi-build = "2.1"

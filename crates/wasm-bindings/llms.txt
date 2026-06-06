@@ -1,0 +1,22 @@
+# WASM Binding — @modern_colorthief/wasm
+
+Install: `npm install @modern_colorthief/wasm`
+
+## API
+
+```javascript
+import { getPalette, getColor } from '@modern_colorthief/wasm';
+
+const palette = await getPalette(image, colorCount?, quality?);  // number[][]
+const color = await getColor(image, quality?);                   // number[]
+```
+
+## Parameters
+
+- `image`: `string | ArrayBuffer | Uint8Array` — URL, ArrayBuffer, or Uint8Array
+- `colorCount`: `number` — colors to extract (default: 10)
+- `quality`: `number` — sampling quality 1-10 (default: 10)
+
+## Image Decoding
+
+Uses browser Canvas API. WebGPU planned for GPU acceleration.

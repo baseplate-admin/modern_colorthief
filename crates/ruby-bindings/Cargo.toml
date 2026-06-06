@@ -1,13 +1,13 @@
 [package]
-name = "colorthief-ruby"
+name = "modern-colorthief-ruby"
 version.workspace = true
 edition.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
-name = "colorthief_ruby"
+name = "modern_colorthief"
 
 [dependencies]
 colorthief-core.workspace = true
-magnus = { version = "0.6", features = ["error"] }
+magnus = "0.6"
 rayon.workspace = true

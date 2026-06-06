@@ -1,0 +1,154 @@
+# modern_colorthief — Full API Documentation
+
+## Overview
+
+Modern ColorThief extracts dominant colors and color palettes from images.
+Rust core with manual median-cut algorithm and rayon parallelism.
+Bindings for Python, Node.js, WASM, JVM (Java/Kotlin), and Ruby.
+
+## Architecture
+
+- Core algorithm: Manual median-cut with rayon parallel processing
+- Image decoding: Language-native (Pillow, Sharp, Canvas, AWT, image_processing)
+- GPU acceleration: Vulkan Compute (native), WebGPU (WASM)
+- Multi-GPU: Vulkan device groups for scaling across GPUs
+
+## Common API (all bindings)
+
+### getPalette(image, colorCount?, quality?) → Array<[R, G, B]>
+
+Extract a palette of dominant colors from an image.
+
+Parameters:
+- `image` — File path, buffer, or language-specific image object
+- `colorCount` — Number of colors to extract (default: 10)
+- `quality` — Sampling quality 1-10 (default: 10). Higher is faster but less accurate.
+
+Returns: Deduplicated array of [R, G, B] color tuples (0-255).
+
+### getColor(image, quality?) → [R, G, B]
+
+Extract the single dominant color from an image.
+
+Parameters:
+- `image` — File path, buffer, or language-specific image object
+- `quality` — Sampling quality 1-10 (default: 10)
+
+Returns: [R, G, B] color tuple (0-255).
+
+## Python Binding
+
+Install: `pip install modern_colorthief`
+
+```python
+from modern_colorthief import get_palette, get_color
+
+# File path
+palette = get_palette("photo.jpg", color_count=10, quality=10)
+color = get_color("photo.jpg", quality=10)
+
+# Bytes
+with open("photo.jpg", "rb") as f:
+    palette = get_palette(f.read())
+
+# BytesIO
+import io
+palette = get_palette(io.BytesIO(image_data))
+
+# PIL Image
+from PIL import Image
+img = Image.open("photo.jpg")
+palette = get_palette(img)
+```
+
+Image decoding uses Pillow (transparent, auto-imported).
+
+## Node.js Binding
+
+Install: `npm install @modern_colorthief/node`
+
+```typescript
+import { getPalette, getColor } from '@modern_colorthief/node';
+
+// File path
+const palette = await getPalette('photo.jpg', 10, 10);
+const color = await getColor('photo.jpg', 10);
+
+// Buffer
+import { readFileSync } from 'fs';
+const buffer = readFileSync('photo.jpg');
+const palette = await getPalette(buffer);
+```
+
+Image decoding uses Sharp (peer dependency, auto-used).
+
+## WASM Binding
+
+Install: `npm install @modern_colorthief/wasm`
+
+```javascript
+import { getPalette, getColor } from '@modern_colorthief/wasm';
+
+// URL
+const palette = await getPalette('photo.jpg', 10, 10);
+
+// ArrayBuffer
+const response = await fetch('photo.jpg');
+const buffer = await response.arrayBuffer();
+const palette = await getPalette(buffer);
+```
+
+Image decoding uses browser Canvas API. WebGPU planned for GPU acceleration.
+
+## JVM Binding (Java/Kotlin)
+
+Package: `colorthief.Colorthief`
+
+```java
+// Java
+import colorthief.Colorthief;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
+BufferedImage img = ImageIO.read(new File("photo.jpg"));
+byte[] pixels = img.getRGBBytes(); // use ImageConverter or Raster
+byte[][] palette = Colorthief.getPalette(pixels, width, height, 10, 10);
+byte[] color = Colorthief.getColor(pixels, width, height, 10);
+```
+
+```kotlin
+// Kotlin
+import colorthief.Colorthief
+
+val palette = Colorthief.getPalette(pixels, width, height, 10, 10)
+val color = Colorthief.getColor(pixels, width, height, 10)
+```
+
+Tested against Java 26. Android compatible.
+
+## Ruby Binding
+
+```ruby
+require 'modern_colorthief'
+require 'image_processing'
+
+# Using image_processing for decoding
+img = ImageProcessing::MiniMagick.source("photo.jpg").call
+pixels = img.to_rgba_bytes
+width, height = img.dimensions
+
+palette = ModernColorthief.get_palette(pixels, width, height, 10, 10)
+color = ModernColorthief.get_color(pixels, width, height, 10)
+```
+
+## GPU Bindings
+
+GPU-accelerated versions available using Vulkan Compute (cross-vendor: Intel, AMD, NVIDIA).
+Package names: `<language>-bindings-gpu`.
+
+WASM uses WebGPU for GPU acceleration (no Vulkan in browsers).
+
+## Performance
+
+~100x faster than pure Python colorthief. Uses all available CPU cores via rayon.
+Release profile: opt-level=3, fat LTO, strip, panic=abort.

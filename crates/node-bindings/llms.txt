@@ -1,0 +1,26 @@
+# Node.js Binding — @modern_colorthief/node
+
+Install: `npm install @modern_colorthief/node`
+
+## API
+
+```typescript
+import { getPalette, getColor } from '@modern_colorthief/node';
+
+const palette = await getPalette(image, colorCount?, quality?);  // number[][]
+const color = await getColor(image, quality?);                   // number[]
+```
+
+## Parameters
+
+- `image`: `string | Buffer` — file path or image buffer
+- `colorCount`: `number` — colors to extract (default: 10)
+- `quality`: `number` — sampling quality 1-10 (default: 10)
+
+## Image Decoding
+
+Uses Sharp (peer dependency). Auto-applied in JS layer.
+
+## Runtime Support
+
+Tested against Node.js, Deno, Bun.

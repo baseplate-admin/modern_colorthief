@@ -3,5 +3,11 @@ name = "colorthief-core"
 version.workspace = true
 edition.workspace = true
 
+[features]
+default = ["cpu"]
+cpu = ["dep:colorthief-core-cpu"]
+gpu = ["dep:colorthief-core-gpu"]
+
 [dependencies]
-rayon = "1.10"
+colorthief-core-cpu = { workspace = true, optional = true }
+colorthief-core-gpu = { workspace = true, optional = true }

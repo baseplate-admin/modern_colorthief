@@ -1,0 +1,30 @@
+# Python Binding — modern_colorthief
+
+Install: `pip install modern_colorthief`
+
+## API
+
+```python
+from modern_colorthief import get_palette, get_color
+
+palette = get_palette(image, color_count=10, quality=10)  # list[tuple[int,int,int]]
+color = get_color(image, quality=10)                      # tuple[int,int,int]
+```
+
+## Parameters
+
+- `image`: `str | bytes | io.BytesIO | PIL.Image.Image` — file path, raw bytes, BytesIO, or PIL Image
+- `color_count`: `int` — number of colors to extract (default: 10)
+- `quality`: `int` — sampling quality 1-10 (default: 10)
+
+## Image Decoding
+
+Uses Pillow (transparent, auto-imported in Python layer).
+
+## CLI
+
+```bash
+modern-colorthief photo.jpg              # dominant color as hex
+modern-colorthief photo.jpg --palette    # palette as hex lines
+modern-colorthief photo.jpg --count 5    # limit palette size
+```
