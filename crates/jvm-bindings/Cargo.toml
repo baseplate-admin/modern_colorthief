@@ -7,6 +7,6 @@ edition.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
-colorthief-core.workspace = true
+modern-colorthief-core.workspace = true
 jni = "0.21"
 rayon.workspace = true

@@ -1,6 +1,8 @@
 [workspace]
 members = [
     "crates/core",
+    "crates/core_cpu",
+    "crates/core_gpu",
     "crates/python-bindings",
     "crates/wasm-bindings",
     "crates/node-bindings",
@@ -16,7 +18,9 @@ version = "0.3.0"
 edition = "2024"
 
 [workspace.dependencies]
-colorthief-core = { path = "crates/core" }
+modern-colorthief-core = { path = "crates/core" }
+modern-colorthief-core-cpu = { path = "crates/core_cpu" }
+modern-colorthief-core-gpu = { path = "crates/core_gpu" }
 rayon = "1.10"
 
 [profile.release.package."*"]

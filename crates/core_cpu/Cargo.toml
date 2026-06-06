@@ -1,5 +1,5 @@
 [package]
-name = "colorthief-core-cpu"
+name = "modern-colorthief-core-cpu"
 version.workspace = true
 edition.workspace = true
 

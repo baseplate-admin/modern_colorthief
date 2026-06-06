@@ -1,4 +1,4 @@
-use colorthief_core::extract_palette_from_buffer;
+use modern_colorthief_core::extract_palette_from_buffer;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 

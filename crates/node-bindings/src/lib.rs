@@ -20,9 +20,15 @@ pub fn get_palette(
     let color_count = color_count.unwrap_or(10);
     let quality = quality.unwrap_or(10);
 
-    colorthief_core::extract_palette_from_buffer(&pixels, width, height, color_count, quality)
-        .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-        .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e))
+    modern_colorthief_core::extract_palette_from_buffer(
+        &pixels,
+        width,
+        height,
+        color_count,
+        quality,
+    )
+    .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
+    .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e))
 }
 
 /// Extract the dominant color from raw RGBA pixel data.
@@ -43,7 +49,7 @@ pub fn get_color(
     let quality = quality.unwrap_or(10);
 
     let palette =
-        colorthief_core::extract_palette_from_buffer(&pixels, width, height, 5, quality)
+        modern_colorthief_core::extract_palette_from_buffer(&pixels, width, height, 5, quality)
             .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e))?;
 
     palette

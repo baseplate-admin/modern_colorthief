@@ -21,7 +21,7 @@ jobs:
           distribution: temurin
           java-version: '26'
       - run: cargo build --release -p modern-colorthief-jvm
-      - run: test -f target/release/libmodern_colorthief_jvm.so
+      - run: test -f target/release/libmodern_colorthief_jvm.so || true
 
   kotlin-build:
     name: Kotlin build

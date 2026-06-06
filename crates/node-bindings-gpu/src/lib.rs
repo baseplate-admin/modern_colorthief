@@ -11,7 +11,7 @@ pub fn get_palette_gpu(
     quality: Option<u8>,
 ) -> napi::Result<Vec<Vec<u8>>> {
     let pixels = pixels.to_vec();
-    colorthief_core::extract_palette_from_buffer(
+    modern_colorthief_core_gpu::extract_palette_from_buffer(
         &pixels,
         width,
         height,
@@ -31,9 +31,14 @@ pub fn get_color_gpu(
     quality: Option<u8>,
 ) -> napi::Result<Vec<u8>> {
     let pixels = pixels.to_vec();
-    let palette =
-        colorthief_core::extract_palette_from_buffer(&pixels, width, height, 5, quality.unwrap_or(10))
-            .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e))?;
+    let palette = modern_colorthief_core_gpu::extract_palette_from_buffer(
+        &pixels,
+        width,
+        height,
+        5,
+        quality.unwrap_or(10),
+    )
+    .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e))?;
 
     palette
         .first()

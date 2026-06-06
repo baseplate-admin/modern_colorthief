@@ -17,10 +17,13 @@ jobs:
   core-test:
     name: Core tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        crate: [modern-colorthief-core, modern-colorthief-core-cpu, modern-colorthief-core-gpu]
     steps:
       - uses: actions/checkout@v6
       - name: Run core tests
-        run: cargo test -p colorthief-core
+        run: cargo test -p ${{ matrix.crate }}
 
   linux:
     runs-on: ${{ matrix.platform.runner }}

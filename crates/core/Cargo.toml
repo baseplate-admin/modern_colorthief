@@ -1,13 +1,13 @@
 [package]
-name = "colorthief-core"
+name = "modern-colorthief-core"
 version.workspace = true
 edition.workspace = true
 
 [features]
 default = ["cpu"]
-cpu = ["dep:colorthief-core-cpu"]
-gpu = ["dep:colorthief-core-gpu"]
+cpu = ["dep:modern-colorthief-core-cpu"]
+gpu = ["dep:modern-colorthief-core-gpu"]
 
 [dependencies]
-colorthief-core-cpu = { workspace = true, optional = true }
-colorthief-core-gpu = { workspace = true, optional = true }
+modern-colorthief-core-cpu = { workspace = true, optional = true }
+modern-colorthief-core-gpu = { workspace = true, optional = true }
