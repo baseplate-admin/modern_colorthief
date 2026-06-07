@@ -23,8 +23,8 @@ jobs:
       - run: test -f target/release/libmodern_colorthief_ruby.so
       - working-directory: crates/ruby-bindings
         run: |
-          bundle install
-          RUBYLIB=target/release:$RUBYLIB bundle exec rspec spec/
+          bundle install --path vendor/bundle
+          RUBYLIB=../../../target/release:$RUBYLIB bundle exec rspec spec/
 
   ruby-gpu-build:
     name: Ruby GPU build
@@ -38,5 +38,5 @@ jobs:
       - run: test -f target/release/libmodern_colorthief_ruby_gpu.so
       - working-directory: crates/ruby-bindings-gpu
         run: |
-          bundle install
-          RUBYLIB=target/release:$RUBYLIB bundle exec rspec spec/
+          bundle install --path vendor/bundle
+          RUBYLIB=../../../target/release:$RUBYLIB bundle exec rspec spec/
