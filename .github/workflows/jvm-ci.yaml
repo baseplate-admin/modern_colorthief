@@ -24,6 +24,10 @@ jobs:
       - run: test -f target/release/libmodern_colorthief_jvm.so
       - name: Copy native lib
         run: cp target/release/libmodern_colorthief_jvm.so /tmp/
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Generate Gradle wrapper
+        working-directory: crates/jvm-bindings/tests
+        run: gradle wrapper
       - name: Run JUnit tests
         working-directory: crates/jvm-bindings/tests
         run: |
