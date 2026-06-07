@@ -21,7 +21,7 @@ jobs:
           node-version: 22
       - working-directory: crates/node-bindings
         run: npm install && npx napi build --platform --release
-      - uses: actions/upload-artifact@v8
+      - uses: actions/upload-artifact@v4
         with:
           name: node-native
           path: crates/node-bindings/artifacts/*
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
         with:
           name: node-native
           path: crates/node-bindings/artifacts
@@ -51,7 +51,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
         with:
           name: node-native
           path: crates/node-bindings/artifacts
@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
         with:
           name: node-native
           path: crates/node-bindings/artifacts
@@ -85,7 +85,7 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
         with:
           name: node-native
           path: crates/node-bindings/artifacts
