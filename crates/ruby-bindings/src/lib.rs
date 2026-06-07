@@ -1,4 +1,4 @@
-use magnus::{function, prelude::*, module, Error, Rational};
+use magnus::{function, prelude::*, module, Error};
 
 /// Extract a palette of dominant colors from raw RGBA pixel data.
 ///

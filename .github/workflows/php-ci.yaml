@@ -2,9 +2,12 @@ name: PHP CI
 
 on:
   push:
-    branches: [master]
+    branches: [main, master]
   pull_request:
-    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build-php:

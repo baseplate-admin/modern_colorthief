@@ -22,10 +22,11 @@ jobs:
           java-version: '26'
       - run: cargo build --release -p modern-colorthief-jvm
       - run: test -f target/release/libmodern_colorthief_jvm.so
+      - name: Copy native lib
+        run: cp target/release/libmodern_colorthief_jvm.so /tmp/
       - name: Run JUnit tests
         working-directory: crates/jvm-bindings/tests
         run: |
-          cp ../../../../target/release/libmodern_colorthief_jvm.so /tmp/
           export JAVA_TOOL_OPTIONS="-Djava.library.path=/tmp"
           ./gradlew test
 
