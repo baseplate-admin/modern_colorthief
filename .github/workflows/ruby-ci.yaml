@@ -24,10 +24,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libclang-dev ruby-dev
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo build --release -p modern-colorthief-ruby
+      - name: Build Ruby bindings
+        id: build
+        run: |
+          OUTPUT=$(cargo build --release -p modern-colorthief-ruby 2>&1)
+          RC=$?
+          echo "exit_code=$RC" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" > /tmp/ruby.log
+          echo "$OUTPUT"
+          if [ $RC -ne 0 ]; then exit 1; fi
+        continue-on-error: true
+      - name: Show build error
+        if: steps.build.outputs.exit_code != '0'
+        run: |
+          echo "::error::Ruby build failed with exit code ${{ steps.build.outputs.exit_code }}"
+          head -100 /tmp/ruby.log | while IFS= read -r line; do echo "::error title=Ruby build::$line"; done
+          exit 1
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f target/release/libmodern_colorthief_ruby.so
+      - run: test -f target/release/libmodern_colorthief.so
       - working-directory: crates/ruby-bindings
         run: |
           bundle install --path vendor/bundle
@@ -46,10 +61,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libclang-dev ruby-dev
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo build --release -p modern-colorthief-ruby-gpu
+      - name: Build Ruby GPU bindings
+        id: build
+        run: |
+          OUTPUT=$(cargo build --release -p modern-colorthief-ruby-gpu 2>&1)
+          RC=$?
+          echo "exit_code=$RC" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" > /tmp/ruby_gpu.log
+          echo "$OUTPUT"
+          if [ $RC -ne 0 ]; then exit 1; fi
+        continue-on-error: true
+      - name: Show build error
+        if: steps.build.outputs.exit_code != '0'
+        run: |
+          echo "::error::Ruby GPU build failed with exit code ${{ steps.build.outputs.exit_code }}"
+          head -100 /tmp/ruby_gpu.log | while IFS= read -r line; do echo "::error title=Ruby GPU build::$line"; done
+          exit 1
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f target/release/libmodern_colorthief_ruby_gpu.so
+      - run: test -f target/release/libmodern_colorthief_gpu.so
       - working-directory: crates/ruby-bindings-gpu
         run: |
           bundle install --path vendor/bundle

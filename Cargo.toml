@@ -48,7 +48,8 @@ web-sys = { version = "0.3", features = ["Window", "Document", "HtmlImageElement
 jni = "0.21"
 
 # Ruby bindings
-magnus = "0.6"
+magnus = "0.8"
+rb-sys = "0.9"
 
 # PHP bindings
 ext-php-rs = "0.15"
@@ -67,3 +68,4 @@ codegen-units = 1
 lto = "fat"
 opt-level = 3
 strip = true
+
