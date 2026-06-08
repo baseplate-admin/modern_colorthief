@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v6
       - run: rustup target add wasm32-unknown-unknown
       - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-wasm
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-wasm
       - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
 
@@ -26,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -44,6 +47,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-node@v6
         with:
           node-version: 22

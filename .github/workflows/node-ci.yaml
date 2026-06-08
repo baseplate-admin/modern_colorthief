@@ -21,6 +21,8 @@ jobs:
           node-version: 22
       - working-directory: crates/node-bindings
         run: npm install && npx napi build --platform --release
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - uses: actions/upload-artifact@v4
         with:
           name: node-native
@@ -56,6 +58,8 @@ jobs:
           name: node-native
           path: crates/node-bindings/artifacts
       - working-directory: crates/node-bindings
+        run: npm install
+      - working-directory: crates/node-bindings
         run: deno test --allow-read --allow-env --allow-net tests/
 
   bun-test:
@@ -69,6 +73,8 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
+      - working-directory: crates/node-bindings
+        run: npm install
       - working-directory: crates/node-bindings
         run: bun test tests/
 

@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-php@v2
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
       - uses: dtolnay/rust-toolchain@stable
@@ -25,9 +25,11 @@ jobs:
       - name: Verify PHP is available
         run: php --version
       - run: cargo build --release -p modern-colorthief-php
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Verify shared library exists
         run: |
-          if [ -f target/release/libmodern_colorthief_php.so ]; then
+          if [ -f target/release/libmodern_colorthief.so ]; then
             echo "Found .so file"
           elif [ -f target/release/modern_colorthief_php.dll ]; then
             echo "Found .dll file"

@@ -21,6 +21,8 @@ jobs:
           distribution: temurin
           java-version: '26'
       - run: cargo build --release -p modern-colorthief-jvm
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - run: test -f target/release/libmodern_colorthief_jvm.so
       - name: Copy native lib
         run: cp target/release/libmodern_colorthief_jvm.so /tmp/
