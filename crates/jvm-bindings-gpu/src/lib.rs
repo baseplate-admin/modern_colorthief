@@ -16,7 +16,7 @@ pub extern "system" fn Java_modern_colorthief_ColorthiefGpu_getPalette<'a>(
     match extract_palette_jvm(&mut env, &pixels, width as u32, height as u32, color_count as u8, quality as u8) {
         Ok(result) => result,
         Err(e) => {
-            let _ = env.throw_new("java/lang/RuntimeException", format!("{}", e));
+            let _ = env.throw_new("java/lang/RuntimeException", e.to_string());
             JObject::null()
         }
     }
@@ -35,7 +35,7 @@ pub extern "system" fn Java_modern_colorthief_ColorthiefGpu_getColor<'a>(
     match extract_color_jvm(&mut env, &pixels, width as u32, height as u32, quality as u8) {
         Ok(result) => result,
         Err(e) => {
-            let _ = env.throw_new("java/lang/RuntimeException", format!("{}", e));
+            let _ = env.throw_new("java/lang/RuntimeException", e.to_string());
             JObject::null()
         }
     }

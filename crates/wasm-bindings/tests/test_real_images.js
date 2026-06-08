@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { readFileSync } from 'fs';
-import path from 'path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -8,7 +11,7 @@ import path from 'path';
 
 /** Resolve the absolute path to a test image file. */
 function testImagePath(filename) {
-    return path.join(__dirname, filename);
+    return join(__dirname, filename);
 }
 
 /** Read a test image file as a Uint8Array. */

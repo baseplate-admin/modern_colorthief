@@ -3,6 +3,12 @@ use modern_colorthief_core::PaletteExtractor;
 /// GPU backend that implements the shared PaletteExtractor trait.
 pub struct GpuExtractor;
 
+impl Default for GpuExtractor {
+    fn default() -> Self {
+        GpuExtractor
+    }
+}
+
 impl GpuExtractor {
     pub fn new() -> Self {
         GpuExtractor

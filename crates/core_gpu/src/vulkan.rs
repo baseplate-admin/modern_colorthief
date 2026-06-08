@@ -23,6 +23,12 @@ static SELECTED_GPUS: std::sync::OnceLock<Option<Vec<usize>>> = std::sync::OnceL
 /// Vulkan compute backend implementation.
 pub struct VulkanBackend;
 
+impl Default for VulkanBackend {
+    fn default() -> Self {
+        VulkanBackend
+    }
+}
+
 impl VulkanBackend {
     pub fn new() -> Self {
         VulkanBackend
@@ -72,9 +78,9 @@ impl VulkanBackend {
         {
             let vulkan_dll = std::path::Path::new("vulkan-1.dll");
             if vulkan_dll.exists() { return true; }
-            std::env::var("SystemRoot").ok().map_or(false, |r| {
+            std::env::var("SystemRoot").is_ok_and(|r| {
                 std::path::Path::new(&format!("{}\\System32\\vulkan-1.dll", r)).exists()
-            }) || std::env::var("VULKAN_SDK").ok().map_or(false, |sdk| {
+            }) || std::env::var("VULKAN_SDK").is_ok_and(|sdk| {
                 std::path::Path::new(&format!("{}\\Bin\\vulkan-1.dll", sdk)).exists()
             })
         }
@@ -237,7 +243,7 @@ pub fn gpu_extract(
     let gpu_indices = SELECTED_GPUS
         .get()
         .and_then(|v| v.as_ref())
-        .map(|v| v.clone())
+        .cloned()
         .unwrap_or_else(|| (0..gpus.len()).collect());
 
     if gpu_indices.is_empty() {
@@ -250,7 +256,7 @@ pub fn gpu_extract(
 
     // Round-robin chunk distribution across GPUs
     let chunk_count = (total_pixels as f64).sqrt().ceil() as usize * gpu_count;
-    let pixels_per_chunk = (total_pixels as usize + chunk_count - 1) / chunk_count.max(1);
+    let pixels_per_chunk = (total_pixels + chunk_count - 1) / chunk_count.max(1);
 
     let mut chunk_colors: Vec<Vec<(u8, u8, u8)>> = vec![Vec::new(); chunk_count];
 

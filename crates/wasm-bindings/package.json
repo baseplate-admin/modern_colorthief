@@ -20,6 +20,7 @@
     "devDependencies": {
         "@types/node": "^24.10.1",
         "happy-dom": "^17.0.0",
+        "jsdom": "^26.1.0",
         "rimraf": "^6.1.2",
         "vite-plugin-wasm": "^3.5.0",
         "vite-tsconfig-paths": "^5.1.4",

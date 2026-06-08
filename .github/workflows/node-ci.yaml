@@ -20,13 +20,13 @@ jobs:
         with:
           node-version: 22
       - working-directory: crates/node-bindings
-        run: npm install && npx napi build --platform --release
+        run: npm install && npx napi build --platform --release --output-dir artifacts
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - uses: actions/upload-artifact@v4
         with:
           name: node-native
-          path: crates/node-bindings/artifacts/*
+          path: crates/node-bindings/artifacts/*.node
 
   node-test:
     name: Node.js 22
