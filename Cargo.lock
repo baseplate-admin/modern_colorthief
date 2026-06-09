@@ -470,7 +470,8 @@ dependencies = [
 [[package]]
 name = "ext-php-rs"
 version = "0.15.15"
-source = "git+https://github.com/extphprs/ext-php-rs#c49bd9157c7ac1af91a902fd566ea617187ceb6e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "abe62f25cd053f5f95dc7bbf94e5b41818ea3cf39b36cc25de8ca6b4de68a0eb"
 dependencies = [
  "anyhow",
  "bitflags",
@@ -511,7 +512,8 @@ dependencies = [
 [[package]]
 name = "ext-php-rs-build"
 version = "0.1.1"
-source = "git+https://github.com/extphprs/ext-php-rs#c49bd9157c7ac1af91a902fd566ea617187ceb6e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "561bce8a6312a6182c078cd987d8d9cb6bf9292a35817cfd009ea0bffa794f5f"
 dependencies = [
  "anyhow",
 ]
@@ -519,7 +521,8 @@ dependencies = [
 [[package]]
 name = "ext-php-rs-derive"
 version = "0.11.14"
-source = "git+https://github.com/extphprs/ext-php-rs#c49bd9157c7ac1af91a902fd566ea617187ceb6e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f57a075f878ad51bcc56745fb21efe601429a509204f8a385bbe526566597320"
 dependencies = [
  "convert_case",
  "darling",
@@ -1123,7 +1126,6 @@ dependencies = [
  "magnus",
  "modern-colorthief-core-cpu",
  "rayon",
- "rb-sys",
 ]
 
 [[package]]
@@ -1132,7 +1134,6 @@ version = "0.3.0"
 dependencies = [
  "magnus",
  "modern-colorthief-core-gpu",
- "rb-sys",
 ]
 
 [[package]]
@@ -1524,7 +1525,8 @@ dependencies = [
 [[package]]
 name = "rb-sys"
 version = "0.9.128"
-source = "git+https://github.com/oxidize-rb/rb-sys#94b205cd8425ebdc09d5682f14503b3f3756fa9b"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "45ca28513560e56cfb79a62b1fce363c73af170a182024ce880c77ee9429920a"
 dependencies = [
  "rb-sys-build",
 ]
@@ -1532,7 +1534,8 @@ dependencies = [
 [[package]]
 name = "rb-sys-build"
 version = "0.9.128"
-source = "git+https://github.com/oxidize-rb/rb-sys#94b205cd8425ebdc09d5682f14503b3f3756fa9b"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce04b2c55eff3a21aaa623fcc655d94373238e72cac6b3e1a3641ff31649f99a"
 dependencies = [
  "bindgen",
  "lazy_static",
