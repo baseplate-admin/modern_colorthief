@@ -1,0 +1,138 @@
+﻿2026-06-09T12:05:46.7394980Z ##[group]Run npm install --legacy-peer-deps && npm run build && npx vitest run
+2026-06-09T12:05:46.7395732Z [36;1mnpm install --legacy-peer-deps && npm run build && npx vitest run[0m
+2026-06-09T12:05:46.7424531Z shell: /usr/bin/bash -e {0}
+2026-06-09T12:05:46.7424902Z ##[endgroup]
+2026-06-09T12:05:47.5194530Z npm warn reify invalid or damaged lockfile detected
+2026-06-09T12:05:47.5195292Z npm warn reify please re-try this operation once it completes
+2026-06-09T12:05:47.5195798Z npm warn reify so that the damage can be corrected, or perform
+2026-06-09T12:05:47.5196364Z npm warn reify a fresh install with no lockfile if the problem persists.
+2026-06-09T12:05:50.1772753Z 
+2026-06-09T12:05:50.1773785Z added 147 packages, and audited 148 packages in 3s
+2026-06-09T12:05:50.1774130Z 
+2026-06-09T12:05:50.1774472Z 38 packages are looking for funding
+2026-06-09T12:05:50.1774940Z   run `npm fund` for details
+2026-06-09T12:05:50.1785746Z 
+2026-06-09T12:05:50.1786050Z found 0 vulnerabilities
+2026-06-09T12:05:50.2864702Z 
+2026-06-09T12:05:50.2865612Z > @modern_colorthief/native@0.3.0 build
+2026-06-09T12:05:50.2866314Z > tsdown
+2026-06-09T12:05:50.2866549Z 
+2026-06-09T12:05:50.3803329Z [34mℹ[39m [34mtsdown v0.22.2[39m powered by [38;2;255;126;23mrolldown v1.1.0[39m
+2026-06-09T12:05:50.4553419Z [34mℹ[39m config file: [4m/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tsdown.config.ts[24m 
+2026-06-09T12:05:50.4579270Z [34mℹ[39m entry: [34mindex.ts, native.ts[39m
+2026-06-09T12:05:50.4580547Z [34mℹ[39m target: [34mnode20[39m
+2026-06-09T12:05:50.4582548Z [34mℹ[39m tsconfig: [34mtsconfig.json[39m
+2026-06-09T12:05:50.4591417Z [34mℹ[39m Build start
+2026-06-09T12:05:51.6300987Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mindex.cjs[22m   [2m0.98 kB[22m [2m│ gzip: 0.53 kB[22m
+2026-06-09T12:05:51.6302495Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mnative.cjs[22m  [2m0.88 kB[22m [2m│ gzip: 0.50 kB[22m
+2026-06-09T12:05:51.6303494Z [34mℹ[39m [33m[CJS][39m 2 files, total: 1.85 kB
+2026-06-09T12:05:51.6447885Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mindex.d.cts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:51.6448859Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mnative.d.cts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:51.6449819Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mindex.d.cts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T12:05:51.6450695Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mnative.d.cts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T12:05:51.6451334Z [34mℹ[39m [33m[CJS][39m 4 files, total: 1.55 kB
+2026-06-09T12:05:51.6503416Z [32m✔[39m Build complete in [32m1187ms[39m
+2026-06-09T12:05:51.6517428Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mnative.mjs[22m        [2m0.77 kB[22m [2m│ gzip: 0.46 kB[22m
+2026-06-09T12:05:51.6518415Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mindex.mjs[22m         [2m0.43 kB[22m [2m│ gzip: 0.27 kB[22m
+2026-06-09T12:05:51.6519632Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.mjs.map    [2m2.43 kB[22m [2m│ gzip: 1.04 kB[22m
+2026-06-09T12:05:51.6520483Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.mjs.map     [2m1.77 kB[22m [2m│ gzip: 0.65 kB[22m
+2026-06-09T12:05:51.6521208Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.d.mts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:51.6522093Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.d.mts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:51.6523171Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mindex.d.mts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T12:05:51.6524282Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mnative.d.mts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T12:05:51.6525028Z [34mℹ[39m [34m[ESM][39m 8 files, total: 6.94 kB
+2026-06-09T12:05:51.6525476Z [32m✔[39m Build complete in [32m1189ms[39m
+2026-06-09T12:05:52.1887241Z 
+2026-06-09T12:05:52.1891143Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.8 [39m[90m/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings[39m
+2026-06-09T12:05:52.3848115Z 
+2026-06-09T12:05:52.3849348Z  [31m❯[39m tests/test_properties.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.3998284Z  [31m❯[39m tests/test_edge_cases.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.4015858Z  [31m❯[39m tests/test_errors.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.5621339Z  [31m❯[39m tests/test_concurrent.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.5649872Z  [31m❯[39m tests/test_input_types.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.5893439Z  [31m❯[39m tests/test_api.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.7001764Z  [31m❯[39m tests/test_helper.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.7084772Z  [31m❯[39m tests/test_deduplication.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T12:05:52.7110597Z 
+2026-06-09T12:05:52.7111570Z [31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+2026-06-09T12:05:52.7112063Z 
+2026-06-09T12:05:52.7117292Z [41m[1m FAIL [22m[49m tests/test_api.ts[2m [ tests/test_api.ts ][22m
+2026-06-09T12:05:52.7118716Z [41m[1m FAIL [22m[49m tests/test_concurrent.ts[2m [ tests/test_concurrent.ts ][22m
+2026-06-09T12:05:52.7120272Z [41m[1m FAIL [22m[49m tests/test_deduplication.ts[2m [ tests/test_deduplication.ts ][22m
+2026-06-09T12:05:52.7121755Z [41m[1m FAIL [22m[49m tests/test_edge_cases.ts[2m [ tests/test_edge_cases.ts ][22m
+2026-06-09T12:05:52.7123162Z [41m[1m FAIL [22m[49m tests/test_errors.ts[2m [ tests/test_errors.ts ][22m
+2026-06-09T12:05:52.7124626Z [41m[1m FAIL [22m[49m tests/test_input_types.ts[2m [ tests/test_input_types.ts ][22m
+2026-06-09T12:05:52.7126284Z [41m[1m FAIL [22m[49m tests/test_properties.ts[2m [ tests/test_properties.ts ][22m
+2026-06-09T12:05:52.7138534Z [31m[1mError[22m: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node[39m
+2026-06-09T12:05:52.7148468Z [36m [2m❯[22m resolveNativePath native.ts:[2m37:11[22m[39m
+2026-06-09T12:05:52.7162837Z     [90m 35|[39m         }
+2026-06-09T12:05:52.7163636Z     [90m 36|[39m     }
+2026-06-09T12:05:52.7164896Z     [90m 37|[39m     throw new Error(`Cannot find native binding ${NAME}. Searched: ${c…
+2026-06-09T12:05:52.7166400Z     [90m   |[39m           [31m^[39m
+2026-06-09T12:05:52.7167467Z     [90m 38|[39m }
+2026-06-09T12:05:52.7167908Z     [90m 39|[39m
+2026-06-09T12:05:52.7168490Z [90m [2m❯[22m native.ts:[2m40:24[22m[39m
+2026-06-09T12:05:52.7169148Z [90m [2m❯[22m index.ts:[2m1:1[22m[39m
+2026-06-09T12:05:52.7169470Z 
+2026-06-09T12:05:52.7169864Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+2026-06-09T12:05:52.7170184Z 
+2026-06-09T12:05:52.7170768Z [41m[1m FAIL [22m[49m tests/test_helper.ts[2m [ tests/test_helper.ts ][22m
+2026-06-09T12:05:52.7173004Z [31m[1mError[22m: No test suite found in file /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_helper.ts[39m
+2026-06-09T12:05:52.7174311Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+2026-06-09T12:05:52.7174835Z 
+2026-06-09T12:05:52.7174892Z 
+2026-06-09T12:05:52.7175826Z [2m Test Files [22m [1m[31m8 failed[39m[22m[90m (8)[39m
+2026-06-09T12:05:52.7176566Z [2m      Tests [22m [2mno tests[22m
+2026-06-09T12:05:52.7177202Z [2m   Start at [22m 12:05:52
+2026-06-09T12:05:52.7178325Z [2m   Duration [22m 513ms[2m (transform 126ms, setup 0ms, import 10ms, tests 0ms, environment 1ms)[22m
+2026-06-09T12:05:52.7178993Z 
+2026-06-09T12:05:52.7188325Z 
+2026-06-09T12:05:52.7233881Z ##[error]Error: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node
+ ❯ resolveNativePath native.ts:37:11
+ ❯ native.ts:40:24
+ ❯ index.ts:1:1
+
+
+2026-06-09T12:05:52.7255144Z 
+2026-06-09T12:05:52.7268870Z ##[error]Error: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node
+ ❯ resolveNativePath native.ts:37:11
+ ❯ native.ts:40:24
+ ❯ index.ts:1:1
+
+
+2026-06-09T12:05:52.7273883Z 
+2026-06-09T12:05:52.7283089Z ##[error]Error: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node
+ ❯ resolveNativePath native.ts:37:11
+ ❯ native.ts:40:24
+ ❯ index.ts:1:1
+
+
+2026-06-09T12:05:52.7288553Z 
+2026-06-09T12:05:52.7297531Z ##[error]Error: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node
+ ❯ resolveNativePath native.ts:37:11
+ ❯ native.ts:40:24
+ ❯ index.ts:1:1
+
+
+2026-06-09T12:05:52.7302273Z 
+2026-06-09T12:05:52.7311268Z ##[error]Error: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node
+ ❯ resolveNativePath native.ts:37:11
+ ❯ native.ts:40:24
+ ❯ index.ts:1:1
+
+
+2026-06-09T12:05:52.7316247Z 
+2026-06-09T12:05:52.7325207Z ##[error]Error: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node
+ ❯ resolveNativePath native.ts:37:11
+ ❯ native.ts:40:24
+ ❯ index.ts:1:1
+
+
+2026-06-09T12:05:52.7330013Z 
+2026-06-09T12:05:52.7338897Z ##[error]Error: Cannot find native binding modern_colorthief. Searched: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/crates/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/artifacts/modern_colorthief.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief-gnu-x64-linux.node, /home/runner/work/modern_colorthief/modern_colorthief/modern_colorthief.node
+ ❯ resolveNativePath native.ts:37:11
+ ❯ native.ts:40:24
+ ❯ index.ts:1:1
+
+
+2026-06-09T12:05:52.7602652Z ##[error]Process completed with exit code 1.

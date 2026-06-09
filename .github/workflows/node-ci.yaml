@@ -61,7 +61,7 @@ jobs:
       - working-directory: crates/node-bindings
         run: npm install && npm run build
       - working-directory: crates/node-bindings
-        run: deno test --allow-read --allow-env --allow-net --include="test_" tests/
+        run: deno test --allow-read --allow-env --allow-net "tests/test_*.ts"
 
   bun-test:
     name: Bun
@@ -77,7 +77,7 @@ jobs:
       - working-directory: crates/node-bindings
         run: npm install && npm run build
       - working-directory: crates/node-bindings
-        run: bun test tests/test_*.ts -- --timeout 30000
+        run: bun test ./tests/ --glob='test_*' -- --timeout 30000
 
   publish:
     name: Publish to npm

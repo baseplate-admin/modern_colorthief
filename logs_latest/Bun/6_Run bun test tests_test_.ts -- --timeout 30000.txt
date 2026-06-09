@@ -1,0 +1,14 @@
+﻿2026-06-09T12:05:54.1933475Z ##[group]Run bun test tests/test_*.ts -- --timeout 30000
+2026-06-09T12:05:54.1933905Z [36;1mbun test tests/test_*.ts -- --timeout 30000[0m
+2026-06-09T12:05:54.1949785Z shell: /usr/bin/bash -e {0}
+2026-06-09T12:05:54.1950077Z ##[endgroup]
+2026-06-09T12:05:54.1996312Z bun test v1.3.14 (0d9b296a)
+2026-06-09T12:05:54.2071051Z The following filters did not match any test files:
+2026-06-09T12:05:54.2071955Z  tests/test_api.ts tests/test_concurrent.ts tests/test_deduplication.ts tests/test_edge_cases.ts tests/test_errors.ts tests/test_helper.ts tests/test_input_types.ts tests/test_properties.ts --timeout 30000
+2026-06-09T12:05:54.2072709Z 43 files were searched [7.00ms]
+2026-06-09T12:05:54.2072899Z 
+2026-06-09T12:05:54.2073131Z note: Tests need ".test", "_test_", ".spec" or "_spec_" in the filename (ex: "MyApp.test.ts")
+2026-06-09T12:05:54.2073705Z note: To treat the "tests/test_api.ts" filter as a path, run "bun test ./tests/test_api.ts"
+2026-06-09T12:05:54.2074029Z 
+2026-06-09T12:05:54.2074195Z Learn more about bun test: https://bun.com/docs/cli/test
+2026-06-09T12:05:54.2089151Z ##[error]Process completed with exit code 1.

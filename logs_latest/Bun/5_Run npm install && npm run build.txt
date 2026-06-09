@@ -1,0 +1,44 @@
+﻿2026-06-09T12:05:48.9437363Z ##[group]Run npm install && npm run build
+2026-06-09T12:05:48.9437802Z [36;1mnpm install && npm run build[0m
+2026-06-09T12:05:48.9456120Z shell: /usr/bin/bash -e {0}
+2026-06-09T12:05:48.9456414Z ##[endgroup]
+2026-06-09T12:05:49.8952576Z npm warn reify invalid or damaged lockfile detected
+2026-06-09T12:05:49.8953400Z npm warn reify please re-try this operation once it completes
+2026-06-09T12:05:49.8954153Z npm warn reify so that the damage can be corrected, or perform
+2026-06-09T12:05:49.8954914Z npm warn reify a fresh install with no lockfile if the problem persists.
+2026-06-09T12:05:52.5549192Z 
+2026-06-09T12:05:52.5549860Z added 153 packages, and audited 154 packages in 3s
+2026-06-09T12:05:52.5550155Z 
+2026-06-09T12:05:52.5550395Z 38 packages are looking for funding
+2026-06-09T12:05:52.5550774Z   run `npm fund` for details
+2026-06-09T12:05:52.5558033Z 
+2026-06-09T12:05:52.5558483Z found 0 vulnerabilities
+2026-06-09T12:05:52.6682788Z 
+2026-06-09T12:05:52.6683495Z > @modern_colorthief/native@0.3.0 build
+2026-06-09T12:05:52.6684204Z > tsdown
+2026-06-09T12:05:52.6684387Z 
+2026-06-09T12:05:52.8377433Z [34mℹ[39m [34mtsdown v0.22.2[39m powered by [38;2;255;126;23mrolldown v1.1.0[39m
+2026-06-09T12:05:52.9760756Z [34mℹ[39m config file: [4m/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tsdown.config.ts[24m 
+2026-06-09T12:05:52.9785139Z [34mℹ[39m entry: [34mindex.ts, native.ts[39m
+2026-06-09T12:05:52.9786604Z [34mℹ[39m target: [34mnode20[39m
+2026-06-09T12:05:52.9788896Z [34mℹ[39m tsconfig: [34mtsconfig.json[39m
+2026-06-09T12:05:52.9796965Z [34mℹ[39m Build start
+2026-06-09T12:05:54.1475590Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mindex.cjs[22m   [2m0.98 kB[22m [2m│ gzip: 0.53 kB[22m
+2026-06-09T12:05:54.1476992Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mnative.cjs[22m  [2m0.88 kB[22m [2m│ gzip: 0.50 kB[22m
+2026-06-09T12:05:54.1477493Z [34mℹ[39m [33m[CJS][39m 2 files, total: 1.85 kB
+2026-06-09T12:05:54.1621771Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mindex.d.cts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:54.1622971Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mnative.d.cts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:54.1623796Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mindex.d.cts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T12:05:54.1624495Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mnative.d.cts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T12:05:54.1625015Z [34mℹ[39m [33m[CJS][39m 4 files, total: 1.55 kB
+2026-06-09T12:05:54.1634678Z [32m✔[39m Build complete in [32m1179ms[39m
+2026-06-09T12:05:54.1652373Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mnative.mjs[22m        [2m0.77 kB[22m [2m│ gzip: 0.46 kB[22m
+2026-06-09T12:05:54.1653316Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mindex.mjs[22m         [2m0.43 kB[22m [2m│ gzip: 0.27 kB[22m
+2026-06-09T12:05:54.1654078Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.mjs.map    [2m2.43 kB[22m [2m│ gzip: 1.04 kB[22m
+2026-06-09T12:05:54.1654964Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.mjs.map     [2m1.77 kB[22m [2m│ gzip: 0.65 kB[22m
+2026-06-09T12:05:54.1655548Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.d.mts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:54.1656147Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.d.mts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T12:05:54.1656787Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mindex.d.mts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T12:05:54.1657819Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mnative.d.mts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T12:05:54.1658323Z [34mℹ[39m [34m[ESM][39m 8 files, total: 6.94 kB
+2026-06-09T12:05:54.1662483Z [32m✔[39m Build complete in [32m1182ms[39m

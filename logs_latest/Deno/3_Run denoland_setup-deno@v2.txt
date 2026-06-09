@@ -1,0 +1,11 @@
+﻿2026-06-09T12:05:43.7668891Z ##[group]Run denoland/setup-deno@v2
+2026-06-09T12:05:43.7669977Z with:
+2026-06-09T12:05:43.7671107Z   deno-version: v2.x
+2026-06-09T12:05:43.7672033Z   deno-binary-name: deno
+2026-06-09T12:05:43.7672943Z   cache: false
+2026-06-09T12:05:43.7673752Z ##[endgroup]
+2026-06-09T12:05:43.9446937Z Going to install stable version 2.8.2.
+2026-06-09T12:05:43.9460946Z Downloading Deno from https://github.com/denoland/deno/releases/download/v2.8.2/deno-x86_64-unknown-linux-gnu.zip.
+2026-06-09T12:05:44.2944213Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/61543171-b144-43ea-bb9f-ba59a8c3e739
+2026-06-09T12:05:45.1279873Z Cached Deno to /opt/hostedtoolcache/deno/2.8.2/x64.
+2026-06-09T12:05:45.1308165Z Installation complete.

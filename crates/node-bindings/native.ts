@@ -10,18 +10,18 @@ const NAME = 'modern_colorthief';
 
 function getSuffix(): string {
     const p = platform();
-    if (p === 'linux') return 'gnu-x64-linux';
-    if (p === 'darwin') return 'apple-x64-darwin';
-    if (p === 'win32') return 'msvc-x64-windows';
+    if (p === 'linux') return 'linux-x64-gnu';
+    if (p === 'darwin') return 'darwin-x64';
+    if (p === 'win32') return 'win32-x64-msvc';
     return '';
 }
 
 function resolveNativePath(): string {
     const suffix = getSuffix();
     const basenames = [
-        `artifacts/${NAME}-${suffix}.node`,
+        `artifacts/${NAME}.${suffix}.node`,
         `artifacts/${NAME}.node`,
-        `${NAME}-${suffix}.node`,
+        `${NAME}.${suffix}.node`,
         `${NAME}.node`,
     ];
     // Search from __dirname and parent directories (handles dist/ output)

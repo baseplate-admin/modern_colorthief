@@ -1,0 +1,70 @@
+﻿2026-06-09T12:05:06.9479469Z ##[group]Run npm install --legacy-peer-deps && npx napi build --platform --release --output-dir artifacts
+2026-06-09T12:05:06.9479879Z [36;1mnpm install --legacy-peer-deps && npx napi build --platform --release --output-dir artifacts[0m
+2026-06-09T12:05:06.9498293Z shell: /usr/bin/bash -e {0}
+2026-06-09T12:05:06.9498441Z env:
+2026-06-09T12:05:06.9498559Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T12:05:06.9498704Z   CARGO_INCREMENTAL: 0
+2026-06-09T12:05:06.9498831Z   CARGO_TERM_COLOR: always
+2026-06-09T12:05:06.9498962Z ##[endgroup]
+2026-06-09T12:05:07.7336138Z npm warn reify invalid or damaged lockfile detected
+2026-06-09T12:05:07.7336683Z npm warn reify please re-try this operation once it completes
+2026-06-09T12:05:07.7337126Z npm warn reify so that the damage can be corrected, or perform
+2026-06-09T12:05:07.7337618Z npm warn reify a fresh install with no lockfile if the problem persists.
+2026-06-09T12:05:09.6768270Z 
+2026-06-09T12:05:09.6768921Z added 147 packages, and audited 148 packages in 3s
+2026-06-09T12:05:09.6769207Z 
+2026-06-09T12:05:09.6769315Z 38 packages are looking for funding
+2026-06-09T12:05:09.6769492Z   run `npm fund` for details
+2026-06-09T12:05:09.6773263Z 
+2026-06-09T12:05:09.6773372Z found 0 vulnerabilities
+2026-06-09T12:05:12.2989696Z [1m[92m   Compiling[0m proc-macro2 v1.0.106
+2026-06-09T12:05:12.2990199Z [1m[92m   Compiling[0m quote v1.0.45
+2026-06-09T12:05:12.2990944Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-06-09T12:05:12.2991476Z [1m[92m   Compiling[0m crossbeam-utils v0.8.21
+2026-06-09T12:05:12.3406422Z [1m[92m   Compiling[0m futures-core v0.3.32
+2026-06-09T12:05:12.3932643Z [1m[92m   Compiling[0m autocfg v1.5.1
+2026-06-09T12:05:12.5218776Z [1m[92m   Compiling[0m futures-sink v0.3.32
+2026-06-09T12:05:12.5627026Z [1m[92m   Compiling[0m pin-project-lite v0.2.17
+2026-06-09T12:05:12.5912071Z [1m[92m   Compiling[0m memchr v2.8.1
+2026-06-09T12:05:13.0113197Z [1m[92m   Compiling[0m syn v2.0.117
+2026-06-09T12:05:13.1172934Z [1m[92m   Compiling[0m serde_core v1.0.228
+2026-06-09T12:05:13.1871885Z [1m[92m   Compiling[0m napi-build v2.3.2
+2026-06-09T12:05:13.3413547Z [1m[92m   Compiling[0m num-traits v0.2.19
+2026-06-09T12:05:13.3749781Z [1m[92m   Compiling[0m crossbeam-epoch v0.9.18
+2026-06-09T12:05:13.4036942Z [1m[92m   Compiling[0m futures-channel v0.3.32
+2026-06-09T12:05:13.5302792Z [1m[92m   Compiling[0m futures-io v0.3.32
+2026-06-09T12:05:13.5652173Z [1m[92m   Compiling[0m futures-task v0.3.32
+2026-06-09T12:05:13.6033672Z [1m[92m   Compiling[0m rayon-core v1.13.0
+2026-06-09T12:05:13.6318040Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2026-06-09T12:05:13.6544939Z [1m[92m   Compiling[0m slab v0.4.12
+2026-06-09T12:05:13.6624883Z [1m[92m   Compiling[0m zmij v1.0.21
+2026-06-09T12:05:13.7372605Z [1m[92m   Compiling[0m crossbeam-deque v0.8.6
+2026-06-09T12:05:13.8333453Z [1m[92m   Compiling[0m serde_json v1.0.150
+2026-06-09T12:05:13.8373151Z [1m[92m   Compiling[0m serde v1.0.228
+2026-06-09T12:05:13.9062847Z [1m[92m   Compiling[0m unicode-segmentation v1.13.3
+2026-06-09T12:05:14.2472985Z [1m[92m   Compiling[0m convert_case v0.11.0
+2026-06-09T12:05:14.8882765Z [1m[92m   Compiling[0m libloading v0.9.0
+2026-06-09T12:05:14.9864074Z [1m[92m   Compiling[0m napi v3.9.0
+2026-06-09T12:05:15.0682562Z [1m[92m   Compiling[0m semver v1.0.28
+2026-06-09T12:05:15.1922948Z [1m[92m   Compiling[0m either v1.16.0
+2026-06-09T12:05:15.2350152Z [1m[92m   Compiling[0m iana-time-zone v0.1.65
+2026-06-09T12:05:15.2912572Z [1m[92m   Compiling[0m itoa v1.0.18
+2026-06-09T12:05:15.3783045Z [1m[92m   Compiling[0m napi-derive-backend v5.0.4
+2026-06-09T12:05:15.4202746Z [1m[92m   Compiling[0m chrono v0.4.45
+2026-06-09T12:05:16.5083435Z [1m[92m   Compiling[0m rayon v1.12.0
+2026-06-09T12:05:17.4133442Z [1m[92m   Compiling[0m napi-sys v3.2.1
+2026-06-09T12:05:18.0588060Z [1m[92m   Compiling[0m encoding_rs v0.8.35
+2026-06-09T12:05:18.1408954Z [1m[92m   Compiling[0m modern-colorthief-node v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings)
+2026-06-09T12:05:18.2104125Z [1m[92m   Compiling[0m tokio v1.52.3
+2026-06-09T12:05:20.0022736Z [1m[92m   Compiling[0m ctor v1.0.7
+2026-06-09T12:05:20.0542980Z [1m[92m   Compiling[0m modern-colorthief-core v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core)
+2026-06-09T12:05:20.1462535Z [1m[92m   Compiling[0m nohash-hasher v0.2.0
+2026-06-09T12:05:20.1828144Z [1m[92m   Compiling[0m rustc-hash v2.1.2
+2026-06-09T12:05:20.2362591Z [1m[92m   Compiling[0m bitflags v2.13.0
+2026-06-09T12:05:20.3825194Z [1m[92m   Compiling[0m modern-colorthief-core-cpu v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core_cpu)
+2026-06-09T12:05:24.0955224Z [1m[92m   Compiling[0m futures-macro v0.3.32
+2026-06-09T12:05:24.0955703Z [1m[92m   Compiling[0m napi-derive v3.5.6
+2026-06-09T12:05:25.4352810Z [1m[92m   Compiling[0m futures-util v0.3.32
+2026-06-09T12:05:26.6155997Z [1m[92m   Compiling[0m futures-executor v0.3.32
+2026-06-09T12:05:26.6821748Z [1m[92m   Compiling[0m futures v0.3.32
+2026-06-09T12:05:33.2993060Z [1m[92m    Finished[0m `release` profile [optimized] target(s) in 21.07s
