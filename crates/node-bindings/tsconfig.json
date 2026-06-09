@@ -11,6 +11,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["index.ts"],
+  "include": ["index.ts", "native.ts"],
   "exclude": ["node_modules", "dist", "examples"]
 }

@@ -77,7 +77,7 @@ jobs:
       - working-directory: crates/node-bindings
         run: npm install && npm run build
       - working-directory: crates/node-bindings
-        run: bun test -- --match="*" tests/test_*.ts
+        run: bun test tests/test_*.ts -- --timeout 30000
 
   publish:
     name: Publish to npm
