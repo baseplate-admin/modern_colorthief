@@ -27,14 +27,14 @@ jobs:
     name: wasm-pack build + test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - working-directory: crates/wasm-bindings
-        run: wasm-pack build --release
+        run: wasm-pack build --release --target nodejs
       - working-directory: crates/wasm-bindings
         run: npm install && npm test
 

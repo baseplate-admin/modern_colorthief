@@ -24,33 +24,7 @@ jobs:
           sudo apt-get install -y libclang-dev php-dev
       - name: Verify PHP is available
         run: php --version
-      - name: Build PHP bindings
-        id: build
-        run: |
-          OUTPUT=$(cargo build --release -p modern-colorthief-php 2>&1)
-          RC=$?
-          echo "exit_code=$RC" >> $GITHUB_OUTPUT
-          echo "$OUTPUT" > /tmp/php.log
-          echo "$OUTPUT"
-          if [ $RC -ne 0 ]; then exit 1; fi
-        continue-on-error: true
-      - name: Show build error
-        if: steps.build.outputs.exit_code != '0'
-        run: |
-          echo "::error::PHP build failed with exit code ${{ steps.build.outputs.exit_code }}"
-          head -100 /tmp/php.log | while IFS= read -r line; do echo "::error title=PHP build::$line"; done
-          exit 1
+      - run: cargo build --release -p modern-colorthief-php
       - name: Run Rust core tests
-        continue-on-error: true
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - name: Verify shared library exists
-        run: |
-          if [ -f target/release/libmodern_colorthief_php.so ]; then
-            echo "Found .so file"
-          elif [ -f target/release/modern_colorthief_php.dll ]; then
-            echo "Found .dll file"
-          else
-            echo "No shared library found"
-            ls -la target/release/ | grep -i colorthief || true
-            exit 1
-          fi
+      - run: test -f target/release/libmodern_colorthief.so
