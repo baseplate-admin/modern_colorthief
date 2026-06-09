@@ -28,10 +28,6 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts/*.node
-      - uses: actions/upload-artifact@v4
-        with:
-          name: node-native-js
-          path: crates/node-bindings/native.js
 
   node-test:
     name: Node.js 22
@@ -46,12 +42,8 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
-      - uses: actions/download-artifact@v4
-        with:
-          name: node-native-js
-          path: crates/node-bindings
       - working-directory: crates/node-bindings
-        run: npm install && npx vitest run
+        run: npm install && npm run build && npx vitest run
 
   deno-test:
     name: Deno
@@ -66,12 +58,8 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
-      - uses: actions/download-artifact@v4
-        with:
-          name: node-native-js
-          path: crates/node-bindings
       - working-directory: crates/node-bindings
-        run: npm install
+        run: npm install && npm run build
       - working-directory: crates/node-bindings
         run: deno test --allow-read --allow-env --allow-net --include="test_" tests/
 
@@ -86,12 +74,8 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
-      - uses: actions/download-artifact@v4
-        with:
-          name: node-native-js
-          path: crates/node-bindings
       - working-directory: crates/node-bindings
-        run: npm install
+        run: npm install && npm run build
       - working-directory: crates/node-bindings
         run: bun test -- --match="*" tests/test_*.ts
 
@@ -112,10 +96,6 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
-      - uses: actions/download-artifact@v4
-        with:
-          name: node-native-js
-          path: crates/node-bindings
       - working-directory: crates/node-bindings
         run: npm install
       - working-directory: crates/node-bindings

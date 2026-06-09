@@ -3,8 +3,12 @@
     "version": "0.3.0",
     "description": "Node.js bindings for modern_colorthief",
     "type": "module",
-    "main": "index.js",
-    "types": "index.d.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsdown",
+        "prepublishOnly": "npm run build"
+    },
     "napi": {
         "binaryName": "modern_colorthief",
         "triples": {}
@@ -15,7 +19,8 @@
     "devDependencies": {
         "@types/node": "^24.10.1",
         "vitest": "^4.0.14",
-        "sharp": ">=0.33.0"
+        "sharp": ">=0.33.0",
+        "tsdown": "latest"
     },
     "peerDependencies": {
         "sharp": ">=0.33.0"
