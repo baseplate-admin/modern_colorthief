@@ -25,8 +25,14 @@ function resolveNativePath(): string {
         `${NAME}.node`,
     ];
     // Search from __dirname and parent directories (handles dist/ output)
-    const bases = [__dirname, join(__dirname, '..'), join(__dirname, '..', '..')];
-    const candidates = bases.flatMap(base => basenames.map(name => join(base, name)));
+    const bases = [
+        __dirname,
+        join(__dirname, '..'),
+        join(__dirname, '..', '..'),
+    ];
+    const candidates = bases.flatMap((base) =>
+        basenames.map((name) => join(base, name)),
+    );
     for (const candidate of candidates) {
         try {
             return require.resolve(candidate);
@@ -34,12 +40,25 @@ function resolveNativePath(): string {
             // try next
         }
     }
-    throw new Error(`Cannot find native binding ${NAME}. Searched: ${candidates.join(', ')}`);
+    throw new Error(
+        `Cannot find native binding ${NAME}. Searched: ${candidates.join(', ')}`,
+    );
 }
 
 const native = require(resolveNativePath()) as {
-    getPalette: (pixels: Buffer, width: number, height: number, colorCount: number, quality: number) => number[][];
-    getColor: (pixels: Buffer, width: number, height: number, quality: number) => number[];
+    getPalette: (
+        pixels: Buffer,
+        width: number,
+        height: number,
+        colorCount: number,
+        quality: number,
+    ) => number[][];
+    getColor: (
+        pixels: Buffer,
+        width: number,
+        height: number,
+        quality: number,
+    ) => number[];
 };
 
 export const getPalette = native.getPalette;

@@ -2,12 +2,12 @@ import { defineConfig } from 'tsdown';
 
 export default defineConfig({
     entry: ['index.ts', 'native.ts'],
-    format: ['cjs', 'esm'],
+    format: ['esm'],
     dts: true,
     outDir: 'dist',
     deps: {
         neverBundle: ['sharp'],
     },
     minify: true,
-    target: 'node20',
+    target: 'node18',
 });
