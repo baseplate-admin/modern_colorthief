@@ -1,6 +1,0 @@
-﻿2026-06-09T05:20:23.3716146Z ##[group]Run deno test --allow-read --allow-env --allow-net tests/
-2026-06-09T05:20:23.3716729Z [36;1mdeno test --allow-read --allow-env --allow-net tests/[0m
-2026-06-09T05:20:23.3744218Z shell: /usr/bin/bash -e {0}
-2026-06-09T05:20:23.3744504Z ##[endgroup]
-2026-06-09T05:20:23.3866609Z [0m[1m[31merror[0m: No test modules found
-2026-06-09T05:20:23.3879650Z ##[error]Process completed with exit code 1.

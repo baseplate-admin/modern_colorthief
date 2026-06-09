@@ -1,8 +1,0 @@
-2026-06-09T05:18:58.5910000Z Requested labels: ubuntu-latest
-2026-06-09T05:18:58.5910000Z Job defined at: baseplate-admin/modern_colorthief/.github/workflows/node-ci.yaml@refs/pull/125/merge
-2026-06-09T05:18:58.5910000Z Waiting for a runner to pick up this job...
-2026-06-09T05:18:58.5850000Z Evaluating build.if
-2026-06-09T05:18:58.5850000Z Evaluating: success()
-2026-06-09T05:18:58.5850000Z Result: true
-2026-06-09T05:18:58.5950000Z Job is about to start running on the hosted runner: GitHub Actions 1000049002
-2026-06-09T05:18:58.5950000Z Job is waiting for a hosted runner to come online.
