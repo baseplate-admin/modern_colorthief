@@ -1,0 +1,103 @@
+﻿2026-06-09T20:39:50.8263426Z ##[group]Run sudo apt-get update
+2026-06-09T20:39:50.8264334Z [36;1msudo apt-get update[0m
+2026-06-09T20:39:50.8264695Z [36;1msudo apt-get install -y libclang-dev ruby-dev[0m
+2026-06-09T20:39:50.8295805Z shell: /usr/bin/bash -e {0}
+2026-06-09T20:39:50.8296105Z ##[endgroup]
+2026-06-09T20:39:50.9827795Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-06-09T20:39:51.0016660Z Get:6 https://packages.microsoft.com/repos/azure-cli noble InRelease [3564 B]
+2026-06-09T20:39:51.0210627Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-06-09T20:39:51.0212323Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-06-09T20:39:51.0259876Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-06-09T20:39:51.0330019Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-06-09T20:39:51.0415425Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-06-09T20:39:51.0609594Z Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [1825 B]
+2026-06-09T20:39:51.1196812Z Get:9 https://packages.microsoft.com/repos/azure-cli noble/main amd64 Packages [2255 B]
+2026-06-09T20:39:51.2355725Z Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [170 kB]
+2026-06-09T20:39:51.2495307Z Get:11 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [140 kB]
+2026-06-09T20:39:51.2893981Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2067 kB]
+2026-06-09T20:39:51.3214953Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [363 kB]
+2026-06-09T20:39:51.3232056Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+2026-06-09T20:39:51.3238218Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [17.4 kB]
+2026-06-09T20:39:51.3248167Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1699 kB]
+2026-06-09T20:39:51.3336517Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [331 kB]
+2026-06-09T20:39:51.3363980Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+2026-06-09T20:39:51.3402344Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [34.7 kB]
+2026-06-09T20:39:51.3407865Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [3299 kB]
+2026-06-09T20:39:51.3665044Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [764 kB]
+2026-06-09T20:39:51.4125038Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 c-n-f Metadata [456 B]
+2026-06-09T20:39:51.4143402Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [11.3 kB]
+2026-06-09T20:39:51.4197212Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+2026-06-09T20:39:51.4205883Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 c-n-f Metadata [656 B]
+2026-06-09T20:39:51.4219192Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5772 B]
+2026-06-09T20:39:51.4220857Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [10.5 kB]
+2026-06-09T20:39:51.4222912Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 c-n-f Metadata [1588 B]
+2026-06-09T20:39:51.4268993Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1763 kB]
+2026-06-09T20:39:51.4355126Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [275 kB]
+2026-06-09T20:39:51.4381796Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [44.8 kB]
+2026-06-09T20:39:51.4406552Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [11.5 kB]
+2026-06-09T20:39:51.4421182Z Get:33 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1195 kB]
+2026-06-09T20:39:51.4527746Z Get:34 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [232 kB]
+2026-06-09T20:39:51.4540306Z Get:35 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.2 kB]
+2026-06-09T20:39:51.4560905Z Get:36 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [23.3 kB]
+2026-06-09T20:39:51.5026267Z Get:37 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [3106 kB]
+2026-06-09T20:39:51.5155703Z Get:38 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [721 kB]
+2026-06-09T20:39:51.5198310Z Get:39 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 c-n-f Metadata [444 B]
+2026-06-09T20:39:51.5210126Z Get:40 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [9248 B]
+2026-06-09T20:39:51.5224688Z Get:41 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 c-n-f Metadata [468 B]
+2026-06-09T20:39:51.5244956Z Get:42 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1212 B]
+2026-06-09T20:40:02.1054378Z Fetched 17.3 MB in 2s (8374 kB/s)
+2026-06-09T20:40:02.9400464Z Reading package lists...
+2026-06-09T20:40:02.9715913Z Reading package lists...
+2026-06-09T20:40:03.1711189Z Building dependency tree...
+2026-06-09T20:40:03.1718499Z Reading state information...
+2026-06-09T20:40:03.5376028Z ruby-dev is already the newest version (1:3.2~ubuntu1).
+2026-06-09T20:40:03.5376534Z ruby-dev set to manually installed.
+2026-06-09T20:40:03.5376862Z The following NEW packages will be installed:
+2026-06-09T20:40:03.5384052Z   libclang-18-dev libclang-dev
+2026-06-09T20:40:03.5581248Z 0 upgraded, 2 newly installed, 0 to remove and 92 not upgraded.
+2026-06-09T20:40:03.5581927Z Need to get 28.8 MB of archives.
+2026-06-09T20:40:03.5582489Z After this operation, 292 MB of additional disk space will be used.
+2026-06-09T20:40:03.5583188Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-06-09T20:40:03.6417218Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libclang-18-dev amd64 1:18.1.3-1ubuntu1 [28.8 MB]
+2026-06-09T20:40:04.4527158Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libclang-dev amd64 1:18.0-59~exp2 [5424 B]
+2026-06-09T20:40:05.5628402Z Fetched 28.8 MB in 1s (31.7 MB/s)
+2026-06-09T20:40:05.7915770Z Selecting previously unselected package libclang-18-dev.
+2026-06-09T20:40:05.8595572Z (Reading database ... 
+2026-06-09T20:40:05.8596368Z (Reading database ... 5%
+2026-06-09T20:40:05.8597228Z (Reading database ... 10%
+2026-06-09T20:40:05.8597811Z (Reading database ... 15%
+2026-06-09T20:40:05.8598192Z (Reading database ... 20%
+2026-06-09T20:40:05.8598568Z (Reading database ... 25%
+2026-06-09T20:40:05.8599330Z (Reading database ... 30%
+2026-06-09T20:40:05.8599883Z (Reading database ... 35%
+2026-06-09T20:40:05.8600302Z (Reading database ... 40%
+2026-06-09T20:40:05.8600744Z (Reading database ... 45%
+2026-06-09T20:40:05.8601173Z (Reading database ... 50%
+2026-06-09T20:40:05.8978206Z (Reading database ... 55%
+2026-06-09T20:40:06.2291882Z (Reading database ... 60%
+2026-06-09T20:40:06.4549522Z (Reading database ... 65%
+2026-06-09T20:40:06.6727902Z (Reading database ... 70%
+2026-06-09T20:40:06.9009399Z (Reading database ... 75%
+2026-06-09T20:40:07.2084704Z (Reading database ... 80%
+2026-06-09T20:40:07.5567894Z (Reading database ... 85%
+2026-06-09T20:40:07.8550319Z (Reading database ... 90%
+2026-06-09T20:40:08.3277569Z (Reading database ... 95%
+2026-06-09T20:40:08.3278033Z (Reading database ... 100%
+2026-06-09T20:40:08.3278481Z (Reading database ... 202271 files and directories currently installed.)
+2026-06-09T20:40:08.3322811Z Preparing to unpack .../libclang-18-dev_1%3a18.1.3-1ubuntu1_amd64.deb ...
+2026-06-09T20:40:08.3351177Z Unpacking libclang-18-dev (1:18.1.3-1ubuntu1) ...
+2026-06-09T20:40:09.3025912Z Selecting previously unselected package libclang-dev.
+2026-06-09T20:40:09.3159214Z Preparing to unpack .../libclang-dev_1%3a18.0-59~exp2_amd64.deb ...
+2026-06-09T20:40:09.3170382Z Unpacking libclang-dev (1:18.0-59~exp2) ...
+2026-06-09T20:40:09.3578992Z Setting up libclang-18-dev (1:18.1.3-1ubuntu1) ...
+2026-06-09T20:40:09.3611033Z Setting up libclang-dev (1:18.0-59~exp2) ...
+2026-06-09T20:40:10.3677192Z 
+2026-06-09T20:40:10.3678107Z Running kernel seems to be up-to-date.
+2026-06-09T20:40:10.3678382Z 
+2026-06-09T20:40:10.3678521Z No services need to be restarted.
+2026-06-09T20:40:10.3678718Z 
+2026-06-09T20:40:10.3678831Z No containers need to be restarted.
+2026-06-09T20:40:10.3679029Z 
+2026-06-09T20:40:10.3679168Z No user sessions are running outdated binaries.
+2026-06-09T20:40:10.3679410Z 
+2026-06-09T20:40:10.3679625Z No VM guests are running outdated hypervisor (qemu) binaries on this host.

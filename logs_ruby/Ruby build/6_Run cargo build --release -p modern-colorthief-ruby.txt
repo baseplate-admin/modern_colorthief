@@ -1,0 +1,155 @@
+﻿2026-06-09T20:40:03.6394148Z ##[group]Run cargo build --release -p modern-colorthief-ruby
+2026-06-09T20:40:03.6394608Z [36;1mcargo build --release -p modern-colorthief-ruby[0m
+2026-06-09T20:40:03.6412542Z shell: /usr/bin/bash -e {0}
+2026-06-09T20:40:03.6412796Z env:
+2026-06-09T20:40:03.6413140Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.6413402Z   CARGO_INCREMENTAL: 0
+2026-06-09T20:40:03.6413633Z   CARGO_TERM_COLOR: always
+2026-06-09T20:40:03.6413863Z ##[endgroup]
+2026-06-09T20:40:06.6711675Z [1m[92m    Updating[0m crates.io index
+2026-06-09T20:40:07.6352913Z [1m[92m Downloading[0m crates ...
+2026-06-09T20:40:07.7003544Z [1m[92m  Downloaded[0m cfg-if v1.0.4
+2026-06-09T20:40:07.7377948Z [1m[92m  Downloaded[0m cexpr v0.6.0
+2026-06-09T20:40:07.7519622Z [1m[92m  Downloaded[0m bitflags v2.13.0
+2026-06-09T20:40:07.7557729Z [1m[92m  Downloaded[0m lazy_static v1.5.0
+2026-06-09T20:40:07.7704269Z [1m[92m  Downloaded[0m rustc-hash v2.1.2
+2026-06-09T20:40:07.7802072Z [1m[92m  Downloaded[0m seq-macro v0.3.6
+2026-06-09T20:40:07.7937508Z [1m[92m  Downloaded[0m magnus-macros v0.8.0
+2026-06-09T20:40:07.7971382Z [1m[92m  Downloaded[0m shell-words v1.1.1
+2026-06-09T20:40:07.8092540Z [1m[92m  Downloaded[0m quote v1.0.45
+2026-06-09T20:40:07.8111102Z [1m[92m  Downloaded[0m rb-sys-env v0.2.3
+2026-06-09T20:40:07.8125601Z [1m[92m  Downloaded[0m shlex v1.3.0
+2026-06-09T20:40:07.8133686Z [1m[92m  Downloaded[0m glob v0.3.3
+2026-06-09T20:40:07.8142589Z [1m[92m  Downloaded[0m either v1.16.0
+2026-06-09T20:40:07.8152876Z [1m[92m  Downloaded[0m crossbeam-deque v0.8.6
+2026-06-09T20:40:07.8234665Z [1m[92m  Downloaded[0m rb-sys-build v0.9.128
+2026-06-09T20:40:07.8252397Z [1m[92m  Downloaded[0m crossbeam-utils v0.8.21
+2026-06-09T20:40:07.8271195Z [1m[92m  Downloaded[0m libloading v0.8.9
+2026-06-09T20:40:07.8287803Z [1m[92m  Downloaded[0m rb-sys v0.9.128
+2026-06-09T20:40:07.8307406Z [1m[92m  Downloaded[0m clang-sys v1.8.1
+2026-06-09T20:40:07.8321454Z [1m[92m  Downloaded[0m crossbeam-epoch v0.9.18
+2026-06-09T20:40:07.8375642Z [1m[92m  Downloaded[0m unicode-ident v1.0.24
+2026-06-09T20:40:07.8409961Z [1m[92m  Downloaded[0m rayon-core v1.13.0
+2026-06-09T20:40:07.8435542Z [1m[92m  Downloaded[0m proc-macro2 v1.0.106
+2026-06-09T20:40:07.8515809Z [1m[92m  Downloaded[0m minimal-lexical v0.2.1
+2026-06-09T20:40:07.8550306Z [1m[92m  Downloaded[0m nom v7.1.3
+2026-06-09T20:40:07.8590678Z [1m[92m  Downloaded[0m memchr v2.8.1
+2026-06-09T20:40:07.8628091Z [1m[92m  Downloaded[0m aho-corasick v1.1.4
+2026-06-09T20:40:07.8666540Z [1m[92m  Downloaded[0m itertools v0.13.0
+2026-06-09T20:40:07.8711087Z [1m[92m  Downloaded[0m regex v1.12.3
+2026-06-09T20:40:07.8746963Z [1m[92m  Downloaded[0m rayon v1.12.0
+2026-06-09T20:40:07.8803783Z [1m[92m  Downloaded[0m magnus v0.8.2
+2026-06-09T20:40:07.8863544Z [1m[92m  Downloaded[0m bindgen v0.72.1
+2026-06-09T20:40:07.9048110Z [1m[92m  Downloaded[0m syn v2.0.117
+2026-06-09T20:40:07.9117867Z [1m[92m  Downloaded[0m regex-syntax v0.8.10
+2026-06-09T20:40:07.9186469Z [1m[92m  Downloaded[0m regex-automata v0.4.14
+2026-06-09T20:40:07.9283772Z [1m[92m  Downloaded[0m libc v0.2.186
+2026-06-09T20:40:07.9981347Z [1m[92m   Compiling[0m proc-macro2 v1.0.106
+2026-06-09T20:40:08.0046596Z [1m[92m   Compiling[0m memchr v2.8.1
+2026-06-09T20:40:08.0047556Z [1m[92m   Compiling[0m glob v0.3.3
+2026-06-09T20:40:08.0048457Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-06-09T20:40:10.7935752Z [1m[92m   Compiling[0m quote v1.0.45
+2026-06-09T20:40:11.6828356Z [1m[92m   Compiling[0m clang-sys v1.8.1
+2026-06-09T20:40:11.7418631Z [1m[92m   Compiling[0m libc v0.2.186
+2026-06-09T20:40:13.4529419Z [1m[92m   Compiling[0m aho-corasick v1.1.4
+2026-06-09T20:40:13.4576661Z [1m[92m   Compiling[0m minimal-lexical v0.2.1
+2026-06-09T20:40:13.4638225Z [1m[92m   Compiling[0m regex-syntax v0.8.10
+2026-06-09T20:40:13.7598554Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2026-06-09T20:40:13.7812139Z [1m[92m   Compiling[0m libloading v0.8.9
+2026-06-09T20:40:13.9730426Z [1m[92m   Compiling[0m nom v7.1.3
+2026-06-09T20:40:15.9078488Z [1m[92m   Compiling[0m regex-automata v0.4.14
+2026-06-09T20:40:16.4598356Z [1m[92m   Compiling[0m syn v2.0.117
+2026-06-09T20:40:20.0738692Z [1m[92m   Compiling[0m bindgen v0.72.1
+2026-06-09T20:40:20.1078646Z [1m[92m   Compiling[0m either v1.16.0
+2026-06-09T20:40:20.2848802Z [1m[92m   Compiling[0m itertools v0.13.0
+2026-06-09T20:40:21.4878377Z [1m[92m   Compiling[0m regex v1.12.3
+2026-06-09T20:40:22.4928374Z [1m[92m   Compiling[0m cexpr v0.6.0
+2026-06-09T20:40:24.5178804Z [1m[92m   Compiling[0m shlex v1.3.0
+2026-06-09T20:40:24.7468573Z [1m[92m   Compiling[0m crossbeam-utils v0.8.21
+2026-06-09T20:40:25.0088421Z [1m[92m   Compiling[0m bitflags v2.13.0
+2026-06-09T20:40:25.2848284Z [1m[92m   Compiling[0m rustc-hash v2.1.2
+2026-06-09T20:40:25.4588881Z [1m[92m   Compiling[0m shell-words v1.1.1
+2026-06-09T20:40:25.6158368Z [1m[92m   Compiling[0m lazy_static v1.5.0
+2026-06-09T20:40:26.3272227Z [1m[92m   Compiling[0m rb-sys-env v0.2.3
+2026-06-09T20:40:26.4850915Z [1m[92m   Compiling[0m crossbeam-epoch v0.9.18
+2026-06-09T20:40:26.7978631Z [1m[92m   Compiling[0m rayon-core v1.13.0
+2026-06-09T20:40:26.8748435Z [1m[92m   Compiling[0m crossbeam-deque v0.8.6
+2026-06-09T20:40:27.7260433Z [1m[92m   Compiling[0m magnus v0.8.2
+2026-06-09T20:40:28.9018416Z [1m[92m   Compiling[0m rayon v1.12.0
+2026-06-09T20:40:30.7539329Z [1m[92m   Compiling[0m rb-sys-build v0.9.128
+2026-06-09T20:40:31.6229264Z [1m[92m   Compiling[0m modern-colorthief-core v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core)
+2026-06-09T20:40:31.6818329Z [1m[92m   Compiling[0m seq-macro v0.3.6
+2026-06-09T20:40:32.8512823Z [1m[92m   Compiling[0m modern-colorthief-core-cpu v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core_cpu)
+2026-06-09T20:40:35.0057355Z [1m[92m   Compiling[0m magnus-macros v0.8.0
+2026-06-09T20:40:46.3726260Z [1m[92m   Compiling[0m rb-sys v0.9.128
+2026-06-09T20:41:06.3359312Z [1m[92m   Compiling[0m modern-colorthief-ruby v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/ruby-bindings)
+2026-06-09T20:41:06.3911669Z [1m[33mwarning[0m[1m: use of deprecated function `magnus::exception::runtime_error`: please use `Ruby::exception_runtime_error` instead[0m
+2026-06-09T20:41:06.3912560Z  [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:6:44
+2026-06-09T20:41:06.3912927Z   [1m[94m|[0m
+2026-06-09T20:41:06.3913454Z [1m[94m6[0m [1m[94m|[0m         .map_err(|e| Error::new(exception::runtime_error(), e))
+2026-06-09T20:41:06.3914051Z   [1m[94m|[0m                                            [1m[33m^^^^^^^^^^^^^[0m
+2026-06-09T20:41:06.3914447Z   [1m[94m|[0m
+2026-06-09T20:41:06.3914799Z   [1m[94m= [0m[1mnote[0m: `#[warn(deprecated)]` on by default
+2026-06-09T20:41:06.3915037Z 
+2026-06-09T20:41:06.3915538Z [1m[33mwarning[0m[1m: use of deprecated function `magnus::exception::runtime_error`: please use `Ruby::exception_runtime_error` instead[0m
+2026-06-09T20:41:06.3916194Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:11:44
+2026-06-09T20:41:06.3916496Z    [1m[94m|[0m
+2026-06-09T20:41:06.3916906Z [1m[94m11[0m [1m[94m|[0m         .map_err(|e| Error::new(exception::runtime_error(), e))?;
+2026-06-09T20:41:06.3917628Z    [1m[94m|[0m                                            [1m[33m^^^^^^^^^^^^^[0m
+2026-06-09T20:41:06.3917852Z 
+2026-06-09T20:41:06.3918352Z [1m[33mwarning[0m[1m: use of deprecated function `magnus::exception::runtime_error`: please use `Ruby::exception_runtime_error` instead[0m
+2026-06-09T20:41:06.3918965Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:17:46
+2026-06-09T20:41:06.3919267Z    [1m[94m|[0m
+2026-06-09T20:41:06.3919778Z [1m[94m17[0m [1m[94m|[0m         .ok_or_else(|| Error::new(exception::runtime_error(), "Image contains no colors"))
+2026-06-09T20:41:06.3920324Z    [1m[94m|[0m                                              [1m[33m^^^^^^^^^^^^^[0m
+2026-06-09T20:41:06.3920551Z 
+2026-06-09T20:41:07.6282097Z [1m[91merror[E0599][0m[1m: the method `call_handle_error` exists for fn item `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}`, but its trait bounds were not satisfied[0m
+2026-06-09T20:41:07.6283419Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:23:59
+2026-06-09T20:41:07.6283808Z    [1m[94m|[0m
+2026-06-09T20:41:07.6284403Z [1m[94m23[0m [1m[94m|[0m     mod_colorthief.define_singleton_method("get_palette", function!(get_palette, 5))?;
+2026-06-09T20:41:07.6285351Z    [1m[94m|[0m                                                           [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mmethod cannot be called due to unsatisfied trait bounds[0m
+2026-06-09T20:41:07.6285946Z    [1m[94m|[0m
+2026-06-09T20:41:07.6286367Z    [1m[94m= [0m[1mnote[0m: the following trait bounds were not satisfied:
+2026-06-09T20:41:07.6287315Z            `<for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette} as FnOnce<(&Ruby, _, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.6288284Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6289161Z            `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(&Ruby, _, _, _, _, _)>`
+2026-06-09T20:41:07.6290025Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6290946Z            `<&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette} as FnOnce<(&Ruby, _, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.6291883Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6292752Z            `&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(&Ruby, _, _, _, _, _)>`
+2026-06-09T20:41:07.6293620Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6294732Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(_, _, _, _, _)>`
+2026-06-09T20:41:07.6295941Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::Function5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6297258Z            `<&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette} as FnOnce<(&Ruby, _, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.6298210Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6299114Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(&Ruby, _, _, _, _, _)>`
+2026-06-09T20:41:07.6300011Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6301172Z    [1m[94m= [0m[1mnote[0m: this error originates in the macro `function` (in Nightly builds, run with -Z macro-backtrace for more info)
+2026-06-09T20:41:07.6301686Z 
+2026-06-09T20:41:07.7095241Z [1m[91merror[E0599][0m[1m: the method `call_handle_error` exists for fn item `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}`, but its trait bounds were not satisfied[0m
+2026-06-09T20:41:07.7096507Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:24:57
+2026-06-09T20:41:07.7096960Z    [1m[94m|[0m
+2026-06-09T20:41:07.7098396Z [1m[94m24[0m [1m[94m|[0m     mod_colorthief.define_singleton_method("get_color", function!(get_color, 4))?;
+2026-06-09T20:41:07.7099866Z    [1m[94m|[0m                                                         [1m[91m^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mmethod cannot be called due to unsatisfied trait bounds[0m
+2026-06-09T20:41:07.7100958Z    [1m[94m|[0m
+2026-06-09T20:41:07.7101508Z    [1m[94m= [0m[1mnote[0m: the following trait bounds were not satisfied:
+2026-06-09T20:41:07.7102203Z            `<for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color} as FnOnce<(&Ruby, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.7103118Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7104131Z            `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(&Ruby, _, _, _, _)>`
+2026-06-09T20:41:07.7105310Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7106787Z            `<&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color} as FnOnce<(&Ruby, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.7108535Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7110058Z            `&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(&Ruby, _, _, _, _)>`
+2026-06-09T20:41:07.7111468Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7112881Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(_, _, _, _)>`
+2026-06-09T20:41:07.7114288Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::Function4<_, _, _, _, _>`
+2026-06-09T20:41:07.7115759Z            `<&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color} as FnOnce<(&Ruby, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.7117577Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7119176Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(&Ruby, _, _, _, _)>`
+2026-06-09T20:41:07.7120743Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7122754Z    [1m[94m= [0m[1mnote[0m: this error originates in the macro `function` (in Nightly builds, run with -Z macro-backtrace for more info)
+2026-06-09T20:41:07.7123726Z 
+2026-06-09T20:41:07.7315767Z [1mFor more information about this error, try `rustc --explain E0599`.[0m
+2026-06-09T20:41:07.7329646Z [1m[33mwarning[0m: `modern-colorthief-ruby` (lib) generated 3 warnings
+2026-06-09T20:41:07.7330432Z [1m[91merror[0m: could not compile `modern-colorthief-ruby` (lib) due to 2 previous errors; 3 warnings emitted
+2026-06-09T20:41:07.7825842Z ##[error]Process completed with exit code 101.

@@ -1,0 +1,548 @@
+﻿2026-06-09T20:39:45.9180333Z Current runner version: '2.335.1'
+2026-06-09T20:39:45.9205947Z ##[group]Runner Image Provisioner
+2026-06-09T20:39:45.9206775Z Hosted Compute Agent
+2026-06-09T20:39:45.9207702Z Version: 20260527.539
+2026-06-09T20:39:45.9208302Z Commit: a891dd388383b896fa6ac04a82c0b75cec981078
+2026-06-09T20:39:45.9209019Z Build Date: 2026-05-27T21:39:57Z
+2026-06-09T20:39:45.9209678Z Worker ID: {d2d5f859-e580-48b1-9f05-8e59d4813388}
+2026-06-09T20:39:45.9210326Z Azure Region: centralus
+2026-06-09T20:39:45.9210894Z ##[endgroup]
+2026-06-09T20:39:45.9212371Z ##[group]Operating System
+2026-06-09T20:39:45.9213033Z Ubuntu
+2026-06-09T20:39:45.9213544Z 24.04.4
+2026-06-09T20:39:45.9214004Z LTS
+2026-06-09T20:39:45.9214505Z ##[endgroup]
+2026-06-09T20:39:45.9215012Z ##[group]Runner Image
+2026-06-09T20:39:45.9215577Z Image: ubuntu-24.04
+2026-06-09T20:39:45.9216131Z Version: 20260607.184.1
+2026-06-09T20:39:45.9217411Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260607.184/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-09T20:39:45.9218798Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260607.184
+2026-06-09T20:39:45.9219678Z ##[endgroup]
+2026-06-09T20:39:45.9220761Z ##[group]GITHUB_TOKEN Permissions
+2026-06-09T20:39:45.9222938Z Contents: read
+2026-06-09T20:39:45.9223484Z Metadata: read
+2026-06-09T20:39:45.9224013Z ##[endgroup]
+2026-06-09T20:39:45.9226009Z Secret source: Actions
+2026-06-09T20:39:45.9226907Z Prepare workflow directory
+2026-06-09T20:39:45.9535028Z Prepare all required actions
+2026-06-09T20:39:45.9572770Z Getting action download info
+2026-06-09T20:39:46.3461484Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-06-09T20:39:46.4376337Z Download action repository 'ruby/setup-ruby@v1' (SHA:12fd324f1d0b43274fdc8130f6980590a667c455)
+2026-06-09T20:39:46.8402404Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:29eef336d9b2848a0b548edc03f92a220660cdb8)
+2026-06-09T20:39:47.2268052Z Complete job name: Ruby build
+2026-06-09T20:39:47.3176142Z ##[group]Run actions/checkout@v4
+2026-06-09T20:39:47.3177609Z with:
+2026-06-09T20:39:47.3178526Z   repository: baseplate-admin/modern_colorthief
+2026-06-09T20:39:47.3187620Z   token: ***
+2026-06-09T20:39:47.3188431Z   ssh-strict: true
+2026-06-09T20:39:47.3189246Z   ssh-user: git
+2026-06-09T20:39:47.3190067Z   persist-credentials: true
+2026-06-09T20:39:47.3190953Z   clean: true
+2026-06-09T20:39:47.3191802Z   sparse-checkout-cone-mode: true
+2026-06-09T20:39:47.3192771Z   fetch-depth: 1
+2026-06-09T20:39:47.3193585Z   fetch-tags: false
+2026-06-09T20:39:47.3194420Z   show-progress: true
+2026-06-09T20:39:47.3195236Z   lfs: false
+2026-06-09T20:39:47.3196003Z   submodules: false
+2026-06-09T20:39:47.3196833Z   set-safe-directory: true
+2026-06-09T20:39:47.3198154Z ##[endgroup]
+2026-06-09T20:39:47.4311307Z Syncing repository: baseplate-admin/modern_colorthief
+2026-06-09T20:39:47.4314136Z ##[group]Getting Git version info
+2026-06-09T20:39:47.4315644Z Working directory is '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T20:39:47.4318331Z [command]/usr/bin/git version
+2026-06-09T20:39:47.4375477Z git version 2.54.0
+2026-06-09T20:39:47.4399348Z ##[endgroup]
+2026-06-09T20:39:47.4412726Z Temporarily overriding HOME='/home/runner/work/_temp/906fb825-3436-4bc0-8d24-af5f3ac9dc5f' before making global git config changes
+2026-06-09T20:39:47.4415227Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-09T20:39:47.4417959Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T20:39:47.4456254Z Deleting the contents of '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T20:39:47.4459723Z ##[group]Initializing the repository
+2026-06-09T20:39:47.4463394Z [command]/usr/bin/git init /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T20:39:47.4535785Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-09T20:39:47.4538105Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-09T20:39:47.4540503Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-09T20:39:47.4542824Z hint: call:
+2026-06-09T20:39:47.4543623Z hint:
+2026-06-09T20:39:47.4544555Z hint: 	git config --global init.defaultBranch <name>
+2026-06-09T20:39:47.4545646Z hint:
+2026-06-09T20:39:47.4546920Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-09T20:39:47.4548856Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-09T20:39:47.4550289Z hint:
+2026-06-09T20:39:47.4551053Z hint: 	git branch -m <name>
+2026-06-09T20:39:47.4552005Z hint:
+2026-06-09T20:39:47.4553130Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-09T20:39:47.4555066Z Initialized empty Git repository in /home/runner/work/modern_colorthief/modern_colorthief/.git/
+2026-06-09T20:39:47.4558755Z [command]/usr/bin/git remote add origin https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T20:39:47.4590735Z ##[endgroup]
+2026-06-09T20:39:47.4592261Z ##[group]Disabling automatic garbage collection
+2026-06-09T20:39:47.4593652Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-09T20:39:47.4617210Z ##[endgroup]
+2026-06-09T20:39:47.4618507Z ##[group]Setting up auth
+2026-06-09T20:39:47.4622779Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-09T20:39:47.4650381Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-09T20:39:47.4923340Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-09T20:39:47.4947307Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-09T20:39:47.5110169Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-09T20:39:47.5141016Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-09T20:39:47.5313552Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-09T20:39:47.5342239Z ##[endgroup]
+2026-06-09T20:39:47.5343957Z ##[group]Fetching the repository
+2026-06-09T20:39:47.5351023Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +190fb0d2341410ec310002b9c2abaa070b4e999a:refs/remotes/pull/125/merge
+2026-06-09T20:39:48.0439611Z From https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T20:39:48.0441459Z  * [new ref]         190fb0d2341410ec310002b9c2abaa070b4e999a -> pull/125/merge
+2026-06-09T20:39:48.0478953Z ##[endgroup]
+2026-06-09T20:39:48.0480782Z ##[group]Determining the checkout info
+2026-06-09T20:39:48.0482246Z ##[endgroup]
+2026-06-09T20:39:48.0484946Z [command]/usr/bin/git sparse-checkout disable
+2026-06-09T20:39:48.0521203Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-09T20:39:48.0543838Z ##[group]Checking out the ref
+2026-06-09T20:39:48.0547636Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/125/merge
+2026-06-09T20:39:48.0732367Z Note: switching to 'refs/remotes/pull/125/merge'.
+2026-06-09T20:39:48.0733539Z 
+2026-06-09T20:39:48.0734245Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-06-09T20:39:48.0735806Z changes and commit them, and you can discard any commits you make in this
+2026-06-09T20:39:48.0737778Z state without impacting any branches by switching back to a branch.
+2026-06-09T20:39:48.0738685Z 
+2026-06-09T20:39:48.0739310Z If you want to create a new branch to retain commits you create, you may
+2026-06-09T20:39:48.0740844Z do so (now or later) by using -c with the switch command. Example:
+2026-06-09T20:39:48.0742064Z 
+2026-06-09T20:39:48.0742659Z   git switch -c <new-branch-name>
+2026-06-09T20:39:48.0743382Z 
+2026-06-09T20:39:48.0743757Z Or undo this operation with:
+2026-06-09T20:39:48.0744304Z 
+2026-06-09T20:39:48.0744640Z   git switch -
+2026-06-09T20:39:48.0745078Z 
+2026-06-09T20:39:48.0745827Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-06-09T20:39:48.0746791Z 
+2026-06-09T20:39:48.0748151Z HEAD is now at 190fb0d Merge 873cdac43a5582d316fed071c5c44ece50fcbd49 into 350b8337a769a0d29e1b551007c13f8ebc5606b8
+2026-06-09T20:39:48.0751625Z ##[endgroup]
+2026-06-09T20:39:48.0779386Z [command]/usr/bin/git log -1 --format=%H
+2026-06-09T20:39:48.0801166Z 190fb0d2341410ec310002b9c2abaa070b4e999a
+2026-06-09T20:39:48.1090963Z ##[group]Run ruby/setup-ruby@v1
+2026-06-09T20:39:48.1091891Z with:
+2026-06-09T20:39:48.1092620Z   ruby-version: 3.4
+2026-06-09T20:39:48.1093409Z   bundler-cache: false
+2026-06-09T20:39:48.1102008Z   token: ***
+2026-06-09T20:39:48.1102786Z ##[endgroup]
+2026-06-09T20:39:48.2799861Z ##[group]Modifying PATH
+2026-06-09T20:39:48.2801636Z Entries added to PATH to use selected Ruby:
+2026-06-09T20:39:48.2809046Z   /opt/hostedtoolcache/Ruby/3.4.9/x64/bin
+2026-06-09T20:39:48.2810870Z ##[endgroup]
+2026-06-09T20:39:48.2812277Z ##[group]Print Ruby version
+2026-06-09T20:39:48.2842452Z [command]/opt/hostedtoolcache/Ruby/3.4.9/x64/bin/ruby --version
+2026-06-09T20:39:49.4976164Z ruby 3.4.9 (2026-03-11 revision 76cca827ab) +PRISM [x86_64-linux]
+2026-06-09T20:39:49.5004714Z Took   1.22 seconds
+2026-06-09T20:39:49.5005652Z ##[endgroup]
+2026-06-09T20:39:49.5006351Z ##[group]Installing Bundler
+2026-06-09T20:39:49.5016699Z Using Bundler shipped with ruby-3.4.9
+2026-06-09T20:39:49.5017528Z Took   0.00 seconds
+2026-06-09T20:39:49.5018362Z ##[endgroup]
+2026-06-09T20:39:49.5117486Z ##[group]Run sudo apt-get update
+2026-06-09T20:39:49.5117918Z [36;1msudo apt-get update[0m
+2026-06-09T20:39:49.5118269Z [36;1msudo apt-get install -y libclang-dev ruby-dev[0m
+2026-06-09T20:39:49.5245211Z shell: /usr/bin/bash -e {0}
+2026-06-09T20:39:49.5245522Z ##[endgroup]
+2026-06-09T20:39:49.5991902Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-06-09T20:39:49.6408008Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-06-09T20:39:49.6423069Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-06-09T20:39:49.6460420Z Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+2026-06-09T20:39:49.6488143Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-06-09T20:39:49.6518400Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-06-09T20:39:49.6600265Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-06-09T20:39:49.7473284Z Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [1825 B]
+2026-06-09T20:39:49.7808753Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [2067 kB]
+2026-06-09T20:39:49.7968687Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [363 kB]
+2026-06-09T20:39:49.7993676Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [181 kB]
+2026-06-09T20:39:49.8010700Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [17.4 kB]
+2026-06-09T20:39:49.8020835Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1699 kB]
+2026-06-09T20:39:49.8137988Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [331 kB]
+2026-06-09T20:39:49.8347657Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+2026-06-09T20:39:49.8379045Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [34.7 kB]
+2026-06-09T20:39:49.8397417Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+2026-06-09T20:39:49.8422698Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5772 B]
+2026-06-09T20:39:49.8863688Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [10.5 kB]
+2026-06-09T20:39:49.9002626Z Get:20 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [170 kB]
+2026-06-09T20:39:49.9203434Z Get:21 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [140 kB]
+2026-06-09T20:39:49.9469258Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1763 kB]
+2026-06-09T20:39:49.9550928Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [275 kB]
+2026-06-09T20:39:49.9578356Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [44.8 kB]
+2026-06-09T20:39:49.9618119Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [11.5 kB]
+2026-06-09T20:39:49.9635507Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1195 kB]
+2026-06-09T20:39:49.9701233Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [232 kB]
+2026-06-09T20:39:49.9748189Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.2 kB]
+2026-06-09T20:39:49.9835819Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [23.3 kB]
+2026-06-09T20:39:50.0548664Z Get:30 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1212 B]
+2026-06-09T20:39:54.7859847Z Fetched 9414 kB in 1s (8184 kB/s)
+2026-06-09T20:39:55.6576183Z Reading package lists...
+2026-06-09T20:39:55.6881372Z Reading package lists...
+2026-06-09T20:39:55.8474311Z Building dependency tree...
+2026-06-09T20:39:55.8481625Z Reading state information...
+2026-06-09T20:39:56.0152628Z ruby-dev is already the newest version (1:3.2~ubuntu1).
+2026-06-09T20:39:56.0153068Z ruby-dev set to manually installed.
+2026-06-09T20:39:56.0153433Z The following NEW packages will be installed:
+2026-06-09T20:39:56.0160040Z   libclang-18-dev libclang-dev
+2026-06-09T20:39:56.0317918Z 0 upgraded, 2 newly installed, 0 to remove and 33 not upgraded.
+2026-06-09T20:39:56.0318480Z Need to get 28.8 MB of archives.
+2026-06-09T20:39:56.0319004Z After this operation, 292 MB of additional disk space will be used.
+2026-06-09T20:39:56.0319618Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-06-09T20:39:56.0828154Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libclang-18-dev amd64 1:18.1.3-1ubuntu1 [28.8 MB]
+2026-06-09T20:39:56.9900737Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libclang-dev amd64 1:18.0-59~exp2 [5424 B]
+2026-06-09T20:39:57.2323953Z Fetched 28.8 MB in 1s (29.8 MB/s)
+2026-06-09T20:39:57.2551472Z Selecting previously unselected package libclang-18-dev.
+2026-06-09T20:39:57.2735571Z (Reading database ... 
+2026-06-09T20:39:57.2736334Z (Reading database ... 5%
+2026-06-09T20:39:57.2736725Z (Reading database ... 10%
+2026-06-09T20:39:57.2737481Z (Reading database ... 15%
+2026-06-09T20:39:57.2737793Z (Reading database ... 20%
+2026-06-09T20:39:57.2738164Z (Reading database ... 25%
+2026-06-09T20:39:57.2738520Z (Reading database ... 30%
+2026-06-09T20:39:57.2738876Z (Reading database ... 35%
+2026-06-09T20:39:57.2739231Z (Reading database ... 40%
+2026-06-09T20:39:57.2739592Z (Reading database ... 45%
+2026-06-09T20:39:57.2739946Z (Reading database ... 50%
+2026-06-09T20:39:57.2777284Z (Reading database ... 55%
+2026-06-09T20:39:57.4001470Z (Reading database ... 60%
+2026-06-09T20:39:57.5896364Z (Reading database ... 65%
+2026-06-09T20:39:57.7964177Z (Reading database ... 70%
+2026-06-09T20:39:57.8278416Z (Reading database ... 75%
+2026-06-09T20:39:57.9416159Z (Reading database ... 80%
+2026-06-09T20:39:58.1482203Z (Reading database ... 85%
+2026-06-09T20:39:58.3544210Z (Reading database ... 90%
+2026-06-09T20:39:58.5410335Z (Reading database ... 95%
+2026-06-09T20:39:58.5410928Z (Reading database ... 100%
+2026-06-09T20:39:58.5411599Z (Reading database ... 202149 files and directories currently installed.)
+2026-06-09T20:39:58.5454364Z Preparing to unpack .../libclang-18-dev_1%3a18.1.3-1ubuntu1_amd64.deb ...
+2026-06-09T20:39:58.5479675Z Unpacking libclang-18-dev (1:18.1.3-1ubuntu1) ...
+2026-06-09T20:39:59.8709424Z Selecting previously unselected package libclang-dev.
+2026-06-09T20:39:59.8828812Z Preparing to unpack .../libclang-dev_1%3a18.0-59~exp2_amd64.deb ...
+2026-06-09T20:39:59.8847135Z Unpacking libclang-dev (1:18.0-59~exp2) ...
+2026-06-09T20:39:59.9165267Z Setting up libclang-18-dev (1:18.1.3-1ubuntu1) ...
+2026-06-09T20:39:59.9208164Z Setting up libclang-dev (1:18.0-59~exp2) ...
+2026-06-09T20:40:00.4697305Z 
+2026-06-09T20:40:00.4698337Z Running kernel seems to be up-to-date.
+2026-06-09T20:40:00.4698707Z 
+2026-06-09T20:40:00.4698902Z No services need to be restarted.
+2026-06-09T20:40:00.4699156Z 
+2026-06-09T20:40:00.4699307Z No containers need to be restarted.
+2026-06-09T20:40:00.4699577Z 
+2026-06-09T20:40:00.4699771Z No user sessions are running outdated binaries.
+2026-06-09T20:40:00.4700129Z 
+2026-06-09T20:40:00.4700431Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-06-09T20:40:01.4028949Z ##[group]Run dtolnay/rust-toolchain@stable
+2026-06-09T20:40:01.4029247Z with:
+2026-06-09T20:40:01.4029446Z   toolchain: stable
+2026-06-09T20:40:01.4029653Z ##[endgroup]
+2026-06-09T20:40:01.4141309Z ##[group]Run : parse toolchain version
+2026-06-09T20:40:01.4141647Z [36;1m: parse toolchain version[0m
+2026-06-09T20:40:01.4141919Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-06-09T20:40:01.4142420Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-06-09T20:40:01.4142927Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-06-09T20:40:01.4143210Z [36;1m  exit 1[0m
+2026-06-09T20:40:01.4143533Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-06-09T20:40:01.4143966Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-06-09T20:40:01.4144677Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4145165Z [36;1m  else[0m
+2026-06-09T20:40:01.4145551Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4145978Z [36;1m  fi[0m
+2026-06-09T20:40:01.4146266Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-06-09T20:40:01.4146767Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4147360Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-06-09T20:40:01.4147883Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4148346Z [36;1melse[0m
+2026-06-09T20:40:01.4148594Z [36;1m  echo "toolchain=$toolchain" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4148887Z [36;1mfi[0m
+2026-06-09T20:40:01.4169208Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:01.4169536Z env:
+2026-06-09T20:40:01.4169726Z   toolchain: stable
+2026-06-09T20:40:01.4169932Z ##[endgroup]
+2026-06-09T20:40:01.4259247Z ##[group]Run : construct rustup command line
+2026-06-09T20:40:01.4259583Z [36;1m: construct rustup command line[0m
+2026-06-09T20:40:01.4260020Z [36;1mecho "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4260608Z [36;1mecho "components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4261059Z [36;1mecho "downgrade=" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:01.4279490Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:01.4279821Z env:
+2026-06-09T20:40:01.4280008Z   targets: 
+2026-06-09T20:40:01.4280200Z   components: 
+2026-06-09T20:40:01.4280397Z ##[endgroup]
+2026-06-09T20:40:01.4427959Z ##[group]Run : set $CARGO_HOME
+2026-06-09T20:40:01.4428350Z [36;1m: set $CARGO_HOME[0m
+2026-06-09T20:40:01.4428830Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-06-09T20:40:01.4453085Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:01.4453439Z ##[endgroup]
+2026-06-09T20:40:01.4520758Z ##[group]Run : install rustup if needed
+2026-06-09T20:40:01.4521073Z [36;1m: install rustup if needed[0m
+2026-06-09T20:40:01.4521378Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-06-09T20:40:01.4522080Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-06-09T20:40:01.4522758Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-06-09T20:40:01.4523039Z [36;1mfi[0m
+2026-06-09T20:40:01.4540730Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:01.4541058Z env:
+2026-06-09T20:40:01.4541292Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:01.4541534Z ##[endgroup]
+2026-06-09T20:40:01.4603695Z ##[group]Run rustup toolchain install stable --profile minimal --no-self-update
+2026-06-09T20:40:01.4604235Z [36;1mrustup toolchain install stable --profile minimal --no-self-update[0m
+2026-06-09T20:40:01.4621044Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:01.4621373Z env:
+2026-06-09T20:40:01.4621580Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:01.4621831Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-06-09T20:40:01.4622066Z ##[endgroup]
+2026-06-09T20:40:03.3428391Z info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+2026-06-09T20:40:03.4457133Z 
+2026-06-09T20:40:03.4539256Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-06-09T20:40:03.4539894Z 
+2026-06-09T20:40:03.4585706Z ##[group]Run rustup default stable
+2026-06-09T20:40:03.4586074Z [36;1mrustup default stable[0m
+2026-06-09T20:40:03.4607611Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:03.4607984Z env:
+2026-06-09T20:40:03.4608215Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.4608463Z ##[endgroup]
+2026-06-09T20:40:03.4692263Z info: using existing install for stable-x86_64-unknown-linux-gnu
+2026-06-09T20:40:03.4700540Z info: default toolchain set to stable-x86_64-unknown-linux-gnu
+2026-06-09T20:40:03.4701035Z 
+2026-06-09T20:40:03.4775602Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-06-09T20:40:03.4776008Z 
+2026-06-09T20:40:03.4802927Z ##[group]Run : create cachekey
+2026-06-09T20:40:03.4803222Z [36;1m: create cachekey[0m
+2026-06-09T20:40:03.4803709Z [36;1mDATE=$(rustc +stable --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-06-09T20:40:03.4804309Z [36;1mHASH=$(rustc +stable --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-06-09T20:40:03.4804775Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-06-09T20:40:03.4823459Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:03.4823798Z env:
+2026-06-09T20:40:03.4824005Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.4824261Z ##[endgroup]
+2026-06-09T20:40:03.5469258Z ##[group]Run : disable incremental compilation
+2026-06-09T20:40:03.5469596Z [36;1m: disable incremental compilation[0m
+2026-06-09T20:40:03.5469910Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-06-09T20:40:03.5470229Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-06-09T20:40:03.5470502Z [36;1mfi[0m
+2026-06-09T20:40:03.5488821Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:03.5489143Z env:
+2026-06-09T20:40:03.5489347Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.5489589Z ##[endgroup]
+2026-06-09T20:40:03.5543424Z ##[group]Run : enable colors in Cargo output
+2026-06-09T20:40:03.5543744Z [36;1m: enable colors in Cargo output[0m
+2026-06-09T20:40:03.5544160Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-06-09T20:40:03.5544486Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-06-09T20:40:03.5544783Z [36;1mfi[0m
+2026-06-09T20:40:03.5561492Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:03.5561812Z env:
+2026-06-09T20:40:03.5562010Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.5562255Z   CARGO_INCREMENTAL: 0
+2026-06-09T20:40:03.5562470Z ##[endgroup]
+2026-06-09T20:40:03.5615907Z ##[group]Run : enable Cargo sparse registry
+2026-06-09T20:40:03.5616222Z [36;1m: enable Cargo sparse registry[0m
+2026-06-09T20:40:03.5616574Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-06-09T20:40:03.5617522Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-06-09T20:40:03.5618189Z [36;1m  if rustc +stable --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-06-09T20:40:03.5618726Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-06-09T20:40:03.5619352Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-06-09T20:40:03.5619821Z [36;1m  elif rustc +stable --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-06-09T20:40:03.5620344Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-06-09T20:40:03.5620827Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-06-09T20:40:03.5621150Z [36;1m  fi[0m
+2026-06-09T20:40:03.5621347Z [36;1mfi[0m
+2026-06-09T20:40:03.5636440Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:03.5636768Z env:
+2026-06-09T20:40:03.5636976Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.5637541Z   CARGO_INCREMENTAL: 0
+2026-06-09T20:40:03.5637796Z   CARGO_TERM_COLOR: always
+2026-06-09T20:40:03.5638016Z ##[endgroup]
+2026-06-09T20:40:03.5945098Z ##[group]Run : work around spurious network errors in curl 8.0
+2026-06-09T20:40:03.5945538Z [36;1m: work around spurious network errors in curl 8.0[0m
+2026-06-09T20:40:03.5946078Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-06-09T20:40:03.5946653Z [36;1mif rustc +stable --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-06-09T20:40:03.5947295Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-06-09T20:40:03.5947596Z [36;1mfi[0m
+2026-06-09T20:40:03.5965889Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:03.5966215Z env:
+2026-06-09T20:40:03.5966422Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.5966797Z   CARGO_INCREMENTAL: 0
+2026-06-09T20:40:03.5967202Z   CARGO_TERM_COLOR: always
+2026-06-09T20:40:03.5967499Z ##[endgroup]
+2026-06-09T20:40:03.6154592Z ##[group]Run rustc +stable --version --verbose
+2026-06-09T20:40:03.6154957Z [36;1mrustc +stable --version --verbose[0m
+2026-06-09T20:40:03.6173538Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-06-09T20:40:03.6173885Z env:
+2026-06-09T20:40:03.6174121Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.6174387Z   CARGO_INCREMENTAL: 0
+2026-06-09T20:40:03.6174612Z   CARGO_TERM_COLOR: always
+2026-06-09T20:40:03.6174831Z ##[endgroup]
+2026-06-09T20:40:03.6323342Z rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-06-09T20:40:03.6323947Z binary: rustc
+2026-06-09T20:40:03.6324743Z commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+2026-06-09T20:40:03.6325262Z commit-date: 2026-05-25
+2026-06-09T20:40:03.6325692Z host: x86_64-unknown-linux-gnu
+2026-06-09T20:40:03.6326090Z release: 1.96.0
+2026-06-09T20:40:03.6326450Z LLVM version: 22.1.2
+2026-06-09T20:40:03.6394162Z ##[group]Run cargo build --release -p modern-colorthief-ruby
+2026-06-09T20:40:03.6394610Z [36;1mcargo build --release -p modern-colorthief-ruby[0m
+2026-06-09T20:40:03.6412550Z shell: /usr/bin/bash -e {0}
+2026-06-09T20:40:03.6412799Z env:
+2026-06-09T20:40:03.6413143Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T20:40:03.6413405Z   CARGO_INCREMENTAL: 0
+2026-06-09T20:40:03.6413636Z   CARGO_TERM_COLOR: always
+2026-06-09T20:40:03.6413866Z ##[endgroup]
+2026-06-09T20:40:06.6711732Z [1m[92m    Updating[0m crates.io index
+2026-06-09T20:40:07.6352951Z [1m[92m Downloading[0m crates ...
+2026-06-09T20:40:07.7003581Z [1m[92m  Downloaded[0m cfg-if v1.0.4
+2026-06-09T20:40:07.7377962Z [1m[92m  Downloaded[0m cexpr v0.6.0
+2026-06-09T20:40:07.7519643Z [1m[92m  Downloaded[0m bitflags v2.13.0
+2026-06-09T20:40:07.7557735Z [1m[92m  Downloaded[0m lazy_static v1.5.0
+2026-06-09T20:40:07.7704279Z [1m[92m  Downloaded[0m rustc-hash v2.1.2
+2026-06-09T20:40:07.7802179Z [1m[92m  Downloaded[0m seq-macro v0.3.6
+2026-06-09T20:40:07.7937515Z [1m[92m  Downloaded[0m magnus-macros v0.8.0
+2026-06-09T20:40:07.7971397Z [1m[92m  Downloaded[0m shell-words v1.1.1
+2026-06-09T20:40:07.8092546Z [1m[92m  Downloaded[0m quote v1.0.45
+2026-06-09T20:40:07.8111107Z [1m[92m  Downloaded[0m rb-sys-env v0.2.3
+2026-06-09T20:40:07.8125608Z [1m[92m  Downloaded[0m shlex v1.3.0
+2026-06-09T20:40:07.8133691Z [1m[92m  Downloaded[0m glob v0.3.3
+2026-06-09T20:40:07.8142603Z [1m[92m  Downloaded[0m either v1.16.0
+2026-06-09T20:40:07.8152881Z [1m[92m  Downloaded[0m crossbeam-deque v0.8.6
+2026-06-09T20:40:07.8234670Z [1m[92m  Downloaded[0m rb-sys-build v0.9.128
+2026-06-09T20:40:07.8252411Z [1m[92m  Downloaded[0m crossbeam-utils v0.8.21
+2026-06-09T20:40:07.8271202Z [1m[92m  Downloaded[0m libloading v0.8.9
+2026-06-09T20:40:07.8287808Z [1m[92m  Downloaded[0m rb-sys v0.9.128
+2026-06-09T20:40:07.8307411Z [1m[92m  Downloaded[0m clang-sys v1.8.1
+2026-06-09T20:40:07.8321487Z [1m[92m  Downloaded[0m crossbeam-epoch v0.9.18
+2026-06-09T20:40:07.8375648Z [1m[92m  Downloaded[0m unicode-ident v1.0.24
+2026-06-09T20:40:07.8409971Z [1m[92m  Downloaded[0m rayon-core v1.13.0
+2026-06-09T20:40:07.8435547Z [1m[92m  Downloaded[0m proc-macro2 v1.0.106
+2026-06-09T20:40:07.8515814Z [1m[92m  Downloaded[0m minimal-lexical v0.2.1
+2026-06-09T20:40:07.8550321Z [1m[92m  Downloaded[0m nom v7.1.3
+2026-06-09T20:40:07.8590711Z [1m[92m  Downloaded[0m memchr v2.8.1
+2026-06-09T20:40:07.8628115Z [1m[92m  Downloaded[0m aho-corasick v1.1.4
+2026-06-09T20:40:07.8666561Z [1m[92m  Downloaded[0m itertools v0.13.0
+2026-06-09T20:40:07.8711109Z [1m[92m  Downloaded[0m regex v1.12.3
+2026-06-09T20:40:07.8747136Z [1m[92m  Downloaded[0m rayon v1.12.0
+2026-06-09T20:40:07.8803804Z [1m[92m  Downloaded[0m magnus v0.8.2
+2026-06-09T20:40:07.8863563Z [1m[92m  Downloaded[0m bindgen v0.72.1
+2026-06-09T20:40:07.9048135Z [1m[92m  Downloaded[0m syn v2.0.117
+2026-06-09T20:40:07.9117912Z [1m[92m  Downloaded[0m regex-syntax v0.8.10
+2026-06-09T20:40:07.9186476Z [1m[92m  Downloaded[0m regex-automata v0.4.14
+2026-06-09T20:40:07.9283782Z [1m[92m  Downloaded[0m libc v0.2.186
+2026-06-09T20:40:07.9981381Z [1m[92m   Compiling[0m proc-macro2 v1.0.106
+2026-06-09T20:40:08.0046631Z [1m[92m   Compiling[0m memchr v2.8.1
+2026-06-09T20:40:08.0047564Z [1m[92m   Compiling[0m glob v0.3.3
+2026-06-09T20:40:08.0048464Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-06-09T20:40:10.7935791Z [1m[92m   Compiling[0m quote v1.0.45
+2026-06-09T20:40:11.6828387Z [1m[92m   Compiling[0m clang-sys v1.8.1
+2026-06-09T20:40:11.7418671Z [1m[92m   Compiling[0m libc v0.2.186
+2026-06-09T20:40:13.4529458Z [1m[92m   Compiling[0m aho-corasick v1.1.4
+2026-06-09T20:40:13.4576693Z [1m[92m   Compiling[0m minimal-lexical v0.2.1
+2026-06-09T20:40:13.4638268Z [1m[92m   Compiling[0m regex-syntax v0.8.10
+2026-06-09T20:40:13.7598599Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2026-06-09T20:40:13.7812507Z [1m[92m   Compiling[0m libloading v0.8.9
+2026-06-09T20:40:13.9730539Z [1m[92m   Compiling[0m nom v7.1.3
+2026-06-09T20:40:15.9078531Z [1m[92m   Compiling[0m regex-automata v0.4.14
+2026-06-09T20:40:16.4598404Z [1m[92m   Compiling[0m syn v2.0.117
+2026-06-09T20:40:20.0738738Z [1m[92m   Compiling[0m bindgen v0.72.1
+2026-06-09T20:40:20.1078687Z [1m[92m   Compiling[0m either v1.16.0
+2026-06-09T20:40:20.2848844Z [1m[92m   Compiling[0m itertools v0.13.0
+2026-06-09T20:40:21.4878423Z [1m[92m   Compiling[0m regex v1.12.3
+2026-06-09T20:40:22.4928418Z [1m[92m   Compiling[0m cexpr v0.6.0
+2026-06-09T20:40:24.5178845Z [1m[92m   Compiling[0m shlex v1.3.0
+2026-06-09T20:40:24.7468614Z [1m[92m   Compiling[0m crossbeam-utils v0.8.21
+2026-06-09T20:40:25.0088464Z [1m[92m   Compiling[0m bitflags v2.13.0
+2026-06-09T20:40:25.2848328Z [1m[92m   Compiling[0m rustc-hash v2.1.2
+2026-06-09T20:40:25.4588918Z [1m[92m   Compiling[0m shell-words v1.1.1
+2026-06-09T20:40:25.6158413Z [1m[92m   Compiling[0m lazy_static v1.5.0
+2026-06-09T20:40:26.3272305Z [1m[92m   Compiling[0m rb-sys-env v0.2.3
+2026-06-09T20:40:26.4850962Z [1m[92m   Compiling[0m crossbeam-epoch v0.9.18
+2026-06-09T20:40:26.7978677Z [1m[92m   Compiling[0m rayon-core v1.13.0
+2026-06-09T20:40:26.8748473Z [1m[92m   Compiling[0m crossbeam-deque v0.8.6
+2026-06-09T20:40:27.7260484Z [1m[92m   Compiling[0m magnus v0.8.2
+2026-06-09T20:40:28.9018464Z [1m[92m   Compiling[0m rayon v1.12.0
+2026-06-09T20:40:30.7539388Z [1m[92m   Compiling[0m rb-sys-build v0.9.128
+2026-06-09T20:40:31.6229306Z [1m[92m   Compiling[0m modern-colorthief-core v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core)
+2026-06-09T20:40:31.6818376Z [1m[92m   Compiling[0m seq-macro v0.3.6
+2026-06-09T20:40:32.8512866Z [1m[92m   Compiling[0m modern-colorthief-core-cpu v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core_cpu)
+2026-06-09T20:40:35.0057393Z [1m[92m   Compiling[0m magnus-macros v0.8.0
+2026-06-09T20:40:46.3726353Z [1m[92m   Compiling[0m rb-sys v0.9.128
+2026-06-09T20:41:06.3359358Z [1m[92m   Compiling[0m modern-colorthief-ruby v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/ruby-bindings)
+2026-06-09T20:41:06.3911709Z [1m[33mwarning[0m[1m: use of deprecated function `magnus::exception::runtime_error`: please use `Ruby::exception_runtime_error` instead[0m
+2026-06-09T20:41:06.3912565Z  [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:6:44
+2026-06-09T20:41:06.3912931Z   [1m[94m|[0m
+2026-06-09T20:41:06.3913458Z [1m[94m6[0m [1m[94m|[0m         .map_err(|e| Error::new(exception::runtime_error(), e))
+2026-06-09T20:41:06.3914055Z   [1m[94m|[0m                                            [1m[33m^^^^^^^^^^^^^[0m
+2026-06-09T20:41:06.3914451Z   [1m[94m|[0m
+2026-06-09T20:41:06.3914802Z   [1m[94m= [0m[1mnote[0m: `#[warn(deprecated)]` on by default
+2026-06-09T20:41:06.3915041Z 
+2026-06-09T20:41:06.3915574Z [1m[33mwarning[0m[1m: use of deprecated function `magnus::exception::runtime_error`: please use `Ruby::exception_runtime_error` instead[0m
+2026-06-09T20:41:06.3916197Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:11:44
+2026-06-09T20:41:06.3916498Z    [1m[94m|[0m
+2026-06-09T20:41:06.3916909Z [1m[94m11[0m [1m[94m|[0m         .map_err(|e| Error::new(exception::runtime_error(), e))?;
+2026-06-09T20:41:06.3917631Z    [1m[94m|[0m                                            [1m[33m^^^^^^^^^^^^^[0m
+2026-06-09T20:41:06.3917863Z 
+2026-06-09T20:41:06.3918355Z [1m[33mwarning[0m[1m: use of deprecated function `magnus::exception::runtime_error`: please use `Ruby::exception_runtime_error` instead[0m
+2026-06-09T20:41:06.3918968Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:17:46
+2026-06-09T20:41:06.3919270Z    [1m[94m|[0m
+2026-06-09T20:41:06.3919781Z [1m[94m17[0m [1m[94m|[0m         .ok_or_else(|| Error::new(exception::runtime_error(), "Image contains no colors"))
+2026-06-09T20:41:06.3920327Z    [1m[94m|[0m                                              [1m[33m^^^^^^^^^^^^^[0m
+2026-06-09T20:41:06.3920773Z 
+2026-06-09T20:41:07.6282130Z [1m[91merror[E0599][0m[1m: the method `call_handle_error` exists for fn item `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}`, but its trait bounds were not satisfied[0m
+2026-06-09T20:41:07.6283424Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:23:59
+2026-06-09T20:41:07.6283811Z    [1m[94m|[0m
+2026-06-09T20:41:07.6284407Z [1m[94m23[0m [1m[94m|[0m     mod_colorthief.define_singleton_method("get_palette", function!(get_palette, 5))?;
+2026-06-09T20:41:07.6285355Z    [1m[94m|[0m                                                           [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mmethod cannot be called due to unsatisfied trait bounds[0m
+2026-06-09T20:41:07.6285949Z    [1m[94m|[0m
+2026-06-09T20:41:07.6286371Z    [1m[94m= [0m[1mnote[0m: the following trait bounds were not satisfied:
+2026-06-09T20:41:07.6287334Z            `<for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette} as FnOnce<(&Ruby, _, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.6288288Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6289164Z            `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(&Ruby, _, _, _, _, _)>`
+2026-06-09T20:41:07.6290028Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6290956Z            `<&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette} as FnOnce<(&Ruby, _, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.6291890Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6292756Z            `&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(&Ruby, _, _, _, _, _)>`
+2026-06-09T20:41:07.6293624Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6294739Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(_, _, _, _, _)>`
+2026-06-09T20:41:07.6295957Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::Function5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6297263Z            `<&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette} as FnOnce<(&Ruby, _, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.6298226Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6299117Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: Fn<(&Ruby, _, _, _, _, _)>`
+2026-06-09T20:41:07.6300014Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8, u8) -> Result<Vec<Vec<u8>>, magnus::Error> {get_palette}: magnus::method::RubyFunction5<_, _, _, _, _, _>`
+2026-06-09T20:41:07.6301174Z    [1m[94m= [0m[1mnote[0m: this error originates in the macro `function` (in Nightly builds, run with -Z macro-backtrace for more info)
+2026-06-09T20:41:07.6301690Z 
+2026-06-09T20:41:07.7095274Z [1m[91merror[E0599][0m[1m: the method `call_handle_error` exists for fn item `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}`, but its trait bounds were not satisfied[0m
+2026-06-09T20:41:07.7096512Z   [1m[94m--> [0mcrates/ruby-bindings/src/lib.rs:24:57
+2026-06-09T20:41:07.7097592Z    [1m[94m|[0m
+2026-06-09T20:41:07.7098403Z [1m[94m24[0m [1m[94m|[0m     mod_colorthief.define_singleton_method("get_color", function!(get_color, 4))?;
+2026-06-09T20:41:07.7099877Z    [1m[94m|[0m                                                         [1m[91m^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mmethod cannot be called due to unsatisfied trait bounds[0m
+2026-06-09T20:41:07.7100963Z    [1m[94m|[0m
+2026-06-09T20:41:07.7101513Z    [1m[94m= [0m[1mnote[0m: the following trait bounds were not satisfied:
+2026-06-09T20:41:07.7102217Z            `<for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color} as FnOnce<(&Ruby, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.7103122Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7104145Z            `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(&Ruby, _, _, _, _)>`
+2026-06-09T20:41:07.7105321Z            which is required by `for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7106794Z            `<&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color} as FnOnce<(&Ruby, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.7108543Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7110065Z            `&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(&Ruby, _, _, _, _)>`
+2026-06-09T20:41:07.7111475Z            which is required by `&for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7112903Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(_, _, _, _)>`
+2026-06-09T20:41:07.7114295Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::Function4<_, _, _, _, _>`
+2026-06-09T20:41:07.7115767Z            `<&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color} as FnOnce<(&Ruby, _, _, _, _)>>::Output = _`
+2026-06-09T20:41:07.7117586Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7119184Z            `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: Fn<(&Ruby, _, _, _, _)>`
+2026-06-09T20:41:07.7120751Z            which is required by `&mut for<'a> fn(&'a [u8], u32, u32, u8) -> Result<Vec<u8>, magnus::Error> {get_color}: magnus::method::RubyFunction4<_, _, _, _, _>`
+2026-06-09T20:41:07.7122778Z    [1m[94m= [0m[1mnote[0m: this error originates in the macro `function` (in Nightly builds, run with -Z macro-backtrace for more info)
+2026-06-09T20:41:07.7123733Z 
+2026-06-09T20:41:07.7315805Z [1mFor more information about this error, try `rustc --explain E0599`.[0m
+2026-06-09T20:41:07.7329667Z [1m[33mwarning[0m: `modern-colorthief-ruby` (lib) generated 3 warnings
+2026-06-09T20:41:07.7330435Z [1m[91merror[0m: could not compile `modern-colorthief-ruby` (lib) due to 2 previous errors; 3 warnings emitted
+2026-06-09T20:41:07.7825867Z ##[error]Process completed with exit code 101.
+2026-06-09T20:41:07.7938380Z Post job cleanup.
+2026-06-09T20:41:07.8872441Z [command]/usr/bin/git version
+2026-06-09T20:41:07.8904549Z git version 2.54.0
+2026-06-09T20:41:07.8950621Z Temporarily overriding HOME='/home/runner/work/_temp/ac605245-11bc-45e2-8260-bde9c3900976' before making global git config changes
+2026-06-09T20:41:07.8952014Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-09T20:41:07.8956832Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T20:41:07.8986940Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-09T20:41:07.9014992Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-09T20:41:07.9195758Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-09T20:41:07.9216548Z http.https://github.com/.extraheader
+2026-06-09T20:41:07.9226963Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-06-09T20:41:07.9252295Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-09T20:41:07.9424199Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-09T20:41:07.9451278Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-09T20:41:07.9731563Z Cleaning up orphan processes
+2026-06-09T20:41:07.9941557Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4. Actions will be forced to run with Node.js 24 by default starting June 16th, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

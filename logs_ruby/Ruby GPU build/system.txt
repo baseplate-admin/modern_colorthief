@@ -1,0 +1,8 @@
+2026-06-09T20:39:43.9250000Z Requested labels: ubuntu-latest
+2026-06-09T20:39:43.9250000Z Job defined at: baseplate-admin/modern_colorthief/.github/workflows/ruby-ci.yaml@refs/pull/125/merge
+2026-06-09T20:39:43.9250000Z Waiting for a runner to pick up this job...
+2026-06-09T20:39:43.9270000Z Job is about to start running on the hosted runner: GitHub Actions 1000049807
+2026-06-09T20:39:43.9250000Z Evaluating ruby-gpu-build.if
+2026-06-09T20:39:43.9250000Z Evaluating: success()
+2026-06-09T20:39:43.9250000Z Result: true
+2026-06-09T20:39:43.9290000Z Job is waiting for a hosted runner to come online.
