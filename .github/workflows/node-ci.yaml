@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
       - working-directory: crates/node-bindings
         run: npm install && npx napi build --platform --release --output-dir artifacts
       - name: Run Rust core tests
@@ -27,6 +28,10 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts/*.node
+      - uses: actions/upload-artifact@v4
+        with:
+          name: node-native-js
+          path: crates/node-bindings/native.js
 
   node-test:
     name: Node.js 22
@@ -41,6 +46,10 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: node-native-js
+          path: crates/node-bindings
       - working-directory: crates/node-bindings
         run: npm install && npx vitest run
 
@@ -57,10 +66,14 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: node-native-js
+          path: crates/node-bindings
       - working-directory: crates/node-bindings
         run: npm install
       - working-directory: crates/node-bindings
-        run: deno test --allow-read --allow-env --allow-net tests/
+        run: deno test --allow-read --allow-env --allow-net --include="test_" tests/
 
   bun-test:
     name: Bun
@@ -73,16 +86,20 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: node-native-js
+          path: crates/node-bindings
       - working-directory: crates/node-bindings
         run: npm install
       - working-directory: crates/node-bindings
-        run: bun test tests/
+        run: bun test -- --match="*" tests/test_*.ts
 
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    needs: [node-test, deno-test, bun-test]
+    needs: [node-test, deno-test, bun-test, build]
     permissions:
       id-token: write
     steps:
@@ -95,6 +112,12 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: node-native-js
+          path: crates/node-bindings
+      - working-directory: crates/node-bindings
+        run: npm install
       - working-directory: crates/node-bindings
         run: npm publish --provenance --access public
         env:

@@ -1,0 +1,62 @@
+﻿2026-06-09T05:19:03.1401337Z ##[group]Run npm install && npx napi build --platform --release --output-dir artifacts
+2026-06-09T05:19:03.1402103Z [36;1mnpm install && npx napi build --platform --release --output-dir artifacts[0m
+2026-06-09T05:19:03.1442267Z shell: /usr/bin/bash -e {0}
+2026-06-09T05:19:03.1442623Z ##[endgroup]
+2026-06-09T05:19:15.6739927Z 
+2026-06-09T05:19:15.6745154Z added 115 packages, and audited 116 packages in 12s
+2026-06-09T05:19:15.6745976Z 
+2026-06-09T05:19:15.6746550Z 26 packages are looking for funding
+2026-06-09T05:19:15.6747025Z   run `npm fund` for details
+2026-06-09T05:19:15.6752421Z 
+2026-06-09T05:19:15.6752861Z found 0 vulnerabilities
+2026-06-09T05:19:19.5967156Z    Compiling proc-macro2 v1.0.106
+2026-06-09T05:19:19.5968370Z    Compiling unicode-ident v1.0.24
+2026-06-09T05:19:19.5969512Z    Compiling quote v1.0.45
+2026-06-09T05:19:19.5970412Z    Compiling crossbeam-utils v0.8.21
+2026-06-09T05:19:19.9101463Z    Compiling serde_core v1.0.228
+2026-06-09T05:19:20.2935830Z    Compiling napi-build v2.3.2
+2026-06-09T05:19:20.3107266Z    Compiling memchr v2.8.1
+2026-06-09T05:19:20.5345268Z    Compiling futures-sink v0.3.32
+2026-06-09T05:19:20.6150636Z    Compiling pin-project-lite v0.2.17
+2026-06-09T05:19:20.6584599Z    Compiling autocfg v1.5.1
+2026-06-09T05:19:21.1590092Z    Compiling syn v2.0.117
+2026-06-09T05:19:21.4060266Z    Compiling futures-core v0.3.32
+2026-06-09T05:19:21.4845859Z    Compiling futures-channel v0.3.32
+2026-06-09T05:19:21.6320488Z    Compiling num-traits v0.2.19
+2026-06-09T05:19:21.6585387Z    Compiling crossbeam-epoch v0.9.18
+2026-06-09T05:19:21.7531474Z    Compiling slab v0.4.12
+2026-06-09T05:19:21.8791121Z    Compiling zmij v1.0.21
+2026-06-09T05:19:21.9680196Z    Compiling cfg-if v1.0.4
+2026-06-09T05:19:21.9960155Z    Compiling futures-io v0.3.32
+2026-06-09T05:19:22.1010251Z    Compiling rayon-core v1.13.0
+2026-06-09T05:19:22.1075329Z    Compiling futures-task v0.3.32
+2026-06-09T05:19:22.2042245Z    Compiling crossbeam-deque v0.8.6
+2026-06-09T05:19:22.3160200Z    Compiling serde v1.0.228
+2026-06-09T05:19:22.3620091Z    Compiling serde_json v1.0.150
+2026-06-09T05:19:22.4620270Z    Compiling unicode-segmentation v1.13.3
+2026-06-09T05:19:23.0050189Z    Compiling convert_case v0.11.0
+2026-06-09T05:19:24.1919771Z    Compiling libloading v0.9.0
+2026-06-09T05:19:24.3399714Z    Compiling napi v3.9.0
+2026-06-09T05:19:24.3568458Z    Compiling either v1.16.0
+2026-06-09T05:19:24.4622932Z    Compiling itoa v1.0.18
+2026-06-09T05:19:24.5349831Z    Compiling semver v1.0.28
+2026-06-09T05:19:24.5970202Z    Compiling iana-time-zone v0.1.65
+2026-06-09T05:19:24.8708599Z    Compiling napi-derive-backend v5.0.4
+2026-06-09T05:19:25.0770093Z    Compiling chrono v0.4.45
+2026-06-09T05:19:27.0799876Z    Compiling rayon v1.12.0
+2026-06-09T05:19:27.8290143Z    Compiling napi-sys v3.2.1
+2026-06-09T05:19:28.9830639Z    Compiling encoding_rs v0.8.35
+2026-06-09T05:19:29.6200383Z    Compiling tokio v1.52.3
+2026-06-09T05:19:32.1550562Z    Compiling modern-colorthief-node v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings)
+2026-06-09T05:19:32.2322168Z    Compiling modern-colorthief-core v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core)
+2026-06-09T05:19:32.2890782Z    Compiling nohash-hasher v0.2.0
+2026-06-09T05:19:32.3397556Z    Compiling rustc-hash v2.1.2
+2026-06-09T05:19:32.3990936Z    Compiling ctor v1.0.7
+2026-06-09T05:19:32.5579802Z    Compiling bitflags v2.13.0
+2026-06-09T05:19:32.7770432Z    Compiling modern-colorthief-core-cpu v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core_cpu)
+2026-06-09T05:19:37.5537739Z    Compiling futures-macro v0.3.32
+2026-06-09T05:19:37.5538447Z    Compiling napi-derive v3.5.6
+2026-06-09T05:19:39.5717277Z    Compiling futures-util v0.3.32
+2026-06-09T05:19:41.2767803Z    Compiling futures-executor v0.3.32
+2026-06-09T05:19:41.3753657Z    Compiling futures v0.3.32
+2026-06-09T05:19:51.5347923Z     Finished `release` profile [optimized] target(s) in 32.22s

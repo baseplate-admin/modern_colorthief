@@ -1,0 +1,169 @@
+﻿2026-06-09T05:20:06.5676183Z ##[group]Run npm install && npx vitest run
+2026-06-09T05:20:06.5676639Z [36;1mnpm install && npx vitest run[0m
+2026-06-09T05:20:06.5712800Z shell: /usr/bin/bash -e {0}
+2026-06-09T05:20:06.5713145Z ##[endgroup]
+2026-06-09T05:20:20.9215801Z 
+2026-06-09T05:20:20.9216864Z added 115 packages, and audited 116 packages in 14s
+2026-06-09T05:20:20.9217427Z 
+2026-06-09T05:20:20.9217758Z 26 packages are looking for funding
+2026-06-09T05:20:20.9218367Z   run `npm fund` for details
+2026-06-09T05:20:20.9227053Z 
+2026-06-09T05:20:20.9227655Z found 0 vulnerabilities
+2026-06-09T05:20:21.5420461Z 
+2026-06-09T05:20:21.5425599Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.8 [39m[90m/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings[39m
+2026-06-09T05:20:21.5426837Z 
+2026-06-09T05:20:21.7457921Z  [31m❯[39m tests/test_edge_cases.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:21.7759888Z  [31m❯[39m tests/test_properties.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:21.8001469Z  [31m❯[39m tests/test_errors.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:21.9326306Z  [31m❯[39m tests/test_input_types.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:21.9596156Z  [31m❯[39m tests/test_concurrent.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:22.0008794Z  [31m❯[39m tests/test_api.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:22.0862223Z  [31m❯[39m tests/test_helper.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:22.1094661Z  [31m❯[39m tests/test_deduplication.ts [2m([22m[2m0 test[22m[2m)[22m
+2026-06-09T05:20:22.1132243Z 
+2026-06-09T05:20:22.1132812Z [31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+2026-06-09T05:20:22.1133317Z 
+2026-06-09T05:20:22.1161694Z [41m[1m FAIL [22m[49m tests/test_api.ts[2m [ tests/test_api.ts ][22m
+2026-06-09T05:20:22.1163984Z [31m[1mError[22m: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js[39m
+2026-06-09T05:20:22.1165958Z [36m [2m❯[22m index.js:[2m1:1[22m[39m
+2026-06-09T05:20:22.1173325Z     [90m  1|[39m import { getPalette as _getPalette, getColor as _getColor } from './na…
+2026-06-09T05:20:22.1174668Z     [90m   |[39m [31m^[39m
+2026-06-09T05:20:22.1175806Z     [90m  2|[39m [35mimport[39m sharp [35mfrom[39m [32m'sharp'[39m[33m;[39m
+2026-06-09T05:20:22.1176883Z     [90m  3|[39m
+2026-06-09T05:20:22.1177934Z [90m [2m❯[22m tests/test_api.ts:[2m2:1[22m[39m
+2026-06-09T05:20:22.1178606Z 
+2026-06-09T05:20:22.1179242Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+2026-06-09T05:20:22.1179944Z 
+2026-06-09T05:20:22.1180767Z [41m[1m FAIL [22m[49m tests/test_concurrent.ts[2m [ tests/test_concurrent.ts ][22m
+2026-06-09T05:20:22.1182895Z [31m[1mError[22m: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js[39m
+2026-06-09T05:20:22.1184515Z [36m [2m❯[22m index.js:[2m1:1[22m[39m
+2026-06-09T05:20:22.1186068Z     [90m  1|[39m import { getPalette as _getPalette, getColor as _getColor } from './na…
+2026-06-09T05:20:22.1187314Z     [90m   |[39m [31m^[39m
+2026-06-09T05:20:22.1188477Z     [90m  2|[39m [35mimport[39m sharp [35mfrom[39m [32m'sharp'[39m[33m;[39m
+2026-06-09T05:20:22.1191583Z     [90m  3|[39m
+2026-06-09T05:20:22.1192512Z [90m [2m❯[22m tests/test_concurrent.ts:[2m2:1[22m[39m
+2026-06-09T05:20:22.1193002Z 
+2026-06-09T05:20:22.1193512Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+2026-06-09T05:20:22.1194272Z 
+2026-06-09T05:20:22.1195168Z [41m[1m FAIL [22m[49m tests/test_deduplication.ts[2m [ tests/test_deduplication.ts ][22m
+2026-06-09T05:20:22.1197362Z [31m[1mError[22m: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js[39m
+2026-06-09T05:20:22.1198983Z [36m [2m❯[22m index.js:[2m1:1[22m[39m
+2026-06-09T05:20:22.1200594Z     [90m  1|[39m import { getPalette as _getPalette, getColor as _getColor } from './na…
+2026-06-09T05:20:22.1201966Z     [90m   |[39m [31m^[39m
+2026-06-09T05:20:22.1202885Z     [90m  2|[39m [35mimport[39m sharp [35mfrom[39m [32m'sharp'[39m[33m;[39m
+2026-06-09T05:20:22.1203633Z     [90m  3|[39m
+2026-06-09T05:20:22.1204473Z [90m [2m❯[22m tests/test_deduplication.ts:[2m2:1[22m[39m
+2026-06-09T05:20:22.1204966Z 
+2026-06-09T05:20:22.1205485Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯[22m[39m
+2026-06-09T05:20:22.1205885Z 
+2026-06-09T05:20:22.1206649Z [41m[1m FAIL [22m[49m tests/test_edge_cases.ts[2m [ tests/test_edge_cases.ts ][22m
+2026-06-09T05:20:22.1208740Z [31m[1mError[22m: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js[39m
+2026-06-09T05:20:22.1210583Z [36m [2m❯[22m index.js:[2m1:1[22m[39m
+2026-06-09T05:20:22.1211724Z     [90m  1|[39m import { getPalette as _getPalette, getColor as _getColor } from './na…
+2026-06-09T05:20:22.1212737Z     [90m   |[39m [31m^[39m
+2026-06-09T05:20:22.1213624Z     [90m  2|[39m [35mimport[39m sharp [35mfrom[39m [32m'sharp'[39m[33m;[39m
+2026-06-09T05:20:22.1214447Z     [90m  3|[39m
+2026-06-09T05:20:22.1215237Z [90m [2m❯[22m tests/test_edge_cases.ts:[2m2:1[22m[39m
+2026-06-09T05:20:22.1215705Z 
+2026-06-09T05:20:22.1216189Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯[22m[39m
+2026-06-09T05:20:22.1216590Z 
+2026-06-09T05:20:22.1217272Z [41m[1m FAIL [22m[49m tests/test_errors.ts[2m [ tests/test_errors.ts ][22m
+2026-06-09T05:20:22.1219646Z [31m[1mError[22m: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js[39m
+2026-06-09T05:20:22.1221201Z [36m [2m❯[22m index.js:[2m1:1[22m[39m
+2026-06-09T05:20:22.1222264Z     [90m  1|[39m import { getPalette as _getPalette, getColor as _getColor } from './na…
+2026-06-09T05:20:22.1223201Z     [90m   |[39m [31m^[39m
+2026-06-09T05:20:22.1224134Z     [90m  2|[39m [35mimport[39m sharp [35mfrom[39m [32m'sharp'[39m[33m;[39m
+2026-06-09T05:20:22.1225001Z     [90m  3|[39m
+2026-06-09T05:20:22.1225763Z [90m [2m❯[22m tests/test_errors.ts:[2m2:1[22m[39m
+2026-06-09T05:20:22.1226212Z 
+2026-06-09T05:20:22.1226731Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯[22m[39m
+2026-06-09T05:20:22.1227117Z 
+2026-06-09T05:20:22.1227812Z [41m[1m FAIL [22m[49m tests/test_helper.ts[2m [ tests/test_helper.ts ][22m
+2026-06-09T05:20:22.1230185Z [31m[1mError[22m: No test suite found in file /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_helper.ts[39m
+2026-06-09T05:20:22.1231773Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯[22m[39m
+2026-06-09T05:20:22.1232186Z 
+2026-06-09T05:20:22.1233041Z [41m[1m FAIL [22m[49m tests/test_input_types.ts[2m [ tests/test_input_types.ts ][22m
+2026-06-09T05:20:22.1235128Z [31m[1mError[22m: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js[39m
+2026-06-09T05:20:22.1236730Z [36m [2m❯[22m index.js:[2m1:1[22m[39m
+2026-06-09T05:20:22.1237821Z     [90m  1|[39m import { getPalette as _getPalette, getColor as _getColor } from './na…
+2026-06-09T05:20:22.1238823Z     [90m   |[39m [31m^[39m
+2026-06-09T05:20:22.1240023Z     [90m  2|[39m [35mimport[39m sharp [35mfrom[39m [32m'sharp'[39m[33m;[39m
+2026-06-09T05:20:22.1240872Z     [90m  3|[39m
+2026-06-09T05:20:22.1241659Z [90m [2m❯[22m tests/test_input_types.ts:[2m2:1[22m[39m
+2026-06-09T05:20:22.1242145Z 
+2026-06-09T05:20:22.1242943Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯[22m[39m
+2026-06-09T05:20:22.1243356Z 
+2026-06-09T05:20:22.1244164Z [41m[1m FAIL [22m[49m tests/test_properties.ts[2m [ tests/test_properties.ts ][22m
+2026-06-09T05:20:22.1246282Z [31m[1mError[22m: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js[39m
+2026-06-09T05:20:22.1247845Z [36m [2m❯[22m index.js:[2m1:1[22m[39m
+2026-06-09T05:20:22.1249276Z     [90m  1|[39m import { getPalette as _getPalette, getColor as _getColor } from './na…
+2026-06-09T05:20:22.1250509Z     [90m   |[39m [31m^[39m
+2026-06-09T05:20:22.1251465Z     [90m  2|[39m [35mimport[39m sharp [35mfrom[39m [32m'sharp'[39m[33m;[39m
+2026-06-09T05:20:22.1252367Z     [90m  3|[39m
+2026-06-09T05:20:22.1253170Z [90m [2m❯[22m tests/test_properties.ts:[2m2:1[22m[39m
+2026-06-09T05:20:22.1253658Z 
+2026-06-09T05:20:22.1254138Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯[22m[39m
+2026-06-09T05:20:22.1254572Z 
+2026-06-09T05:20:22.1254612Z 
+2026-06-09T05:20:22.1255205Z [2m Test Files [22m [1m[31m8 failed[39m[22m[90m (8)[39m
+2026-06-09T05:20:22.1256076Z [2m      Tests [22m [2mno tests[22m
+2026-06-09T05:20:22.1256798Z [2m   Start at [22m 05:20:21
+2026-06-09T05:20:22.1258078Z [2m   Duration [22m 563ms[2m (transform 120ms, setup 0ms, import 11ms, tests 0ms, environment 1ms)[22m
+2026-06-09T05:20:22.1258833Z 
+2026-06-09T05:20:22.1258914Z 
+2026-06-09T05:20:22.1288944Z ##[error]Error: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js
+ ❯ index.js:1:1
+ ❯ tests/test_api.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+
+2026-06-09T05:20:22.1300109Z 
+2026-06-09T05:20:22.1304406Z ##[error]Error: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js
+ ❯ index.js:1:1
+ ❯ tests/test_concurrent.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+
+2026-06-09T05:20:22.1307021Z 
+2026-06-09T05:20:22.1311512Z ##[error]Error: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js
+ ❯ index.js:1:1
+ ❯ tests/test_deduplication.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+
+2026-06-09T05:20:22.1314155Z 
+2026-06-09T05:20:22.1318253Z ##[error]Error: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js
+ ❯ index.js:1:1
+ ❯ tests/test_edge_cases.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+
+2026-06-09T05:20:22.1320146Z 
+2026-06-09T05:20:22.1322389Z ##[error]Error: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js
+ ❯ index.js:1:1
+ ❯ tests/test_errors.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+
+2026-06-09T05:20:22.1323775Z 
+2026-06-09T05:20:22.1325877Z ##[error]Error: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js
+ ❯ index.js:1:1
+ ❯ tests/test_input_types.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+
+2026-06-09T05:20:22.1327189Z 
+2026-06-09T05:20:22.1329341Z ##[error]Error: Cannot find module './native.js' imported from /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js
+ ❯ index.js:1:1
+ ❯ tests/test_properties.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_MODULE_NOT_FOUND' }
+
+2026-06-09T05:20:22.1681678Z ##[error]Process completed with exit code 1.

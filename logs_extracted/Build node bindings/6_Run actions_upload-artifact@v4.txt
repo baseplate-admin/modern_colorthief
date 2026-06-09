@@ -1,0 +1,20 @@
+﻿2026-06-09T05:19:54.6279971Z ##[group]Run actions/upload-artifact@v4
+2026-06-09T05:19:54.6280297Z with:
+2026-06-09T05:19:54.6280497Z   name: node-native
+2026-06-09T05:19:54.6280750Z   path: crates/node-bindings/artifacts/*.node
+2026-06-09T05:19:54.6281055Z   if-no-files-found: warn
+2026-06-09T05:19:54.6281287Z   compression-level: 6
+2026-06-09T05:19:54.6281499Z   overwrite: false
+2026-06-09T05:19:54.6281709Z   include-hidden-files: false
+2026-06-09T05:19:54.6281942Z ##[endgroup]
+2026-06-09T05:19:54.8498546Z With the provided path, there will be 1 file uploaded
+2026-06-09T05:19:54.8503786Z Artifact name is valid!
+2026-06-09T05:19:54.8505016Z Root directory input is valid!
+2026-06-09T05:19:55.0242875Z Beginning upload of artifact content to blob storage
+2026-06-09T05:19:55.2585520Z Uploaded bytes 277386
+2026-06-09T05:19:55.2908033Z Finished uploading artifact content to blob storage!
+2026-06-09T05:19:55.2911802Z SHA256 digest of uploaded artifact zip is d893638f6f454fee0252efab40926a5eeca3d83865742dd4b45c19d63d11c230
+2026-06-09T05:19:55.2913126Z Finalizing artifact upload
+2026-06-09T05:19:55.4267954Z Artifact node-native.zip successfully finalized. Artifact ID 7499118597
+2026-06-09T05:19:55.4269774Z Artifact node-native has been successfully uploaded! Final size is 277386 bytes. Artifact ID is 7499118597
+2026-06-09T05:19:55.4276922Z Artifact download URL: https://github.com/baseplate-admin/modern_colorthief/actions/runs/27185549215/artifacts/7499118597

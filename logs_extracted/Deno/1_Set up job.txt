@@ -1,0 +1,32 @@
+﻿2026-06-09T05:20:00.9580003Z Current runner version: '2.334.0'
+2026-06-09T05:20:00.9607983Z ##[group]Runner Image Provisioner
+2026-06-09T05:20:00.9608885Z Hosted Compute Agent
+2026-06-09T05:20:00.9609591Z Version: 20260520.533
+2026-06-09T05:20:00.9610246Z Commit: 189110e25284a9812c124fd27b339e2fb4f2f9db
+2026-06-09T05:20:00.9611018Z Build Date: 2026-05-20T17:44:04Z
+2026-06-09T05:20:00.9611768Z Worker ID: {af4c512c-9f8b-412d-893f-53e583f2b1b1}
+2026-06-09T05:20:00.9612856Z Azure Region: westus2
+2026-06-09T05:20:00.9613534Z ##[endgroup]
+2026-06-09T05:20:00.9615129Z ##[group]Operating System
+2026-06-09T05:20:00.9615867Z Ubuntu
+2026-06-09T05:20:00.9616464Z 24.04.4
+2026-06-09T05:20:00.9617009Z LTS
+2026-06-09T05:20:00.9617633Z ##[endgroup]
+2026-06-09T05:20:00.9618264Z ##[group]Runner Image
+2026-06-09T05:20:00.9618911Z Image: ubuntu-24.04
+2026-06-09T05:20:00.9619649Z Version: 20260525.161.1
+2026-06-09T05:20:00.9620784Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260525.161/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-09T05:20:00.9622966Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260525.161
+2026-06-09T05:20:00.9624018Z ##[endgroup]
+2026-06-09T05:20:00.9625344Z ##[group]GITHUB_TOKEN Permissions
+2026-06-09T05:20:00.9627641Z Contents: read
+2026-06-09T05:20:00.9628407Z Metadata: read
+2026-06-09T05:20:00.9628986Z ##[endgroup]
+2026-06-09T05:20:00.9631274Z Secret source: Actions
+2026-06-09T05:20:00.9632578Z Prepare workflow directory
+2026-06-09T05:20:00.9989966Z Prepare all required actions
+2026-06-09T05:20:01.0031526Z Getting action download info
+2026-06-09T05:20:01.5397793Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+2026-06-09T05:20:01.8869217Z Download action repository 'denoland/setup-deno@v2' (SHA:667a34cdef165d8d2b2e98dde39547c9daac7282)
+2026-06-09T05:20:02.1482769Z Download action repository 'actions/download-artifact@v4' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-06-09T05:20:02.5437012Z Complete job name: Deno

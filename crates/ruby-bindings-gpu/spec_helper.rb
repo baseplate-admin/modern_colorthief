@@ -2,10 +2,16 @@
 
 require 'rspec'
 
-# Load the native GPU extension.
-# The compiled .so/.bundle/.dll lives under lib/ after `rake compile`.
+# Load the native GPU extension with correct cross-platform naming.
+GPU_LIB_NAME = case RbConfig::CONFIG['host_os']
+when /linux/ then 'libmodern_colorthief_gpu.so'
+when /darwin|mac/ then 'libmodern_colorthief_gpu.bundle'
+when /windows|mingw/ then 'libmodern_colorthief_gpu.dll'
+else 'libmodern_colorthief_gpu.so'
+end
+
 begin
-  require_relative 'lib/modern_colorthief_gpu'
+  require GPU_LIB_NAME
 rescue LoadError
   # Extension not yet compiled; tests will be skipped at runtime.
 end
