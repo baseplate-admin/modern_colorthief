@@ -1,4 +1,4 @@
-import { getPalette as _getPalette, getColor as _getColor } from './native.js';
+import { getPalette as _getPalette, getColor as _getColor } from './native';
 import sharp from 'sharp';
 
 /**
