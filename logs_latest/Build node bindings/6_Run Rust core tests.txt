@@ -1,0 +1,45 @@
+﻿2026-06-09T11:15:39.8807413Z ##[group]Run cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+2026-06-09T11:15:39.8808254Z [36;1mcargo test -p modern-colorthief-core -p modern-colorthief-core-cpu[0m
+2026-06-09T11:15:39.8836105Z shell: /usr/bin/bash -e {0}
+2026-06-09T11:15:39.8836625Z env:
+2026-06-09T11:15:39.8837062Z   CARGO_HOME: /home/runner/.cargo
+2026-06-09T11:15:39.8837517Z   CARGO_INCREMENTAL: 0
+2026-06-09T11:15:39.8837890Z   CARGO_TERM_COLOR: always
+2026-06-09T11:15:39.8838244Z ##[endgroup]
+2026-06-09T11:15:39.9488581Z [1m[92m   Compiling[0m crossbeam-utils v0.8.21
+2026-06-09T11:15:39.9490513Z [1m[92m   Compiling[0m rayon-core v1.13.0
+2026-06-09T11:15:39.9500373Z [1m[92m   Compiling[0m modern-colorthief-core v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core)
+2026-06-09T11:15:39.9509190Z [1m[92m   Compiling[0m either v1.16.0
+2026-06-09T11:15:40.3057195Z [1m[92m   Compiling[0m crossbeam-epoch v0.9.18
+2026-06-09T11:15:40.4366226Z [1m[92m   Compiling[0m crossbeam-deque v0.8.6
+2026-06-09T11:15:40.7451302Z [1m[92m   Compiling[0m rayon v1.12.0
+2026-06-09T11:15:42.0068161Z [1m[92m   Compiling[0m modern-colorthief-core-cpu v0.3.0 (/home/runner/work/modern_colorthief/modern_colorthief/crates/core_cpu)
+2026-06-09T11:15:42.4152320Z [1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 2.51s
+2026-06-09T11:15:42.4178314Z [1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/modern_colorthief_core-c452efe90a19a691)
+2026-06-09T11:15:42.4189353Z 
+2026-06-09T11:15:42.4189607Z running 1 test
+2026-06-09T11:15:42.4192165Z test tests::test_extract_palette ... ok
+2026-06-09T11:15:42.4192584Z 
+2026-06-09T11:15:42.4193497Z test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-06-09T11:15:42.4194263Z 
+2026-06-09T11:15:42.4197186Z [1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/modern_colorthief_core_cpu-42b9572e8be17cd1)
+2026-06-09T11:15:42.4204019Z 
+2026-06-09T11:15:42.4204376Z running 3 tests
+2026-06-09T11:15:42.4207158Z test tests::test_empty_buffer ... ok
+2026-06-09T11:15:42.4212266Z test tests::test_solid_red ... ok
+2026-06-09T11:15:42.4226846Z test tests::test_two_colors ... ok
+2026-06-09T11:15:42.4229807Z 
+2026-06-09T11:15:42.4230916Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-06-09T11:15:42.4231637Z 
+2026-06-09T11:15:42.4232245Z [1m[92m   Doc-tests[0m modern_colorthief_core
+2026-06-09T11:15:42.4370287Z 
+2026-06-09T11:15:42.4370808Z running 0 tests
+2026-06-09T11:15:42.4371180Z 
+2026-06-09T11:15:42.4371810Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-06-09T11:15:42.4372273Z 
+2026-06-09T11:15:42.4381837Z [1m[92m   Doc-tests[0m modern_colorthief_core_cpu
+2026-06-09T11:15:42.4544305Z 
+2026-06-09T11:15:42.4544831Z running 0 tests
+2026-06-09T11:15:42.4545155Z 
+2026-06-09T11:15:42.4545875Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-06-09T11:15:42.4546524Z 

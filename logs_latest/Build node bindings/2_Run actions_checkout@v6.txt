@@ -1,0 +1,97 @@
+﻿2026-06-09T11:14:37.5462929Z ##[group]Run actions/checkout@v6
+2026-06-09T11:14:37.5464101Z with:
+2026-06-09T11:14:37.5464667Z   repository: baseplate-admin/modern_colorthief
+2026-06-09T11:14:37.5470063Z   token: ***
+2026-06-09T11:14:37.5470557Z   ssh-strict: true
+2026-06-09T11:14:37.5471054Z   ssh-user: git
+2026-06-09T11:14:37.5471553Z   persist-credentials: true
+2026-06-09T11:14:37.5472110Z   clean: true
+2026-06-09T11:14:37.5472603Z   sparse-checkout-cone-mode: true
+2026-06-09T11:14:37.5473203Z   fetch-depth: 1
+2026-06-09T11:14:37.5474100Z   fetch-tags: false
+2026-06-09T11:14:37.5474612Z   show-progress: true
+2026-06-09T11:14:37.5475121Z   lfs: false
+2026-06-09T11:14:37.5475576Z   submodules: false
+2026-06-09T11:14:37.5476089Z   set-safe-directory: true
+2026-06-09T11:14:37.5476927Z ##[endgroup]
+2026-06-09T11:14:37.6497479Z Syncing repository: baseplate-admin/modern_colorthief
+2026-06-09T11:14:37.6500114Z ##[group]Getting Git version info
+2026-06-09T11:14:37.6501187Z Working directory is '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T11:14:37.6502690Z [command]/usr/bin/git version
+2026-06-09T11:14:37.6531588Z git version 2.54.0
+2026-06-09T11:14:37.6586946Z ##[endgroup]
+2026-06-09T11:14:37.6602276Z Temporarily overriding HOME='/home/runner/work/_temp/1560777f-74a0-470e-8501-67842192b5ff' before making global git config changes
+2026-06-09T11:14:37.6604262Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-09T11:14:37.6608344Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T11:14:37.6657565Z Deleting the contents of '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T11:14:37.6661550Z ##[group]Determining repository object format
+2026-06-09T11:14:37.6664227Z ##[endgroup]
+2026-06-09T11:14:37.6665091Z ##[group]Initializing the repository
+2026-06-09T11:14:37.6670970Z [command]/usr/bin/git init /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T11:14:37.6748385Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-09T11:14:37.6750075Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-09T11:14:37.6751224Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-09T11:14:37.6752140Z hint: call:
+2026-06-09T11:14:37.6752604Z hint:
+2026-06-09T11:14:37.6753211Z hint: 	git config --global init.defaultBranch <name>
+2026-06-09T11:14:37.6754154Z hint:
+2026-06-09T11:14:37.6754826Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-09T11:14:37.6755955Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-09T11:14:37.6756845Z hint:
+2026-06-09T11:14:37.6757293Z hint: 	git branch -m <name>
+2026-06-09T11:14:37.6757834Z hint:
+2026-06-09T11:14:37.6758558Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-09T11:14:37.6765413Z Initialized empty Git repository in /home/runner/work/modern_colorthief/modern_colorthief/.git/
+2026-06-09T11:14:37.6776448Z [command]/usr/bin/git remote add origin https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T11:14:37.6818259Z ##[endgroup]
+2026-06-09T11:14:37.6819317Z ##[group]Disabling automatic garbage collection
+2026-06-09T11:14:37.6823696Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-09T11:14:37.6856551Z ##[endgroup]
+2026-06-09T11:14:37.6858310Z ##[group]Setting up auth
+2026-06-09T11:14:37.6948961Z Removing SSH command configuration
+2026-06-09T11:14:37.6956987Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-09T11:14:37.6961315Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-09T11:14:37.7242412Z Removing HTTP extra header
+2026-06-09T11:14:37.7249058Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-09T11:14:37.7285270Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-09T11:14:37.7522003Z Removing includeIf entries pointing to credentials config files
+2026-06-09T11:14:37.7528225Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-09T11:14:37.7564126Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-09T11:14:37.7805851Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-16221181-32b2-43af-853e-5018990852f6.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-09T11:14:37.7848118Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-16221181-32b2-43af-853e-5018990852f6.config
+2026-06-09T11:14:37.7881444Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-16221181-32b2-43af-853e-5018990852f6.config
+2026-06-09T11:14:37.7917400Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-16221181-32b2-43af-853e-5018990852f6.config
+2026-06-09T11:14:37.7951727Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-16221181-32b2-43af-853e-5018990852f6.config
+2026-06-09T11:14:37.7982106Z ##[endgroup]
+2026-06-09T11:14:37.7983028Z ##[group]Fetching the repository
+2026-06-09T11:14:37.7990934Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9a34e835b489374ca69b856ea2f7094fc5b20fa7:refs/remotes/pull/125/merge
+2026-06-09T11:14:38.0231587Z From https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T11:14:38.0234470Z  * [new ref]         9a34e835b489374ca69b856ea2f7094fc5b20fa7 -> pull/125/merge
+2026-06-09T11:14:38.0267525Z ##[endgroup]
+2026-06-09T11:14:38.0269496Z ##[group]Determining the checkout info
+2026-06-09T11:14:38.0271741Z ##[endgroup]
+2026-06-09T11:14:38.0275613Z [command]/usr/bin/git sparse-checkout disable
+2026-06-09T11:14:38.0322207Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-09T11:14:38.0353504Z ##[group]Checking out the ref
+2026-06-09T11:14:38.0355852Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/125/merge
+2026-06-09T11:14:38.0572373Z Note: switching to 'refs/remotes/pull/125/merge'.
+2026-06-09T11:14:38.0573741Z 
+2026-06-09T11:14:38.0574598Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-06-09T11:14:38.0576943Z changes and commit them, and you can discard any commits you make in this
+2026-06-09T11:14:38.0579396Z state without impacting any branches by switching back to a branch.
+2026-06-09T11:14:38.0580895Z 
+2026-06-09T11:14:38.0581811Z If you want to create a new branch to retain commits you create, you may
+2026-06-09T11:14:38.0584518Z do so (now or later) by using -c with the switch command. Example:
+2026-06-09T11:14:38.0585903Z 
+2026-06-09T11:14:38.0586477Z   git switch -c <new-branch-name>
+2026-06-09T11:14:38.0587445Z 
+2026-06-09T11:14:38.0588018Z Or undo this operation with:
+2026-06-09T11:14:38.0588915Z 
+2026-06-09T11:14:38.0589451Z   git switch -
+2026-06-09T11:14:38.0590373Z 
+2026-06-09T11:14:38.0591396Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-06-09T11:14:38.0592932Z 
+2026-06-09T11:14:38.0595548Z HEAD is now at 9a34e83 Merge b3b82ea8339b3175d48ed9ea8c76b8eef5c12b40 into 350b8337a769a0d29e1b551007c13f8ebc5606b8
+2026-06-09T11:14:38.0601116Z ##[endgroup]
+2026-06-09T11:14:38.0624275Z [command]/usr/bin/git log -1 --format=%H
+2026-06-09T11:14:38.0650230Z 9a34e835b489374ca69b856ea2f7094fc5b20fa7

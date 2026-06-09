@@ -1,0 +1,13 @@
+﻿2026-06-09T11:14:38.1021404Z ##[group]Run actions/setup-node@v6
+2026-06-09T11:14:38.1022563Z with:
+2026-06-09T11:14:38.1023618Z   node-version: 22
+2026-06-09T11:14:38.1024548Z   check-latest: false
+2026-06-09T11:14:38.1034453Z   token: ***
+2026-06-09T11:14:38.1035384Z   package-manager-cache: true
+2026-06-09T11:14:38.1036444Z ##[endgroup]
+2026-06-09T11:14:38.2676486Z Found in cache @ /opt/hostedtoolcache/node/22.22.3/x64
+2026-06-09T11:14:38.2680822Z ##[group]Environment details
+2026-06-09T11:14:38.9120314Z node: v22.22.3
+2026-06-09T11:14:38.9122680Z npm: 10.9.8
+2026-06-09T11:14:38.9124639Z yarn: 1.22.22
+2026-06-09T11:14:38.9127489Z ##[endgroup]

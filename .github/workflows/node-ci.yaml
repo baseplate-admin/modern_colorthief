@@ -21,7 +21,7 @@ jobs:
           node-version: 22
       - uses: dtolnay/rust-toolchain@stable
       - working-directory: crates/node-bindings
-        run: npm install && npx napi build --platform --release --output-dir artifacts
+        run: npm install --legacy-peer-deps && npx napi build --platform --release --output-dir artifacts
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - uses: actions/upload-artifact@v4
@@ -43,7 +43,7 @@ jobs:
           name: node-native
           path: crates/node-bindings/artifacts
       - working-directory: crates/node-bindings
-        run: npm install && npm run build && npx vitest run
+        run: npm install --legacy-peer-deps && npm run build && npx vitest run
 
   deno-test:
     name: Deno

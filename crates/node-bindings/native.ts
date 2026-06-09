@@ -18,12 +18,15 @@ function getSuffix(): string {
 
 function resolveNativePath(): string {
     const suffix = getSuffix();
-    const candidates = [
-        join(__dirname, 'artifacts', `${NAME}-${suffix}.node`),
-        join(__dirname, 'artifacts', `${NAME}.node`),
-        join(__dirname, `${NAME}-${suffix}.node`),
-        join(__dirname, `${NAME}.node`),
+    const basenames = [
+        `artifacts/${NAME}-${suffix}.node`,
+        `artifacts/${NAME}.node`,
+        `${NAME}-${suffix}.node`,
+        `${NAME}.node`,
     ];
+    // Search from __dirname and parent directories (handles dist/ output)
+    const bases = [__dirname, join(__dirname, '..'), join(__dirname, '..', '..')];
+    const candidates = bases.flatMap(base => basenames.map(name => join(base, name)));
     for (const candidate of candidates) {
         try {
             return require.resolve(candidate);

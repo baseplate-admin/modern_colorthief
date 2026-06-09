@@ -1,0 +1,32 @@
+﻿2026-06-09T11:15:48.1589628Z Current runner version: '2.334.0'
+2026-06-09T11:15:48.1617369Z ##[group]Runner Image Provisioner
+2026-06-09T11:15:48.1618386Z Hosted Compute Agent
+2026-06-09T11:15:48.1619003Z Version: 20260520.533
+2026-06-09T11:15:48.1619632Z Commit: 189110e25284a9812c124fd27b339e2fb4f2f9db
+2026-06-09T11:15:48.1620462Z Build Date: 2026-05-20T17:44:04Z
+2026-06-09T11:15:48.1621213Z Worker ID: {8cc4625d-7149-463c-842f-f91e2eef22bd}
+2026-06-09T11:15:48.1622048Z Azure Region: westcentralus
+2026-06-09T11:15:48.1622684Z ##[endgroup]
+2026-06-09T11:15:48.1623993Z ##[group]Operating System
+2026-06-09T11:15:48.1624912Z Ubuntu
+2026-06-09T11:15:48.1625543Z 24.04.4
+2026-06-09T11:15:48.1626111Z LTS
+2026-06-09T11:15:48.1626666Z ##[endgroup]
+2026-06-09T11:15:48.1627240Z ##[group]Runner Image
+2026-06-09T11:15:48.1627926Z Image: ubuntu-24.04
+2026-06-09T11:15:48.1628548Z Version: 20260525.161.1
+2026-06-09T11:15:48.1629609Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260525.161/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-09T11:15:48.1631465Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260525.161
+2026-06-09T11:15:48.1632521Z ##[endgroup]
+2026-06-09T11:15:48.1633713Z ##[group]GITHUB_TOKEN Permissions
+2026-06-09T11:15:48.1636013Z Contents: read
+2026-06-09T11:15:48.1636652Z Metadata: read
+2026-06-09T11:15:48.1637211Z ##[endgroup]
+2026-06-09T11:15:48.1639523Z Secret source: Actions
+2026-06-09T11:15:48.1640298Z Prepare workflow directory
+2026-06-09T11:15:48.1979634Z Prepare all required actions
+2026-06-09T11:15:48.2019509Z Getting action download info
+2026-06-09T11:15:48.7300940Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+2026-06-09T11:15:49.3707958Z Download action repository 'actions/setup-node@v6' (SHA:48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e)
+2026-06-09T11:15:49.4705485Z Download action repository 'actions/download-artifact@v4' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-06-09T11:15:50.3961315Z Complete job name: Node.js 22
