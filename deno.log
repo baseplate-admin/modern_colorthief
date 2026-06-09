@@ -1,0 +1,307 @@
+2026-06-09T18:02:52.8461632Z Current runner version: '2.334.0'
+2026-06-09T18:02:52.8486902Z ##[group]Runner Image Provisioner
+2026-06-09T18:02:52.8487717Z Hosted Compute Agent
+2026-06-09T18:02:52.8488428Z Version: 20260520.533
+2026-06-09T18:02:52.8489141Z Commit: 189110e25284a9812c124fd27b339e2fb4f2f9db
+2026-06-09T18:02:52.8489966Z Build Date: 2026-05-20T17:44:04Z
+2026-06-09T18:02:52.8490674Z Worker ID: {0ef1ee2f-bf73-4cb0-b491-0e677719a7f8}
+2026-06-09T18:02:52.8491404Z Azure Region: northcentralus
+2026-06-09T18:02:52.8492087Z ##[endgroup]
+2026-06-09T18:02:52.8493870Z ##[group]Operating System
+2026-06-09T18:02:52.8494662Z Ubuntu
+2026-06-09T18:02:52.8495203Z 24.04.4
+2026-06-09T18:02:52.8495712Z LTS
+2026-06-09T18:02:52.8496279Z ##[endgroup]
+2026-06-09T18:02:52.8496841Z ##[group]Runner Image
+2026-06-09T18:02:52.8497450Z Image: ubuntu-24.04
+2026-06-09T18:02:52.8498088Z Version: 20260525.161.1
+2026-06-09T18:02:52.8499357Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260525.161/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-09T18:02:52.8501073Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260525.161
+2026-06-09T18:02:52.8502061Z ##[endgroup]
+2026-06-09T18:02:52.8503225Z ##[group]GITHUB_TOKEN Permissions
+2026-06-09T18:02:52.8505369Z Contents: read
+2026-06-09T18:02:52.8506084Z Metadata: read
+2026-06-09T18:02:52.8506684Z ##[endgroup]
+2026-06-09T18:02:52.8508939Z Secret source: Actions
+2026-06-09T18:02:52.8509798Z Prepare workflow directory
+2026-06-09T18:02:52.8852256Z Prepare all required actions
+2026-06-09T18:02:52.8889904Z Getting action download info
+2026-06-09T18:02:53.3233139Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+2026-06-09T18:02:53.7004318Z Download action repository 'denoland/setup-deno@v2' (SHA:667a34cdef165d8d2b2e98dde39547c9daac7282)
+2026-06-09T18:02:54.0511923Z Download action repository 'actions/download-artifact@v4' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-06-09T18:02:54.5635073Z Complete job name: Deno
+2026-06-09T18:02:54.6522232Z ##[group]Run actions/checkout@v6
+2026-06-09T18:02:54.6523857Z with:
+2026-06-09T18:02:54.6524843Z   repository: baseplate-admin/modern_colorthief
+2026-06-09T18:02:54.6536955Z   token: ***
+2026-06-09T18:02:54.6537839Z   ssh-strict: true
+2026-06-09T18:02:54.6538717Z   ssh-user: git
+2026-06-09T18:02:54.6539620Z   persist-credentials: true
+2026-06-09T18:02:54.6540608Z   clean: true
+2026-06-09T18:02:54.6541523Z   sparse-checkout-cone-mode: true
+2026-06-09T18:02:54.6542596Z   fetch-depth: 1
+2026-06-09T18:02:54.6543620Z   fetch-tags: false
+2026-06-09T18:02:54.6544536Z   show-progress: true
+2026-06-09T18:02:54.6545444Z   lfs: false
+2026-06-09T18:02:54.6546286Z   submodules: false
+2026-06-09T18:02:54.6547258Z   set-safe-directory: true
+2026-06-09T18:02:54.6548575Z ##[endgroup]
+2026-06-09T18:02:54.7601216Z Syncing repository: baseplate-admin/modern_colorthief
+2026-06-09T18:02:54.7604511Z ##[group]Getting Git version info
+2026-06-09T18:02:54.7606271Z Working directory is '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T18:02:54.7608760Z [command]/usr/bin/git version
+2026-06-09T18:02:54.7642302Z git version 2.54.0
+2026-06-09T18:02:54.7667122Z ##[endgroup]
+2026-06-09T18:02:54.7683112Z Temporarily overriding HOME='/home/runner/work/_temp/0bb37a17-acbe-4d05-b35e-22dec1179a0d' before making global git config changes
+2026-06-09T18:02:54.7688450Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-09T18:02:54.7692815Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T18:02:54.7737477Z Deleting the contents of '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T18:02:54.7742396Z ##[group]Determining repository object format
+2026-06-09T18:02:54.7746416Z ##[endgroup]
+2026-06-09T18:02:54.7749521Z ##[group]Initializing the repository
+2026-06-09T18:02:54.7752900Z [command]/usr/bin/git init /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T18:02:54.7857343Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-09T18:02:54.7859893Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-09T18:02:54.7863803Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-09T18:02:54.7866274Z hint: call:
+2026-06-09T18:02:54.7867165Z hint:
+2026-06-09T18:02:54.7868367Z hint: 	git config --global init.defaultBranch <name>
+2026-06-09T18:02:54.7870023Z hint:
+2026-06-09T18:02:54.7871290Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-09T18:02:54.7874124Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-09T18:02:54.7875722Z hint:
+2026-06-09T18:02:54.7876580Z hint: 	git branch -m <name>
+2026-06-09T18:02:54.7877548Z hint:
+2026-06-09T18:02:54.7879070Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-09T18:02:54.7881409Z Initialized empty Git repository in /home/runner/work/modern_colorthief/modern_colorthief/.git/
+2026-06-09T18:02:54.7885391Z [command]/usr/bin/git remote add origin https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T18:02:54.7916082Z ##[endgroup]
+2026-06-09T18:02:54.7917846Z ##[group]Disabling automatic garbage collection
+2026-06-09T18:02:54.7919527Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-09T18:02:54.7950176Z ##[endgroup]
+2026-06-09T18:02:54.7951920Z ##[group]Setting up auth
+2026-06-09T18:02:54.7953781Z Removing SSH command configuration
+2026-06-09T18:02:54.7957289Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-09T18:02:54.7992444Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-09T18:02:54.8324843Z Removing HTTP extra header
+2026-06-09T18:02:54.8330416Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-09T18:02:54.8360691Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-09T18:02:54.8569314Z Removing includeIf entries pointing to credentials config files
+2026-06-09T18:02:54.8575050Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-09T18:02:54.8609969Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-09T18:02:54.8853037Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-09T18:02:54.8891837Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:02:54.8922277Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:02:54.8964079Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:02:54.8996170Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:02:54.9026569Z ##[endgroup]
+2026-06-09T18:02:54.9029127Z ##[group]Fetching the repository
+2026-06-09T18:02:54.9034369Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0995c948091da35bfe155c7bfe3c677be84cdd8b:refs/remotes/pull/125/merge
+2026-06-09T18:02:55.3450175Z From https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T18:02:55.3454375Z  * [new ref]         0995c948091da35bfe155c7bfe3c677be84cdd8b -> pull/125/merge
+2026-06-09T18:02:55.3489368Z ##[endgroup]
+2026-06-09T18:02:55.3491847Z ##[group]Determining the checkout info
+2026-06-09T18:02:55.3494764Z ##[endgroup]
+2026-06-09T18:02:55.3497035Z [command]/usr/bin/git sparse-checkout disable
+2026-06-09T18:02:55.3542855Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-09T18:02:55.3572127Z ##[group]Checking out the ref
+2026-06-09T18:02:55.3575396Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/125/merge
+2026-06-09T18:02:55.3857271Z Note: switching to 'refs/remotes/pull/125/merge'.
+2026-06-09T18:02:55.3858821Z 
+2026-06-09T18:02:55.3860060Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-06-09T18:02:55.3862604Z changes and commit them, and you can discard any commits you make in this
+2026-06-09T18:02:55.3865400Z state without impacting any branches by switching back to a branch.
+2026-06-09T18:02:55.3866738Z 
+2026-06-09T18:02:55.3867508Z If you want to create a new branch to retain commits you create, you may
+2026-06-09T18:02:55.3869203Z do so (now or later) by using -c with the switch command. Example:
+2026-06-09T18:02:55.3870425Z 
+2026-06-09T18:02:55.3870872Z   git switch -c <new-branch-name>
+2026-06-09T18:02:55.3871561Z 
+2026-06-09T18:02:55.3871967Z Or undo this operation with:
+2026-06-09T18:02:55.3872593Z 
+2026-06-09T18:02:55.3872960Z   git switch -
+2026-06-09T18:02:55.3873741Z 
+2026-06-09T18:02:55.3874547Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-06-09T18:02:55.3875917Z 
+2026-06-09T18:02:55.3877177Z HEAD is now at 0995c94 Merge def082b030a963d6aceb4c76c595ca0a39d31614 into 350b8337a769a0d29e1b551007c13f8ebc5606b8
+2026-06-09T18:02:55.3880889Z ##[endgroup]
+2026-06-09T18:02:55.3906562Z [command]/usr/bin/git log -1 --format=%H
+2026-06-09T18:02:55.3929700Z 0995c948091da35bfe155c7bfe3c677be84cdd8b
+2026-06-09T18:02:55.4214676Z ##[group]Run denoland/setup-deno@v2
+2026-06-09T18:02:55.4215764Z with:
+2026-06-09T18:02:55.4216546Z   deno-version: v2.x
+2026-06-09T18:02:55.4217459Z   deno-binary-name: deno
+2026-06-09T18:02:55.4218376Z   cache: false
+2026-06-09T18:02:55.4219180Z ##[endgroup]
+2026-06-09T18:02:55.5992247Z Going to install stable version 2.8.2.
+2026-06-09T18:02:55.6047055Z Downloading Deno from https://github.com/denoland/deno/releases/download/v2.8.2/deno-x86_64-unknown-linux-gnu.zip.
+2026-06-09T18:02:55.9600965Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/a43e5a39-51d0-4ea3-9bca-f6db09c02b09
+2026-06-09T18:02:56.8095808Z Cached Deno to /opt/hostedtoolcache/deno/2.8.2/x64.
+2026-06-09T18:02:56.8120202Z Installation complete.
+2026-06-09T18:02:56.8298033Z ##[group]Run actions/download-artifact@v4
+2026-06-09T18:02:56.8298421Z with:
+2026-06-09T18:02:56.8298668Z   name: node-native
+2026-06-09T18:02:56.8298956Z   path: crates/node-bindings/artifacts
+2026-06-09T18:02:56.8299288Z   merge-multiple: false
+2026-06-09T18:02:56.8299642Z   repository: baseplate-admin/modern_colorthief
+2026-06-09T18:02:56.8299985Z   run-id: 27225718779
+2026-06-09T18:02:56.8300247Z ##[endgroup]
+2026-06-09T18:02:57.0375846Z Downloading single artifact
+2026-06-09T18:02:57.2103276Z Preparing to download the following artifacts:
+2026-06-09T18:02:57.2104934Z - node-native (ID: 7516052539, Size: 443487, Expected Digest: sha256:6f58a08210558112b36a51cff21dc9f586b10dc288eecb09ff38a9410c874907)
+2026-06-09T18:02:57.3527179Z Redirecting to blob download url: https://productionresultssa15.blob.core.windows.net/actions-results/e0961c6f-a0a2-41df-a3c7-fe6ce1b98ee7/workflow-job-run-65b099e5-1b90-508c-ae20-093b2ff8a749/artifacts/d89d7f62ea493a5c13ae895d60736848fe525bb02d6f9d0cd9a58fc594f923d9.zip
+2026-06-09T18:02:57.3529901Z Starting download of artifact to: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts
+2026-06-09T18:02:57.5031100Z (node:2383) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-06-09T18:02:57.5034130Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-06-09T18:02:57.6225022Z SHA256 digest of downloaded artifact is 6f58a08210558112b36a51cff21dc9f586b10dc288eecb09ff38a9410c874907
+2026-06-09T18:02:57.6226124Z Artifact download completed successfully.
+2026-06-09T18:02:57.6226719Z Total of 1 artifact(s) downloaded
+2026-06-09T18:02:57.6232811Z Download artifact has finished successfully
+2026-06-09T18:02:57.6350810Z ##[group]Run npm install && npm run build
+2026-06-09T18:02:57.6351236Z [36;1mnpm install && npm run build[0m
+2026-06-09T18:02:57.6381779Z shell: /usr/bin/bash -e {0}
+2026-06-09T18:02:57.6382083Z ##[endgroup]
+2026-06-09T18:02:59.7429720Z npm warn reify invalid or damaged lockfile detected
+2026-06-09T18:02:59.7430508Z npm warn reify please re-try this operation once it completes
+2026-06-09T18:02:59.7431187Z npm warn reify so that the damage can be corrected, or perform
+2026-06-09T18:02:59.7431977Z npm warn reify a fresh install with no lockfile if the problem persists.
+2026-06-09T18:03:03.1033830Z 
+2026-06-09T18:03:03.1035151Z added 153 packages, and audited 154 packages in 5s
+2026-06-09T18:03:03.1036061Z 
+2026-06-09T18:03:03.1036512Z 38 packages are looking for funding
+2026-06-09T18:03:03.1037386Z   run `npm fund` for details
+2026-06-09T18:03:03.1044874Z 
+2026-06-09T18:03:03.1045342Z found 0 vulnerabilities
+2026-06-09T18:03:03.2494080Z 
+2026-06-09T18:03:03.2494791Z > @modern_colorthief/native@0.3.0 build
+2026-06-09T18:03:03.2495382Z > tsdown
+2026-06-09T18:03:03.2495536Z 
+2026-06-09T18:03:03.4379652Z [34mℹ[39m [34mtsdown v0.22.2[39m powered by [38;2;255;126;23mrolldown v1.1.0[39m
+2026-06-09T18:03:03.6148052Z [34mℹ[39m config file: [4m/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tsdown.config.ts[24m 
+2026-06-09T18:03:03.6176658Z [34mℹ[39m entry: [34mindex.ts, native.ts[39m
+2026-06-09T18:03:03.6178144Z [34mℹ[39m target: [34mnode20[39m
+2026-06-09T18:03:03.6181395Z [34mℹ[39m tsconfig: [34mtsconfig.json[39m
+2026-06-09T18:03:03.6190934Z [34mℹ[39m Build start
+2026-06-09T18:03:04.8711443Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mindex.cjs[22m   [2m0.98 kB[22m [2m│ gzip: 0.53 kB[22m
+2026-06-09T18:03:04.8713057Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mnative.cjs[22m  [2m0.87 kB[22m [2m│ gzip: 0.49 kB[22m
+2026-06-09T18:03:04.8714440Z [34mℹ[39m [33m[CJS][39m 2 files, total: 1.84 kB
+2026-06-09T18:03:04.8931601Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mindex.d.cts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:03:04.8932895Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mnative.d.cts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:03:04.8934529Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mindex.d.cts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T18:03:04.8935382Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mnative.d.cts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T18:03:04.8936056Z [34mℹ[39m [33m[CJS][39m 4 files, total: 1.55 kB
+2026-06-09T18:03:04.8940136Z [32m✔[39m Build complete in [32m1270ms[39m
+2026-06-09T18:03:04.8957290Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mnative.mjs[22m        [2m0.76 kB[22m [2m│ gzip: 0.46 kB[22m
+2026-06-09T18:03:04.8959083Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mindex.mjs[22m         [2m0.43 kB[22m [2m│ gzip: 0.27 kB[22m
+2026-06-09T18:03:04.8960919Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.mjs.map    [2m2.42 kB[22m [2m│ gzip: 1.03 kB[22m
+2026-06-09T18:03:04.8962566Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.mjs.map     [2m1.77 kB[22m [2m│ gzip: 0.65 kB[22m
+2026-06-09T18:03:04.8964507Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.d.mts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:03:04.8966187Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.d.mts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:03:04.8968182Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mindex.d.mts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T18:03:04.8969611Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mnative.d.mts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T18:03:04.8971621Z [34mℹ[39m [34m[ESM][39m 8 files, total: 6.93 kB
+2026-06-09T18:03:04.8972562Z [32m✔[39m Build complete in [32m1273ms[39m
+2026-06-09T18:03:04.9372230Z ##[group]Run deno test --allow-read --allow-env --allow-net "tests/test_*.ts"
+2026-06-09T18:03:04.9372840Z [36;1mdeno test --allow-read --allow-env --allow-net "tests/test_*.ts"[0m
+2026-06-09T18:03:04.9399146Z shell: /usr/bin/bash -e {0}
+2026-06-09T18:03:04.9399416Z ##[endgroup]
+2026-06-09T18:03:04.9648421Z [0m[32mCheck[0m tests/test_api.ts
+2026-06-09T18:03:04.9648969Z [0m[32mCheck[0m tests/test_concurrent.ts
+2026-06-09T18:03:04.9649376Z [0m[32mCheck[0m tests/test_deduplication.ts
+2026-06-09T18:03:04.9649748Z [0m[32mCheck[0m tests/test_edge_cases.ts
+2026-06-09T18:03:04.9650116Z [0m[32mCheck[0m tests/test_errors.ts
+2026-06-09T18:03:04.9650450Z [0m[32mCheck[0m tests/test_helper.ts
+2026-06-09T18:03:04.9650792Z [0m[32mCheck[0m tests/test_input_types.ts
+2026-06-09T18:03:04.9651187Z [0m[32mCheck[0m tests/test_properties.ts
+2026-06-09T18:03:05.9340444Z [0m[1mTS2307 [0m[ERROR]: Cannot find module 'file:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/index.js'. Maybe change the extension to '.ts' or run with --sloppy-imports
+2026-06-09T18:03:05.9342523Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_api.ts[0m:[0m[33m2[0m:[0m[33m38[0m
+2026-06-09T18:03:05.9343991Z 
+2026-06-09T18:03:05.9345308Z [0m[1mTS2307 [0m[ERROR]: Cannot find module 'file:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_helper.js'. Maybe change the extension to '.ts' or run with --sloppy-imports
+2026-06-09T18:03:05.9348225Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_api.ts[0m:[0m[33m3[0m:[0m[33m64[0m
+2026-06-09T18:03:05.9349444Z 
+2026-06-09T18:03:05.9349837Z [0m[1mTS2307 [0m[ERROR]: Import "path" not a dependency
+2026-06-09T18:03:05.9350917Z   [0m[36mhint:[0m If you want to use a built-in Node module, add a "node:" prefix (ex. "node:path").
+2026-06-09T18:03:05.9352609Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_helper.ts[0m:[0m[33m1[0m:[0m[33m25[0m
+2026-06-09T18:03:05.9354333Z 
+2026-06-09T18:03:05.9354948Z [0m[1mTS2307 [0m[ERROR]: Import "fs" not a dependency
+2026-06-09T18:03:05.9355859Z   [0m[36mhint:[0m If you want to use a built-in Node module, add a "node:" prefix (ex. "node:fs").
+2026-06-09T18:03:05.9357505Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_helper.ts[0m:[0m[33m2[0m:[0m[33m30[0m
+2026-06-09T18:03:05.9359221Z 
+2026-06-09T18:03:05.9359756Z [0m[1mTS7006 [0m[ERROR]: Parameter 'r' implicitly has an 'any' type.
+2026-06-09T18:03:05.9361005Z         expect(results.every(r => r[0] === results[0][0] && r[1] === results[0][1] && r[2] === results[0][2])).toBe(true);
+2026-06-09T18:03:05.9361588Z [0m[31m                             ^[0m
+2026-06-09T18:03:05.9362512Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_concurrent.ts[0m:[0m[33m19[0m:[0m[33m30[0m
+2026-06-09T18:03:05.9363971Z 
+2026-06-09T18:03:05.9365098Z [0m[1mTS7006 [0m[ERROR]: Parameter 'r' implicitly has an 'any' type.
+2026-06-09T18:03:05.9365842Z         expect(results.every(r => r.length > 0)).toBe(true);
+2026-06-09T18:03:05.9366858Z [0m[31m                             ^[0m
+2026-06-09T18:03:05.9368537Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_concurrent.ts[0m:[0m[33m27[0m:[0m[33m30[0m
+2026-06-09T18:03:05.9370085Z 
+2026-06-09T18:03:05.9370574Z [0m[1mTS7006 [0m[ERROR]: Parameter 'c' implicitly has an 'any' type.
+2026-06-09T18:03:05.9371452Z         const serialized = palette.map(c => c.join(','));
+2026-06-09T18:03:05.9372235Z [0m[31m                                       ^[0m
+2026-06-09T18:03:05.9376948Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_deduplication.ts[0m:[0m[33m8[0m:[0m[33m40[0m
+2026-06-09T18:03:05.9377604Z 
+2026-06-09T18:03:05.9377907Z [0m[1mTS7006 [0m[ERROR]: Parameter 'r' implicitly has an 'any' type.
+2026-06-09T18:03:05.9378778Z         expect(results.every(r => r[0] === results[0][0] && r[1] === results[0][1] && r[2] === results[0][2])).toBe(true);
+2026-06-09T18:03:05.9379838Z [0m[31m                             ^[0m
+2026-06-09T18:03:05.9381128Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_edge_cases.ts[0m:[0m[33m43[0m:[0m[33m30[0m
+2026-06-09T18:03:05.9382045Z 
+2026-06-09T18:03:05.9382442Z [0m[1mTS7006 [0m[ERROR]: Parameter 'v' implicitly has an 'any' type.
+2026-06-09T18:03:05.9383053Z         color.forEach(v => {
+2026-06-09T18:03:05.9383759Z [0m[31m                      ^[0m
+2026-06-09T18:03:05.9385009Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_properties.ts[0m:[0m[33m12[0m:[0m[33m23[0m
+2026-06-09T18:03:05.9385932Z 
+2026-06-09T18:03:05.9386357Z [0m[1mTS7006 [0m[ERROR]: Parameter 'color' implicitly has an 'any' type.
+2026-06-09T18:03:05.9386984Z         palette.forEach(color => {
+2026-06-09T18:03:05.9387475Z [0m[31m                        ~~~~~[0m
+2026-06-09T18:03:05.9388723Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_properties.ts[0m:[0m[33m22[0m:[0m[33m25[0m
+2026-06-09T18:03:05.9389640Z 
+2026-06-09T18:03:05.9390020Z [0m[1mTS7006 [0m[ERROR]: Parameter 'v' implicitly has an 'any' type.
+2026-06-09T18:03:05.9390624Z             color.forEach(v => {
+2026-06-09T18:03:05.9391109Z [0m[31m                          ^[0m
+2026-06-09T18:03:05.9392355Z     at [0m[36mfile:///home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tests/test_properties.ts[0m:[0m[33m25[0m:[0m[33m27[0m
+2026-06-09T18:03:05.9393492Z 
+2026-06-09T18:03:05.9393654Z Found 11 errors.
+2026-06-09T18:03:05.9393869Z 
+2026-06-09T18:03:05.9400443Z [0m[1m[31merror[0m: Type checking failed.
+2026-06-09T18:03:05.9400855Z 
+2026-06-09T18:03:05.9401452Z   [33minfo:[39m The program failed type-checking, but it still might work correctly.
+2026-06-09T18:03:05.9402446Z   [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.
+2026-06-09T18:03:05.9526546Z ##[error]Process completed with exit code 1.
+2026-06-09T18:03:05.9619054Z Post job cleanup.
+2026-06-09T18:03:06.0803120Z Caching is not enabled. Caching is skipped.
+2026-06-09T18:03:06.0947683Z Post job cleanup.
+2026-06-09T18:03:06.1789187Z [command]/usr/bin/git version
+2026-06-09T18:03:06.1826297Z git version 2.54.0
+2026-06-09T18:03:06.1899584Z Temporarily overriding HOME='/home/runner/work/_temp/37c2d697-5234-4339-bd23-b7174a7451fb' before making global git config changes
+2026-06-09T18:03:06.1900966Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-09T18:03:06.1906375Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T18:03:06.1935851Z Removing SSH command configuration
+2026-06-09T18:03:06.1943219Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-09T18:03:06.1976310Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-09T18:03:06.2199559Z Removing HTTP extra header
+2026-06-09T18:03:06.2205705Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-09T18:03:06.2237954Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-09T18:03:06.2450062Z Removing includeIf entries pointing to credentials config files
+2026-06-09T18:03:06.2456497Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-09T18:03:06.2483053Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-09T18:03:06.2484296Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-09T18:03:06.2484929Z includeif.gitdir:/github/workspace/.git.path
+2026-06-09T18:03:06.2485397Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-09T18:03:06.2491540Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-09T18:03:06.2512347Z /home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2522335Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2555437Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-09T18:03:06.2576502Z /home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2586637Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2616169Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-06-09T18:03:06.2636399Z /github/runner_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2644393Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2674235Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-09T18:03:06.2694267Z /github/runner_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2704953Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config
+2026-06-09T18:03:06.2737222Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-09T18:03:06.2946823Z Removing credentials config '/home/runner/work/_temp/git-credentials-4bc371d6-2fb1-4894-a21b-2d3c754ee00f.config'
+2026-06-09T18:03:06.3091249Z Cleaning up orphan processes
+2026-06-09T18:03:06.3366050Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/download-artifact@v4. Actions will be forced to run with Node.js 24 by default starting June 16th, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

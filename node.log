@@ -1,0 +1,318 @@
+2026-06-09T18:04:53.4535227Z Current runner version: '2.334.0'
+2026-06-09T18:04:53.4563581Z ##[group]Runner Image Provisioner
+2026-06-09T18:04:53.4564659Z Hosted Compute Agent
+2026-06-09T18:04:53.4565413Z Version: 20260520.533
+2026-06-09T18:04:53.4566103Z Commit: 189110e25284a9812c124fd27b339e2fb4f2f9db
+2026-06-09T18:04:53.4566863Z Build Date: 2026-05-20T17:44:04Z
+2026-06-09T18:04:53.4567863Z Worker ID: {ef1cd29d-259e-4f4f-8eff-19b75e1f55b0}
+2026-06-09T18:04:53.4568684Z Azure Region: eastus
+2026-06-09T18:04:53.4569340Z ##[endgroup]
+2026-06-09T18:04:53.4570835Z ##[group]Operating System
+2026-06-09T18:04:53.4571510Z Ubuntu
+2026-06-09T18:04:53.4572172Z 24.04.4
+2026-06-09T18:04:53.4572774Z LTS
+2026-06-09T18:04:53.4573323Z ##[endgroup]
+2026-06-09T18:04:53.4573990Z ##[group]Runner Image
+2026-06-09T18:04:53.4574705Z Image: ubuntu-24.04
+2026-06-09T18:04:53.4575374Z Version: 20260525.161.1
+2026-06-09T18:04:53.4576728Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260525.161/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-09T18:04:53.4579037Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260525.161
+2026-06-09T18:04:53.4580103Z ##[endgroup]
+2026-06-09T18:04:53.4581451Z ##[group]GITHUB_TOKEN Permissions
+2026-06-09T18:04:53.4583865Z Contents: read
+2026-06-09T18:04:53.4584650Z Metadata: read
+2026-06-09T18:04:53.4585270Z ##[endgroup]
+2026-06-09T18:04:53.4587971Z Secret source: Actions
+2026-06-09T18:04:53.4589299Z Prepare workflow directory
+2026-06-09T18:04:53.4935980Z Prepare all required actions
+2026-06-09T18:04:53.4974598Z Getting action download info
+2026-06-09T18:04:53.9762885Z Download action repository 'actions/checkout@v6' (SHA:df4cb1c069e1874edd31b4311f1884172cec0e10)
+2026-06-09T18:04:54.1941418Z Download action repository 'actions/setup-node@v6' (SHA:48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e)
+2026-06-09T18:04:54.2938931Z Download action repository 'actions/download-artifact@v4' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-06-09T18:04:54.5902669Z Complete job name: Node.js 22
+2026-06-09T18:04:54.6682799Z ##[group]Run actions/checkout@v6
+2026-06-09T18:04:54.6683792Z with:
+2026-06-09T18:04:54.6684373Z   repository: baseplate-admin/modern_colorthief
+2026-06-09T18:04:54.6690600Z   token: ***
+2026-06-09T18:04:54.6691129Z   ssh-strict: true
+2026-06-09T18:04:54.6691651Z   ssh-user: git
+2026-06-09T18:04:54.6692168Z   persist-credentials: true
+2026-06-09T18:04:54.6692732Z   clean: true
+2026-06-09T18:04:54.6693245Z   sparse-checkout-cone-mode: true
+2026-06-09T18:04:54.6693849Z   fetch-depth: 1
+2026-06-09T18:04:54.6694376Z   fetch-tags: false
+2026-06-09T18:04:54.6694911Z   show-progress: true
+2026-06-09T18:04:54.6695436Z   lfs: false
+2026-06-09T18:04:54.6695915Z   submodules: false
+2026-06-09T18:04:54.6696428Z   set-safe-directory: true
+2026-06-09T18:04:54.6697418Z ##[endgroup]
+2026-06-09T18:04:54.7747903Z Syncing repository: baseplate-admin/modern_colorthief
+2026-06-09T18:04:54.7750145Z ##[group]Getting Git version info
+2026-06-09T18:04:54.7751180Z Working directory is '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T18:04:54.7752525Z [command]/usr/bin/git version
+2026-06-09T18:04:54.7804106Z git version 2.54.0
+2026-06-09T18:04:54.7859707Z ##[endgroup]
+2026-06-09T18:04:54.7875717Z Temporarily overriding HOME='/home/runner/work/_temp/c230307f-8336-4ccb-baf5-9c612a45c414' before making global git config changes
+2026-06-09T18:04:54.7877575Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-09T18:04:54.7881869Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T18:04:54.7934404Z Deleting the contents of '/home/runner/work/modern_colorthief/modern_colorthief'
+2026-06-09T18:04:54.7939405Z ##[group]Determining repository object format
+2026-06-09T18:04:54.7941794Z ##[endgroup]
+2026-06-09T18:04:54.7942643Z ##[group]Initializing the repository
+2026-06-09T18:04:54.7947782Z [command]/usr/bin/git init /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T18:04:54.8043635Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-09T18:04:54.8045899Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-09T18:04:54.8047284Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-09T18:04:54.8048479Z hint: call:
+2026-06-09T18:04:54.8049223Z hint:
+2026-06-09T18:04:54.8049970Z hint: 	git config --global init.defaultBranch <name>
+2026-06-09T18:04:54.8050740Z hint:
+2026-06-09T18:04:54.8051451Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-09T18:04:54.8052682Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-09T18:04:54.8053842Z hint:
+2026-06-09T18:04:54.8054530Z hint: 	git branch -m <name>
+2026-06-09T18:04:54.8055146Z hint:
+2026-06-09T18:04:54.8055956Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-09T18:04:54.8057465Z Initialized empty Git repository in /home/runner/work/modern_colorthief/modern_colorthief/.git/
+2026-06-09T18:04:54.8060074Z [command]/usr/bin/git remote add origin https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T18:04:54.8105028Z ##[endgroup]
+2026-06-09T18:04:54.8106000Z ##[group]Disabling automatic garbage collection
+2026-06-09T18:04:54.8109886Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-09T18:04:54.8144224Z ##[endgroup]
+2026-06-09T18:04:54.8145672Z ##[group]Setting up auth
+2026-06-09T18:04:54.8146331Z Removing SSH command configuration
+2026-06-09T18:04:54.8152738Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-09T18:04:54.8192296Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-09T18:04:54.8543122Z Removing HTTP extra header
+2026-06-09T18:04:54.8549960Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-09T18:04:54.8584504Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-09T18:04:54.8822581Z Removing includeIf entries pointing to credentials config files
+2026-06-09T18:04:54.8828977Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-09T18:04:54.8864659Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-09T18:04:54.9107316Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-09T18:04:54.9148707Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:04:54.9180334Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:04:54.9214745Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:04:54.9248607Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:04:54.9279130Z ##[endgroup]
+2026-06-09T18:04:54.9280619Z ##[group]Fetching the repository
+2026-06-09T18:04:54.9289800Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +75e6331026c8f7fea749158ffec7cfa708c639d2:refs/remotes/pull/125/merge
+2026-06-09T18:04:55.2179141Z From https://github.com/baseplate-admin/modern_colorthief
+2026-06-09T18:04:55.2181758Z  * [new ref]         75e6331026c8f7fea749158ffec7cfa708c639d2 -> pull/125/merge
+2026-06-09T18:04:55.2217350Z ##[endgroup]
+2026-06-09T18:04:55.2219030Z ##[group]Determining the checkout info
+2026-06-09T18:04:55.2220473Z ##[endgroup]
+2026-06-09T18:04:55.2223844Z [command]/usr/bin/git sparse-checkout disable
+2026-06-09T18:04:55.2273253Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-09T18:04:55.2308072Z ##[group]Checking out the ref
+2026-06-09T18:04:55.2311359Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/125/merge
+2026-06-09T18:04:55.2542703Z Note: switching to 'refs/remotes/pull/125/merge'.
+2026-06-09T18:04:55.2543762Z 
+2026-06-09T18:04:55.2544631Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-06-09T18:04:55.2547531Z changes and commit them, and you can discard any commits you make in this
+2026-06-09T18:04:55.2550012Z state without impacting any branches by switching back to a branch.
+2026-06-09T18:04:55.2551443Z 
+2026-06-09T18:04:55.2552427Z If you want to create a new branch to retain commits you create, you may
+2026-06-09T18:04:55.2554650Z do so (now or later) by using -c with the switch command. Example:
+2026-06-09T18:04:55.2555955Z 
+2026-06-09T18:04:55.2556569Z   git switch -c <new-branch-name>
+2026-06-09T18:04:55.2557703Z 
+2026-06-09T18:04:55.2558259Z Or undo this operation with:
+2026-06-09T18:04:55.2559307Z 
+2026-06-09T18:04:55.2559960Z   git switch -
+2026-06-09T18:04:55.2560821Z 
+2026-06-09T18:04:55.2562067Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-06-09T18:04:55.2563863Z 
+2026-06-09T18:04:55.2566056Z HEAD is now at 75e6331 Merge 3fa5a1a4bc8424b577b79665f4c069a87c26cae6 into 350b8337a769a0d29e1b551007c13f8ebc5606b8
+2026-06-09T18:04:55.2571570Z ##[endgroup]
+2026-06-09T18:04:55.2602703Z [command]/usr/bin/git log -1 --format=%H
+2026-06-09T18:04:55.2631365Z 75e6331026c8f7fea749158ffec7cfa708c639d2
+2026-06-09T18:04:55.3116879Z ##[group]Run actions/setup-node@v6
+2026-06-09T18:04:55.3118357Z with:
+2026-06-09T18:04:55.3119321Z   node-version: 22
+2026-06-09T18:04:55.3120383Z   check-latest: false
+2026-06-09T18:04:55.3138235Z   token: ***
+2026-06-09T18:04:55.3139321Z   package-manager-cache: true
+2026-06-09T18:04:55.3140554Z ##[endgroup]
+2026-06-09T18:04:55.4868838Z Found in cache @ /opt/hostedtoolcache/node/22.22.3/x64
+2026-06-09T18:04:55.4872625Z ##[group]Environment details
+2026-06-09T18:05:02.9695424Z node: v22.22.3
+2026-06-09T18:05:02.9697526Z npm: 10.9.8
+2026-06-09T18:05:02.9697968Z yarn: 1.22.22
+2026-06-09T18:05:02.9699329Z ##[endgroup]
+2026-06-09T18:05:02.9902903Z ##[group]Run actions/download-artifact@v4
+2026-06-09T18:05:02.9903357Z with:
+2026-06-09T18:05:02.9903647Z   name: node-native
+2026-06-09T18:05:02.9903980Z   path: crates/node-bindings/artifacts
+2026-06-09T18:05:02.9904342Z   merge-multiple: false
+2026-06-09T18:05:02.9904706Z   repository: baseplate-admin/modern_colorthief
+2026-06-09T18:05:02.9905090Z   run-id: 27225823243
+2026-06-09T18:05:02.9905515Z ##[endgroup]
+2026-06-09T18:05:03.1974115Z Downloading single artifact
+2026-06-09T18:05:03.3701649Z Preparing to download the following artifacts:
+2026-06-09T18:05:03.3702829Z - node-native (ID: 7516098036, Size: 277463, Expected Digest: sha256:98b048a6b8b0e7ec55662648b5b32b4ddc59773eade2602a28f5ddfaab2a91de)
+2026-06-09T18:05:03.4658977Z Redirecting to blob download url: https://productionresultssa0.blob.core.windows.net/actions-results/0d1d8566-92b6-4e0f-907e-00fd35f5a02b/workflow-job-run-a9cdcdbb-4b5a-525d-a905-625abf95eecc/artifacts/d89d7f62ea493a5c13ae895d60736848fe525bb02d6f9d0cd9a58fc594f923d9.zip
+2026-06-09T18:05:03.4661961Z Starting download of artifact to: /home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/artifacts
+2026-06-09T18:05:03.5716528Z (node:2316) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-06-09T18:05:03.5719556Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-06-09T18:05:03.5860415Z SHA256 digest of downloaded artifact is 98b048a6b8b0e7ec55662648b5b32b4ddc59773eade2602a28f5ddfaab2a91de
+2026-06-09T18:05:03.5861613Z Artifact download completed successfully.
+2026-06-09T18:05:03.5862225Z Total of 1 artifact(s) downloaded
+2026-06-09T18:05:03.5867154Z Download artifact has finished successfully
+2026-06-09T18:05:03.5994170Z ##[group]Run npm install --legacy-peer-deps && npm run build && npx vitest run
+2026-06-09T18:05:03.5994874Z [36;1mnpm install --legacy-peer-deps && npm run build && npx vitest run[0m
+2026-06-09T18:05:03.6034313Z shell: /usr/bin/bash -e {0}
+2026-06-09T18:05:03.6034662Z ##[endgroup]
+2026-06-09T18:05:06.1026246Z npm warn reify invalid or damaged lockfile detected
+2026-06-09T18:05:06.1027278Z npm warn reify please re-try this operation once it completes
+2026-06-09T18:05:06.1028074Z npm warn reify so that the damage can be corrected, or perform
+2026-06-09T18:05:06.1028984Z npm warn reify a fresh install with no lockfile if the problem persists.
+2026-06-09T18:05:09.2188470Z 
+2026-06-09T18:05:09.2189341Z added 147 packages, and audited 148 packages in 6s
+2026-06-09T18:05:09.2189802Z 
+2026-06-09T18:05:09.2190100Z 38 packages are looking for funding
+2026-06-09T18:05:09.2190643Z   run `npm fund` for details
+2026-06-09T18:05:09.2198786Z 
+2026-06-09T18:05:09.2199597Z found 0 vulnerabilities
+2026-06-09T18:05:09.3705970Z 
+2026-06-09T18:05:09.3706858Z > @modern_colorthief/native@0.3.0 build
+2026-06-09T18:05:09.3707883Z > tsdown
+2026-06-09T18:05:09.3708100Z 
+2026-06-09T18:05:09.7633270Z [34mℹ[39m [34mtsdown v0.22.2[39m powered by [38;2;255;126;23mrolldown v1.1.0[39m
+2026-06-09T18:05:10.1675859Z [34mℹ[39m config file: [4m/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings/tsdown.config.ts[24m 
+2026-06-09T18:05:10.1703887Z [34mℹ[39m entry: [34mindex.ts, native.ts[39m
+2026-06-09T18:05:10.1705240Z [34mℹ[39m target: [34mnode20[39m
+2026-06-09T18:05:10.1708563Z [34mℹ[39m tsconfig: [34mtsconfig.json[39m
+2026-06-09T18:05:10.1717781Z [34mℹ[39m Build start
+2026-06-09T18:05:11.5647465Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mindex.cjs[22m   [2m0.98 kB[22m [2m│ gzip: 0.53 kB[22m
+2026-06-09T18:05:11.5648962Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[1mnative.cjs[22m  [2m0.87 kB[22m [2m│ gzip: 0.49 kB[22m
+2026-06-09T18:05:11.5649995Z [34mℹ[39m [33m[CJS][39m 2 files, total: 1.84 kB
+2026-06-09T18:05:11.5880555Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mindex.d.cts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:05:11.5881760Z [34mℹ[39m [33m[CJS][39m [2mdist/[22mnative.d.cts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:05:11.5883538Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mindex.d.cts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T18:05:11.5884931Z [34mℹ[39m [33m[CJS][39m [2mdist/[22m[32m[1mnative.d.cts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T18:05:11.5885953Z [34mℹ[39m [33m[CJS][39m 4 files, total: 1.55 kB
+2026-06-09T18:05:11.5887853Z [32m✔[39m Build complete in [32m1412ms[39m
+2026-06-09T18:05:11.5904701Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mnative.mjs[22m        [2m0.76 kB[22m [2m│ gzip: 0.46 kB[22m
+2026-06-09T18:05:11.5906396Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[1mindex.mjs[22m         [2m0.43 kB[22m [2m│ gzip: 0.27 kB[22m
+2026-06-09T18:05:11.5908097Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.mjs.map    [2m2.42 kB[22m [2m│ gzip: 1.03 kB[22m
+2026-06-09T18:05:11.5909035Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.mjs.map     [2m1.77 kB[22m [2m│ gzip: 0.65 kB[22m
+2026-06-09T18:05:11.5909885Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mindex.d.mts.map   [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:05:11.5910714Z [34mℹ[39m [34m[ESM][39m [2mdist/[22mnative.d.mts.map  [2m0.23 kB[22m [2m│ gzip: 0.16 kB[22m
+2026-06-09T18:05:11.5911632Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mindex.d.mts[22m[39m       [2m0.76 kB[22m [2m│ gzip: 0.34 kB[22m
+2026-06-09T18:05:11.5913011Z [34mℹ[39m [34m[ESM][39m [2mdist/[22m[32m[1mnative.d.mts[22m[39m      [2m0.33 kB[22m [2m│ gzip: 0.19 kB[22m
+2026-06-09T18:05:11.5913746Z [34mℹ[39m [34m[ESM][39m 8 files, total: 6.93 kB
+2026-06-09T18:05:11.5917409Z [32m✔[39m Build complete in [32m1415ms[39m
+2026-06-09T18:05:12.3388438Z 
+2026-06-09T18:05:12.3392956Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.8 [39m[90m/home/runner/work/modern_colorthief/modern_colorthief/crates/node-bindings[39m
+2026-06-09T18:05:12.3394044Z 
+2026-06-09T18:05:12.9769616Z  [32m✓[39m tests/test_errors.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 326[2mms[22m[39m
+2026-06-09T18:05:13.1552383Z  [31m❯[39m tests/test_properties.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 506[2mms[22m[39m
+2026-06-09T18:05:13.1636860Z      [32m✓[39m getColor returns 3-element RGB array[32m 82[2mms[22m[39m
+2026-06-09T18:05:13.1698790Z      [32m✓[39m getPalette returns array of 3-element RGB arrays[32m 60[2mms[22m[39m
+2026-06-09T18:05:13.1758404Z      [32m✓[39m deterministic color results[32m 148[2mms[22m[39m
+2026-06-09T18:05:13.1788716Z [31m     [31m×[31m deterministic palette results[39m[32m 101[2mms[22m[39m
+2026-06-09T18:05:13.1818757Z      [32m✓[39m palette length respects color_count=3[32m 45[2mms[22m[39m
+2026-06-09T18:05:13.1878564Z      [32m✓[39m palette length respects color_count=5[32m 68[2mms[22m[39m
+2026-06-09T18:05:13.3459193Z  [32m✓[39m tests/test_edge_cases.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 697[2mms[22m[39m
+2026-06-09T18:05:13.8562644Z  [32m✓[39m tests/test_input_types.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 580[2mms[22m[39m
+2026-06-09T18:05:14.1019289Z  [32m✓[39m tests/test_concurrent.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 653[2mms[22m[39m
+2026-06-09T18:05:14.1784082Z  [32m✓[39m tests/test_api.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 470[2mms[22m[39m
+2026-06-09T18:05:14.2115955Z  [32m✓[39m tests/test_deduplication.ts [2m([22m[2m1 test[22m[2m)[22m[32m 111[2mms[22m[39m
+2026-06-09T18:05:14.2147628Z 
+2026-06-09T18:05:14.2148991Z [31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+2026-06-09T18:05:14.2149772Z 
+2026-06-09T18:05:14.2151789Z [41m[1m FAIL [22m[49m tests/test_properties.ts[2m > [22mProperties[2m > [22mdeterministic palette results
+2026-06-09T18:05:14.2158081Z [31m[1mAssertionError[22m: expected [ [ 114, 116, 101 ], …(9) ] to deeply equal [ [ 114, 116, 101 ], …(9) ][39m
+2026-06-09T18:05:14.2159101Z 
+2026-06-09T18:05:14.2159580Z [32m- Expected[39m
+2026-06-09T18:05:14.2160195Z [31m+ Received[39m
+2026-06-09T18:05:14.2160581Z 
+2026-06-09T18:05:14.2161147Z [33m@@ -38,11 +38,11 @@[39m
+2026-06-09T18:05:14.2161797Z [2m      248,[22m
+2026-06-09T18:05:14.2162357Z [2m      215,[22m
+2026-06-09T18:05:14.2162915Z [2m      170,[22m
+2026-06-09T18:05:14.2163441Z [2m    ],[22m
+2026-06-09T18:05:14.2164006Z [2m    [[22m
+2026-06-09T18:05:14.2164557Z [32m-     237,[39m
+2026-06-09T18:05:14.2165125Z [31m+     236,[39m
+2026-06-09T18:05:14.2165752Z [2m      175,[22m
+2026-06-09T18:05:14.2166299Z [2m      161,[22m
+2026-06-09T18:05:14.2166825Z [2m    ],[22m
+2026-06-09T18:05:14.2167521Z [2m    [[22m
+2026-06-09T18:05:14.2168063Z [2m      231,[22m
+2026-06-09T18:05:14.2168415Z 
+2026-06-09T18:05:14.2169094Z [36m [2m❯[22m tests/test_properties.ts:[2m42:20[22m[39m
+2026-06-09T18:05:14.2195684Z     [90m 40|[39m         [35mconst[39m p1 [33m=[39m [35mawait[39m [34mgetPalette[39m([34mtestImagePath[39m()[33m,[39m [34m10[39m)[33m;[39m
+2026-06-09T18:05:14.2198162Z     [90m 41|[39m         [35mconst[39m p2 [33m=[39m [35mawait[39m [34mgetPalette[39m([34mtestImagePath[39m()[33m,[39m [34m10[39m)[33m;[39m
+2026-06-09T18:05:14.2199572Z     [90m 42|[39m         [34mexpect[39m(p1)[33m.[39m[34mtoEqual[39m(p2)[33m;[39m
+2026-06-09T18:05:14.2200836Z     [90m   |[39m                    [31m^[39m
+2026-06-09T18:05:14.2201523Z     [90m 43|[39m     })[33m;[39m
+2026-06-09T18:05:14.2202018Z     [90m 44|[39m
+2026-06-09T18:05:14.2202246Z 
+2026-06-09T18:05:14.2202687Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+2026-06-09T18:05:14.2203061Z 
+2026-06-09T18:05:14.2203124Z 
+2026-06-09T18:05:14.2205888Z [2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m6 passed[39m[22m[90m (7)[39m
+2026-06-09T18:05:14.2208192Z [2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m41 passed[39m[22m[90m (42)[39m
+2026-06-09T18:05:14.2209255Z [2m   Start at [22m 18:05:12
+2026-06-09T18:05:14.2210474Z [2m   Duration [22m 1.86s[2m (transform 190ms, setup 0ms, import 732ms, tests 3.34s, environment 1ms)[22m
+2026-06-09T18:05:14.2211196Z 
+2026-06-09T18:05:14.2224535Z 
+2026-06-09T18:05:14.2258041Z ##[error]AssertionError: expected [ [ 114, 116, 101 ], …(9) ] to deeply equal [ [ 114, 116, 101 ], …(9) ]
+
+- Expected
++ Received
+
+@@ -38,11 +38,11 @@
+      248,
+      215,
+      170,
+    ],
+    [
+-     237,
++     236,
+      175,
+      161,
+    ],
+    [
+      231,
+
+ ❯ tests/test_properties.ts:42:20
+
+
+2026-06-09T18:05:14.2573954Z ##[error]Process completed with exit code 1.
+2026-06-09T18:05:14.2709647Z Post job cleanup.
+2026-06-09T18:05:14.3604532Z [command]/usr/bin/git version
+2026-06-09T18:05:14.3642940Z git version 2.54.0
+2026-06-09T18:05:14.3683206Z Temporarily overriding HOME='/home/runner/work/_temp/5ad95f2d-f2e8-46da-89f5-9719bce11acf' before making global git config changes
+2026-06-09T18:05:14.3684612Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-09T18:05:14.3689674Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/modern_colorthief/modern_colorthief
+2026-06-09T18:05:14.3721881Z Removing SSH command configuration
+2026-06-09T18:05:14.3728459Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-09T18:05:14.3767510Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-09T18:05:14.4013712Z Removing HTTP extra header
+2026-06-09T18:05:14.4020912Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-09T18:05:14.4058554Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-09T18:05:14.4323465Z Removing includeIf entries pointing to credentials config files
+2026-06-09T18:05:14.4335097Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-09T18:05:14.4367930Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-09T18:05:14.4379030Z includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-09T18:05:14.4379730Z includeif.gitdir:/github/workspace/.git.path
+2026-06-09T18:05:14.4380234Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-09T18:05:14.4381518Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path
+2026-06-09T18:05:14.4408067Z /home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4420148Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git.path /home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4456400Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path
+2026-06-09T18:05:14.4480772Z /home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4491538Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/modern_colorthief/modern_colorthief/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4528441Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-06-09T18:05:14.4553448Z /github/runner_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4562557Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4596556Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-06-09T18:05:14.4620374Z /github/runner_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4631109Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config
+2026-06-09T18:05:14.4675622Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-09T18:05:14.4935250Z Removing credentials config '/home/runner/work/_temp/git-credentials-d7df2d95-858f-436a-b3eb-0a576d7f7118.config'
+2026-06-09T18:05:14.5112114Z Cleaning up orphan processes
+2026-06-09T18:05:14.5393193Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/download-artifact@v4. Actions will be forced to run with Node.js 24 by default starting June 16th, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
