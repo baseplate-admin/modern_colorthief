@@ -5,7 +5,9 @@ export default defineConfig({
     format: ['cjs', 'esm'],
     dts: true,
     outDir: 'dist',
-    external: ['sharp'],
+    deps: {
+        neverBundle: ['sharp'],
+    },
     minify: true,
     target: 'node20',
 });
