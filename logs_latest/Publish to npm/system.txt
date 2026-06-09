@@ -1,4 +1,0 @@
-2026-06-09T11:16:18.0090000Z Evaluating publish.if
-2026-06-09T11:16:18.0090000Z Evaluating: (success() && (startsWith(github.ref, 'refs/tags/')))
-2026-06-09T11:16:18.0090000Z Expanded: (false && startsWith(github.ref, 'refs/tags/'))
-2026-06-09T11:16:18.0090000Z Result: false
