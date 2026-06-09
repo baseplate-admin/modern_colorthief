@@ -1,7 +1,7 @@
 use magnus::{Error, exception, function, prelude::*};
 
 fn get_palette(pixels: &[u8], width: u32, height: u32, color_count: u8, quality: u8) -> Result<Vec<Vec<u8>>, Error> {
-    modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, color_count as usize, quality)
+    modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, color_count, quality)
         .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
         .map_err(|e| Error::new(exception::runtime_error(), e))
 }

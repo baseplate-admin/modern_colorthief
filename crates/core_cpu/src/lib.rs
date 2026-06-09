@@ -48,7 +48,6 @@ fn sample_pixels(buffer: &[u8], quality: u8) -> Vec<Color> {
 
     (0..total_pixels)
         .step_by(step)
-        .par_bridge()
         .filter_map(|i| {
             let offset = i * 4;
             if offset + 2 < buffer.len() {

@@ -10,4 +10,3 @@ name = "modern_colorthief"
 [dependencies]
 modern-colorthief-core-cpu.workspace = true
 ext-php-rs.workspace = true
-rayon.workspace = true
