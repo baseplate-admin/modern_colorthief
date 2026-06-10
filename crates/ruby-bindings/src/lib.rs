@@ -1,13 +1,13 @@
 use magnus::{Error, RString, prelude::*};
 
-fn get_palette(pixels: RString, width: u32, height: u32, color_count: u8, quality: u8) -> Result<Vec<Vec<u8>>, Error> {
+fn get_palette(_ruby: &magnus::Ruby, pixels: RString, width: u32, height: u32, color_count: u8, quality: u8) -> Result<Vec<Vec<u8>>, Error> {
     let pixels = pixels.as_slice();
     modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, color_count, quality)
         .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
         .map_err(|e| Error::new(magnus::exception::error(), e))
 }
 
-fn get_color(pixels: RString, width: u32, height: u32, quality: u8) -> Result<Vec<u8>, Error> {
+fn get_color(_ruby: &magnus::Ruby, pixels: RString, width: u32, height: u32, quality: u8) -> Result<Vec<u8>, Error> {
     let pixels = pixels.as_slice();
     let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
         .map_err(|e| Error::new(magnus::exception::error(), e))?;
@@ -22,7 +22,7 @@ fn get_color(pixels: RString, width: u32, height: u32, quality: u8) -> Result<Ve
 #[magnus::init]
 fn init_colorthief_ruby() -> Result<(), Error> {
     let mod_colorthief = magnus::ruby().define_module("Colorthief")?;
-    mod_colorthief.define_singleton_method("get_palette", function!(get_palette, 5))?;
-    mod_colorthief.define_singleton_method("get_color", function!(get_color, 4))?;
+    mod_colorthief.define_singleton_method("get_palette", ruby_function!(get_palette, 5))?;
+    mod_colorthief.define_singleton_method("get_color", ruby_function!(get_color, 4))?;
     Ok(())
 }

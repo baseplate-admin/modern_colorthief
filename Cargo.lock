@@ -1091,7 +1091,6 @@ version = "0.3.0"
 dependencies = [
  "ext-php-rs",
  "modern-colorthief-core-cpu",
- "rayon",
 ]
 
 [[package]]
@@ -1125,7 +1124,6 @@ version = "0.3.0"
 dependencies = [
  "magnus",
  "modern-colorthief-core-cpu",
- "rayon",
 ]
 
 [[package]]

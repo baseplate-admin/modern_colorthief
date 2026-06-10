@@ -4,7 +4,7 @@ version.workspace = true
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 name = "modern_colorthief_gpu"
 
 [dependencies]
