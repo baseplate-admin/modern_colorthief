@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Rust
+*.pyd
+*.dll
+*.dylib
+*.pdb
+.maturin/

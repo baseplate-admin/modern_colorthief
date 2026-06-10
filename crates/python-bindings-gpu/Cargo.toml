@@ -9,3 +9,4 @@ crate-type = ["cdylib"]
 [dependencies]
 modern-colorthief-core-gpu.workspace = true
 pyo3.workspace = true
+image = "0.25"

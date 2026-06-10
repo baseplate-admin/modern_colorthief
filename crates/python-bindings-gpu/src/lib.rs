@@ -1,67 +1,101 @@
-use modern_colorthief_core_gpu::extract_palette_from_buffer;
-use pyo3::exceptions::PyValueError;
+use std::path::PathBuf;
+
+use modern_colorthief_core_gpu::{extract_palette_from_buffer, list_gpus};
+use image::ImageReader;
 use pyo3::prelude::*;
 
-/// GPU-accelerated palette extraction (Vulkan Compute backend).
-/// Falls back to CPU if no Vulkan device is available.
-///
-/// Args:
-///     pixels (bytes): Raw RGBA pixel data (4 bytes per pixel).
-///     width (int): Image width in pixels.
-///     height (int): Image height in pixels.
-///     color_count (int): Number of colors to extract. Defaults to 10.
-///     quality (int): Downsample factor. Defaults to 10.
-///
-/// Returns:
-///     list[tuple[int, int, int]]: Deduplicated list of RGB color tuples.
 #[pyfunction]
-#[pyo3(signature = (pixels, width, height, color_count=None, quality=None))]
-fn _get_palette_gpu(
-    py: Python<'_>,
-    pixels: &[u8],
+#[pyo3(signature = (buffer, width, height, color_count=5, quality=1))]
+fn extract_palette_from_buffer_py(
+    py: Python,
+    buffer: &[u8],
     width: u32,
     height: u32,
-    color_count: Option<u8>,
-    quality: Option<u8>,
+    color_count: u8,
+    quality: u8,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
     py.detach(move || {
-        extract_palette_from_buffer(
-            pixels,
-            width,
-            height,
-            color_count.unwrap_or(10),
-            quality.unwrap_or(10),
-        )
+        extract_palette_from_buffer(buffer, width, height, color_count, quality)
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))
     })
-    .map_err(PyValueError::new_err)
 }
 
-/// GPU-accelerated dominant color extraction.
 #[pyfunction]
-#[pyo3(signature = (pixels, width, height, quality=None))]
-fn _get_color_gpu(
-    py: Python<'_>,
-    pixels: &[u8],
+#[pyo3(signature = (buffer, width, height, quality=1))]
+fn extract_dominant_color_from_buffer_py(
+    py: Python,
+    buffer: &[u8],
     width: u32,
     height: u32,
-    quality: Option<u8>,
+    quality: u8,
 ) -> PyResult<(u8, u8, u8)> {
-    let palette = py
-        .detach(move || {
-            extract_palette_from_buffer(pixels, width, height, 5, quality.unwrap_or(10))
-        })
-        .map_err(PyValueError::new_err)?;
-
-    palette
-        .first()
-        .copied()
-        .ok_or_else(|| PyValueError::new_err("Image contains no colors"))
+    py.detach(move || {
+        extract_palette_from_buffer(buffer, width, height, 1, quality)
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))?
+            .into_iter()
+            .next()
+            .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("No color extracted"))
+    })
 }
 
-#[pymodule(gil_used = false)]
-fn _modern_colorthief_gpu(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
-    m.add_function(wrap_pyfunction!(_get_palette_gpu, m)?)?;
-    m.add_function(wrap_pyfunction!(_get_color_gpu, m)?)?;
+fn load_image_info(path: &str) -> PyResult<(Vec<u8>, u32, u32)> {
+    let img = ImageReader::open(PathBuf::from(path))
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Failed to open image: {e}")))?
+        .decode()
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Failed to decode image: {e}")))?;
+    let (w, h) = (img.width(), img.height());
+    Ok((img.into_rgba8().into_raw(), w, h))
+}
+
+#[pyfunction]
+#[pyo3(signature = (path, color_count=5, quality=1))]
+fn extract_palette_py(
+    py: Python,
+    path: String,
+    color_count: u8,
+    quality: u8,
+) -> PyResult<Vec<(u8, u8, u8)>> {
+    let (buffer, width, height) = py.detach(move || -> PyResult<(Vec<u8>, u32, u32)> {
+        load_image_info(&path)
+    })?;
+    extract_palette_from_buffer_py(py, &buffer, width, height, color_count, quality)
+}
+
+#[pyfunction]
+#[pyo3(signature = (path, quality=1))]
+fn extract_dominant_color_py(
+    py: Python,
+    path: String,
+    quality: u8,
+) -> PyResult<(u8, u8, u8)> {
+    let (buffer, width, height) = py.detach(move || -> PyResult<(Vec<u8>, u32, u32)> {
+        load_image_info(&path)
+    })?;
+    extract_dominant_color_from_buffer_py(py, &buffer, width, height, quality)
+}
+
+#[pyfunction]
+fn list_gpus_py(py: Python) -> PyResult<Vec<pyo3::Bound<pyo3::types::PyDict>>> {
+    use pyo3::types::PyDict;
+    let gpus = list_gpus().map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))?;
+    let mut result = Vec::new();
+    for gpu in gpus {
+        let d = PyDict::new(py);
+        d.set_item("index", gpu.index)?;
+        d.set_item("name", gpu.name)?;
+        d.set_item("device_type", format!("{:?}", gpu.device_type))?;
+        d.set_item("vendor_name", gpu.vendor_name)?;
+        result.push(d);
+    }
+    Ok(result)
+}
+
+#[pymodule]
+fn gpu(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction![extract_palette_from_buffer_py](m)?)?;
+    m.add_function(wrap_pyfunction![extract_dominant_color_from_buffer_py](m)?)?;
+    m.add_function(wrap_pyfunction![extract_palette_py](m)?)?;
+    m.add_function(wrap_pyfunction![extract_dominant_color_py](m)?)?;
+    m.add_function(wrap_pyfunction![list_gpus_py](m)?)?;
     Ok(())
 }

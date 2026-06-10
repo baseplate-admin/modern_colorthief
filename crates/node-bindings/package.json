@@ -25,5 +25,8 @@
     },
     "peerDependencies": {
         "sharp": ">=0.33.0"
+    },
+    "allowScripts": {
+        "sharp@0.34.5": true
     }
 }

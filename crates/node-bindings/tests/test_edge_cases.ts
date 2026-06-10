@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from './test_compat';
 import { getPalette, getColor } from '../index.js';
 import { testImagePath, testImageBuffer, kaijuImagePath, kaijuImageBuffer } from './test_helper.js';
 

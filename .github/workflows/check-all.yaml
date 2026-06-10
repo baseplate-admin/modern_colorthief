@@ -16,6 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev ruby-dev
       - name: Check all crates
         run: cargo check --workspace --all-targets --exclude modern-colorthief-ruby --exclude modern-colorthief-ruby-gpu --exclude modern-colorthief-php --exclude modern-colorthief-php-gpu
       - name: Check clippy
@@ -49,6 +53,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
+          bundler-cache: true
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -61,7 +66,7 @@ jobs:
       - working-directory: crates/ruby-bindings
         run: |
           bundle install --path vendor/bundle
-          RUBYLIB=../../target/release:$RUBYLIB bundle exec rspec spec/
+          RUBYLIB=../../target/release bundle exec rspec spec/
 
   ruby-gpu-build:
     name: Ruby GPU build
@@ -71,6 +76,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
+          bundler-cache: true
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -83,4 +89,4 @@ jobs:
       - working-directory: crates/ruby-bindings-gpu
         run: |
           bundle install --path vendor/bundle
-          RUBYLIB=../../target/release:$RUBYLIB bundle exec rspec spec/
+          RUBYLIB=../../target/release bundle exec rspec spec/

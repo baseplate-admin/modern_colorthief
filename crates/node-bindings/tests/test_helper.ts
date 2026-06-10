@@ -1,5 +1,10 @@
-import { resolve } from 'path';
-import { readFileSync } from 'fs';
+import { resolve, dirname } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+// Cross-platform __dirname for ESM (works in Node.js and Deno)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // ---------------------------------------------------------------------------
 // Committed test images (shared across all language bindings)

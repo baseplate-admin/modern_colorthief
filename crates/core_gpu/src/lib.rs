@@ -18,9 +18,7 @@ pub enum GpuDevice {
     CPU,
     Other,
 }
-mod traits;
 
-pub use traits::GpuExtractor;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod vulkan;
