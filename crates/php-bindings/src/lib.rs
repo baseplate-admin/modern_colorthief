@@ -1,35 +1,34 @@
 use ext_php_rs::prelude::*;
 
-#[allow(clippy::missing_safety_doc)]
 #[php_function]
-fn get_palette(pixels: &[u8], width: u32, height: u32, color_count: Option<u8>, quality: Option<u8>) -> Result<Vec<Vec<u8>>, Exception> {
+fn get_palette(pixels: String, width: u32, height: u32, color_count: Option<u8>, quality: Option<u8>) -> PhpResult<Vec<Vec<u8>>> {
+    let pixels = pixels.into_bytes();
     let color_count = color_count.unwrap_or(10);
     let quality = quality.unwrap_or(10);
 
-    modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, color_count, quality)
+    modern_colorthief_core_cpu::extract_palette_from_buffer(&pixels, width, height, color_count, quality)
         .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-        .map_err(|e| Exception::new_fn("Exception", e))
+        .map_err(|e| PhpException::new("Exception", e.to_string()))
 }
 
-#[allow(clippy::missing_safety_doc)]
 #[php_function]
-fn get_color(pixels: &[u8], width: u32, height: u32, quality: Option<u8>) -> Result<Vec<u8>, Exception> {
+fn get_color(pixels: String, width: u32, height: u32, quality: Option<u8>) -> PhpResult<Vec<u8>> {
+    let pixels = pixels.into_bytes();
     let quality = quality.unwrap_or(10);
 
-    let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
-        .map_err(|e| Exception::new_fn("Exception", e))?;
+    let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(&pixels, width, height, 5, quality)
+        .map_err(|e| PhpException::new("Exception", e.to_string()))?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| Exception::new_fn("Exception", "Image contains no colors"))
+        .ok_or_else(|| PhpException::new("Exception", "Image contains no colors"))
 }
 
 #[php_module]
-fn php_module() -> Module {
-    let module = Module::new("modern_colorthief");
-    module.add_function(get_palette());
-    module.add_function(get_color());
+fn php_module(module: ModuleBuilder) -> ModuleBuilder {
     module
+        .function(wrap_function!(get_palette))
+        .function(wrap_function!(get_color))
 }

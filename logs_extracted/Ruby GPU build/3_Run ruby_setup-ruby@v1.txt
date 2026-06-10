@@ -1,0 +1,19 @@
+﻿2026-06-09T20:39:50.4512218Z ##[group]Run ruby/setup-ruby@v1
+2026-06-09T20:39:50.4512600Z with:
+2026-06-09T20:39:50.4512845Z   ruby-version: 3.4
+2026-06-09T20:39:50.4513116Z   bundler-cache: false
+2026-06-09T20:39:50.4516856Z   token: ***
+2026-06-09T20:39:50.4517161Z ##[endgroup]
+2026-06-09T20:39:50.6144681Z ##[group]Modifying PATH
+2026-06-09T20:39:50.6145918Z Entries added to PATH to use selected Ruby:
+2026-06-09T20:39:50.6155015Z   /opt/hostedtoolcache/Ruby/3.4.9/x64/bin
+2026-06-09T20:39:50.6156425Z ##[endgroup]
+2026-06-09T20:39:50.6157679Z ##[group]Print Ruby version
+2026-06-09T20:39:50.6232947Z [command]/opt/hostedtoolcache/Ruby/3.4.9/x64/bin/ruby --version
+2026-06-09T20:39:50.8109556Z ruby 3.4.9 (2026-03-11 revision 76cca827ab) +PRISM [x86_64-linux]
+2026-06-09T20:39:50.8138821Z Took   0.20 seconds
+2026-06-09T20:39:50.8140421Z ##[endgroup]
+2026-06-09T20:39:50.8141646Z ##[group]Installing Bundler
+2026-06-09T20:39:50.8145541Z Using Bundler shipped with ruby-3.4.9
+2026-06-09T20:39:50.8146525Z Took   0.00 seconds
+2026-06-09T20:39:50.8147406Z ##[endgroup]
