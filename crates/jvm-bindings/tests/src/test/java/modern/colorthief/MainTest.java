@@ -324,10 +324,10 @@ public class MainTest {
     @DisplayName("Single pixel image returns that pixel color")
     public void testSinglePixel() {
         byte[] pixels = new byte[4];
-        pixels[0] = 42;
-        pixels[1] = 100;
-        pixels[2] = 200;
-        pixels[3] = 255; // alpha
+        pixels[0] = (byte) 42;
+        pixels[1] = (byte) 100;
+        pixels[2] = (byte) 200;
+        pixels[3] = (byte) 255; // alpha
         byte[] color = Colorthief.getColor(pixels, 1, 1, 1);
         assertNotNull(color);
         assertEquals(3, color.length);
@@ -340,10 +340,10 @@ public class MainTest {
     @DisplayName("Single pixel palette returns that color")
     public void testSinglePixelPalette() {
         byte[] pixels = new byte[4];
-        pixels[0] = 42;
-        pixels[1] = 100;
-        pixels[2] = 200;
-        pixels[3] = 255;
+        pixels[0] = (byte) 42;
+        pixels[1] = (byte) 100;
+        pixels[2] = (byte) 200;
+        pixels[3] = (byte) 255;
         byte[][] palette = Colorthief.getPalette(pixels, 1, 1, 5, 1);
         assertNotNull(palette);
         assertTrue(palette.length > 0);
