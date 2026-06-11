@@ -7,7 +7,7 @@ fn get_palette(
     color_count: u8,
     quality: u8,
 ) -> Result<Vec<Vec<u8>>, error::Error> {
-    let pixels = pixels.as_slice();
+    let pixels = unsafe { pixels.as_slice() };
     modern_colorthief_core_cpu::extract_palette_from_buffer(
         pixels,
         width,
@@ -25,7 +25,7 @@ fn get_color(
     height: u32,
     quality: u8,
 ) -> Result<Vec<u8>, error::Error> {
-    let pixels = pixels.as_slice();
+    let pixels = unsafe { pixels.as_slice() };
     let palette =
         modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
             .map_err(|e| error::Error::new(exception::standard_error(), e.to_string()))?;

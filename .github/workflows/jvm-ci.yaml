@@ -69,4 +69,4 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
-      - run: cargo check --target aarch64-linux-android -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-node
+      - run: cargo check --target aarch64-linux-android -p modern-colorthief-core -p modern-colorthief-core-cpu

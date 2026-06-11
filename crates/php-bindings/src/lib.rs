@@ -2,13 +2,12 @@ use ext_php_rs::prelude::*;
 
 #[php_function]
 fn get_palette(
-    pixels: String,
+    pixels: Vec<u8>,
     width: u32,
     height: u32,
     color_count: Option<u8>,
     quality: Option<u8>,
 ) -> PhpResult<Vec<Vec<u8>>> {
-    let pixels = pixels.into_bytes();
     let color_count = color_count.unwrap_or(10);
     let quality = quality.unwrap_or(10);
 
@@ -24,8 +23,7 @@ fn get_palette(
 }
 
 #[php_function]
-fn get_color(pixels: String, width: u32, height: u32, quality: Option<u8>) -> PhpResult<Vec<u8>> {
-    let pixels = pixels.into_bytes();
+fn get_color(pixels: Vec<u8>, width: u32, height: u32, quality: Option<u8>) -> PhpResult<Vec<u8>> {
     let quality = quality.unwrap_or(10);
 
     let palette =

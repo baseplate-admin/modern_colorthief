@@ -47,14 +47,14 @@ beforeAll(async () => {
 
 describe('test.jpg — getPalette', () => {
     it('should return a non-empty palette', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const palette = await getPalette(bytes, 10, 10);
         expect(palette.length).toBeGreaterThan(0);
     }, 30000);
 
     it('should return colors with valid RGB values (0-255)', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const palette = await getPalette(bytes, 10, 10);
         for (const color of palette) {
@@ -67,14 +67,14 @@ describe('test.jpg — getPalette', () => {
     }, 30000);
 
     it('should return at most color_count colors', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const palette = await getPalette(bytes, 5, 10);
         expect(palette.length).toBeLessThanOrEqual(5);
     }, 30000);
 
     it('should return no duplicate colors', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const palette = await getPalette(bytes, 20, 10);
         const serialized = palette.map(c => `${c[0]},${c[1]},${c[2]}`);
@@ -83,7 +83,7 @@ describe('test.jpg — getPalette', () => {
     }, 30000);
 
     it('should return more colors with higher color_count', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const small = await getPalette(bytes, 3, 10);
         const large = await getPalette(bytes, 15, 10);
@@ -91,7 +91,7 @@ describe('test.jpg — getPalette', () => {
     }, 30000);
 
     it('should produce deterministic results', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const p1 = await getPalette(bytes, 10, 10);
         const p2 = await getPalette(bytes, 10, 10);
@@ -105,7 +105,7 @@ describe('test.jpg — getPalette', () => {
 
 describe('test.jpg — getColor', () => {
     it('should return an RGB array of length 3', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const color = await getColor(bytes, 10);
         expect(Array.isArray(color)).toBe(true);
@@ -113,7 +113,7 @@ describe('test.jpg — getColor', () => {
     }, 30000);
 
     it('should return valid RGB values (0-255)', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const color = await getColor(bytes, 10);
         for (const channel of color) {
@@ -123,7 +123,7 @@ describe('test.jpg — getColor', () => {
     }, 30000);
 
     it('should produce deterministic results', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const c1 = await getColor(bytes, 10);
         const c2 = await getColor(bytes, 10);
@@ -131,7 +131,7 @@ describe('test.jpg — getColor', () => {
     }, 30000);
 
     it('should return the same dominant color regardless of quality setting', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const cLow = await getColor(bytes, 1);
         const cHigh = await getColor(bytes, 10);
@@ -148,7 +148,7 @@ describe('test.jpg — getColor', () => {
 
 describe('test.jpg — decodeImage', () => {
     it('should decode and return valid dimensions', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const result = await decodeImage(bytes);
         expect(result.width).toBeGreaterThan(0);
@@ -157,7 +157,7 @@ describe('test.jpg — decodeImage', () => {
     }, 30000);
 
     it('should return a Uint8Array of pixels', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const result = await decodeImage(bytes);
         expect(result.pixels instanceof Uint8Array).toBe(true);
@@ -170,14 +170,14 @@ describe('test.jpg — decodeImage', () => {
 
 describe('kaiju_no_8.jpg — getPalette', () => {
     it('should return a non-empty palette', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const palette = await getPalette(bytes, 10, 10);
         expect(palette.length).toBeGreaterThan(0);
     }, 30000);
 
     it('should return colors with valid RGB values (0-255)', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const palette = await getPalette(bytes, 10, 10);
         for (const color of palette) {
@@ -190,7 +190,7 @@ describe('kaiju_no_8.jpg — getPalette', () => {
     }, 30000);
 
     it('should return no duplicate colors', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const palette = await getPalette(bytes, 20, 10);
         const serialized = palette.map(c => `${c[0]},${c[1]},${c[2]}`);
@@ -199,7 +199,7 @@ describe('kaiju_no_8.jpg — getPalette', () => {
     }, 30000);
 
     it('should produce deterministic results', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const p1 = await getPalette(bytes, 10, 10);
         const p2 = await getPalette(bytes, 10, 10);
@@ -213,7 +213,7 @@ describe('kaiju_no_8.jpg — getPalette', () => {
 
 describe('kaiju_no_8.jpg — getColor', () => {
     it('should return an RGB array of length 3', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const color = await getColor(bytes, 10);
         expect(Array.isArray(color)).toBe(true);
@@ -221,7 +221,7 @@ describe('kaiju_no_8.jpg — getColor', () => {
     }, 30000);
 
     it('should return valid RGB values (0-255)', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const color = await getColor(bytes, 10);
         for (const channel of color) {
@@ -237,7 +237,7 @@ describe('kaiju_no_8.jpg — getColor', () => {
 
 describe('kaiju_no_8.jpg — decodeImage', () => {
     it('should decode and return valid dimensions', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const result = await decodeImage(bytes);
         expect(result.width).toBeGreaterThan(0);
@@ -252,21 +252,21 @@ describe('kaiju_no_8.jpg — decodeImage', () => {
 
 describe('URL input to getPalette/getColor', () => {
     it('should accept a file URL for getPalette', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const url = `file:///${testImagePath('test.jpg').replace(/\\/g, '/')}`;
         const palette = await getPalette(url, 10, 10);
         expect(palette.length).toBeGreaterThan(0);
     }, 30000);
 
     it('should accept a file URL for getColor', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const url = `file:///${testImagePath('test.jpg').replace(/\\/g, '/')}`;
         const color = await getColor(url, 10);
         expect(color.length).toBe(3);
     }, 30000);
 
     it('should accept a file URL for decodeImage', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const url = `file:///${testImagePath('test.jpg').replace(/\\/g, '/')}`;
         const result = await decodeImage(url);
         expect(result.width).toBeGreaterThan(0);
@@ -274,7 +274,7 @@ describe('URL input to getPalette/getColor', () => {
     }, 30000);
 
     it('should reject an invalid URL', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         await expect(getPalette('https://example.com/nonexistent.png', 5, 10)).rejects.toThrow();
     }, 30000);
 });
@@ -285,7 +285,7 @@ describe('URL input to getPalette/getColor', () => {
 
 describe('Blob input with real image data', () => {
     it('should accept a Blob created from test.jpg bytes', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const blob = new Blob([bytes]);
         const palette = await getPalette(blob, 10, 10);
@@ -293,7 +293,7 @@ describe('Blob input with real image data', () => {
     }, 30000);
 
     it('should accept a Blob created from kaiju_no_8.jpg bytes', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const blob = new Blob([bytes]);
         const color = await getColor(blob, 10);
@@ -307,7 +307,7 @@ describe('Blob input with real image data', () => {
 
 describe('Concurrent Promise execution', () => {
     it('should handle concurrent getPalette calls for the same image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const promises = Array.from({ length: 5 }, () => getPalette(bytes, 10, 10));
         const results = await Promise.all(promises);
@@ -318,7 +318,7 @@ describe('Concurrent Promise execution', () => {
     }, 30000);
 
     it('should handle concurrent getColor calls for the same image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const promises = Array.from({ length: 5 }, () => getColor(bytes, 10));
         const results = await Promise.all(promises);
@@ -329,7 +329,7 @@ describe('Concurrent Promise execution', () => {
     }, 30000);
 
     it('should handle concurrent decodeImage calls for the same image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const promises = Array.from({ length: 3 }, () => decodeImage(bytes));
         const results = await Promise.all(promises);
@@ -341,7 +341,7 @@ describe('Concurrent Promise execution', () => {
     }, 30000);
 
     it('should handle concurrent calls across both test images', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const testBytes = loadImageBytes('test.jpg');
         const kaijuBytes = loadImageBytes('kaiju_no_8.jpg');
         const results = await Promise.all([
@@ -359,7 +359,7 @@ describe('Concurrent Promise execution', () => {
     }, 30000);
 
     it('should handle concurrent calls with different parameters', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('kaiju_no_8.jpg');
         const results = await Promise.all([
             getPalette(bytes, 3, 10),
@@ -376,7 +376,7 @@ describe('Concurrent Promise execution', () => {
     }, 30000);
 
     it('should produce consistent results across concurrent calls', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const bytes = loadImageBytes('test.jpg');
         const promises = Array.from({ length: 4 }, () => getPalette(bytes, 10, 10));
         const results = await Promise.all(promises);

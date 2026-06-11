@@ -89,7 +89,7 @@ beforeAll(async () => {
 
 describe('Solid color detection', () => {
     it('should detect pure red', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(255, 0, 0);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
@@ -100,7 +100,7 @@ describe('Solid color detection', () => {
     }, 30000);
 
     it('should detect pure green', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(0, 255, 0);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
@@ -111,7 +111,7 @@ describe('Solid color detection', () => {
     }, 30000);
 
     it('should detect white', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(255, 255, 255);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
@@ -122,7 +122,7 @@ describe('Solid color detection', () => {
     }, 30000);
 
     it('should detect black', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(0, 0, 0);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
@@ -139,7 +139,7 @@ describe('Solid color detection', () => {
 
 describe('Two-color detection', () => {
     it('should find two distinct colors in a two-color image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createTwoColorImage(255, 0, 0, 0, 0, 255);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThanOrEqual(2);
@@ -150,7 +150,7 @@ describe('Two-color detection', () => {
     }, 30000);
 
     it('should return red and blue as separate palette entries', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createTwoColorImage(255, 0, 0, 0, 0, 255);
         const palette = await getPalette(img, 10, 10);
         // At least one entry should be close to red, another close to blue
@@ -167,21 +167,21 @@ describe('Two-color detection', () => {
 
 describe('Palette length respects color_count', () => {
     it('should return at most color_count colors', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(128, 64, 32);
         const palette = await getPalette(img, 3, 10);
         expect(palette.length).toBeLessThanOrEqual(3);
     }, 30000);
 
     it('should return at most 1 color when color_count is 1', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(200, 100, 50);
         const palette = await getPalette(img, 1, 10);
         expect(palette.length).toBeLessThanOrEqual(1);
     }, 30000);
 
     it('should return more colors when color_count is higher', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createGradientImage([
             [255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [255, 0, 255]
         ]);
@@ -197,7 +197,7 @@ describe('Palette length respects color_count', () => {
 
 describe('Deduplication', () => {
     it('should not return duplicate colors in palette', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(100, 150, 200);
         const palette = await getPalette(img, 20, 10);
         const serialized = palette.map(c => `${c[0]},${c[1]},${c[2]}`);
@@ -206,7 +206,7 @@ describe('Deduplication', () => {
     }, 30000);
 
     it('solid image should return very few unique colors', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(50, 50, 50);
         const palette = await getPalette(img, 50, 10);
         // A solid image has only one color, so even with color_count=50 we expect few
@@ -220,7 +220,7 @@ describe('Deduplication', () => {
 
 describe('getColor returns correct dominant color', () => {
     it('should return an RGB array of length 3', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(255, 0, 0);
         const color = await getColor(img, 10);
         expect(Array.isArray(color)).toBe(true);
@@ -228,7 +228,7 @@ describe('getColor returns correct dominant color', () => {
     }, 30000);
 
     it('should return red for a red image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(255, 0, 0);
         const color = await getColor(img, 10);
         expect(color[0]).toBeCloseTo(255, -1);
@@ -237,7 +237,7 @@ describe('getColor returns correct dominant color', () => {
     }, 30000);
 
     it('should return green for a green image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(0, 255, 0);
         const color = await getColor(img, 10);
         expect(color[0]).toBeCloseTo(0, -1);
@@ -246,7 +246,7 @@ describe('getColor returns correct dominant color', () => {
     }, 30000);
 
     it('should return a color close to the dominant color in a two-color image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createTwoColorImage(255, 0, 0, 0, 0, 255);
         const color = await getColor(img, 10);
         // Either red-dominant or blue-dominant is acceptable (equal area)
@@ -262,31 +262,31 @@ describe('getColor returns correct dominant color', () => {
 
 describe('Error handling', () => {
     it('should reject with empty bytes', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const emptyBlob = new Blob([new Uint8Array(0)]);
         await expect(getPalette(emptyBlob, 5, 10)).rejects.toThrow();
     }, 30000);
 
     it('should reject with non-image data', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const fakeBlob = new Blob([new TextEncoder().encode('not an image')]);
         await expect(getPalette(fakeBlob, 5, 10)).rejects.toThrow();
     }, 30000);
 
     it('getColor should reject with empty bytes', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const emptyBlob = new Blob([new Uint8Array(0)]);
         await expect(getColor(emptyBlob, 10)).rejects.toThrow();
     }, 30000);
 
     it('getColor should reject with non-image data', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const fakeBlob = new Blob([new TextEncoder().encode('hello world')]);
         await expect(getColor(fakeBlob, 10)).rejects.toThrow();
     }, 30000);
 
     it('should reject with truncated JPEG header', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const truncated = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0]);
         const blob = new Blob([truncated]);
         await expect(getPalette(blob, 5, 10)).rejects.toThrow();
@@ -299,7 +299,7 @@ describe('Error handling', () => {
 
 describe('Deterministic results', () => {
     it('should return the same palette for the same image twice', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(180, 90, 45);
         const p1 = await getPalette(img, 5, 10);
         const p2 = await getPalette(img, 5, 10);
@@ -307,7 +307,7 @@ describe('Deterministic results', () => {
     }, 30000);
 
     it('should return the same color for the same image twice', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(180, 90, 45);
         const c1 = await getColor(img, 10);
         const c2 = await getColor(img, 10);
@@ -315,7 +315,7 @@ describe('Deterministic results', () => {
     }, 30000);
 
     it('should be deterministic on a multi-color image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createGradientImage([
             [255, 0, 0], [0, 255, 0], [0, 0, 255]
         ]);
@@ -331,7 +331,7 @@ describe('Deterministic results', () => {
 
 describe('Edge cases', () => {
     it('should handle a 1x1 pixel image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createTinyImage(255, 128, 64);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
@@ -342,7 +342,7 @@ describe('Edge cases', () => {
     }, 30000);
 
     it('getColor should handle a 1x1 pixel image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createTinyImage(70, 140, 210);
         const color = await getColor(img, 10);
         expect(color.length).toBe(3);
@@ -352,21 +352,21 @@ describe('Edge cases', () => {
     }, 30000);
 
     it('should handle large quality value (quality=10)', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(200, 100, 50);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
     }, 30000);
 
     it('should handle minimum quality value (quality=1)', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createSolidImage(200, 100, 50);
         const palette = await getPalette(img, 5, 1);
         expect(palette.length).toBeGreaterThan(0);
     }, 30000);
 
     it('should work with a large image', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const img = await createLargeImage(100, 200, 150);
         const palette = await getPalette(img, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
@@ -377,7 +377,7 @@ describe('Edge cases', () => {
     }, 30000);
 
     it('should work when passing a Uint8Array', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const blob = await createSolidImage(255, 0, 0);
         const arrayBuffer = await blob.arrayBuffer();
         const uint8 = new Uint8Array(arrayBuffer);
@@ -386,7 +386,7 @@ describe('Edge cases', () => {
     }, 30000);
 
     it('should work when passing an ArrayBuffer', async () => {
-        expect.poll(() => wasmAvailable).toBe(true);
+        await expect.poll(() => wasmAvailable).toBe(true);
         const blob = await createSolidImage(0, 255, 0);
         const arrayBuffer = await blob.arrayBuffer();
         const palette = await getPalette(arrayBuffer, 5, 10);
