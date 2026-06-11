@@ -41,7 +41,7 @@ testing {
 }
 
 tasks.named<Test>("test") {
-    val nativeLibPath = layout.projectDirectory.dir("native").get().asFile.absolutePath
+    val nativeLibPath = file("native").absolutePath
     jvmArgs("-Djava.library.path=$nativeLibPath")
     testLogging {
         events("passed", "skipped", "failed")
