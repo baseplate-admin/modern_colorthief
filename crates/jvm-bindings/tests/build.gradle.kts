@@ -37,6 +37,12 @@ kotlin.compilerOptions {
     jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_23)
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    if (name.contains("Test")) {
+        options.release.set(23)
+    }
+}
+
 testing {
     suites {
         named<JvmTestSuite>("test") {
