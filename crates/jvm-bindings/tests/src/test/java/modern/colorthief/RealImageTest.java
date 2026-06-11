@@ -73,7 +73,7 @@ public class RealImageTest {
                 pixels[idx] = (byte) (x * 255 / (width - 1));       // R ramps 0..255
                 pixels[idx + 1] = (byte) (y * 255 / (height - 1)); // G ramps 0..255
                 pixels[idx + 2] = (byte) 128;                       // B constant
-                pixels[idx + 3] = 255;
+                pixels[idx + 3] = (byte) 255;
             }
         }
         byte[][] palette = Colorthief.getPalette(pixels, width, height, 10, 5);
