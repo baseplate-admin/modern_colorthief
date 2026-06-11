@@ -73,7 +73,7 @@ jobs:
         run: gradle wrapper
       - name: Run JUnit tests
         working-directory: crates/jvm-bindings/tests
-        run: ./gradlew test
+        run: ./gradlew test --info
 
   kotlin-build:
     name: Kotlin build
