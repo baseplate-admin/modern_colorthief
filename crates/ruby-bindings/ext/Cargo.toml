@@ -8,6 +8,6 @@ crate-type = ["cdylib"]
 name = "modern_colorthief"
 
 [dependencies]
-modern-colorthief-core-cpu = { path = "../modern-colorthief-core-cpu" }
+modern-colorthief-core-cpu = { path = "../../core_cpu" }
 magnus = "0.8"
 rb-sys = "0.9"
