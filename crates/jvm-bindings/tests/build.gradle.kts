@@ -43,7 +43,9 @@ testing {
 tasks.named<Test>("test") {
     val nativeLibPath = file("native").absolutePath
     jvmArgs("--enable-native-access=ALL-UNNAMED")
-    systemProperty("java.library.path", nativeLibPath)
+    jvmArgs("-Djava.library.path=$nativeLibPath")
+    environment("LD_LIBRARY_PATH", nativeLibPath)
+    environment("JAVA_LIBRARY_PATH", nativeLibPath)
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
