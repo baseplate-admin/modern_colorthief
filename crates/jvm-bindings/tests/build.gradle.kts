@@ -20,7 +20,8 @@ sourceSets {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
+    testImplementation(kotlin("test-junit5"))
 }
 
 java {
