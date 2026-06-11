@@ -4,19 +4,19 @@ fn get_palette(pixels: RString, width: u32, height: u32, color_count: u8, qualit
     let pixels = pixels.as_slice();
     modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, color_count, quality)
         .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-        .map_err(|e| error::Error::new(exception::e_script(), e.to_string()))
+        .map_err(|e| error::Error::new(exception::standard_error(), e.to_string()))
 }
 
 fn get_color(pixels: RString, width: u32, height: u32, quality: u8) -> Result<Vec<u8>, error::Error> {
     let pixels = pixels.as_slice();
     let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
-        .map_err(|e| error::Error::new(exception::e_script(), e.to_string()))?;
+        .map_err(|e| error::Error::new(exception::standard_error(), e.to_string()))?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| error::Error::new(exception::e_script(), "Image contains no colors"))
+        .ok_or_else(|| error::Error::new(exception::standard_error(), "Image contains no colors"))
 }
 
 #[magnus::init]
