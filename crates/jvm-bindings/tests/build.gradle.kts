@@ -45,6 +45,12 @@ tasks.withType<Test> {
     jvmArgs("-Djava.library.path=$nativeLibPath")
     systemProperty("native.lib.path", nativeLibPath)
     environment("LD_LIBRARY_PATH", nativeLibPath)
+
+    // Disable classpath isolation which can interfere with test discovery
+    classpathIsolation {
+        enabled = false
+    }
+
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
