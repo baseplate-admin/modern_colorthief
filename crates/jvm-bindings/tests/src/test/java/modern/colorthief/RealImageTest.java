@@ -100,9 +100,9 @@ public class RealImageTest {
         byte[] color = Colorthief.getColor(pixels, width, height, 5);
         assertNotNull(color);
         assertEquals(3, color.length);
-        assertTrue(color[0] & 0xFF >= 0 && color[0] & 0xFF <= 255);
-        assertTrue(color[1] & 0xFF >= 0 && color[1] & 0xFF <= 255);
-        assertTrue(color[2] & 0xFF >= 0 && color[2] & 0xFF <= 255);
+        assertTrue((color[0] & 0xFF) >= 0 && (color[0] & 0xFF) <= 255);
+        assertTrue((color[1] & 0xFF) >= 0 && (color[1] & 0xFF) <= 255);
+        assertTrue((color[2] & 0xFF) >= 0 && (color[2] & 0xFF) <= 255);
     }
 
     // =========================================================================
