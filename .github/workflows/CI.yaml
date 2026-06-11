@@ -36,9 +36,9 @@ jobs:
         working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.14
+          python-version: '3.12'
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -47,10 +47,11 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           manylinux: auto
       - name: Upload wheels
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-linux-${{ matrix.platform.target }}
           path: crates/python-bindings/dist
+          retention-days: 1
 
   musllinux:
     runs-on: ${{ matrix.platform.runner }}
@@ -70,9 +71,9 @@ jobs:
         working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.14
+          python-version: '3.12'
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -81,10 +82,11 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           manylinux: musllinux_1_2
       - name: Upload wheels
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-musllinux-${{ matrix.platform.target }}
           path: crates/python-bindings/dist
+          retention-days: 1
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
@@ -105,9 +107,9 @@ jobs:
         working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.14
+          python-version: '3.12'
           architecture: ${{ matrix.platform.python_arch }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
@@ -116,28 +118,29 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-windows-${{ matrix.platform.target }}
           path: crates/python-bindings/dist
+          retention-days: 1
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
       matrix:
         platform:
-          - runner: macos-15-intel
+          - runner: macos-13
             target: x86_64
-          - runner: macos-latest
+          - runner: macos-14
             target: aarch64
     defaults:
       run:
         working-directory: crates/python-bindings
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.14
+          python-version: '3.12'
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -146,10 +149,11 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           manylinux: auto
       - name: Upload wheels
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-macos-${{ matrix.platform.target }}
           path: crates/python-bindings/dist
+          retention-days: 1
 
   emscripten:
     runs-on: ubuntu-22.04
@@ -159,7 +163,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install uv and pyodide-build
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
       - run: uv pip install --system pyodide-build
@@ -173,7 +177,7 @@ jobs:
         with:
           version: ${{ env.EMSCRIPTEN_VERSION }}
           actions-cache-folder: emsdk-cache
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Build wheels
@@ -184,10 +188,11 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           rust-toolchain: nightly
       - name: Upload wheels
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: wasm-wheels
           path: crates/python-bindings/dist
+          retention-days: 1
 
   android:
     runs-on: ${{ matrix.platform.runner }}
@@ -210,10 +215,11 @@ jobs:
           args: --release --out dist
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-android-${{ matrix.platform.target }}
           path: crates/python-bindings/dist
+          retention-days: 1
 
   sdist:
     runs-on: ubuntu-latest
@@ -228,10 +234,11 @@ jobs:
           command: sdist
           args: --out dist
       - name: Upload sdist
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-sdist
           path: crates/python-bindings/dist
+          retention-days: 1
 
   test-python:
     name: Python tests
@@ -243,15 +250,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
-      - uses: actions/download-artifact@v8
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
         with:
-          pattern: wheels-linux-x86_64
+          name: wheels-linux-x86_64
           path: crates/python-bindings/dist
       - run: uv pip install dist/*.whl pytest
       - run: uv run pytest tests/ -v
@@ -266,21 +273,21 @@ jobs:
       contents: write
       attestations: write
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v4
+        uses: actions/attest-build-provenance@v1
         with:
           subject-path: 'wheels-*/*'
       - name: Install uv
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v5
       - name: Publish to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: uv publish 'wheels-*/*'
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             wasm-wheels/*.whl

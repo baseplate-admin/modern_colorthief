@@ -16,10 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: 22
       - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - working-directory: crates/node-bindings
         run: npm install --legacy-peer-deps && npx napi build --platform --release --output-dir artifacts
       - name: Run Rust core tests
@@ -28,6 +33,7 @@ jobs:
         with:
           name: node-native
           path: crates/node-bindings/artifacts/*.node
+          retention-days: 1
 
   node-test:
     name: Node.js 22
@@ -35,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
       - uses: actions/download-artifact@v4
@@ -59,7 +65,7 @@ jobs:
           name: node-native
           path: crates/node-bindings/artifacts
       - working-directory: crates/node-bindings
-        run: npm install && npm run build
+        run: npm install --legacy-peer-deps && npm run build
       - working-directory: crates/node-bindings
         run: deno test --sloppy-imports --no-check --allow-read --allow-env --allow-net --allow-ffi "tests/test_*.ts"
 
@@ -75,7 +81,7 @@ jobs:
           name: node-native
           path: crates/node-bindings/artifacts
       - working-directory: crates/node-bindings
-        run: npm install && npm run build
+        run: npm install --legacy-peer-deps && npm run build
       - working-directory: crates/node-bindings
         run: bun test --timeout 30000 tests/
 
@@ -88,7 +94,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
@@ -97,7 +103,7 @@ jobs:
           name: node-native
           path: crates/node-bindings/artifacts
       - working-directory: crates/node-bindings
-        run: npm install
+        run: npm install --legacy-peer-deps
       - working-directory: crates/node-bindings
         run: npm publish --provenance --access public
         env:

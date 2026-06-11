@@ -11,47 +11,63 @@ permissions:
 
 jobs:
   ruby-build:
-    name: Ruby build
+    name: Ruby build + test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/ruby-bindings
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
           bundler-cache: true
+          working-directory: crates/ruby-bindings
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev ruby-dev
       - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - run: cargo build --release -p modern-colorthief-ruby
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f target/release/libmodern_colorthief.so
-      - working-directory: crates/ruby-bindings
-        run: |
+      - run: test -f ../../target/release/libmodern_colorthief.so
+      - run: |
           bundle install --path vendor/bundle
           RUBYLIB=../../target/release bundle exec rspec spec/
 
   ruby-gpu-build:
-    name: Ruby GPU build
+    name: Ruby GPU build + test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/ruby-bindings-gpu
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
           bundler-cache: true
+          working-directory: crates/ruby-bindings-gpu
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev ruby-dev
       - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - run: cargo build --release -p modern-colorthief-ruby-gpu
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f target/release/libmodern_colorthief_gpu.so
-      - working-directory: crates/ruby-bindings-gpu
-        run: |
+      - run: test -f ../../target/release/libmodern_colorthief_gpu.so
+      - run: |
           bundle install --path vendor/bundle
           RUBYLIB=../../target/release bundle exec rspec spec/

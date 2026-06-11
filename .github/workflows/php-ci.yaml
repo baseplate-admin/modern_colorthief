@@ -11,13 +11,22 @@ permissions:
 
 jobs:
   build-php:
+    name: PHP build + test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/php-bindings
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
       - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -25,13 +34,13 @@ jobs:
       - name: Verify PHP is available
         run: php --version
       - run: cargo build --release -p modern-colorthief-php
+        working-directory: .
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f target/release/libmodern_colorthief.so
+        working-directory: .
+      - run: test -f ../../target/release/libmodern_colorthief.so
       - name: Install PHP dependencies
-        working-directory: crates/php-bindings
-        run: composer install
+        run: composer install --no-interaction --prefer-dist
       - name: Run PHP pest tests
-        working-directory: crates/php-bindings
         run: |
           php -d extension=../../target/release/libmodern_colorthief.so vendor/bin/pest

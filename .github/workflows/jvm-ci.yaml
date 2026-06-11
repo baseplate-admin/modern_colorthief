@@ -16,16 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '26'
-      - run: cargo build --release -p modern-colorthief-jvm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build JVM native library
+        run: cargo build --release -p modern-colorthief-jvm
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f target/release/libmodern_colorthief_jvm.so
-      - name: Copy native lib
-        run: cp target/release/libmodern_colorthief_jvm.so /tmp/
+      - name: Verify shared library built
+        run: test -f target/release/libmodern_colorthief.so
+      - name: Copy native lib for JNI
+        run: cp target/release/libmodern_colorthief.so /tmp/
       - uses: gradle/actions/setup-gradle@v4
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings/tests
@@ -41,10 +49,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '26'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - run: cargo build --release -p modern-colorthief-jvm
 
   android-check:
@@ -52,5 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
       - run: cargo check --target aarch64-linux-android -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-node

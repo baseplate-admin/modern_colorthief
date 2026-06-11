@@ -16,7 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: rustup target add wasm32-unknown-unknown
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
       - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-wasm
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
@@ -27,7 +29,7 @@ jobs:
     name: wasm-pack build + test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-node@v4
         with:
@@ -38,17 +40,27 @@ jobs:
       - working-directory: crates/wasm-bindings
         run: npm install && npm test
 
+  wasm-gpu-build:
+    name: WASM GPU build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-wasm-gpu
+
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    needs: [wasm-build, wasm-pack-build]
+    needs: [wasm-build, wasm-pack-build, wasm-gpu-build]
     permissions:
       id-token: write
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'

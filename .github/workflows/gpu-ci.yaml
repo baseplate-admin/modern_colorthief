@@ -18,30 +18,79 @@ jobs:
       - uses: humbletim/setup-vulkan-sdk@v1
         with:
           vulkan-install-method: VULKAN_SDK
-      - name: Run GPU tests
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Run GPU core tests
         run: cargo test -p modern-colorthief-core-gpu -- --include-ignored
 
   gpu-php-test:
     name: GPU PHP pest tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/php-bindings-gpu
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
       - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev php-dev
       - run: cargo build --release -p modern-colorthief-php-gpu
+        working-directory: .
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f target/release/libmodern_colorthief_gpu.so
+        working-directory: .
+      - run: test -f ../../target/release/libmodern_colorthief_gpu.so
       - name: Install PHP dependencies
-        working-directory: crates/php-bindings-gpu
-        run: composer install
+        run: composer install --no-interaction --prefer-dist
       - name: Run PHP GPU pest tests
-        working-directory: crates/php-bindings-gpu
         run: |
           php -d extension=../../target/release/libmodern_colorthief_gpu.so vendor/bin/pest
+
+  gpu-python-test:
+    name: GPU Python tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/python-bindings-gpu
+    steps:
+      - uses: actions/checkout@v6
+      - uses: humbletim/setup-vulkan-sdk@v1
+        with:
+          vulkan-install-method: VULKAN_SDK
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Build GPU Python module
+        run: |
+          uv pip install maturin pytest Pillow
+          maturin develop --release
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+        working-directory: .
+      - name: Run GPU Python tests
+        run: |
+          uv run pytest tests/ -v
