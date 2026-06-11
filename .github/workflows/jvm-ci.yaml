@@ -35,6 +35,8 @@ jobs:
       - name: Copy native lib for JNI
         run: cp target/release/libmodern_colorthief.so /tmp/
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.1'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings/tests
         run: gradle wrapper

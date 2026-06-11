@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Comprehensive JUnit 5 tests for the modern_colorthief Java bindings.
- * Covers all test scenarios from the Python test suite:
+ * Covers core functionality:
  * - Solid color detection
  * - Two-color detection
  * - Palette length respects color_count
