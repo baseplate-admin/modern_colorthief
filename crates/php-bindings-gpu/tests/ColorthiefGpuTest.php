@@ -153,9 +153,7 @@ test('gpu palette count bounded by requested color_count on real image', functio
 
     foreach ([3, 5] as $count) {
         $palette = get_palette($pixels, $w, $h, $count, 10);
-        expect(count($palette))
-            ->toBeLessThanOrEqual($count)
-            ->withMessage("palette count should be <= {$count}");
+        expect(count($palette))->toBeLessThanOrEqual($count);
     }
 });
 
