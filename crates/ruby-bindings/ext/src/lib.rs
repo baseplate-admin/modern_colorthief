@@ -37,7 +37,7 @@ fn get_color(
         .ok_or_else(|| error::Error::new(exception::standard_error(), "Image contains no colors"))
 }
 
-#[magnus::init(ruby_init_name = "modern_colorthief")]
+#[magnus::init(init_name = "modern_colorthief")]
 fn init_colorthief_ruby() {
     let mod_colorthief = define_module("Colorthief").unwrap();
     mod_colorthief

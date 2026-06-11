@@ -3,76 +3,156 @@ name: Ruby CI
 on:
   push:
     branches: [ main, master ]
+    tags:
+      - 'v*'
   pull_request:
   workflow_dispatch:
 
 # https://github.com/oxidize-rb/actions
 
 jobs:
-  ruby-cpu-build:
-    name: Ruby CPU build + test
+  ########################################################################
+  # 1. Fetch CI metadata — stable Ruby versions + supported platforms
+  ########################################################################
+  fetch-ci-data:
+    name: Fetch CI data
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: crates/ruby-bindings
+    outputs:
+      result: ${{ steps.ci-data.outputs.result }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Set up Ruby and Rust
-        uses: oxidize-rb/actions/setup-ruby-and-rust@main
+      - name: Fetch CI data
+        id: ci-data
+        uses: oxidize-rb/actions/fetch-ci-data@v1
         with:
-          ruby-version: "3.4"
+          stable-ruby-versions: |
+            exclude: [head]
+          supported-ruby-platforms: |
+            exclude: [arm-linux, x64-mingw32]
+
+  ########################################################################
+  # 2. Native build + test on real runners (Linux / macOS / Windows)
+  ########################################################################
+  native-test:
+    name: "${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-14, windows-2022]
+        ruby: ["3.2", "3.3", "3.4"]
+        bindings: [ruby-bindings, ruby-bindings-gpu]
+        exclude:
+          # GPU (Vulkan) tests only on Linux and macOS runners
+          - os: windows-2022
+            bindings: ruby-bindings-gpu
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
           bundler-cache: false
-          cargo-cache: true
-          cargo-vendor: true
-          cache-version: v0-cpu
-          working-directory: crates/ruby-bindings
+
+      - name: Cargo version check
+        working-directory: crates/${{ matrix.bindings }}
+        run: |
+          rustc --version
+          cargo --version
+          ls ext/Cargo.toml
+
+      - name: Install Ruby deps
+        working-directory: crates/${{ matrix.bindings }}
+        run: bundle install
 
       - name: Build native extension
-        run: rake build
+        working-directory: crates/${{ matrix.bindings }}
+        run: |
+          cargo build --release --manifest-path ext/Cargo.toml
+          rake build
 
       - name: Run RSpec tests
-        run: |
-          bundle install
-          bundle exec rspec spec/
+        working-directory: crates/${{ matrix.bindings }}
+        run: bundle exec rspec spec/
 
-      - name: Cross-compile with cross-gem
-        uses: oxidize-rb/actions/cross-gem@v1
-        with:
-          platform: x86_64-linux
-          ruby-versions: "3.4"
-          working-directory: crates/ruby-bindings
-
-  ruby-gpu-build:
-    name: Ruby GPU build + test
+  ########################################################################
+  # 3. Cross-compile gems for all 5 platforms
+  ########################################################################
+  cross-gem:
+    name: "cross-gem ${{ matrix.bindings }} — ${{ matrix.platform }}"
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: crates/ruby-bindings-gpu
+    needs: [fetch-ci-data, native-test]
+    if: needs.native-test.result == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [x86_64-linux, aarch64-linux, x86_64-darwin, arm64-darwin, x64-mingw-ucrt]
+        bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Ruby and Rust
-        uses: oxidize-rb/actions/setup-ruby-and-rust@main
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: "3.4"
-          bundler-cache: false
+          bundler-cache: true
           cargo-cache: true
           cargo-vendor: true
-          cache-version: v0-gpu
-          working-directory: crates/ruby-bindings-gpu
+          cache-version: v3-cross
+          working-directory: crates/${{ matrix.bindings }}
 
-      - name: Build native extension
-        run: rake build
-
-      - name: Run RSpec tests
-        run: |
-          bundle install
-          bundle exec rspec spec/
-
-      - name: Cross-compile with cross-gem
+      - name: Cross-compile gem
         uses: oxidize-rb/actions/cross-gem@v1
         with:
-          platform: x86_64-linux
-          ruby-versions: "3.4"
-          working-directory: crates/ruby-bindings-gpu
+          platform: ${{ matrix.platform }}
+          ruby-versions: "3.2,3.3,3.4"
+          working-directory: crates/${{ matrix.bindings }}
+          cache-save-always: true
+
+      - name: Upload gem artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ matrix.bindings }}-${{ matrix.platform }}-gem"
+          path: crates/${{ matrix.bindings }}/pkg/*.gem
+          retention-days: 7
+
+  ########################################################################
+  # 4. Publish gems to RubyGems on tagged releases
+  ########################################################################
+  publish:
+    name: Publish to RubyGems
+    runs-on: ubuntu-22.04
+    needs: [cross-gem]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        bindings: [ruby-bindings, ruby-bindings-gpu]
+    steps:
+      - name: Download gem artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "${{ matrix.bindings }}-*-gem"
+          path: gems/
+          merge-multiple: true
+
+      - name: Publish to RubyGems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          rubygems: latest
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+      - run: |
+          for gem in gems/*.gem; do
+            gem push "$gem"
+          done
