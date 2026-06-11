@@ -1,4 +1,4 @@
-package modern.colorthief;
+package io.baseplate_admin.modern_colorthief;
 
 public class Colorthief {
     public static native byte[][] getPalette(byte[] pixels, int width, int height, int colorCount, int quality);

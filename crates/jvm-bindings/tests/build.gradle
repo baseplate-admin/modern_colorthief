@@ -2,6 +2,15 @@ plugins {
     id 'java'
 }
 
+sourceSets {
+    main {
+        java.srcDir 'src/io'
+    }
+    test {
+        java.srcDir 'src/test/java'
+    }
+}
+
 group = 'modern.colorthief'
 version = '0.3.0'
 

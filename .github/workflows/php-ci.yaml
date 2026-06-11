@@ -41,6 +41,15 @@ jobs:
       - run: test -f ../../target/release/libmodern_colorthief.so
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist
+      - name: Verify extension loads
+        run: |
+          php -d extension=../../target/release/libmodern_colorthief.so -r 'echo "Extension loaded: " . phpversion("modern_colorthief") . "\n"; var_dump(function_exists("get_palette")); var_dump(function_exists("get_color"));'
+      - name: Test extension with pixel array
+        run: |
+          php -d extension=../../target/release/libmodern_colorthief.so -r '
+          $pixels = [255, 0, 0, 255];
+          try { $r = get_palette($pixels, 1, 1, 5, 1); echo "OK: palette has " . count($r) . " colors\n"; } catch (Exception $e) { echo "ERROR: " . $e->getMessage() . "\n"; }
+          '
       - name: Run PHP pest tests
         run: |
           php -d extension=../../target/release/libmodern_colorthief.so vendor/bin/pest

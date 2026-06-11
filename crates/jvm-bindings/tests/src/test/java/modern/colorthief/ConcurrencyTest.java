@@ -1,5 +1,6 @@
-package modern.colorthief;
+package io.baseplate_admin.modern_colorthief;
 
+import io.baseplate_admin.modern_colorthief.Colorthief;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,8 +54,10 @@ public class ConcurrencyTest {
             }));
         }
 
-        for (Thread t : threads) t.start();
-        for (Thread t : threads) t.join();
+        for (Thread t : threads)
+            t.start();
+        for (Thread t : threads)
+            t.join();
 
         assertNull(error.get(), "No thread errors");
         assertEquals(threadCount, results.size());
@@ -88,8 +91,10 @@ public class ConcurrencyTest {
             }));
         }
 
-        for (Thread t : threads) t.start();
-        for (Thread t : threads) t.join();
+        for (Thread t : threads)
+            t.start();
+        for (Thread t : threads)
+            t.join();
 
         assertNull(error.get(), "No thread errors");
         assertEquals(threadCount, results.size());
@@ -137,8 +142,10 @@ public class ConcurrencyTest {
             }
         }));
 
-        for (Thread t : threads) t.start();
-        for (Thread t : threads) t.join();
+        for (Thread t : threads)
+            t.start();
+        for (Thread t : threads)
+            t.join();
 
         assertFalse(hadError.get(), "No thread errors");
         assertEquals(3, resultCount.get());
@@ -182,8 +189,10 @@ public class ConcurrencyTest {
         }
 
         long concurrentStart = System.nanoTime();
-        for (Thread t : threads) t.start();
-        for (Thread t : threads) t.join();
+        for (Thread t : threads)
+            t.start();
+        for (Thread t : threads)
+            t.join();
         long concurrentTime = System.nanoTime() - concurrentStart;
 
         assertFalse(hadError.get(), "No thread errors");
@@ -194,7 +203,7 @@ public class ConcurrencyTest {
         long sequentialEstimate = singleTime * numCalls;
         assertTrue(concurrentTime < sequentialEstimate * 3,
                 "Concurrent " + (concurrentTime / 1_000_000) + "ms should be < sequential " +
-                (sequentialEstimate / 1_000_000) + "ms (3x)");
+                        (sequentialEstimate / 1_000_000) + "ms (3x)");
     }
 
     // =========================================================================
@@ -223,8 +232,10 @@ public class ConcurrencyTest {
             }));
         }
 
-        for (Thread t : threads) t.start();
-        for (Thread t : threads) t.join();
+        for (Thread t : threads)
+            t.start();
+        for (Thread t : threads)
+            t.join();
 
         assertEquals(0, errorCount.get(), "No errors in stress test");
         assertEquals(threadCount, successCount.get());

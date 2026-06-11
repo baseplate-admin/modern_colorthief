@@ -2,14 +2,16 @@
 
 // ext-php-rs exposes get_palette() and get_color() as global functions
 // from the "modern_colorthief_gpu" extension module.
+// Pixels are passed as arrays of integers (byte values 0-255).
 
 beforeEach(function () {
     // 1x1 red pixel (RGBA)
-    $this->redPixels = "\xff\x00\x00\xff";
+    $this->redPixels = [255, 0, 0, 255];
     // 1x2: red pixel then blue pixel (RGBA)
-    $this->twoColorPixels = "\xff\x00\x00\xff\x00\x00\xff\xff";
+    $this->twoColorPixels = [255, 0, 0, 255, 0, 0, 255, 255];
     // 3x3 solid green image (RGBA)
-    $this->greenPixels = str_repeat("\x00\xff\x00\xff", 9);
+    $green = [0, 255, 0, 255];
+    $this->greenPixels = array_merge(...array_fill(0, 9, [$green]));
 });
 
 test('gpu solid red color detection', function () {
@@ -67,13 +69,14 @@ test('gpu get_color returns valid RGB values', function () {
 });
 
 test('gpu error on empty pixels', function () {
-    expect(fn () => get_palette('', 1, 1, 5, 1))->toThrow();
-    expect(fn () => get_color('', 1, 1, 1))->toThrow();
+    expect(fn () => get_palette([], 1, 1, 5, 1))->toThrow(\Exception::class);
+    expect(fn () => get_color([], 1, 1, 1))->toThrow(\Exception::class);
 });
 
 test('gpu error on mismatched pixel data', function () {
     // 4 bytes but claiming 2x2 (needs 16 bytes for RGBA)
-    expect(fn () => get_palette("\xff\x00\x00\xff", 2, 2, 5, 1))->toThrow();
+    $pixels = [255, 0, 0, 255];
+    expect(fn () => get_palette($pixels, 2, 2, 5, 1))->toThrow(\Exception::class);
 });
 
 test('gpu deterministic results for same input', function () {

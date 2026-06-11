@@ -16,7 +16,7 @@ fn extract_palette_from_buffer_py(
 ) -> PyResult<Vec<(u8, u8, u8)>> {
     py.detach(move || {
         extract_palette_from_buffer(buffer, width, height, color_count, quality)
-            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))
+            .map_err(pyo3::exceptions::PyRuntimeError::new_err)
     })
 }
 
@@ -31,7 +31,7 @@ fn extract_dominant_color_from_buffer_py(
 ) -> PyResult<(u8, u8, u8)> {
     py.detach(move || {
         extract_palette_from_buffer(buffer, width, height, 1, quality)
-            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))?
+            .map_err(pyo3::exceptions::PyRuntimeError::new_err)?
             .into_iter()
             .next()
             .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("No color extracted"))
@@ -73,7 +73,7 @@ fn extract_dominant_color_py(py: Python, path: String, quality: u8) -> PyResult<
 #[pyfunction]
 fn list_gpus_py(py: Python) -> PyResult<Vec<pyo3::Bound<pyo3::types::PyDict>>> {
     use pyo3::types::PyDict;
-    let gpus = list_gpus().map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e))?;
+    let gpus = list_gpus().map_err(pyo3::exceptions::PyRuntimeError::new_err)?;
     let mut result = Vec::new();
     for gpu in gpus {
         let d = PyDict::new(py);

@@ -1,8 +1,24 @@
 use ext_php_rs::prelude::*;
 
+fn pixels_to_bytes(pixels: Vec<i64>) -> PhpResult<Vec<u8>> {
+    pixels
+        .into_iter()
+        .map(|b| {
+            if (0..=255).contains(&b) {
+                Ok(b as u8)
+            } else {
+                Err(PhpException::default(format!(
+                    "Pixel byte value {} out of range [0, 255]",
+                    b
+                )))
+            }
+        })
+        .collect()
+}
+
 #[php_function]
 fn get_palette(
-    pixels: Vec<u8>,
+    pixels: Vec<i64>,
     width: u32,
     height: u32,
     color_count: Option<u8>,
@@ -10,9 +26,10 @@ fn get_palette(
 ) -> PhpResult<Vec<Vec<u8>>> {
     let color_count = color_count.unwrap_or(10);
     let quality = quality.unwrap_or(10);
+    let bytes = pixels_to_bytes(pixels)?;
 
     modern_colorthief_core_cpu::extract_palette_from_buffer(
-        &pixels,
+        &bytes,
         width,
         height,
         color_count,
@@ -23,11 +40,12 @@ fn get_palette(
 }
 
 #[php_function]
-fn get_color(pixels: Vec<u8>, width: u32, height: u32, quality: Option<u8>) -> PhpResult<Vec<u8>> {
+fn get_color(pixels: Vec<i64>, width: u32, height: u32, quality: Option<u8>) -> PhpResult<Vec<u8>> {
     let quality = quality.unwrap_or(10);
+    let bytes = pixels_to_bytes(pixels)?;
 
     let palette =
-        modern_colorthief_core_cpu::extract_palette_from_buffer(&pixels, width, height, 5, quality)
+        modern_colorthief_core_cpu::extract_palette_from_buffer(&bytes, width, height, 5, quality)
             .map_err(|e| PhpException::default(e.to_string()))?;
 
     palette
