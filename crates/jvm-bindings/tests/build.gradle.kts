@@ -1,6 +1,6 @@
 plugins {
     `java`
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.4.0"
 }
 
 group = "modern.colorthief"
@@ -29,7 +29,7 @@ java {
 }
 
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(26)
 }
 
 testing {
@@ -41,6 +41,8 @@ testing {
 }
 
 tasks.named<Test>("test") {
+    val nativeLibPath = layout.projectDirectory.dir("native").get().asFile.absolutePath
+    jvmArgs("-Djava.library.path=$nativeLibPath")
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
