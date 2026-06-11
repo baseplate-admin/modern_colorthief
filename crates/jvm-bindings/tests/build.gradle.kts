@@ -1,3 +1,5 @@
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+
 plugins {
     `java`
     kotlin("jvm") version "2.1.0"
@@ -29,18 +31,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_26
 }
 
-kotlin {
-    jvmToolchain(26)
+// Kotlin 2.1.0 cannot run on Java 26, use Java 23 for Kotlin compilation
+val kotlinLauncher by javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(23))
 }
 
-kotlin.compilerOptions {
-    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_23)
-}
-
-tasks.withType<JavaCompile>().configureEach {
-    if (name.contains("Test")) {
-        options.release.set(23)
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlin.compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_23)
     }
+    javaLauncher.set(kotlinLauncher)
 }
 
 testing {
