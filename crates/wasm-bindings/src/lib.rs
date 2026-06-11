@@ -112,6 +112,77 @@ pub fn decode_image_promise(image: &JsValue) -> js_sys::Promise {
     })
 }
 
+/// Extract a palette from raw RGBA pixel data (no image decoding).
+///
+/// Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).
+///
+/// # Example
+/// ```js
+/// const pixels = new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255]); // 2x1 red+green
+/// const palette = await getPaletteFromPixels(pixels, 2, 1, 5, 10);
+/// ```
+#[wasm_bindgen(js_name = "getPaletteFromPixels")]
+pub fn get_palette_from_pixels(
+    pixels: js_sys::Uint8Array,
+    width: u32,
+    height: u32,
+    color_count: u8,
+    quality: u8,
+) -> js_sys::Promise {
+    js_sys::Promise::new(&mut |res_fn, rej_fn| {
+        let buf = pixels.to_vec();
+        match extract_palette_from_buffer(&buf, width, height, color_count, quality) {
+            Ok(colors) => {
+                let result = js_sys::Array::new();
+                for (r, g, b) in colors {
+                    let tuple = js_sys::Array::new();
+                    tuple.push(&JsValue::from(f64::from(r)));
+                    tuple.push(&JsValue::from(f64::from(g)));
+                    tuple.push(&JsValue::from(f64::from(b)));
+                    result.push(&tuple);
+                }
+                resolve(&res_fn, &result);
+            }
+            Err(e) => reject_err(&rej_fn, e),
+        }
+    })
+}
+
+/// Extract the dominant color from raw RGBA pixel data (no image decoding).
+///
+/// Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).
+///
+/// # Example
+/// ```js
+/// const pixels = new Uint8Array([255, 0, 0, 255].repeat(100));
+/// const color = await getColorFromPixels(pixels, 10, 10, 10);
+/// ```
+#[wasm_bindgen(js_name = "getColorFromPixels")]
+pub fn get_color_from_pixels(
+    pixels: js_sys::Uint8Array,
+    width: u32,
+    height: u32,
+    quality: u8,
+) -> js_sys::Promise {
+    js_sys::Promise::new(&mut |res_fn, rej_fn| {
+        let buf = pixels.to_vec();
+        match extract_palette_from_buffer(&buf, width, height, 5, quality) {
+            Ok(mut colors) => {
+                if let Some((r, g, b)) = colors.pop() {
+                    let result = js_sys::Array::new();
+                    result.push(&JsValue::from(f64::from(r)));
+                    result.push(&JsValue::from(f64::from(g)));
+                    result.push(&JsValue::from(f64::from(b)));
+                    resolve(&res_fn, &result);
+                } else {
+                    reject(&rej_fn, "Image contains no extractable colors");
+                }
+            }
+            Err(e) => reject_err(&rej_fn, e),
+        }
+    })
+}
+
 /// Synchronously decode an image via the browser Canvas API.
 fn decode_image_sync(image: &JsValue) -> Result<(js_sys::Uint8Array, u32, u32), String> {
     let window = web_sys::window().ok_or("No window available")?;

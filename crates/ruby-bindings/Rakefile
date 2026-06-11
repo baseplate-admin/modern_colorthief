@@ -15,8 +15,12 @@ def build_extension
   found = Dir.glob(File.join(target_dir, "libmodern_colorthief.*"))
     .find { |f| File.file?(f) && %w[.so .bundle .dll].any? { |ext| f.end_with?(ext) } }
   if found
-    FileUtils.cp(found, lib_dir)
-    puts "Copied #{File.basename(found)} to lib/modern_colorthief/"
+    # Rename to match Ruby init symbol: Ruby expects Init_<basename>, so
+    # modern_colorthief.so -> Init_modern_colorthief (matches magnus ruby_init_name).
+    basename = File.basename(found)
+    renamed = basename.sub(/\Alibmodern_colorthief/, "modern_colorthief")
+    FileUtils.cp(found, File.join(lib_dir, renamed))
+    puts "Copied #{basename} to lib/modern_colorthief/#{renamed}"
   else
     abort "Could not find built library in #{target_dir}"
   end

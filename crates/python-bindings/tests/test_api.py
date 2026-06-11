@@ -64,29 +64,19 @@ def test_version_no_whitespace():
     assert modern_colorthief.__version__.strip() == modern_colorthief.__version__
 
 
-def test_internal_palette_location():
-    assert hasattr(modern_colorthief, "_get_palette_given_location")
+def test_internal_palette_pixels():
+    assert hasattr(modern_colorthief, "_get_palette_given_pixels")
 
 
-def test_internal_palette_bytes():
-    assert hasattr(modern_colorthief, "_get_palette_given_bytes")
-
-
-def test_internal_color_location():
-    assert hasattr(modern_colorthief, "_get_color_given_location")
-
-
-def test_internal_color_bytes():
-    assert hasattr(modern_colorthief, "_get_color_given_bytes")
+def test_internal_color_pixels():
+    assert hasattr(modern_colorthief, "_get_color_given_pixels")
 
 
 def test_internal_have_docstrings():
     """Rust docstrings propagate to Python help()."""
     for name in [
-        "_get_palette_given_location",
-        "_get_palette_given_bytes",
-        "_get_color_given_location",
-        "_get_color_given_bytes",
+        "_get_palette_given_pixels",
+        "_get_color_given_pixels",
     ]:
         fn = getattr(modern_colorthief, name)
         doc = fn.__doc__

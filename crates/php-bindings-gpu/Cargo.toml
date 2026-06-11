@@ -1,7 +1,7 @@
 [package]
 name = "modern-colorthief-php-gpu"
 version.workspace = true
-edition = "2021"
+edition.workspace = true
 
 [lib]
 crate-type = ["cdylib"]

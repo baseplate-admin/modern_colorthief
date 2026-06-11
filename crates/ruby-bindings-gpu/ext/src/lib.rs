@@ -37,7 +37,7 @@ fn get_color(
         .ok_or_else(|| error::Error::new(exception::standard_error(), "No color extracted"))
 }
 
-#[magnus::init]
+#[magnus::init(ruby_init_name = "modern_colorthief_gpu")]
 fn init_colorthief_gpu_ruby() {
     let mod_colorthief_gpu = define_module("ColorthiefGpu").unwrap();
     mod_colorthief_gpu

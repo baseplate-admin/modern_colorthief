@@ -9,10 +9,10 @@ require "rbconfig"
 LIB_DIR = File.expand_path("modern_colorthief", __dir__)
 
 lib_name = case RbConfig::CONFIG["host_os"]
-when /linux/ then "libmodern_colorthief.so"
-when /darwin|mac/ then "libmodern_colorthief.bundle"
+when /linux/ then "modern_colorthief.so"
+when /darwin|mac/ then "modern_colorthief.bundle"
 when /windows|mingw/ then "modern_colorthief.dll"
-else "libmodern_colorthief.so"
+else "modern_colorthief.so"
 end
 
 lib_path = File.join(LIB_DIR, lib_name)

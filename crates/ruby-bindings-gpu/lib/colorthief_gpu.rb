@@ -9,10 +9,10 @@ require "rbconfig"
 LIB_DIR = File.expand_path("modern_colorthief_gpu", __dir__)
 
 lib_name = case RbConfig::CONFIG["host_os"]
-when /linux/ then "libmodern_colorthief_gpu.so"
-when /darwin|mac/ then "libmodern_colorthief_gpu.bundle"
+when /linux/ then "modern_colorthief_gpu.so"
+when /darwin|mac/ then "modern_colorthief_gpu.bundle"
 when /windows|mingw/ then "modern_colorthief_gpu.dll"
-else "libmodern_colorthief_gpu.so"
+else "modern_colorthief_gpu.so"
 end
 
 lib_path = File.join(LIB_DIR, lib_name)

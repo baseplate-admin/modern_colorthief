@@ -9,7 +9,14 @@ __version__ = _modern_colorthief.__version__
 
 def _to_rgba_pixels(image):
     """Convert any PIL Image to raw RGBA bytes, width, height."""
-    img = Image.open(image) if isinstance(image, (str, bytes, io.BytesIO)) else image
+    if isinstance(image, (str, bytes, io.BytesIO)):
+        img = Image.open(image)
+    elif isinstance(image, Image.Image):
+        img = image
+    else:
+        raise TypeError(
+            f"image must be a file path, bytes, BytesIO, or PIL Image, not {type(image).__name__}"
+        )
     img = img.convert("RGBA")
     width, height = img.size
     return img.tobytes(), width, height

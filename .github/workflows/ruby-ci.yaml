@@ -18,9 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@main
         with:
@@ -54,9 +51,6 @@ jobs:
         working-directory: crates/ruby-bindings-gpu
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@main

@@ -35,6 +35,9 @@ jobs:
         working-directory: crates/php-bindings-gpu
     steps:
       - uses: actions/checkout@v6
+      - uses: humbletim/setup-vulkan-sdk@v1
+        with:
+          vulkan-install-method: VULKAN_SDK
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -50,8 +53,8 @@ jobs:
           sudo apt-get install -y libclang-dev php-dev
       - run: cargo build --release -p modern-colorthief-php-gpu
         working-directory: .
-      - name: Run Rust core tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - name: Run Rust GPU core tests
+        run: cargo test -p modern-colorthief-core-gpu -- --include-ignored
         working-directory: .
       - run: test -f ../../target/release/libmodern_colorthief_gpu.so
       - name: Install PHP dependencies
