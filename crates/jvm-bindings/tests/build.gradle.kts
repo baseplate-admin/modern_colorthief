@@ -32,7 +32,12 @@ kotlin {
     jvmToolchain(26)
 }
 
+kotlin.compilerOptions {
+    freeCompilerArgs.add("-XXLanguage:+UnnamedLocalVariables")
+}
+
 tasks.withType<Test> {
+    useJUnitPlatform()
     val nativeLibPath = file("native").absolutePath
     jvmArgs("--enable-native-access=ALL-UNNAMED")
     jvmArgs("-Djava.library.path=$nativeLibPath")
