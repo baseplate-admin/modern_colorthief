@@ -10,6 +10,7 @@ let gpuAvailable = false;
 beforeAll(async () => {
     try {
         const mod = await import('../pkg/modern_colorthief_wasm_gpu.js');
+        await mod.default();
         getPaletteGpu = mod.getPaletteGpu;
         getColorGpu = mod.getColorGpu;
         gpuAvailable =

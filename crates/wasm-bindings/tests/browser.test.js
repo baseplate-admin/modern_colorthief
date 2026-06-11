@@ -10,6 +10,7 @@ let wasmAvailable = false;
 beforeAll(async () => {
     try {
         const mod = await import('../pkg/modern_colorthief_wasm.js');
+        await mod.default();
         getPalette = mod.getPalette;
         getColor = mod.getColor;
         decodeImage = mod.decodeImage;
