@@ -17,6 +17,5 @@ Gem::Specification.new do |spec|
   spec.extensions = ["ext/extconf.rb"]
 
   spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "rake-compiler", "~> 1.2"
   spec.add_development_dependency "rspec", "~> 3.13"
 end

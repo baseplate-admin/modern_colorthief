@@ -1,73 +1,48 @@
 # frozen_string_literal: true
 
-require "rake/extensiontask"
+namespace :cross_ruby do
+  task :build_native do
+    puts "Compiling modern_colorthief_gpu Rust extension..."
 
-Rake::ExtensionTask.new("modern_colorthief_gpu", "modern_colorthief_gpu") do |ext|
-  ext.lib_dir = "lib/modern_colorthief_gpu"
-end
+    lib_dir = File.expand_path("lib/modern_colorthief_gpu")
+    FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
 
-# Override the compile task to use cargo for Rust compilation
-task "compile" => ["clean"] do
-  puts "Compiling modern_colorthief_gpu Rust extension..."
+    cargo_args = ["build", "--release", "--manifest-path", "ext/Cargo.toml"]
 
-  lib_dir = File.expand_path("lib/modern_colorthief_gpu")
-  FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
+    target = ENV["RB_SYS_RUBY_BUILD_TARGET"]
+    if target
+      cargo_args << "--target"
+      cargo_args << target
+      puts "Cross-compiling for target: #{target}"
+    end
 
-  # Build arguments for cargo
-  cargo_args = ["build", "--release", "--manifest-path", "ext/Cargo.toml"]
+    system("cargo", *cargo_args) do |ok, status|
+      abort "Cargo build failed (exit #{status.exitstatus})" unless ok
+    end
 
-  # Handle cross-compilation: oxidize-rb sets RB_SYS_RUBY_BUILD_TARGET
-  target = ENV["RB_SYS_RUBY_BUILD_TARGET"]
-  if target
-    cargo_args << "--target"
-    cargo_args << target
-    puts "Cross-compiling for target: #{target}"
-  end
+    target_dir = target ? File.expand_path("target/#{target}/release") : File.expand_path("target/release")
 
-  # Build with cargo
-  system("cargo", *cargo_args) do |ok, status|
-    abort "Cargo build failed (exit #{status.exitstatus})" unless ok
-  end
+    lib_name = case RbConfig::CONFIG["host_os"]
+    when /linux/ then "libmodern_colorthief_gpu.so"
+    when /darwin|mac/ then "libmodern_colorthief_gpu.bundle"
+    when /windows|mingw/ then "modern_colorthief_gpu.dll"
+    else "libmodern_colorthief_gpu.so"
+    end
 
-  # Copy the built library to lib/
-  if target
-    target_dir = File.expand_path("target/#{target}/release")
-  else
-    target_dir = File.expand_path("target/release")
-  end
-
-  host_os = RbConfig::CONFIG["host_os"]
-
-  lib_name = case host_os
-  when /linux/ then "libmodern_colorthief_gpu.so"
-  when /darwin|mac/ then "libmodern_colorthief_gpu.bundle"
-  when /windows|mingw/ then "modern_colorthief_gpu.dll"
-  else "libmodern_colorthief_gpu.so"
-  end
-
-  src = File.join(target_dir, lib_name)
-  if File.exist?(src)
-    dest = File.join(lib_dir, File.basename(src))
-    FileUtils.cp(src, dest)
-    puts "Copied #{File.basename(src)} to lib/modern_colorthief_gpu/"
-  else
-    # Try to find the library with any name pattern
-    found = Dir.glob(File.join(target_dir, "*modern_colorthief_gpu*")).find { |f| File.file?(f) }
-    if found
-      dest = File.join(lib_dir, File.basename(found))
-      FileUtils.cp(found, dest)
-      puts "Copied #{File.basename(found)} to lib/modern_colorthief_gpu/"
+    src = File.join(target_dir, lib_name)
+    if File.exist?(src)
+      FileUtils.cp(src, lib_dir)
+      puts "Copied #{lib_name} to lib/modern_colorthief_gpu/"
     else
-      abort "Could not find built library in #{target_dir}"
+      found = Dir.glob(File.join(target_dir, "*modern_colorthief_gpu*")).find { |f| File.file?(f) }
+      if found
+        FileUtils.cp(found, lib_dir)
+        puts "Copied #{File.basename(found)} to lib/modern_colorthief_gpu/"
+      else
+        abort "Could not find built library in #{target_dir}"
+      end
     end
   end
 end
 
-# For cross_ruby compatibility
-namespace :cross_ruby do
-  task :build_native do
-    Rake::Task["compile"].invoke
-  end
-end
-
-task "default" => "compile"
+task "default" => "cross_ruby:build_native"
