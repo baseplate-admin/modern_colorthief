@@ -11,13 +11,13 @@ fun testHigherQualityMoreAccurate() {
     val colorHigh = Colorthief.getColor(pixels, 100, 100, 10)
     assertNotNull(colorLow)
     assertNotNull(colorHigh)
-    // Both should be close to the original color
+    val expectedValues = listOf(128, 64, 200)
     for (channel in 0..2) {
-        val expected = when (channel) { 0 -> 128, 1 -> 64, else -> 200 }
-        val diffLow = kotlin.math.abs(colorLow[channel].toInt() and 0xFF - expected)
-        val diffHigh = kotlin.math.abs(colorHigh[channel].toInt() and 0xFF - expected)
-        assertTrue(diffLow < 30, "Low quality should be close: diff=$diffLow")
-        assertTrue(diffHigh < 30, "High quality should be close: diff=$diffHigh")
+        val expected = expectedValues[channel]
+        val actualLow = colorLow[channel].toInt() and 0xFF
+        val actualHigh = colorHigh[channel].toInt() and 0xFF
+        assertTrue(kotlin.math.abs(actualLow - expected) < 30, "Low quality should be close: diff=${kotlin.math.abs(actualLow - expected)}")
+        assertTrue(kotlin.math.abs(actualHigh - expected) < 30, "High quality should be close: diff=${kotlin.math.abs(actualHigh - expected)}")
     }
 }
 
