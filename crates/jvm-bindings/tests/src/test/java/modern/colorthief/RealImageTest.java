@@ -94,7 +94,7 @@ public class RealImageTest {
                 pixels[idx] = (byte) 255;                           // R constant
                 pixels[idx + 1] = (byte) (y * 255 / (height - 1)); // G ramps
                 pixels[idx + 2] = (byte) 0;                         // B constant
-                pixels[idx + 3] = 255;
+                pixels[idx + 3] = (byte) 255;
             }
         }
         byte[] color = Colorthief.getColor(pixels, width, height, 5);
@@ -123,7 +123,7 @@ public class RealImageTest {
                 pixels[idx] = v;
                 pixels[idx + 1] = v;
                 pixels[idx + 2] = v;
-                pixels[idx + 3] = 255;
+                pixels[idx + 3] = (byte) 255;
             }
         }
         byte[][] palette = Colorthief.getPalette(pixels, width, height, 5, 5);
@@ -267,15 +267,15 @@ public class RealImageTest {
             for (int x = 0; x < width; x++) {
                 int idx = (y * width + x) * 4;
                 if (y < height / 2) {
-                    pixels[idx] = 255;   // R
+                    pixels[idx] = (byte) 255;   // R
                     pixels[idx + 1] = 0; // G
                     pixels[idx + 2] = 0; // B
                 } else {
                     pixels[idx] = 0;     // R
                     pixels[idx + 1] = 0; // G
-                    pixels[idx + 2] = 255; // B
+                    pixels[idx + 2] = (byte) 255; // B
                 }
-                pixels[idx + 3] = 255;
+                pixels[idx + 3] = (byte) 255;
             }
         }
         byte[][] palette = Colorthief.getPalette(pixels, width, height, 5, 10);
@@ -328,7 +328,7 @@ public class RealImageTest {
                 pixels[idx] = (byte) (x * 255 / (width - 1));
                 pixels[idx + 1] = (byte) (y * 255 / (height - 1));
                 pixels[idx + 2] = (byte) ((x + y) * 127 / (width + height - 2));
-                pixels[idx + 3] = 255;
+                pixels[idx + 3] = (byte) 255;
             }
         }
     }
@@ -341,7 +341,7 @@ public class RealImageTest {
         rng.nextBytes(pixels);
         // Force alpha to 255 for all pixels
         for (int i = 3; i < pixels.length; i += 4) {
-            pixels[i] = 255;
+            pixels[i] = (byte) 255;
         }
         return pixels;
     }
@@ -355,7 +355,7 @@ public class RealImageTest {
             pixels[i * 4] = r;
             pixels[i * 4 + 1] = g;
             pixels[i * 4 + 2] = b;
-            pixels[i * 4 + 3] = 255;
+            pixels[i * 4 + 3] = (byte) 255;
         }
         return pixels;
     }
