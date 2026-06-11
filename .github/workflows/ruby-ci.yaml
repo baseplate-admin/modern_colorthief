@@ -6,7 +6,7 @@ on:
   pull_request:
   workflow_dispatch:
 
-# https://github.com/oxidize-rb/actions/tree/main/cross-gem
+# https://github.com/oxidize-rb/actions
 
 jobs:
   ruby-cpu-build:
@@ -18,6 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@main
         with:
@@ -28,17 +31,20 @@ jobs:
           cache-version: v0-cpu
           working-directory: crates/ruby-bindings
 
-      - name: Build gem
-        uses: oxidize-rb/actions/cross-gem@v1
-        with:
-          platform: x86_64-linux
-          ruby-versions: "3.4"
-          working-directory: crates/ruby-bindings
+      - name: Build native extension
+        run: rake build
 
       - name: Run RSpec tests
         run: |
           bundle install
           bundle exec rspec spec/
+
+      - name: Cross-compile with cross-gem
+        uses: oxidize-rb/actions/cross-gem@v1
+        with:
+          platform: x86_64-linux
+          ruby-versions: "3.4"
+          working-directory: crates/ruby-bindings
 
   ruby-gpu-build:
     name: Ruby GPU build + test
@@ -48,6 +54,9 @@ jobs:
         working-directory: crates/ruby-bindings-gpu
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@main
@@ -59,14 +68,17 @@ jobs:
           cache-version: v0-gpu
           working-directory: crates/ruby-bindings-gpu
 
-      - name: Build gem
-        uses: oxidize-rb/actions/cross-gem@v1
-        with:
-          platform: x86_64-linux
-          ruby-versions: "3.4"
-          working-directory: crates/ruby-bindings-gpu
+      - name: Build native extension
+        run: rake build
 
       - name: Run RSpec tests
         run: |
           bundle install
           bundle exec rspec spec/
+
+      - name: Cross-compile with cross-gem
+        uses: oxidize-rb/actions/cross-gem@v1
+        with:
+          platform: x86_64-linux
+          ruby-versions: "3.4"
+          working-directory: crates/ruby-bindings-gpu

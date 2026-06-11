@@ -6,40 +6,19 @@ def build_extension
   lib_dir = File.expand_path("lib/modern_colorthief_gpu")
   FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
 
-  cargo_args = ["build", "--release", "--manifest-path", "ext/Cargo.toml"]
-
-  target = ENV["RB_SYS_RUBY_BUILD_TARGET"]
-  if target
-    cargo_args << "--target"
-    cargo_args << target
-    puts "Cross-compiling for target: #{target}"
-  end
-
-  system("cargo", *cargo_args) do |ok, status|
+  system("cargo", "build", "--release", "--manifest-path", "ext/Cargo.toml") do |ok, status|
     abort "Cargo build failed (exit #{status.exitstatus})" unless ok
   end
 
-  target_dir = target ? File.expand_path("target/#{target}/release") : File.expand_path("target/release")
+  target_dir = File.expand_path("target/release")
 
-  lib_name = case RbConfig::CONFIG["host_os"]
-  when /linux/ then "libmodern_colorthief_gpu.so"
-  when /darwin|mac/ then "libmodern_colorthief_gpu.bundle"
-  when /windows|mingw/ then "modern_colorthief_gpu.dll"
-  else "libmodern_colorthief_gpu.so"
-  end
-
-  src = File.join(target_dir, lib_name)
-  if File.exist?(src)
-    FileUtils.cp(src, lib_dir)
-    puts "Copied #{lib_name} to lib/modern_colorthief_gpu/"
+  found = Dir.glob(File.join(target_dir, "libmodern_colorthief_gpu.*"))
+    .find { |f| File.file?(f) && %w[.so .bundle .dll].any? { |ext| f.end_with?(ext) } }
+  if found
+    FileUtils.cp(found, lib_dir)
+    puts "Copied #{File.basename(found)} to lib/modern_colorthief_gpu/"
   else
-    found = Dir.glob(File.join(target_dir, "*modern_colorthief_gpu*")).find { |f| File.file?(f) }
-    if found
-      FileUtils.cp(found, lib_dir)
-      puts "Copied #{File.basename(found)} to lib/modern_colorthief_gpu/"
-    else
-      abort "Could not find built library in #{target_dir}"
-    end
+    abort "Could not find built library in #{target_dir}"
   end
 end
 
