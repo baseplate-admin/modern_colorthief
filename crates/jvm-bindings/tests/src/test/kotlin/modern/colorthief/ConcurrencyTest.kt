@@ -9,7 +9,12 @@ import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.test.*
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * Concurrency and thread safety tests:
@@ -66,7 +71,7 @@ class ConcurrencyTest {
             assertNotNull(r, "Thread $i should have a result")
         }
         for (r in results) {
-            assertArrayEquals(results[0], r, "All concurrent results must match")
+            assertContentEquals(results[0]!!, r)
         }
     }
 

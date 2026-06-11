@@ -4,7 +4,10 @@ import io.baseplate_admin.modern_colorthief.Colorthief
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import kotlin.test.*
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 /**
  * Cross-image comparison and input consistency tests:
@@ -74,7 +77,7 @@ class CrossImageTest {
         val c1 = Colorthief.getColor(a, 100, 100, 1)
         val c2 = Colorthief.getColor(b, 100, 100, 1)
 
-        assertArrayEquals(c1, c2, "Same pixel data in different arrays must yield same color")
+        assertContentEquals(c1, c2)
     }
 
     @Test
@@ -88,7 +91,7 @@ class CrossImageTest {
 
         assertEquals(p1.size, p2.size)
         for (i in p1.indices) {
-            assertArrayEquals(p1[i], p2[i], "Palette entry $i")
+            assertContentEquals(p1[i], p2[i])
         }
     }
 
