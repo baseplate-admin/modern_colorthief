@@ -1,0 +1,13 @@
+[package]
+name = "modern_colorthief"
+version = "0.3.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+name = "modern_colorthief"
+
+[dependencies]
+modern-colorthief-core-cpu = { path = "../modern-colorthief-core-cpu" }
+magnus = "0.8"
+rb-sys = "0.9"

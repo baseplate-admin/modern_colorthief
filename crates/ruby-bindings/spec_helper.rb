@@ -1,5 +1,7 @@
-require 'rspec'
-require_relative '../lib/colorthief_ruby'
+# frozen_string_literal: true
+
+require "rspec"
+require_relative "lib/colorthief_ruby"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

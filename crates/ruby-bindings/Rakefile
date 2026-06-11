@@ -1,0 +1,73 @@
+# frozen_string_literal: true
+
+require "rake/extensiontask"
+
+Rake::ExtensionTask.new("modern_colorthief", "modern_colorthief") do |ext|
+  ext.lib_dir = "lib/modern_colorthief"
+end
+
+# Override the compile task to use cargo for Rust compilation
+task "compile" => ["clean"] do
+  puts "Compiling modern_colorthief Rust extension..."
+
+  lib_dir = File.expand_path("lib/modern_colorthief")
+  FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
+
+  # Build arguments for cargo
+  cargo_args = ["build", "--release", "--manifest-path", "ext/Cargo.toml"]
+
+  # Handle cross-compilation: oxidize-rb sets RB_SYS_RUBY_BUILD_TARGET
+  target = ENV["RB_SYS_RUBY_BUILD_TARGET"]
+  if target
+    cargo_args << "--target"
+    cargo_args << target
+    puts "Cross-compiling for target: #{target}"
+  end
+
+  # Build with cargo
+  system("cargo", *cargo_args) do |ok, status|
+    abort "Cargo build failed (exit #{status.exitstatus})" unless ok
+  end
+
+  # Copy the built library to lib/
+  if target
+    target_dir = File.expand_path("target/#{target}/release")
+  else
+    target_dir = File.expand_path("target/release")
+  end
+
+  host_os = RbConfig::CONFIG["host_os"]
+
+  lib_name = case host_os
+  when /linux/ then "libmodern_colorthief.so"
+  when /darwin|mac/ then "libmodern_colorthief.bundle"
+  when /windows|mingw/ then "modern_colorthief.dll"
+  else "libmodern_colorthief.so"
+  end
+
+  src = File.join(target_dir, lib_name)
+  if File.exist?(src)
+    dest = File.join(lib_dir, File.basename(src))
+    FileUtils.cp(src, dest)
+    puts "Copied #{File.basename(src)} to lib/modern_colorthief/"
+  else
+    # Try to find the library with any name pattern
+    found = Dir.glob(File.join(target_dir, "*modern_colorthief*")).find { |f| File.file?(f) }
+    if found
+      dest = File.join(lib_dir, File.basename(found))
+      FileUtils.cp(found, dest)
+      puts "Copied #{File.basename(found)} to lib/modern_colorthief/"
+    else
+      abort "Could not find built library in #{target_dir}"
+    end
+  end
+end
+
+# For cross_ruby compatibility
+namespace :cross_ruby do
+  task :build_native do
+    Rake::Task["compile"].invoke
+  end
+end
+
+task "default" => "compile"

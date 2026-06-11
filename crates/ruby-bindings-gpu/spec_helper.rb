@@ -1,17 +1,23 @@
-# spec_helper.rb - RSpec configuration for modern_colorthief_gpu
+# frozen_string_literal: true
 
-require 'rspec'
+require "rspec"
 
 # Load the native GPU extension with correct cross-platform naming.
-GPU_LIB_NAME = case RbConfig::CONFIG['host_os']
-when /linux/ then 'libmodern_colorthief_gpu.so'
-when /darwin|mac/ then 'libmodern_colorthief_gpu.bundle'
-when /windows|mingw/ then 'libmodern_colorthief_gpu.dll'
-else 'libmodern_colorthief_gpu.so'
+GPU_LIB_NAME = case RbConfig::CONFIG["host_os"]
+when /linux/ then "libmodern_colorthief_gpu.so"
+when /darwin|mac/ then "libmodern_colorthief_gpu.bundle"
+when /windows|mingw/ then "modern_colorthief_gpu.dll"
+else "libmodern_colorthief_gpu.so"
 end
 
 begin
-  require GPU_LIB_NAME
+  lib_dir = File.expand_path("../lib", __dir__)
+  lib_path = File.join(lib_dir, GPU_LIB_NAME)
+  if File.exist?(lib_path)
+    require lib_path
+  else
+    require GPU_LIB_NAME
+  end
 rescue LoadError
   # Extension not yet compiled; tests will be skipped at runtime.
 end

@@ -6,68 +6,115 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
+# https://github.com/oxidize-rb/actions/tree/main/cross-gem
 
 jobs:
-  ruby-build:
-    name: Ruby build + test
-    runs-on: ubuntu-latest
+  ruby-cpu-build:
+    name: Ruby CPU build + test
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: crates/ruby-bindings
+    strategy:
+      matrix:
+        platform:
+        - x86_64-linux
+        - aarch64-linux
+        - x86_64-darwin
+        - arm64-darwin
+        - x64-mingw-ucrt
     steps:
-      - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4'
-          bundler-cache: true
-          working-directory: crates/ruby-bindings
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libclang-dev ruby-dev
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo build --release -p modern-colorthief-ruby
-      - name: Run Rust core tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f ../../target/release/libmodern_colorthief.so
-      - run: |
-          bundle install --path vendor/bundle
-          RUBYLIB=../../target/release bundle exec rspec spec/
+    - uses: actions/checkout@v4
+
+    - name: Patches
+      run: |
+        # Copy core crates into gem directory for self-contained workspace
+        cp -r ../core ./modern-colorthief-core
+        cp -r ../core_cpu ./modern-colorthief-core-cpu
+
+        # Fix crate name in ext/Cargo.toml to match gem name
+        # (must match or else RbSys::PackageNotFoundError)
+        sed -i 's%^name = ".*$%name = "modern_colorthief"%' ./ext/Cargo.toml
+
+        # Create workspace Cargo.toml at gem root
+        cat <<'EOD' > Cargo.toml
+        [workspace]
+        members = ["ext/modern_colorthief", "modern-colorthief-core", "modern-colorthief-core-cpu"]
+        EOD
+
+        # Copy README for gem
+        cp ../../README.md . 2>/dev/null || true
+
+    - name: Set up Ruby and Rust
+      uses: oxidize-rb/actions/setup-ruby-and-rust@main
+      with:
+        ruby-version: "3.4"
+        bundler-cache: false
+        cargo-cache: true
+        cargo-vendor: true
+        cache-version: v0-${{ matrix.platform }}
+        working-directory: crates/ruby-bindings
+
+    - name: Cross compile
+      id: gem
+      uses: oxidize-rb/actions/cross-gem@v1
+      with:
+        platform: ${{ matrix.platform }}
+        ruby-versions: "3.0,3.1,3.2,3.3,3.4"
+        working-directory: crates/ruby-bindings
+
+    - name: Run RSpec tests (x86_64-linux only)
+      if: matrix.platform == 'x86_64-linux'
+      run: |
+        bundle install
+        bundle exec rspec spec/
 
   ruby-gpu-build:
     name: Ruby GPU build + test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: crates/ruby-bindings-gpu
     steps:
-      - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.4'
-          bundler-cache: true
-          working-directory: crates/ruby-bindings-gpu
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libclang-dev ruby-dev
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo build --release -p modern-colorthief-ruby-gpu
-      - name: Run Rust core tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: test -f ../../target/release/libmodern_colorthief_gpu.so
-      - run: |
-          bundle install --path vendor/bundle
-          RUBYLIB=../../target/release bundle exec rspec spec/
+    - uses: actions/checkout@v4
+
+    - name: Patches
+      run: |
+        # Copy core crates into gem directory for self-contained workspace
+        cp -r ../core ./modern-colorthief-core
+        cp -r ../core_gpu ./modern-colorthief-core-gpu
+
+        # Fix crate name in ext/Cargo.toml to match gem name
+        sed -i 's%^name = ".*$%name = "modern_colorthief_gpu"%' ./ext/Cargo.toml
+
+        # Create workspace Cargo.toml at gem root
+        cat <<'EOD' > Cargo.toml
+        [workspace]
+        members = ["ext/modern_colorthief_gpu", "modern-colorthief-core", "modern-colorthief-core-gpu"]
+        EOD
+
+        # Copy README for gem
+        cp ../../README.md . 2>/dev/null || true
+
+    - name: Set up Ruby and Rust
+      uses: oxidize-rb/actions/setup-ruby-and-rust@main
+      with:
+        ruby-version: "3.4"
+        bundler-cache: false
+        cargo-cache: true
+        cargo-vendor: true
+        cache-version: v0-gpu
+        working-directory: crates/ruby-bindings-gpu
+
+    - name: Cross compile (Linux only for GPU)
+      id: gem
+      uses: oxidize-rb/actions/cross-gem@v1
+      with:
+        platform: x86_64-linux
+        ruby-versions: "3.0,3.1,3.2,3.3,3.4"
+        working-directory: crates/ruby-bindings-gpu
+
+    - name: Run RSpec tests
+      run: |
+        bundle install
+        bundle exec rspec spec/
