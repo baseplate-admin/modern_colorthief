@@ -1,0 +1,26 @@
+{
+    "name": "modern-colorthief/php-gpu",
+    "description": "PHP GPU bindings for modern_colorthief - fast color palette extraction",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "files": [
+            "extension/modern_colorthief_gpu.php"
+        ]
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "platform": {
+            "php": "8.2"
+        }
+    }
+}

@@ -20,3 +20,28 @@ jobs:
           vulkan-install-method: VULKAN_SDK
       - name: Run GPU tests
         run: cargo test -p modern-colorthief-core-gpu -- --include-ignored
+
+  gpu-php-test:
+    name: GPU PHP pest tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev php-dev
+      - run: cargo build --release -p modern-colorthief-php-gpu
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - run: test -f target/release/libmodern_colorthief_gpu.so
+      - name: Install PHP dependencies
+        working-directory: crates/php-bindings-gpu
+        run: composer install
+      - name: Run PHP GPU pest tests
+        working-directory: crates/php-bindings-gpu
+        run: |
+          php -d extension=../../target/release/libmodern_colorthief_gpu.so vendor/bin/pest
