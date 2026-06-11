@@ -15,23 +15,16 @@ export default defineConfig({
             },
             {
                 test: {
-                    name: 'chrome',
+                    name: 'browser',
                     include: ['tests/browser.test.js'],
                     pool: 'browser',
                     browser: {
+                        enabled: true,
                         provider: playwright({ launch: { headless: true } }),
-                        name: 'chrome',
-                    },
-                },
-            },
-            {
-                test: {
-                    name: 'firefox',
-                    include: ['tests/browser.test.js'],
-                    pool: 'browser',
-                    browser: {
-                        provider: playwright({ launch: { headless: true } }),
-                        name: 'firefox',
+                        instances: [
+                            { name: 'chrome', browser: 'chromium' },
+                            { name: 'firefox', browser: 'firefox' },
+                        ],
                     },
                 },
             },
