@@ -428,10 +428,10 @@ public class MainTest {
         int pixelCount = width * height;
         byte[] pixels = new byte[pixelCount * 4];
         for (int i = 0; i < pixelCount; i++) {
-            pixels[i * 4] = r;
-            pixels[i * 4 + 1] = g;
-            pixels[i * 4 + 2] = b;
-            pixels[i * 4 + 3] = 255; // full alpha
+            pixels[i * 4] = (byte) r;
+            pixels[i * 4 + 1] = (byte) g;
+            pixels[i * 4 + 2] = (byte) b;
+            pixels[i * 4 + 3] = (byte) 255; // full alpha
         }
         return pixels;
     }
@@ -444,17 +444,17 @@ public class MainTest {
                                         int r2, int g2, int b2) {
         byte[] pixels = new byte[(firstCount + secondCount) * 4];
         for (int i = 0; i < firstCount; i++) {
-            pixels[i * 4] = r1;
-            pixels[i * 4 + 1] = g1;
-            pixels[i * 4 + 2] = b1;
-            pixels[i * 4 + 3] = 255;
+            pixels[i * 4] = (byte) r1;
+            pixels[i * 4 + 1] = (byte) g1;
+            pixels[i * 4 + 2] = (byte) b1;
+            pixels[i * 4 + 3] = (byte) 255;
         }
         for (int i = 0; i < secondCount; i++) {
             int idx = (firstCount + i) * 4;
-            pixels[idx] = r2;
-            pixels[idx + 1] = g2;
-            pixels[idx + 2] = b2;
-            pixels[idx + 3] = 255;
+            pixels[idx] = (byte) r2;
+            pixels[idx + 1] = (byte) g2;
+            pixels[idx + 2] = (byte) b2;
+            pixels[idx + 3] = (byte) 255;
         }
         return pixels;
     }
