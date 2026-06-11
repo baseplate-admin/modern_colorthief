@@ -8,7 +8,7 @@ fn get_palette(pixels: String, width: u32, height: u32, color_count: Option<u8>,
 
     modern_colorthief_core_cpu::extract_palette_from_buffer(&pixels, width, height, color_count, quality)
         .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-        .map_err(|e| PhpException::new("Exception", e.to_string(), 0))
+        .map_err(|e| PhpException::default(e.to_string()))
 }
 
 #[php_function]
@@ -17,13 +17,13 @@ fn get_color(pixels: String, width: u32, height: u32, quality: Option<u8>) -> Ph
     let quality = quality.unwrap_or(10);
 
     let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(&pixels, width, height, 5, quality)
-        .map_err(|e| PhpException::new("Exception", e.to_string(), 0))?;
+        .map_err(|e| PhpException::default(e.to_string()))?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| PhpException::new("Exception", "Image contains no colors", 0))
+        .ok_or_else(|| PhpException::default("Image contains no colors".into()))
 }
 
 #[php_module]

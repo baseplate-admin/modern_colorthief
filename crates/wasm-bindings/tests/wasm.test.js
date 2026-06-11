@@ -74,7 +74,7 @@ let wasmAvailable = false;
 
 beforeAll(async () => {
     try {
-        const mod = await import('../pkg/colorthief_wasm.js');
+        const mod = await import('../pkg/modern_colorthief_wasm.js');
         getPalette = mod.getPalette;
         getColor = mod.getColor;
         wasmAvailable = typeof getPalette === 'function' && typeof getColor === 'function';
