@@ -12,30 +12,8 @@ export default defineConfig({
                     include: ['tests/node.test.js'],
                 },
             },
-            {
-                test: {
-                    name: 'chrome',
-                    include: ['tests/browser.test.js'],
-                    browser: {
-                        enabled: true,
-                        name: 'chrome',
-                        channel: 'Chrome',
-                        headless: true,
-                    },
-                },
-            },
-            {
-                test: {
-                    name: 'firefox',
-                    include: ['tests/browser.test.js'],
-                    browser: {
-                        enabled: true,
-                        name: 'firefox',
-                        channel: 'Firefox',
-                        headless: true,
-                    },
-                },
-            },
+            './vitest.chrome.config.js',
+            './vitest.firefox.config.js',
         ],
     },
 });
