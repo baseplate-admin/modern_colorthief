@@ -49,6 +49,7 @@ jobs:
         working-directory: crates/jvm-bindings/tests
         run: |
           export JAVA_TOOL_OPTIONS="-Djava.library.path=/tmp"
+          export JAVA_HOME="$JAVA_HOME_23_X64"
           ./gradlew test
 
   kotlin-build:
