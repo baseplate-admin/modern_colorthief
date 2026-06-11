@@ -25,11 +25,9 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_26
-    targetCompatibility = JavaVersion.VERSION_26
+    toolchain { languageVersion.set(JavaLanguageVersion.of(26)) }
 }
 
-// Kotlin 2.1.0 cannot run on Java 26, use Java 23 toolchain
 kotlin {
     jvmToolchain(23)
 }
