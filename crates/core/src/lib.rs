@@ -39,7 +39,10 @@ pub trait PaletteExtractor: Send + Sync {
         quality: u8,
     ) -> Result<(u8, u8, u8), String> {
         let palette = self.extract_palette(buffer, width, height, 5, quality)?;
-        palette.first().copied().ok_or("No colors found".to_string())
+        palette
+            .first()
+            .copied()
+            .ok_or("No colors found".to_string())
     }
 }
 

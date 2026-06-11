@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
-use modern_colorthief_core_gpu::{extract_palette_from_buffer, list_gpus};
 use image::ImageReader;
+use modern_colorthief_core_gpu::{extract_palette_from_buffer, list_gpus};
 use pyo3::prelude::*;
 
 #[pyfunction]
@@ -42,7 +42,9 @@ fn load_image_info(path: &str) -> PyResult<(Vec<u8>, u32, u32)> {
     let img = ImageReader::open(PathBuf::from(path))
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Failed to open image: {e}")))?
         .decode()
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("Failed to decode image: {e}")))?;
+        .map_err(|e| {
+            pyo3::exceptions::PyValueError::new_err(format!("Failed to decode image: {e}"))
+        })?;
     let (w, h) = (img.width(), img.height());
     Ok((img.into_rgba8().into_raw(), w, h))
 }
@@ -55,22 +57,16 @@ fn extract_palette_py(
     color_count: u8,
     quality: u8,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
-    let (buffer, width, height) = py.detach(move || -> PyResult<(Vec<u8>, u32, u32)> {
-        load_image_info(&path)
-    })?;
+    let (buffer, width, height) =
+        py.detach(move || -> PyResult<(Vec<u8>, u32, u32)> { load_image_info(&path) })?;
     extract_palette_from_buffer_py(py, &buffer, width, height, color_count, quality)
 }
 
 #[pyfunction]
 #[pyo3(signature = (path, quality=1))]
-fn extract_dominant_color_py(
-    py: Python,
-    path: String,
-    quality: u8,
-) -> PyResult<(u8, u8, u8)> {
-    let (buffer, width, height) = py.detach(move || -> PyResult<(Vec<u8>, u32, u32)> {
-        load_image_info(&path)
-    })?;
+fn extract_dominant_color_py(py: Python, path: String, quality: u8) -> PyResult<(u8, u8, u8)> {
+    let (buffer, width, height) =
+        py.detach(move || -> PyResult<(Vec<u8>, u32, u32)> { load_image_info(&path) })?;
     extract_dominant_color_from_buffer_py(py, &buffer, width, height, quality)
 }
 

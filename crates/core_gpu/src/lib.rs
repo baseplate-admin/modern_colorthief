@@ -19,7 +19,6 @@ pub enum GpuDevice {
     Other,
 }
 
-
 #[cfg(not(target_arch = "wasm32"))]
 mod vulkan;
 
@@ -38,9 +37,7 @@ pub mod webgpu {
 
     impl WebGpuBackend {
         pub fn new() -> Self {
-            WebGpuBackend {
-                available: false,
-            }
+            WebGpuBackend { available: false }
         }
 
         fn is_available(&self) -> bool {
@@ -92,13 +89,12 @@ mod tests {
         assert!(result.is_err());
     }
 
-   #[test]
+    #[test]
     #[ignore]
     fn test_gpu_or_not_available() {
         let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(25);
         let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
-        if result.is_ok() {
-            let palette = result.unwrap();
+        if let Ok(palette) = result {
             assert!(!palette.is_empty());
         }
     }

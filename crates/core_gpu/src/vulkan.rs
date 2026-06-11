@@ -45,7 +45,7 @@ impl VulkanBackend {
                 • Intel: https://www.intel.com/content/www/us/en/download-center/home.html\n\
                 \n\
                 Vulkan ICD (vulkan-1.dll) is included with modern GPU drivers."
-        .to_string();
+            .to_string();
         #[cfg(target_os = "linux")]
         return "Vulkan not found. modern_colorthief GPU mode requires the Vulkan loader.\n\
                 \n\
@@ -56,7 +56,7 @@ impl VulkanBackend {
                 • openSUSE: sudo zypper install vulkan-loader\n\
                 \n\
                 Also install GPU-specific Vulkan drivers (e.g., mesa-vulkan-drivers)."
-        .to_string();
+            .to_string();
         #[cfg(target_os = "macos")]
         return "Vulkan not found. macOS does not include native Vulkan support.\n\
                 \n\
@@ -65,7 +65,7 @@ impl VulkanBackend {
                 • Then run: MoltenVKHelper --accept-sla\n\
                 \n\
                 MoltenVK provides Vulkan ICD on top of Metal."
-        .to_string();
+            .to_string();
         #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
         {
             "Vulkan not supported on this platform.".to_string()
@@ -77,7 +77,9 @@ impl VulkanBackend {
         #[cfg(target_os = "windows")]
         {
             let vulkan_dll = std::path::Path::new("vulkan-1.dll");
-            if vulkan_dll.exists() { return true; }
+            if vulkan_dll.exists() {
+                return true;
+            }
             std::env::var("SystemRoot").is_ok_and(|r| {
                 std::path::Path::new(&format!("{}\\System32\\vulkan-1.dll", r)).exists()
             }) || std::env::var("VULKAN_SDK").is_ok_and(|sdk| {

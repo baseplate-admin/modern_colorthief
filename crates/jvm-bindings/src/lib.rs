@@ -1,6 +1,6 @@
+use jni::JNIEnv;
 use jni::objects::{JByteArray, JObject};
 use jni::sys::{jint, jsize};
-use jni::JNIEnv;
 
 /// Extract a palette of dominant colors from raw RGBA pixel data.
 #[unsafe(no_mangle)]
@@ -13,7 +13,14 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getPalette<'a>(
     color_count: jint,
     quality: jint,
 ) -> JObject<'a> {
-    match extract_palette_jvm(&mut env, &pixels, width as u32, height as u32, color_count as u8, quality as u8) {
+    match extract_palette_jvm(
+        &mut env,
+        &pixels,
+        width as u32,
+        height as u32,
+        color_count as u8,
+        quality as u8,
+    ) {
         Ok(result) => result,
         Err(e) => {
             let _ = env.throw_new("java/lang/RuntimeException", e.to_string());
@@ -32,7 +39,13 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getColor<'a>(
     height: jint,
     quality: jint,
 ) -> JObject<'a> {
-    match extract_color_jvm(&mut env, &pixels, width as u32, height as u32, quality as u8) {
+    match extract_color_jvm(
+        &mut env,
+        &pixels,
+        width as u32,
+        height as u32,
+        quality as u8,
+    ) {
         Ok(result) => result,
         Err(e) => {
             let _ = env.throw_new("java/lang/RuntimeException", e.to_string());
@@ -67,11 +80,7 @@ fn extract_palette_jvm<'a>(
         quality,
     )?;
 
-    let result_array = jni_err(env.new_object_array(
-        colors.len() as jsize,
-        "[B",
-        JObject::null(),
-    ))?;
+    let result_array = jni_err(env.new_object_array(colors.len() as jsize, "[B", JObject::null()))?;
 
     for (i, (r, g, b)) in colors.into_iter().enumerate() {
         let color_array = jni_err(env.byte_array_from_slice(&[r, g, b]))?;
@@ -95,11 +104,7 @@ fn extract_color_jvm<'a>(
     let u8_data: Vec<u8> = pixel_data.iter().copied().map(|b| b as u8).collect();
 
     let colors = modern_colorthief_core_cpu::extract_palette_from_buffer(
-        &u8_data,
-        width,
-        height,
-        5,
-        quality,
+        &u8_data, width, height, 5, quality,
     )?;
 
     let (r, g, b) = colors

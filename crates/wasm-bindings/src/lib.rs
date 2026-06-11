@@ -1,6 +1,6 @@
 use modern_colorthief_core_cpu::extract_palette_from_buffer;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::*;
 
 fn resolve(p: &js_sys::Function, val: &JsValue) {
     let _ = p.call1(&JsValue::UNDEFINED, val);
@@ -29,27 +29,25 @@ fn reject_err(p: &js_sys::Function, msg: String) {
 /// ```
 #[wasm_bindgen(js_name = "getPalette")]
 pub fn get_palette_promise(image: &JsValue, color_count: u8, quality: u8) -> js_sys::Promise {
-    js_sys::Promise::new(&mut |res_fn, rej_fn| {
-        match decode_image_sync(image) {
-            Ok((pixels, width, height)) => {
-                let buf = pixels.to_vec();
-                match extract_palette_from_buffer(&buf, width, height, color_count, quality) {
-                    Ok(colors) => {
-                        let result = js_sys::Array::new();
-                        for (r, g, b) in colors {
-                            let tuple = js_sys::Array::new();
-                            tuple.push(&JsValue::from(f64::from(r)));
-                            tuple.push(&JsValue::from(f64::from(g)));
-                            tuple.push(&JsValue::from(f64::from(b)));
-                            result.push(&tuple);
-                        }
-                        resolve(&res_fn, &result);
+    js_sys::Promise::new(&mut |res_fn, rej_fn| match decode_image_sync(image) {
+        Ok((pixels, width, height)) => {
+            let buf = pixels.to_vec();
+            match extract_palette_from_buffer(&buf, width, height, color_count, quality) {
+                Ok(colors) => {
+                    let result = js_sys::Array::new();
+                    for (r, g, b) in colors {
+                        let tuple = js_sys::Array::new();
+                        tuple.push(&JsValue::from(f64::from(r)));
+                        tuple.push(&JsValue::from(f64::from(g)));
+                        tuple.push(&JsValue::from(f64::from(b)));
+                        result.push(&tuple);
                     }
-                    Err(e) => reject_err(&rej_fn, e),
+                    resolve(&res_fn, &result);
                 }
+                Err(e) => reject_err(&rej_fn, e),
             }
-            Err(e) => reject_err(&rej_fn, e),
         }
+        Err(e) => reject_err(&rej_fn, e),
     })
 }
 
@@ -68,27 +66,25 @@ pub fn get_palette_promise(image: &JsValue, color_count: u8, quality: u8) -> js_
 /// ```
 #[wasm_bindgen(js_name = "getColor")]
 pub fn get_color_promise(image: &JsValue, quality: u8) -> js_sys::Promise {
-    js_sys::Promise::new(&mut |res_fn, rej_fn| {
-        match decode_image_sync(image) {
-            Ok((pixels, width, height)) => {
-                let buf = pixels.to_vec();
-                match extract_palette_from_buffer(&buf, width, height, 5, quality) {
-                    Ok(mut colors) => {
-                        if let Some((r, g, b)) = colors.pop() {
-                            let result = js_sys::Array::new();
-                            result.push(&JsValue::from(f64::from(r)));
-                            result.push(&JsValue::from(f64::from(g)));
-                            result.push(&JsValue::from(f64::from(b)));
-                            resolve(&res_fn, &result);
-                        } else {
-                            reject(&rej_fn, "Image contains no extractable colors");
-                        }
+    js_sys::Promise::new(&mut |res_fn, rej_fn| match decode_image_sync(image) {
+        Ok((pixels, width, height)) => {
+            let buf = pixels.to_vec();
+            match extract_palette_from_buffer(&buf, width, height, 5, quality) {
+                Ok(mut colors) => {
+                    if let Some((r, g, b)) = colors.pop() {
+                        let result = js_sys::Array::new();
+                        result.push(&JsValue::from(f64::from(r)));
+                        result.push(&JsValue::from(f64::from(g)));
+                        result.push(&JsValue::from(f64::from(b)));
+                        resolve(&res_fn, &result);
+                    } else {
+                        reject(&rej_fn, "Image contains no extractable colors");
                     }
-                    Err(e) => reject_err(&rej_fn, e),
                 }
+                Err(e) => reject_err(&rej_fn, e),
             }
-            Err(e) => reject_err(&rej_fn, e),
         }
+        Err(e) => reject_err(&rej_fn, e),
     })
 }
 
@@ -103,17 +99,16 @@ pub fn get_color_promise(image: &JsValue, quality: u8) -> js_sys::Promise {
 /// ```
 #[wasm_bindgen(js_name = "decodeImage")]
 pub fn decode_image_promise(image: &JsValue) -> js_sys::Promise {
-    js_sys::Promise::new(&mut |res_fn, rej_fn| {
-        match decode_image_sync(image) {
-            Ok((pixels, width, height)) => {
-                let obj = js_sys::Object::new();
-                let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("pixels"), &pixels.into());
-                let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("width"), &JsValue::from(width));
-                let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("height"), &JsValue::from(height));
-                resolve(&res_fn, &obj);
-            }
-            Err(e) => reject_err(&rej_fn, e),
+    js_sys::Promise::new(&mut |res_fn, rej_fn| match decode_image_sync(image) {
+        Ok((pixels, width, height)) => {
+            let obj = js_sys::Object::new();
+            let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("pixels"), &pixels.into());
+            let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("width"), &JsValue::from(width));
+            let _ =
+                js_sys::Reflect::set(&obj, &JsValue::from_str("height"), &JsValue::from(height));
+            resolve(&res_fn, &obj);
         }
+        Err(e) => reject_err(&rej_fn, e),
     })
 }
 
@@ -142,8 +137,9 @@ fn decode_image_sync(image: &JsValue) -> Result<(js_sys::Uint8Array, u32, u32), 
             return Err("Expected string URL, Uint8Array, or ArrayBuffer".to_string());
         };
 
-        let blob = web_sys::Blob::new_with_u8_array_sequence(&js_sys::Uint8Array::from(bytes.as_slice()))
-            .map_err(|_| "Failed to create blob")?;
+        let blob =
+            web_sys::Blob::new_with_u8_array_sequence(&js_sys::Uint8Array::from(bytes.as_slice()))
+                .map_err(|_| "Failed to create blob")?;
         let url = web_sys::Url::create_object_url_with_blob(&blob)
             .map_err(|_| "Failed to create blob URL")?;
         img.set_src(&url);
