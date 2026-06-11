@@ -2,7 +2,7 @@ name: WASM CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, wasm-fix ]
     tags: [ '*' ]
   pull_request:
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
       - working-directory: crates/wasm-bindings
         run: wasm-pack build --release --target nodejs
       - working-directory: crates/wasm-bindings
-        run: npm install
+        run: npm ci
       - working-directory: crates/wasm-bindings
         run: npx vitest run --project node
 
@@ -71,7 +71,10 @@ jobs:
       - working-directory: crates/wasm-bindings
         run: wasm-pack build --release --target web
       - working-directory: crates/wasm-bindings
-        run: npm install
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: crates/wasm-bindings
+        run: npx playwright install chrome firefox --with-deps
       - working-directory: crates/wasm-bindings
         run: npx vitest run --project ${{ matrix.browser }}
 
@@ -92,7 +95,10 @@ jobs:
       - working-directory: crates/wasm-bindings-gpu
         run: wasm-pack build --release --target web
       - working-directory: crates/wasm-bindings-gpu
-        run: npm install
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: crates/wasm-bindings-gpu
+        run: npx playwright install chrome firefox --with-deps
       - working-directory: crates/wasm-bindings-gpu
         run: npx vitest run --project ${{ matrix.browser }}
 

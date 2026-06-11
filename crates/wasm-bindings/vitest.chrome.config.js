@@ -8,9 +8,8 @@ export default defineConfig({
         include: ['tests/browser.test.js'],
         pool: 'browser',
         browser: {
-            enabled: true,
+            provider: 'playwright',
             name: 'chrome',
-            channel: 'Chrome',
             headless: true,
         },
     },

@@ -15,10 +15,10 @@ export default defineConfig({
                 test: {
                     name: 'chrome',
                     include: ['tests/browser.test.js'],
+                    pool: 'browser',
                     browser: {
-                        enabled: true,
+                        provider: 'playwright',
                         name: 'chrome',
-                        channel: 'Chrome',
                         headless: true,
                     },
                 },
@@ -27,10 +27,10 @@ export default defineConfig({
                 test: {
                     name: 'firefox',
                     include: ['tests/browser.test.js'],
+                    pool: 'browser',
                     browser: {
-                        enabled: true,
+                        provider: 'playwright',
                         name: 'firefox',
-                        channel: 'Firefox',
                         headless: true,
                     },
                 },
