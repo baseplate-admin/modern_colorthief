@@ -1,5 +1,6 @@
 import io
-from PIL import Image
+
+from PIL import Image, UnidentifiedImageError
 
 from ._modern_colorthief import *
 
@@ -9,14 +10,21 @@ __version__ = _modern_colorthief.__version__
 
 def _to_rgba_pixels(image):
     """Convert any PIL Image to raw RGBA bytes, width, height."""
-    if isinstance(image, (str, bytes, io.BytesIO)):
-        img = Image.open(image)
-    elif isinstance(image, Image.Image):
-        img = image
-    else:
-        raise TypeError(
-            f"image must be a file path, bytes, BytesIO, or PIL Image, not {type(image).__name__}"
-        )
+    try:
+        if isinstance(image, str):
+            img = Image.open(image)
+        elif isinstance(image, bytes):
+            img = Image.open(io.BytesIO(image))
+        elif isinstance(image, io.BytesIO):
+            img = Image.open(image)
+        elif isinstance(image, Image.Image):
+            img = image
+        else:
+            raise TypeError(
+                f"image must be a file path, bytes, BytesIO, or PIL Image, not {type(image).__name__}"
+            )
+    except (FileNotFoundError, UnidentifiedImageError) as e:
+        raise ValueError(str(e))
     img = img.convert("RGBA")
     width, height = img.size
     return img.tobytes(), width, height

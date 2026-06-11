@@ -5,7 +5,6 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 export default defineConfig({
     plugins: [tsconfigPaths(), wasm()],
     test: {
-        environment: 'happy-dom',
         include: ['tests/**/*.js'],
     },
 });
