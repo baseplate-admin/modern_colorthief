@@ -36,16 +36,22 @@ testing {
     suites {
         named<JvmTestSuite>("test") {
             useJUnitJupiter("5.12.2")
+            targets {
+                all {
+                    testTask.configure {
+                        val nativeLibPath = file("native").absolutePath
+                        jvmArgs("--enable-native-access=ALL-UNNAMED")
+                        systemProperty("native.lib.path", nativeLibPath)
+                        environment("LD_LIBRARY_PATH", nativeLibPath)
+                    }
+                }
+            }
         }
     }
 }
 
-tasks.named<Test>("test") {
-    val nativeLibPath = file("native").absolutePath
-    jvmArgs("--enable-native-access=ALL-UNNAMED")
-    jvmArgs("-Djava.library.path=$nativeLibPath")
-    environment("LD_LIBRARY_PATH", nativeLibPath)
-    environment("JAVA_LIBRARY_PATH", nativeLibPath)
+tasks.withType<Test> {
+    systemProperty("native.lib.path", file("native").absolutePath)
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL

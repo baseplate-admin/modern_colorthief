@@ -1,7 +1,6 @@
 package modern.colorthief
 
 import io.baseplate_admin.modern_colorthief.Colorthief
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.util.Random
@@ -25,10 +24,13 @@ import kotlin.test.assertTrue
 class RealImageTest {
 
     companion object {
-        @BeforeAll
-        @JvmStatic
-        fun loadNativeLibrary() {
-            System.loadLibrary("modern_colorthief")
+        init {
+            val libPath = System.getProperty("native.lib.path")
+            if (libPath != null) {
+                System.load(libPath + "/libmodern_colorthief.so")
+            } else {
+                System.loadLibrary("modern_colorthief")
+            }
         }
     }
 
