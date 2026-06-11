@@ -44,7 +44,7 @@ def build_extension
 end
 
 # Tasks expected by oxidize-rb cross-gem action
-%x[x86_64-linux aarch64-linux x86_64-darwin arm64-darwin x64-mingw-ucrt].each do |platform|
+%w[x86_64-linux aarch64-linux x86_64-darwin arm64-darwin x64-mingw-ucrt].each do |platform|
   Rake::Task.define_task("native:#{platform}") do
     build_extension
   end
