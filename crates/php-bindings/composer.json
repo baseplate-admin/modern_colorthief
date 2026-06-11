@@ -3,11 +3,6 @@
     "description": "PHP bindings for modern_colorthief - fast color palette extraction",
     "type": "library",
     "license": "MIT",
-    "autoload": {
-        "files": [
-            "extension/modern_colorthief.php"
-        ]
-    },
     "require": {
         "php": ">=8.2"
     },
