@@ -424,7 +424,7 @@ public class MainTest {
     /**
      * Create raw RGBA pixel data for a solid-color image.
      */
-    private byte[] createSolidColorPixels(int width, int height, byte r, byte g, byte b) {
+    private byte[] createSolidColorPixels(int width, int height, int r, int g, int b) {
         int pixelCount = width * height;
         byte[] pixels = new byte[pixelCount * 4];
         for (int i = 0; i < pixelCount; i++) {
@@ -440,8 +440,8 @@ public class MainTest {
      * Create raw RGBA pixel data with two color blocks.
      */
     private byte[] createTwoColorPixels(int firstCount, int secondCount,
-                                        byte r1, byte g1, byte b1,
-                                        byte r2, byte g2, byte b2) {
+                                        int r1, int g1, int b1,
+                                        int r2, int g2, int b2) {
         byte[] pixels = new byte[(firstCount + secondCount) * 4];
         for (int i = 0; i < firstCount; i++) {
             pixels[i * 4] = r1;
