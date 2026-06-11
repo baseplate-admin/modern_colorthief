@@ -5,7 +5,11 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.util.Random
-import kotlin.test.*
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.fail
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /**
  * Tests for JVM binding features involving real image data patterns,
@@ -35,32 +39,34 @@ class RealImageTest {
     @Test
     @DisplayName("Load test.jpg from resources and verify bytes are readable")
     fun testLoadTestJpgFromResources() {
-        val is = javaClass.classLoader.getResourceAsStream("test.jpg")
-        assertNotNull(is, "test.jpg should exist in src/test/resources")
+        val stream = javaClass.classLoader.getResourceAsStream("test.jpg")
+        assertNotNull(stream, "test.jpg should exist in src/test/resources")
+        var data: ByteArray
         try {
-            val data = is.readAllBytes()
+            data = stream.readBytes()
             assertTrue(data.isNotEmpty(), "test.jpg should not be empty")
             assertTrue(data.size < 1_000_000, "test.jpg should be under 1MB")
         } catch (e: Exception) {
             fail("Failed to read test.jpg: ${e.message}")
         } finally {
-            is.close()
+            stream.close()
         }
     }
 
     @Test
     @DisplayName("Load kaiju_no_8.jpg from resources and verify bytes are readable")
     fun testLoadKaijuNo8JpgFromResources() {
-        val is = javaClass.classLoader.getResourceAsStream("kaiju_no_8.jpg")
-        assertNotNull(is, "kaiju_no_8.jpg should exist in src/test/resources")
+        val stream = javaClass.classLoader.getResourceAsStream("kaiju_no_8.jpg")
+        assertNotNull(stream, "kaiju_no_8.jpg should exist in src/test/resources")
+        var data: ByteArray
         try {
-            val data = is.readAllBytes()
+            data = stream.readBytes()
             assertTrue(data.isNotEmpty(), "kaiju_no_8.jpg should not be empty")
             assertTrue(data.size < 1_000_000, "kaiju_no_8.jpg should be under 1MB")
         } catch (e: Exception) {
             fail("Failed to read kaiju_no_8.jpg: ${e.message}")
         } finally {
-            is.close()
+            stream.close()
         }
     }
 
@@ -221,9 +227,9 @@ class RealImageTest {
         assertNotNull(color)
         assertEquals(3, color.size)
         // Allow small tolerance for large image sampling
-        assertEquals(170, color[0].toInt() and 0xFF, 10)
-        assertEquals(85, color[1].toInt() and 0xFF, 10)
-        assertEquals(220, color[2].toInt() and 0xFF, 10)
+        assertEquals(170, color[0].toInt() and 0xFF, 10.0)
+        assertEquals(85, color[1].toInt() and 0xFF, 10.0)
+        assertEquals(220, color[2].toInt() and 0xFF, 10.0)
     }
 
     @Test
@@ -239,7 +245,7 @@ class RealImageTest {
 
         assertEquals(p1.size, p2.size, "Palette lengths must match")
         for (i in p1.indices) {
-            assertArrayEquals(p1[i], p2[i], "Palette entry $i must be consistent")
+            assertContentEquals(p1[i], p2[i])
         }
     }
 

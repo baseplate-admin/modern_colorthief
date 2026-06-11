@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.util.Arrays
 import kotlin.test.assertEquals
+import kotlin.test.assertContentEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -299,7 +301,7 @@ class MainTest {
         val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
         val c1 = Colorthief.getColor(pixels, 10, 10, 1)
         val c2 = Colorthief.getColor(pixels, 10, 10, 1)
-        assertArrayEquals(c1, c2, "Results must be deterministic")
+        assertContentEquals(c1, c2)
     }
 
     @Test
@@ -310,7 +312,7 @@ class MainTest {
         val p2 = Colorthief.getPalette(pixels, 10, 10, 5, 1)
         assertEquals(p1.size, p2.size)
         for (i in p1.indices) {
-            assertArrayEquals(p1[i], p2[i], "Palette entry $i must match")
+            assertContentEquals(p1[i], p2[i])
         }
     }
 
@@ -321,7 +323,7 @@ class MainTest {
         val first = Colorthief.getColor(pixels, 20, 20, 1)
         for (i in 0..3) {
             val later = Colorthief.getColor(pixels, 20, 20, 1)
-            assertArrayEquals(first, later, "Call ${i + 2} must match first")
+            assertContentEquals(first, later)
         }
     }
 

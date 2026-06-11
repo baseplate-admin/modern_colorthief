@@ -4,7 +4,9 @@ import io.baseplate_admin.modern_colorthief.Colorthief
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /**
  * Quality consistency tests:
@@ -70,8 +72,8 @@ class QualityConsistencyTest {
 
         for (q in 1..10) {
             val c = Colorthief.getColor(pixels, 100, 100, q)
-            assertNotNull(c, "quality $q returned null")
-            assertEquals(3, c.size, "quality $q wrong length")
+            assertNotNull(c)
+            assertEquals(3, c.size)
         }
     }
 
