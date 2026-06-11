@@ -20,6 +20,7 @@ sourceSets {
 }
 
 dependencies {
+    implementation(kotlin("stdlib"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
     testImplementation(kotlin("test-junit5"))
 }
@@ -36,8 +37,15 @@ kotlin.compilerOptions {
     freeCompilerArgs.add("-XXLanguage:+UnnamedLocalVariables")
 }
 
+testing {
+    suites {
+        named<JvmTestSuite>("test") {
+            useJUnitJupiter("5.12.2")
+        }
+    }
+}
+
 tasks.withType<Test> {
-    useJUnitPlatform()
     val nativeLibPath = file("native").absolutePath
     jvmArgs("--enable-native-access=ALL-UNNAMED")
     jvmArgs("-Djava.library.path=$nativeLibPath")
