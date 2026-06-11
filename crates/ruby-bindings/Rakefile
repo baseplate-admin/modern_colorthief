@@ -1,48 +1,58 @@
 # frozen_string_literal: true
 
-namespace :cross_ruby do
-  task :build_native do
-    puts "Compiling modern_colorthief Rust extension..."
+def build_extension
+  puts "Compiling modern_colorthief Rust extension..."
 
-    lib_dir = File.expand_path("lib/modern_colorthief")
-    FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
+  lib_dir = File.expand_path("lib/modern_colorthief")
+  FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
 
-    cargo_args = ["build", "--release", "--manifest-path", "ext/Cargo.toml"]
+  cargo_args = ["build", "--release", "--manifest-path", "ext/Cargo.toml"]
 
-    target = ENV["RB_SYS_RUBY_BUILD_TARGET"]
-    if target
-      cargo_args << "--target"
-      cargo_args << target
-      puts "Cross-compiling for target: #{target}"
-    end
+  target = ENV["RB_SYS_RUBY_BUILD_TARGET"]
+  if target
+    cargo_args << "--target"
+    cargo_args << target
+    puts "Cross-compiling for target: #{target}"
+  end
 
-    system("cargo", *cargo_args) do |ok, status|
-      abort "Cargo build failed (exit #{status.exitstatus})" unless ok
-    end
+  system("cargo", *cargo_args) do |ok, status|
+    abort "Cargo build failed (exit #{status.exitstatus})" unless ok
+  end
 
-    target_dir = target ? File.expand_path("target/#{target}/release") : File.expand_path("target/release")
+  target_dir = target ? File.expand_path("target/#{target}/release") : File.expand_path("target/release")
 
-    lib_name = case RbConfig::CONFIG["host_os"]
-    when /linux/ then "libmodern_colorthief.so"
-    when /darwin|mac/ then "libmodern_colorthief.bundle"
-    when /windows|mingw/ then "modern_colorthief.dll"
-    else "libmodern_colorthief.so"
-    end
+  lib_name = case RbConfig::CONFIG["host_os"]
+  when /linux/ then "libmodern_colorthief.so"
+  when /darwin|mac/ then "libmodern_colorthief.bundle"
+  when /windows|mingw/ then "modern_colorthief.dll"
+  else "libmodern_colorthief.so"
+  end
 
-    src = File.join(target_dir, lib_name)
-    if File.exist?(src)
-      FileUtils.cp(src, lib_dir)
-      puts "Copied #{lib_name} to lib/modern_colorthief/"
+  src = File.join(target_dir, lib_name)
+  if File.exist?(src)
+    FileUtils.cp(src, lib_dir)
+    puts "Copied #{lib_name} to lib/modern_colorthief/"
+  else
+    found = Dir.glob(File.join(target_dir, "*modern_colorthief*")).find { |f| File.file?(f) }
+    if found
+      FileUtils.cp(found, lib_dir)
+      puts "Copied #{File.basename(found)} to lib/modern_colorthief/"
     else
-      found = Dir.glob(File.join(target_dir, "*modern_colorthief*")).find { |f| File.file?(f) }
-      if found
-        FileUtils.cp(found, lib_dir)
-        puts "Copied #{File.basename(found)} to lib/modern_colorthief/"
-      else
-        abort "Could not find built library in #{target_dir}"
-      end
+      abort "Could not find built library in #{target_dir}"
     end
   end
 end
 
-task "default" => "cross_ruby:build_native"
+# Tasks expected by oxidize-rb cross-gem action
+%x[x86_64-linux aarch64-linux x86_64-darwin arm64-darwin x64-mingw-ucrt].each do |platform|
+  Rake::Task.define_task("native:#{platform}") do
+    build_extension
+  end
+end
+
+# Generic build task
+task :build do
+  build_extension
+end
+
+task "default" => "build"
