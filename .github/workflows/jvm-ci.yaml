@@ -54,6 +54,8 @@ jobs:
         with:
           name: native-lib
           path: crates/jvm-bindings/tests/native/
+      - name: Verify native library
+        run: ls -la crates/jvm-bindings/tests/native/ && file crates/jvm-bindings/tests/native/libmodern_colorthief.so
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.5.1'
