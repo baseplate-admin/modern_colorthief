@@ -62,9 +62,7 @@ jobs:
         run: gradle wrapper
       - name: Run JUnit tests
         working-directory: crates/jvm-bindings/tests
-        run: |
-          export JAVA_TOOL_OPTIONS="-Djava.library.path=./native"
-          ./gradlew test
+        run: ./gradlew test
 
   kotlin-build:
     name: Kotlin build

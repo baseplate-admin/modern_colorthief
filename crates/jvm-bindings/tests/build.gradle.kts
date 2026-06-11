@@ -41,6 +41,8 @@ testing {
 }
 
 tasks.named<Test>("test") {
+    val nativeLibPath = layout.projectDirectory.dir("native").get().asFile.absolutePath
+    jvmArgs("-Djava.library.path=$nativeLibPath")
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
