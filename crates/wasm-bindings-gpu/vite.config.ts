@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
 import wasm from 'vite-plugin-wasm';
 
 export default defineConfig({
@@ -17,9 +18,8 @@ export default defineConfig({
                     include: ['tests/browser.test.js'],
                     pool: 'browser',
                     browser: {
-                        provider: 'playwright',
+                        provider: playwright({ launch: { headless: true } }),
                         name: 'chrome',
-                        headless: true,
                     },
                 },
             },
@@ -29,9 +29,8 @@ export default defineConfig({
                     include: ['tests/browser.test.js'],
                     pool: 'browser',
                     browser: {
-                        provider: 'playwright',
+                        provider: playwright({ launch: { headless: true } }),
                         name: 'firefox',
-                        headless: true,
                     },
                 },
             },
