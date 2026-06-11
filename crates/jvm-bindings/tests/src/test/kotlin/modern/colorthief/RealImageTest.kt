@@ -227,9 +227,9 @@ class RealImageTest {
         assertNotNull(color)
         assertEquals(3, color.size)
         // Allow small tolerance for large image sampling
-        assertEquals(170, color[0].toInt() and 0xFF, 10.0)
-        assertEquals(85, color[1].toInt() and 0xFF, 10.0)
-        assertEquals(220, color[2].toInt() and 0xFF, 10.0)
+        assertEquals(170.0, (color[0].toInt() and 0xFF).toDouble(), 10.0)
+        assertEquals(85.0, (color[1].toInt() and 0xFF).toDouble(), 10.0)
+        assertEquals(220.0, (color[2].toInt() and 0xFF).toDouble(), 10.0)
     }
 
     @Test
