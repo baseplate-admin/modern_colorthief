@@ -18,21 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare gem workspace
-        run: |
-          cp -r ../core ./modern-colorthief-core
-          cp -r ../core_cpu ./modern-colorthief-core-cpu
-          for d in ./modern-colorthief-core ./modern-colorthief-core-cpu; do
-            sed -i 's/^version\.workspace = true$/version = "0.3.0"/' "$d/Cargo.toml"
-            sed -i 's/^edition\.workspace = true$/edition = "2024"/' "$d/Cargo.toml"
-            sed -i 's/^rayon\.workspace = true$/rayon = "1.10"/' "$d/Cargo.toml" || true
-          done
-          sed -i 's|path = "\.\./core"|path = "../modern-colorthief-core"|' ./modern-colorthief-core-cpu/Cargo.toml
-          cat <<'EOD' > Cargo.toml
-          [workspace]
-          members = ["ext", "modern-colorthief-core", "modern-colorthief-core-cpu"]
-          EOD
-
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@main
         with:
@@ -63,21 +48,6 @@ jobs:
         working-directory: crates/ruby-bindings-gpu
     steps:
       - uses: actions/checkout@v4
-
-      - name: Prepare gem workspace
-        run: |
-          cp -r ../core ./modern-colorthief-core
-          cp -r ../core_gpu ./modern-colorthief-core-gpu
-          for d in ./modern-colorthief-core ./modern-colorthief-core-gpu; do
-            sed -i 's/^version\.workspace = true$/version = "0.3.0"/' "$d/Cargo.toml"
-            sed -i 's/^edition\.workspace = true$/edition = "2024"/' "$d/Cargo.toml"
-            sed -i 's/^ash\.workspace = true$/ash = "0.38"/' "$d/Cargo.toml" || true
-          done
-          sed -i 's|path = "\.\./core"|path = "../modern-colorthief-core"|' ./modern-colorthief-core-gpu/Cargo.toml
-          cat <<'EOD' > Cargo.toml
-          [workspace]
-          members = ["ext", "modern-colorthief-core", "modern-colorthief-core-gpu"]
-          EOD
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@main
