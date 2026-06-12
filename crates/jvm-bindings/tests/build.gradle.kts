@@ -39,10 +39,7 @@ kotlin.compilerOptions {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform {
-        // Explicitly include test classes to ensure discovery works
-        includeEngines("junit-jupiter")
-    }
+    useJUnitPlatform()
 
     val nativeLibPath = file("native").absolutePath
     jvmArgs("--enable-native-access=ALL-UNNAMED")
@@ -52,8 +49,12 @@ tasks.withType<Test> {
     testLogging {
         events("passed", "skipped", "failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
+        showCauses = true
+        showStackTraces = true
     }
 
-    // Gradle 9.5.1 is strict about test discovery — disable to see actual errors
-    failOnNoDiscoveredTests = false
+    doFirst {
+        logger.lifecycle("Test classpath: ${classpath.asPath}")
+    }
 }
