@@ -24,3 +24,4 @@ rustc-ice-*.txt
 #.idea/
 NPM_TOKEN
 .env
+.claude/scheduled_tasks.lock
