@@ -16,7 +16,7 @@ fn get_palette(
         quality,
     )
     .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-    .map_err(|e| error::Error::new(exception::standard_error(), e.to_string()))
+    .map_err(|e| error::Error::new(exception::runtime_error(), e.to_string()))
 }
 
 fn get_color(
@@ -28,16 +28,16 @@ fn get_color(
     let pixels = unsafe { pixels.as_slice() };
     let palette =
         modern_colorthief_core_gpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
-            .map_err(|e| error::Error::new(exception::standard_error(), e.to_string()))?;
+            .map_err(|e| error::Error::new(exception::runtime_error(), e.to_string()))?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| error::Error::new(exception::standard_error(), "No color extracted"))
+        .ok_or_else(|| error::Error::new(exception::runtime_error(), "No color extracted"))
 }
 
-#[magnus::init(ruby_init_name = "modern_colorthief_gpu")]
+#[magnus::init]
 fn init_colorthief_gpu_ruby() {
     let mod_colorthief_gpu = define_module("ColorthiefGpu").unwrap();
     mod_colorthief_gpu
