@@ -90,8 +90,15 @@ jobs:
           cache-version: v1-cross
           working-directory: crates/${{ matrix.bindings }}
 
+      - name: Install podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+
       - name: Cross-compile gem
         uses: oxidize-rb/actions/cross-gem@v1
+        env:
+          RB_SYS_DOCK_RUNTIME: podman
         with:
           platform: ${{ matrix.platform }}
           ruby-versions: "3.2,3.3,3.4"
