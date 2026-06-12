@@ -9,5 +9,5 @@ name = "modern_colorthief"
 
 [dependencies]
 modern-colorthief-core-cpu = { path = "../../core_cpu" }
-magnus = { version = "0.8", features = ["link"] }
+magnus = "0.8"
 rb-sys = "0.9"

@@ -9,5 +9,5 @@ name = "modern_colorthief_gpu"
 
 [dependencies]
 modern-colorthief-core-gpu = { path = "../../core_gpu" }
-magnus = { version = "0.8", features = ["link"] }
+magnus = "0.8"
 rb-sys = "0.9"
