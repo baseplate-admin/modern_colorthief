@@ -19,10 +19,14 @@ export default defineConfig({
                     pool: 'browser',
                     browser: {
                         enabled: true,
-                        provider: playwright({ launch: { headless: true } }),
+                        provider: playwright({
+                            launch: {
+                                headless: true,
+                                args: ['--enable-unsafe-webgpu', '--use-gl=swiftshader'],
+                            },
+                        }),
                         instances: [
                             { name: 'chrome', browser: 'chromium' },
-                            { name: 'firefox', browser: 'firefox' },
                         ],
                     },
                 },

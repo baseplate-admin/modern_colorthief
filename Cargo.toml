@@ -9,6 +9,7 @@ members = [
     "crates/wasm-bindings-gpu",
     "crates/node-bindings",
     "crates/node-bindings-gpu",
+    "crates/node-bindings-wasm",
     "crates/jvm-bindings",
     "crates/jvm-bindings-gpu",
     "crates/php-bindings",

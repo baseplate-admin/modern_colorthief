@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 
 // ---------------------------------------------------------------------------
 // Helpers (port of Python test helpers)
@@ -59,14 +59,16 @@ beforeAll(async () => {
     } catch { /* WASM GPU not built for nodejs target */ }
 });
 
-function ready() { return expect.poll(() => gpuAvailable).toBe(true); }
+function skipIfNoGpu() {
+    if (!gpuAvailable) expect.skip('GPU not available in Node.js');
+}
 
 // ---------------------------------------------------------------------------
 // API surface (port of test_api.py)
 // ---------------------------------------------------------------------------
 
 describe('GPU API surface', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('exports getPaletteGpu', () => { expect(typeof getPaletteGpu).toBe('function'); });
     it('exports getColorGpu', () => { expect(typeof getColorGpu).toBe('function'); });
@@ -77,7 +79,7 @@ describe('GPU API surface', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU solid color — palette', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('detects pure red', async () => {
         const { pixels, width, height } = pixels(255, 0, 0);
@@ -115,7 +117,7 @@ describe('GPU solid color — palette', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU getColor', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('returns RGB array of length 3', async () => {
         const { pixels, width, height } = pixels(255, 0, 0);
@@ -147,7 +149,7 @@ describe('GPU getColor', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU palette properties', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('returns valid RGB values', async () => {
         const { pixels, width, height } = pixels(100, 150, 200);
@@ -182,7 +184,7 @@ describe('GPU palette properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU two-color detection', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('finds two distinct colors', async () => {
         const { pixels, width, height } = twoColor(255, 0, 0, 0, 0, 255);
@@ -198,7 +200,7 @@ describe('GPU two-color detection', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU determinism', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('same palette for same pixels', async () => {
         const { pixels, width, height } = pixels(180, 90, 45);
@@ -227,7 +229,7 @@ describe('GPU determinism', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU quality bounds', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('quality=1 is valid', async () => {
         const { pixels, width, height } = pixels(200, 100, 50);
@@ -247,7 +249,7 @@ describe('GPU quality bounds', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU deduplication', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('no duplicates with high color_count', async () => {
         const { pixels, width, height } = pixels(100, 150, 200);
@@ -263,7 +265,7 @@ describe('GPU deduplication', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU edge cases', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('handles 1x1 pixel image — palette', async () => {
         const { pixels, width, height } = pixels(255, 128, 64, 1, 1);
@@ -289,7 +291,7 @@ describe('GPU edge cases', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU error handling', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('rejects empty pixels — palette', async () => {
         await expect(getPaletteGpu(new Uint8Array(0), 0, 0, 5, 10)).rejects.toThrow();
@@ -309,7 +311,7 @@ describe('GPU error handling', () => {
 // ---------------------------------------------------------------------------
 
 describe('GPU concurrency', () => {
-    beforeAll(() => { if (!gpuAvailable) skip(); });
+    beforeEach(() => { skipIfNoGpu(); });
 
     it('handles concurrent palette calls', async () => {
         const { pixels, width, height } = pixels(100, 150, 200);

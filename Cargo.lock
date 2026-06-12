@@ -1666,6 +1666,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "modern-colorthief-node-wasm"
+version = "0.3.0"
+dependencies = [
+ "js-sys",
+ "modern-colorthief-core-cpu",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+]
+
+[[package]]
 name = "modern-colorthief-php"
 version = "0.3.0"
 dependencies = [
