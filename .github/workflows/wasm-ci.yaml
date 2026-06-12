@@ -2,7 +2,7 @@ name: WASM CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, wasm-fix ]
     tags: [ '*' ]
   pull_request:
   workflow_dispatch:
@@ -25,9 +25,21 @@ jobs:
       - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-wasm
       - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
 
-  wasm-pack-build:
-    name: wasm-pack build + test
+  wasm-gpu-build:
+    name: WASM GPU build
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-wasm-gpu
+      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-wasm-gpu
+
+  cpu-node-tests:
+    name: CPU Node.js tests
+    runs-on: ubuntu-latest
+    needs: [wasm-build]
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
@@ -38,23 +50,63 @@ jobs:
       - working-directory: crates/wasm-bindings
         run: wasm-pack build --release --target nodejs
       - working-directory: crates/wasm-bindings
-        run: npm install && npm test
+        run: npm ci
+      - working-directory: crates/wasm-bindings
+        run: npx vitest run --project node
 
-  wasm-gpu-build:
-    name: WASM GPU build
+  cpu-browser-tests:
+    name: CPU Browser tests
     runs-on: ubuntu-latest
+    needs: [wasm-build]
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
         with:
-          targets: wasm32-unknown-unknown
-      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-wasm-gpu
+          node-version: 22
+      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - working-directory: crates/wasm-bindings
+        run: wasm-pack build --release --target web
+      - working-directory: crates/wasm-bindings
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: crates/wasm-bindings
+        run: npx playwright install chromium firefox --with-deps
+      - working-directory: crates/wasm-bindings
+        run: npx vitest run --project ${{ matrix.browser }}
+
+  gpu-browser-tests:
+    name: GPU Browser tests
+    runs-on: ubuntu-latest
+    needs: [wasm-gpu-build]
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - working-directory: crates/wasm-bindings-gpu
+        run: wasm-pack build --release --target web
+      - working-directory: crates/wasm-bindings-gpu
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: crates/wasm-bindings-gpu
+        run: npx playwright install chromium firefox --with-deps
+      - working-directory: crates/wasm-bindings-gpu
+        run: npx vitest run --project ${{ matrix.browser }}
 
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    needs: [wasm-build, wasm-pack-build, wasm-gpu-build]
+    needs: [cpu-node-tests, cpu-browser-tests, gpu-browser-tests]
     permissions:
       id-token: write
     steps:

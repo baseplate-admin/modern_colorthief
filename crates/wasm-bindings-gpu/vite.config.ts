@@ -1,10 +1,9 @@
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import wasm from 'vite-plugin-wasm';
 
 export default defineConfig({
-    plugins: [tsconfigPaths(), wasm()],
+    plugins: [wasm()],
     test: {
         projects: [
             {

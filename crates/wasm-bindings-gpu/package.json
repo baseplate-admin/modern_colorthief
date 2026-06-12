@@ -1,13 +1,13 @@
 {
-    "name": "@modern_colorthief/wasm",
+    "name": "@modern_colorthief/wasm-gpu",
     "version": "0.3.0",
     "type": "module",
-    "description": "Modern color extraction from images, compiled to WebAssembly",
+    "description": "Modern color extraction from images (GPU), compiled to WebAssembly",
     "license": "MIT",
     "author": "baseplate-admin",
-    "main": "pkg/colorthief_wasm.js",
-    "module": "pkg/colorthief_wasm.js",
-    "types": "pkg/colorthief_wasm.d.ts",
+    "main": "pkg/modern_colorthief_wasm_gpu.js",
+    "module": "pkg/modern_colorthief_wasm_gpu.js",
+    "types": "pkg/modern_colorthief_wasm_gpu.d.ts",
     "files": [
         "pkg"
     ],
@@ -18,14 +18,10 @@
         "test": "vitest run"
     },
     "devDependencies": {
-        "@types/node": "^24.10.1",
         "@vitest/browser-playwright": "^4.1.8",
-        "happy-dom": "^17.0.0",
-        "jsdom": "^26.1.0",
         "playwright": "^1.50.0",
         "rimraf": "^6.1.2",
         "vite-plugin-wasm": "^3.5.0",
-        "vite-tsconfig-paths": "^5.1.4",
         "vitest": "^4.0.14"
     }
 }
