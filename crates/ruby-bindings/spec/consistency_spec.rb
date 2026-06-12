@@ -1,6 +1,6 @@
 require_relative '../lib/colorthief_ruby'
 
-RSpec.describe 'Consistency with Python test suite' do
+RSpec.describe Colorthief do
   # Build a 10x10 image: 80% red pixels, 20% blue pixels
   let(:red_dominant_pixels) do
     pixels = []
@@ -38,7 +38,6 @@ RSpec.describe 'Consistency with Python test suite' do
 
   describe 'Different images produce different colors' do
     it 'red image returns red, green image returns green' do
-      require 'stringio'
       red_pixels = []
       100.times { red_pixels.push(255, 0, 0, 255) }
       red_pixels = red_pixels.pack('C*')
@@ -96,13 +95,13 @@ RSpec.describe 'Consistency with Python test suite' do
 
       3.times do
         t = Thread.new do
-                    5.times do
-              palette = described_class.get_palette(red_dominant_pixels, 10, 10, 3, 1)
-              results << palette
-            end
+          5.times do
+            palette = described_class.get_palette(red_dominant_pixels, 10, 10, 3, 1)
+            results << palette
           end
-          threads << t
         end
+        threads << t
+      end
 
       threads.each(&:join)
 
