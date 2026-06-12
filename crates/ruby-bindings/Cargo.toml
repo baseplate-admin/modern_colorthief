@@ -1,4 +1,0 @@
-[workspace]
-members = ["ext"]
-resolver = "2"
-inhibited = true

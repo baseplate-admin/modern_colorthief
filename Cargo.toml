@@ -10,9 +10,11 @@ members = [
     "crates/node-bindings-gpu",
     "crates/jvm-bindings",
     "crates/jvm-bindings-gpu",
-     "crates/php-bindings",
+    "crates/php-bindings",
     "crates/php-bindings-gpu",
     "crates/python-bindings-gpu",
+    "crates/ruby-bindings/ext",
+    "crates/ruby-bindings-gpu/ext",
 ]
 resolver = "2"
 
@@ -66,4 +68,3 @@ codegen-units = 1
 lto = "fat"
 opt-level = 3
 strip = true
-
