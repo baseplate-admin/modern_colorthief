@@ -34,7 +34,9 @@ fn get_color(
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| error::Error::new(Ruby::exception_runtime_error(), "Image contains no colors"))
+        .ok_or_else(|| {
+            error::Error::new(Ruby::exception_runtime_error(), "Image contains no colors")
+        })
 }
 
 #[magnus::init]
