@@ -50,22 +50,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
           bundler-cache: false
-
-      - name: Cargo version check
-        working-directory: crates/${{ matrix.bindings }}
-        run: |
-          rustc --version
-          cargo --version
-          ls ext/Cargo.toml
+          cargo-cache: true
+          cache-version: v1-native
 
       - name: Install Ruby deps
         working-directory: crates/${{ matrix.bindings }}
@@ -135,8 +127,8 @@ jobs:
       id-token: write
     strategy:
       fail-fast: false
-      matrix:
-        bindings: [ruby-bindings, ruby-bindings-gpu]
+    matrix:
+      bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
       - name: Download gem artifacts
         uses: actions/download-artifact@v4
