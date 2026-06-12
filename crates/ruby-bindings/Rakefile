@@ -6,9 +6,14 @@ GEMSPEC = Gem::Specification.load("modern_colorthief.gemspec")
 
 RbSys::ExtensionTask.new("modern_colorthief", GEMSPEC)
 
-# Tasks expected by oxidize-rb cross-gem action
+# Tasks expected by oxidize-rb cross-gem action.
+# When running inside an rb-sys-dock container, compilation is handled by RbSys::ExtensionTask.
+# These tasks skip the rb-sys-dock invocation to avoid nested container calls.
 %w[x86_64-linux aarch64-linux x86_64-darwin arm64-darwin x64-mingw-ucrt].each do |platform|
   Rake::Task.define_task("native:#{platform}") do
+    if ENV.key?("RB_SYS")
+      next
+    end
     sh "bundle", "exec", "rb-sys-dock", "--platform", platform, "--build"
   end
 end
