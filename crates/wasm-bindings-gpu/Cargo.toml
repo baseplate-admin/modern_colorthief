@@ -7,8 +7,9 @@ edition.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-modern-colorthief-core-gpu.workspace = true
+modern-colorthief-core-wasm.workspace = true
 wasm-bindgen.workspace = true
+wasm-bindgen-futures = "0.4"
 js-sys.workspace = true
 web-sys.workspace = true
 

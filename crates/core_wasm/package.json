@@ -1,0 +1,8 @@
+{
+  "name": "modern-colorthief-core-wasm",
+  "private": true,
+  "devDependencies": {
+    "@webgpu/types": "^0.1.70",
+    "typescript": "^5.8.0"
+  }
+}
