@@ -25,7 +25,7 @@ beforeAll(async () => {
     } catch { /* WASM not built yet */ }
 });
 
-function ready() { return expect.poll(() => wasmAvailable).toBe(true); }
+function ready() { return expect.poll(() => wasmAvailable, { timeout: 3000 }).toBe(true); }
 
 // ---------------------------------------------------------------------------
 // Helpers: create test images via Canvas
@@ -50,6 +50,12 @@ async function twoColorBlob(r1, g1, b1, r2, g2, b2, w = 100, h = 100) {
     return new Promise(res => c.toBlob(res, 'image/png'));
 }
 
+// Convert blob to Uint8Array for WASM API that doesn't handle Blob directly
+async function blobToBytes(blob) {
+    const buf = await blob.arrayBuffer();
+    return new Uint8Array(buf);
+}
+
 function solidPixels(r, g, b, w = 100, h = 100) {
     const buf = new Uint8Array(w * h * 4);
     for (let i = 0; i < w * h; i++) {
@@ -71,14 +77,15 @@ describe('API surface', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getPalette — via Canvas-decoded image
+// getPalette — via Canvas-decoded image (pass Uint8Array, not Blob)
 // ---------------------------------------------------------------------------
 
 describe('getPalette (browser)', () => {
     it('returns a non-empty palette for solid red', async () => {
         await ready();
         const blob = await solidBlob(255, 0, 0);
-        const palette = await getPalette(blob, 5, 10);
+        const bytes = await blobToBytes(blob);
+        const palette = await getPalette(bytes, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
         expect(palette[0][0]).toBeGreaterThan(200);
         expect(palette[0][1]).toBeLessThan(55);
@@ -88,7 +95,8 @@ describe('getPalette (browser)', () => {
     it('returns valid RGB values (0-255)', async () => {
         await ready();
         const blob = await solidBlob(100, 150, 200);
-        const palette = await getPalette(blob, 10, 10);
+        const bytes = await blobToBytes(blob);
+        const palette = await getPalette(bytes, 10, 10);
         for (const color of palette) {
             expect(color.length).toBe(3);
             for (const v of color) {
@@ -101,8 +109,9 @@ describe('getPalette (browser)', () => {
     it('respects color_count', async () => {
         await ready();
         const blob = await solidBlob(255, 0, 0);
+        const bytes = await blobToBytes(blob);
         for (const count of [3, 5]) {
-            const palette = await getPalette(blob, count, 10);
+            const palette = await getPalette(bytes, count, 10);
             expect(palette.length).toBeLessThanOrEqual(count);
         }
     });
@@ -110,7 +119,8 @@ describe('getPalette (browser)', () => {
     it('no duplicate colors', async () => {
         await ready();
         const blob = await solidBlob(100, 150, 200);
-        const palette = await getPalette(blob, 20, 10);
+        const bytes = await blobToBytes(blob);
+        const palette = await getPalette(bytes, 20, 10);
         const keys = palette.map(c => `${c[0]},${c[1]},${c[2]}`);
         expect(new Set(keys).size).toBe(keys.length);
     });
@@ -118,15 +128,17 @@ describe('getPalette (browser)', () => {
     it('deterministic results', async () => {
         await ready();
         const blob = await solidBlob(180, 90, 45);
-        const p1 = await getPalette(blob, 10, 10);
-        const p2 = await getPalette(blob, 10, 10);
+        const bytes = await blobToBytes(blob);
+        const p1 = await getPalette(bytes, 10, 10);
+        const p2 = await getPalette(bytes, 10, 10);
         expect(p1).toEqual(p2);
     });
 
     it('detects two distinct colors', async () => {
         await ready();
         const blob = await twoColorBlob(255, 0, 0, 0, 0, 255);
-        const palette = await getPalette(blob, 5, 10);
+        const bytes = await blobToBytes(blob);
+        const palette = await getPalette(bytes, 5, 10);
         expect(palette.length).toBeGreaterThanOrEqual(2);
         const hasRed = palette.some(c => c[0] > 200 && c[1] < 55 && c[2] < 55);
         const hasBlue = palette.some(c => c[0] < 55 && c[1] < 55 && c[2] > 200);
@@ -135,14 +147,15 @@ describe('getPalette (browser)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getColor — via Canvas-decoded image
+// getColor — via Canvas-decoded image (pass Uint8Array, not Blob)
 // ---------------------------------------------------------------------------
 
 describe('getColor (browser)', () => {
     it('returns an RGB array of length 3', async () => {
         await ready();
         const blob = await solidBlob(255, 0, 0);
-        const color = await getColor(blob, 10);
+        const bytes = await blobToBytes(blob);
+        const color = await getColor(bytes, 10);
         expect(Array.isArray(color)).toBe(true);
         expect(color.length).toBe(3);
     });
@@ -150,7 +163,8 @@ describe('getColor (browser)', () => {
     it('returns valid RGB values', async () => {
         await ready();
         const blob = await solidBlob(100, 150, 200);
-        const color = await getColor(blob, 10);
+        const bytes = await blobToBytes(blob);
+        const color = await getColor(bytes, 10);
         for (const v of color) {
             expect(v).toBeGreaterThanOrEqual(0);
             expect(v).toBeLessThanOrEqual(255);
@@ -160,7 +174,8 @@ describe('getColor (browser)', () => {
     it('returns red for a red image', async () => {
         await ready();
         const blob = await solidBlob(255, 0, 0);
-        const color = await getColor(blob, 10);
+        const bytes = await blobToBytes(blob);
+        const color = await getColor(bytes, 10);
         expect(color[0]).toBeGreaterThan(200);
         expect(color[1]).toBeLessThan(55);
         expect(color[2]).toBeLessThan(55);
@@ -169,8 +184,9 @@ describe('getColor (browser)', () => {
     it('deterministic results', async () => {
         await ready();
         const blob = await solidBlob(100, 150, 200);
-        const c1 = await getColor(blob, 10);
-        const c2 = await getColor(blob, 10);
+        const bytes = await blobToBytes(blob);
+        const c1 = await getColor(bytes, 10);
+        const c2 = await getColor(bytes, 10);
         expect(c1).toEqual(c2);
     });
 });
@@ -183,7 +199,8 @@ describe('decodeImage (browser)', () => {
     it('returns correct dimensions', async () => {
         await ready();
         const blob = await solidBlob(255, 0, 0, 200, 100);
-        const result = await decodeImage(blob);
+        const bytes = await blobToBytes(blob);
+        const result = await decodeImage(bytes);
         expect(result.width).toBe(200);
         expect(result.height).toBe(100);
     });
@@ -191,14 +208,16 @@ describe('decodeImage (browser)', () => {
     it('returns correct pixel count (width * height * 4)', async () => {
         await ready();
         const blob = await solidBlob(255, 0, 0, 50, 30);
-        const result = await decodeImage(blob);
+        const bytes = await blobToBytes(blob);
+        const result = await decodeImage(bytes);
         expect(result.pixels.length).toBe(50 * 30 * 4);
     });
 
     it('returns correct RGBA for solid red', async () => {
         await ready();
         const blob = await solidBlob(255, 0, 0);
-        const result = await decodeImage(blob);
+        const bytes = await blobToBytes(blob);
+        const result = await decodeImage(bytes);
         expect(result.pixels[0]).toBe(255);
         expect(result.pixels[1]).toBe(0);
         expect(result.pixels[2]).toBe(0);
@@ -208,7 +227,8 @@ describe('decodeImage (browser)', () => {
     it('returns correct RGBA for solid green', async () => {
         await ready();
         const blob = await solidBlob(0, 255, 0);
-        const result = await decodeImage(blob);
+        const bytes = await blobToBytes(blob);
+        const result = await decodeImage(bytes);
         expect(result.pixels[0]).toBe(0);
         expect(result.pixels[1]).toBe(255);
         expect(result.pixels[2]).toBe(0);
@@ -218,7 +238,8 @@ describe('decodeImage (browser)', () => {
     it('returns correct RGBA for white', async () => {
         await ready();
         const blob = await solidBlob(255, 255, 255);
-        const result = await decodeImage(blob);
+        const bytes = await blobToBytes(blob);
+        const result = await decodeImage(bytes);
         expect(result.pixels[0]).toBe(255);
         expect(result.pixels[1]).toBe(255);
         expect(result.pixels[2]).toBe(255);
@@ -228,7 +249,8 @@ describe('decodeImage (browser)', () => {
     it('returns correct RGBA for black', async () => {
         await ready();
         const blob = await solidBlob(0, 0, 0);
-        const result = await decodeImage(blob);
+        const bytes = await blobToBytes(blob);
+        const result = await decodeImage(bytes);
         expect(result.pixels[0]).toBe(0);
         expect(result.pixels[1]).toBe(0);
         expect(result.pixels[2]).toBe(0);
@@ -237,13 +259,13 @@ describe('decodeImage (browser)', () => {
 
     it('rejects non-image data', async () => {
         await ready();
-        const fake = new Blob([new TextEncoder().encode('not an image')]);
+        const fake = new Uint8Array(new TextEncoder().encode('not an image'));
         await expect(decodeImage(fake)).rejects.toThrow();
     });
 
     it('rejects empty bytes', async () => {
         await ready();
-        const empty = new Blob([new Uint8Array(0)]);
+        const empty = new Uint8Array(0);
         await expect(decodeImage(empty)).rejects.toThrow();
     });
 
@@ -293,14 +315,16 @@ describe('Quality bounds', () => {
     it('quality=1 is valid', async () => {
         await ready();
         const blob = await solidBlob(200, 100, 50);
-        const palette = await getPalette(blob, 5, 1);
+        const bytes = await blobToBytes(blob);
+        const palette = await getPalette(bytes, 5, 1);
         expect(palette.length).toBeGreaterThan(0);
     });
 
     it('quality=10 is valid', async () => {
         await ready();
         const blob = await solidBlob(200, 100, 50);
-        const palette = await getPalette(blob, 5, 10);
+        const bytes = await blobToBytes(blob);
+        const palette = await getPalette(bytes, 5, 10);
         expect(palette.length).toBeGreaterThan(0);
     });
 });
@@ -341,8 +365,9 @@ describe('Concurrency', () => {
     it('handles concurrent palette calls', async () => {
         await ready();
         const blob = await solidBlob(100, 150, 200);
+        const bytes = await blobToBytes(blob);
         const results = await Promise.all(
-            Array.from({ length: 5 }, () => getPalette(blob, 10, 10))
+            Array.from({ length: 5 }, () => getPalette(bytes, 10, 10))
         );
         expect(results.length).toBe(5);
         for (const p of results) expect(p.length).toBeGreaterThan(0);
@@ -351,8 +376,9 @@ describe('Concurrency', () => {
     it('handles concurrent color calls', async () => {
         await ready();
         const blob = await solidBlob(100, 150, 200);
+        const bytes = await blobToBytes(blob);
         const results = await Promise.all(
-            Array.from({ length: 5 }, () => getColor(blob, 10))
+            Array.from({ length: 5 }, () => getColor(bytes, 10))
         );
         expect(results.length).toBe(5);
         for (const c of results) expect(c.length).toBe(3);
@@ -361,10 +387,11 @@ describe('Concurrency', () => {
     it('mixed concurrent operations', async () => {
         await ready();
         const blob = await solidBlob(100, 150, 200);
+        const bytes = await blobToBytes(blob);
         const results = await Promise.all([
-            getPalette(blob, 10, 10),
-            getColor(blob, 10),
-            decodeImage(blob),
+            getPalette(bytes, 10, 10),
+            getColor(bytes, 10),
+            decodeImage(bytes),
         ]);
         expect(results[0].length).toBeGreaterThan(0);
         expect(results[1].length).toBe(3);
@@ -374,8 +401,9 @@ describe('Concurrency', () => {
     it('concurrent calls produce consistent results', async () => {
         await ready();
         const blob = await solidBlob(180, 90, 45);
+        const bytes = await blobToBytes(blob);
         const results = await Promise.all(
-            Array.from({ length: 4 }, () => getPalette(blob, 10, 10))
+            Array.from({ length: 4 }, () => getPalette(bytes, 10, 10))
         );
         for (let i = 1; i < results.length; i++) {
             expect(results[i]).toEqual(results[0]);

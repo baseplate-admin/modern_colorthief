@@ -10,7 +10,7 @@ High-performance color palette extraction from images. Rust core with bindings f
 
 - **`crates/core/`** — Manual median-cut algorithm with rayon. Accepts raw RGBA buffers. No external image decoding. No `color-thief` crate.
 - **`crates/python-bindings/`** — PyO3 bindings. Pillow for image decoding (transparent in Python layer). Rust receives raw RGBA bytes.
-- **`crates/node-bindings/`** — napi-rs bindings. Sharp for image decoding. TypeScript preferred. Bundled with tsdown. TSGO support.
+- **`crates/node-bindings/`** — napi-rs bindings. Sharp for image decoding. TypeScript preferred. Bundled with vite.
 - **`crates/wasm-bindings/`** — wasm-bindgen. Canvas API for image decoding. WebGPU planned for GPU acceleration.
 - **`crates/jvm-bindings/`** — JNI bindings. Java AWT for image decoding. Java 26 target. Android compatible. Kotlin bindings.
 - **`crates/ruby-bindings/`** — magnus bindings. `image_processing` gem for image decoding.
@@ -27,8 +27,8 @@ High-performance color palette extraction from images. Rust core with bindings f
 7. **Tests**: Same test format across all bindings (test_api, test_errors, test_properties, test_edge_cases).
 8. **llms.txt**: Per-binding API docs. Index + full. Auto-regenerated on API change via hooks.
 9. **GPU**: Vulkan Compute for native (cross-vendor). WebGPU for WASM.
-10. **tsdown** for bundling/minification in Node bindings.
-11. **TSGO** (@typescript/native-preview) for native TypeScript execution.
+10. **vite** for bundling/type generation in Node bindings.
+11. **vite-plugin-dts** for type declaration generation.
 12. **uv monorepo** — Root pyproject.toml links to python-bindings.
 
 ## Build Commands

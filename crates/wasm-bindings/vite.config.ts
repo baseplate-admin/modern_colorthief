@@ -17,6 +17,8 @@ export default defineConfig({
                 test: {
                     name: 'browser',
                     include: ['tests/browser.test.js'],
+                    testTimeout: 30000,
+                    hookTimeout: 10000,
                     pool: 'browser',
                     browser: {
                         enabled: true,

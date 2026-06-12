@@ -2,7 +2,7 @@ name: Node CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, wasm-fix ]
     tags: [ '*' ]
   pull_request:
   workflow_dispatch:
