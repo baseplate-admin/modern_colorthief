@@ -48,8 +48,8 @@ tasks.named<Test>("test") {
 
     // Explicitly scan all test class directories
     filter {
-        includeTestsInPackages("modern.colorthief")
-        includeTestsInPackages("io.baseplate_admin.modern_colorthief")
+        includeTestsMatching("modern.colorthief.*")
+        includeTestsMatching("io.baseplate_admin.modern_colorthief.*")
     }
 
     testLogging {
@@ -62,6 +62,5 @@ tasks.named<Test>("test") {
 
     doFirst {
         logger.lifecycle("Test classpath: ${classpath.asPath}")
-        logger.lifecycle("Scan filters: ${filter.includes}")
     }
 }
