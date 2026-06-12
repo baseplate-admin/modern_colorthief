@@ -1,53 +1,14 @@
 # frozen_string_literal: true
 
-def build_extension
-  puts "Compiling modern_colorthief_gpu Rust extension..."
+require "rb_sys/extensiontask"
 
-  lib_dir = File.expand_path("lib/modern_colorthief_gpu")
-  FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
+GEMSPEC = Gem::Specification.load("modern_colorthief_gpu.gemspec")
 
-  # Support cross-compilation via oxidize-rb / rb-sys-dock.
-  # The cross-gem action sets RUSTUP_TARGET for the target triple.
-  cargo_args = ["build", "--release", "--manifest-path", "ext/Cargo.toml"]
-  if target = ENV["RUSTUP_TARGET"]
-    cargo_args << "--target" << target
-  end
-
-  system(*cargo_args) do |ok, status|
-    abort "Cargo build failed (exit #{status.exitstatus})" unless ok
-  end
-
-  # When cross-compiling, Cargo outputs to target/<triple>/release
-  # Workspace builds put output in the workspace root target/ dir
-  workspace_target = File.expand_path("../../target")
-  target_dir = if ENV["RUSTUP_TARGET"]
-    File.join(workspace_target, ENV["RUSTUP_TARGET"], "release")
-  else
-    File.join(workspace_target, "release")
-  end
-
-  found = Dir.glob(File.join(target_dir, "*modern_colorthief_gpu*"))
-    .find { |f| File.file?(f) && %w[.so .bundle .dll].any? { |ext| f.end_with?(ext) } }
-  if found
-    basename = File.basename(found)
-    renamed = basename.sub(/\Alibmodern_colorthief_gpu/, "modern_colorthief_gpu")
-    FileUtils.cp(found, File.join(lib_dir, renamed))
-    puts "Copied #{basename} to lib/modern_colorthief_gpu/#{renamed}"
-  else
-    abort "Could not find built library in #{target_dir}"
-  end
-end
+RbSys::ExtensionTask.new("modern_colorthief_gpu", GEMSPEC)
 
 # Tasks expected by oxidize-rb cross-gem action
 %w[x86_64-linux aarch64-linux x86_64-darwin arm64-darwin x64-mingw-ucrt].each do |platform|
   Rake::Task.define_task("native:#{platform}") do
-    build_extension
+    sh "bundle", "exec", "rb-sys-dock", "--platform", platform, "--build"
   end
 end
-
-# Generic build task
-task :build do
-  build_extension
-end
-
-task "default" => "build"
