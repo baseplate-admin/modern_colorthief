@@ -67,9 +67,14 @@ fn extract_palette_jvm<'a>(
     quality: u8,
 ) -> Result<JObject<'a>, String> {
     let len = jni_err(env.get_array_length(pixels))?.max(0) as usize;
-    let expected = (width as usize).saturating_mul(height as usize).saturating_mul(4);
+    let expected = (width as usize)
+        .saturating_mul(height as usize)
+        .saturating_mul(4);
     if len < expected {
-        return Err(format!("Pixel buffer too small: expected {} bytes, got {}", expected, len));
+        return Err(format!(
+            "Pixel buffer too small: expected {} bytes, got {}",
+            expected, len
+        ));
     }
     let mut pixel_data = vec![0i8; len];
     jni_err(env.get_byte_array_region(pixels, 0, &mut pixel_data))?;
@@ -102,9 +107,14 @@ fn extract_color_jvm<'a>(
     quality: u8,
 ) -> Result<JObject<'a>, String> {
     let len = jni_err(env.get_array_length(pixels))?.max(0) as usize;
-    let expected = (width as usize).saturating_mul(height as usize).saturating_mul(4);
+    let expected = (width as usize)
+        .saturating_mul(height as usize)
+        .saturating_mul(4);
     if len < expected {
-        return Err(format!("Pixel buffer too small: expected {} bytes, got {}", expected, len));
+        return Err(format!(
+            "Pixel buffer too small: expected {} bytes, got {}",
+            expected, len
+        ));
     }
     let mut pixel_data = vec![0i8; len];
     jni_err(env.get_byte_array_region(pixels, 0, &mut pixel_data))?;
