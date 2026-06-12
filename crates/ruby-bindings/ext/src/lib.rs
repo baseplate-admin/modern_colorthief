@@ -16,7 +16,12 @@ fn get_palette(
         quality,
     )
     .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-    .map_err(|e| error::Error::new(Ruby::exception_runtime_error(), e.to_string()))
+    .map_err(|e| {
+        error::Error::new(
+            Ruby::get().unwrap().exception_runtime_error(),
+            e.to_string(),
+        )
+    })
 }
 
 fn get_color(
@@ -28,20 +33,28 @@ fn get_color(
     let pixels = unsafe { pixels.as_slice() };
     let palette =
         modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
-            .map_err(|e| error::Error::new(Ruby::exception_runtime_error(), e.to_string()))?;
+            .map_err(|e| {
+                error::Error::new(
+                    Ruby::get().unwrap().exception_runtime_error(),
+                    e.to_string(),
+                )
+            })?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
         .ok_or_else(|| {
-            error::Error::new(Ruby::exception_runtime_error(), "Image contains no colors")
+            error::Error::new(
+                Ruby::get().unwrap().exception_runtime_error(),
+                "Image contains no colors",
+            )
         })
 }
 
 #[magnus::init]
-fn init_colorthief_ruby() {
-    let mod_colorthief = Ruby::define_module("Colorthief").unwrap();
+fn init_colorthief_ruby(ruby: &Ruby) {
+    let mod_colorthief = ruby.define_module("Colorthief").unwrap();
     mod_colorthief
         .define_singleton_method("get_palette", function!(get_palette, 5))
         .unwrap();
