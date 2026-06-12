@@ -18,13 +18,15 @@ def build_extension
   end
 
   # When cross-compiling, Cargo outputs to target/<triple>/release
+  # Workspace builds put output in the workspace root target/ dir
+  workspace_target = File.expand_path("../../target")
   target_dir = if ENV["RUSTUP_TARGET"]
-    File.expand_path("target/#{ENV["RUSTUP_TARGET"]}/release")
+    File.join(workspace_target, ENV["RUSTUP_TARGET"], "release")
   else
-    File.expand_path("target/release")
+    File.join(workspace_target, "release")
   end
 
-  found = Dir.glob(File.join(target_dir, "libmodern_colorthief_gpu.*"))
+  found = Dir.glob(File.join(target_dir, "*modern_colorthief_gpu*"))
     .find { |f| File.file?(f) && %w[.so .bundle .dll].any? { |ext| f.end_with?(ext) } }
   if found
     basename = File.basename(found)

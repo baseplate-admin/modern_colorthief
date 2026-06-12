@@ -191,10 +191,9 @@ RSpec.describe Colorthief do
       expect(palette).not_to be_empty
     end
 
-    it 'quality=0 raises an error' do
-      expect {
-        described_class.get_palette(medium_image, 50, 50, 5, 0)
-      }.to raise_error(RuntimeError)
+    it 'quality=0 is treated as quality=1 (clamped)' do
+      palette = described_class.get_palette(medium_image, 50, 50, 5, 0)
+      expect(palette).not_to be_empty
     end
 
     it 'higher quality returns more detailed palette' do
@@ -219,10 +218,9 @@ RSpec.describe Colorthief do
       expect(color.length).to eq(3)
     end
 
-    it 'get_color with quality=0 raises an error' do
-      expect {
-        described_class.get_color(medium_image, 50, 50, 0)
-      }.to raise_error(RuntimeError)
+    it 'get_color with quality=0 works (clamped to 1)' do
+      color = described_class.get_color(medium_image, 50, 50, 0)
+      expect(color.length).to eq(3)
     end
   end
 

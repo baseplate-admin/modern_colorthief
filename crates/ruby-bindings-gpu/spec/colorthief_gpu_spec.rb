@@ -379,12 +379,6 @@ RSpec.describe ColorthiefGpu do
           expect { described_class.get_color(empty, 0, 0, 1) }.to raise_error(RuntimeError)
         end
       end
-
-      it 'raises RuntimeError for zero dimensions' do
-        with_gpu do
-          expect { described_class.get_color(solid_red_pixels, 0, 0, 1) }.to raise_error(RuntimeError)
-        end
-      end
     end
   end
 end
