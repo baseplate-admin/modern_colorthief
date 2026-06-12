@@ -16,8 +16,10 @@ Gem::Specification.new do |spec|
 
   spec.extensions = ["ext/extconf.rb"]
 
-  spec.add_dependency "rb-sys", "~> 0.9"
+  spec.add_dependency "rb_sys", "~> 0.9"
 
   spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "rake-compiler", "~> 1.3"
+
   spec.add_development_dependency "rspec", "~> 3.13"
 end

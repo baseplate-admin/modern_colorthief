@@ -9,3 +9,4 @@ crate-type = ["cdylib"]
 [dependencies]
 modern-colorthief-core-cpu = { path = "../../core_cpu" }
 magnus = "0.8"
+rb-sys.workspace = true
