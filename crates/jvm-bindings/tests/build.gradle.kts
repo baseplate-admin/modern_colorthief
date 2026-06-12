@@ -38,13 +38,19 @@ kotlin.compilerOptions {
     freeCompilerArgs.add("-XXLanguage:+UnnamedLocalVariables")
 }
 
-tasks.withType<Test> {
+tasks.named<Test>("test") {
     useJUnitPlatform()
 
     val nativeLibPath = file("native").absolutePath
     jvmArgs("--enable-native-access=ALL-UNNAMED")
     jvmArgs("-Djava.library.path=$nativeLibPath")
     systemProperty("native.lib.path", nativeLibPath)
+
+    // Explicitly scan all test class directories
+    filter {
+        includeTestsInPackages("modern.colorthief")
+        includeTestsInPackages("io.baseplate_admin.modern_colorthief")
+    }
 
     testLogging {
         events("passed", "skipped", "failed")
@@ -56,5 +62,6 @@ tasks.withType<Test> {
 
     doFirst {
         logger.lifecycle("Test classpath: ${classpath.asPath}")
+        logger.lifecycle("Scan filters: ${filter.includes}")
     }
 }
