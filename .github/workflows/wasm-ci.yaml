@@ -95,9 +95,9 @@ jobs:
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - uses: nanasess/setup-chromedriver@v3
       - uses: browser-actions/setup-geckodriver@latest
-      - name: Run GPU Firefox tests
+      - name: Run GPU Firefox tests (no browser-tests — Firefox headless on CI lacks WebGPU)
         working-directory: crates/wasm-bindings-gpu
-        run: wasm-pack test --headless --firefox --release --features browser-tests
+        run: wasm-pack test --headless --firefox --release
 
   cpu-node-tests:
     name: CPU Node.js tests
