@@ -32,7 +32,7 @@ modern-colorthief-core-gpu = { path = "crates/core_gpu" }
 rayon = "1.10"
 
 # Python bindings
-pyo3 = { version = "0.28", features = ["abi3-py39"] }
+pyo3 = { version = "0.29", features = ["abi3-py39"] }
 
 # Node.js bindings
 napi = { version = "3.1", features = ["full"] }
@@ -42,7 +42,17 @@ napi-build = "2"
 # WASM bindings
 wasm-bindgen = "0.2"
 js-sys = "0.3"
-web-sys = { version = "0.3", features = ["Window", "Document", "HtmlImageElement", "HtmlCanvasElement", "CanvasRenderingContext2d", "ImageData", "Blob", "Url", "console"] }
+web-sys = { version = "0.3", features = [
+    "Window",
+    "Document",
+    "HtmlImageElement",
+    "HtmlCanvasElement",
+    "CanvasRenderingContext2d",
+    "ImageData",
+    "Blob",
+    "Url",
+    "console",
+] }
 
 # JVM bindings
 jni = "0.21"
