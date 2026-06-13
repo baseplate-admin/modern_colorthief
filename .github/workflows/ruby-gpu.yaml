@@ -37,10 +37,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Vulkan SDK
+      - name: Set up Vulkan SDK (Linux)
+        if: runner.os == 'Linux'
         uses: humbletim/setup-vulkan-sdk@v1
         with:
-          version: latest
+          vulkan-version: latest
+
+      - name: Set up Vulkan SDK (Windows)
+        if: runner.os == 'Windows'
+        uses: humbletim/setup-vulkan-sdk@v1
+        with:
+          vulkan-version: latest
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -82,10 +89,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Vulkan SDK
+      - name: Set up Vulkan SDK (Linux)
+        if: runner.os == 'Linux'
         uses: humbletim/setup-vulkan-sdk@v1
         with:
-          version: latest
+          vulkan-version: latest
+
+      - name: Set up Vulkan SDK (Windows)
+        if: runner.os == 'Windows'
+        uses: humbletim/setup-vulkan-sdk@v1
+        with:
+          vulkan-version: latest
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
