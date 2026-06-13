@@ -6,15 +6,12 @@ use wasm_bindgen::prelude::*;
 const JS_HELPER: &str = include_str!(concat!(env!("OUT_DIR"), "/helper.min.js"));
 
 /// Evaluate a JavaScript string by constructing a Function from it.
-/// Uses `js_sys::Function::new()` instead of a direct `globalThis` binding
+/// Uses `js_sys::Function::new_no_args()` instead of a direct `globalThis` binding
 /// because the webgpu native module corrupts wasm-bindgen's `globalThis` binding.
 fn js_eval(code: &str) -> Result<JsValue, String> {
-    // Wrap in an arrow function so the code is evaluated as an expression
-    let wrapped = format!("(() => {{ {} }})()", code);
-    let fn_val = js_sys::Function::new(
-        "",
-        &wrapped,
-    ).map_err(|e| format!("Failed to create eval function: {:?}", e))?;
+    // Wrap code as a return expression inside a function body
+    let body = format!("return {};", code);
+    let fn_val = js_sys::Function::new_no_args(&body);
     let result = js_sys::Reflect::apply(
         &fn_val,
         &JsValue::UNDEFINED,
@@ -26,7 +23,10 @@ fn js_eval(code: &str) -> Result<JsValue, String> {
 /// Check whether the current JS environment supports WebGPU.
 fn has_webgpu() -> bool {
     let check = "(typeof navigator !== 'undefined' && !!navigator.gpu) || (typeof GPU !== 'undefined')";
-    js_eval(check).and_then(|v| v.as_bool()).unwrap_or(false)
+    js_eval(check)
+        .ok()
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false)
 }
 
 /// Call the WebGPU extract function. Returns a `Vec<u8>` of RGB values.
