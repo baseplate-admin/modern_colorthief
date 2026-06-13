@@ -26,9 +26,6 @@ permissions:
   contents: read
 
 jobs:
-  ########################################################################
-  # 1. Build native extensions (CPU + GPU)
-  ########################################################################
   native-build:
     name: "build ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
@@ -82,9 +79,6 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-  ########################################################################
-  # 2. Run Rust tests (CPU + GPU)
-  ########################################################################
   native-test:
     name: "rust-test ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
@@ -135,9 +129,6 @@ jobs:
         working-directory: crates/${{ matrix.bindings }}/ext
         run: cargo test
 
-  ########################################################################
-  # 3. Run RSpec tests (CPU + GPU)
-  ########################################################################
   rspec-test:
     name: "rspec ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
@@ -192,9 +183,6 @@ jobs:
         working-directory: crates/${{ matrix.bindings }}
         run: bundle exec rspec spec/
 
-  ########################################################################
-  # 4. Cross-compile gems for all platforms
-  ########################################################################
   cross-gem:
     name: "cross-gem ${{ matrix.bindings }}"
     runs-on: ubuntu-latest
@@ -240,9 +228,6 @@ jobs:
           path: crates/${{ matrix.bindings }}/pkg/*.gem
           retention-days: 7
 
-  ########################################################################
-  # 5. Publish gems to RubyGems on tagged releases
-  ########################################################################
   publish:
     name: Publish to RubyGems
     runs-on: ubuntu-latest
