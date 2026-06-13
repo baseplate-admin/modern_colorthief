@@ -1,0 +1,14 @@
+{
+  "goog:chromeOptions": {
+    "args": [
+      "--enable-unsafe-webgpu",
+      "--use-gl=swiftshader-webgpu"
+    ]
+  },
+  "moz:firefoxOptions": {
+    "prefs": {
+      "dom.webgpu.enabled": true,
+      "dom.webgpu.allow-insecure-on-http": true
+    }
+  }
+}

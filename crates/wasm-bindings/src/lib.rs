@@ -2,6 +2,12 @@ use modern_colorthief_core_cpu::extract_palette_from_buffer;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 
+/// Return the package version string (e.g. "0.3.0").
+#[wasm_bindgen(js_name = "__version__")]
+pub fn version() -> String {
+    env!("CARGO_PKG_VERSION").to_string()
+}
+
 fn resolve(p: &js_sys::Function, val: &JsValue) {
     let _ = p.call1(&JsValue::UNDEFINED, val);
 }

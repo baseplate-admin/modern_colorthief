@@ -1,5 +1,11 @@
 use wasm_bindgen::prelude::*;
 
+/// Return the package version string (e.g. "0.3.0").
+#[wasm_bindgen(js_name = "getVersion")]
+pub fn get_version() -> String {
+    env!("CARGO_PKG_VERSION").to_string()
+}
+
 /// Extract a palette of dominant colors from raw pixel data using WebGPU.
 ///
 /// Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).

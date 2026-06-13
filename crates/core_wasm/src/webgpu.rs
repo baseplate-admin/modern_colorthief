@@ -12,6 +12,12 @@ extern "C" {
     fn js_eval(code: &str) -> JsValue;
 }
 
+/// Check whether the current JS environment supports WebGPU.
+fn has_webgpu() -> bool {
+    let has_it = js_eval("typeof navigator !== 'undefined' && !!navigator.gpu");
+    has_it.as_bool().unwrap_or(false)
+}
+
 /// Call the WebGPU extract function. Returns a `Vec<u8>` of RGB values.
 pub async fn extract_palette_webgpu(
     pixels: &[u8],
@@ -20,6 +26,10 @@ pub async fn extract_palette_webgpu(
     color_count: u8,
     quality: u8,
 ) -> Result<Vec<u8>, String> {
+    if !has_webgpu() {
+        return Err("WebGPU is not available in this environment".to_string());
+    }
+
     let extract_fn = js_eval(JS_HELPER);
 
     // Build input object
