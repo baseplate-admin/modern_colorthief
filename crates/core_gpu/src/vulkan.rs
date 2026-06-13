@@ -88,11 +88,19 @@ impl VulkanBackend {
         }
         #[cfg(target_os = "linux")]
         {
-            std::fs::metadata("libvulkan.so").is_ok()
-                || std::fs::metadata("/usr/lib/libvulkan.so").is_ok()
-                || std::fs::metadata("/usr/lib/x86_64-linux-gnu/libvulkan.so").is_ok()
+            [
+                "libvulkan.so",
+                "/usr/lib/libvulkan.so",
+                "/usr/lib/x86_64-linux-gnu/libvulkan.so",
+                "/usr/lib/i386-linux-gnu/libvulkan.so",
+                "/usr/local/lib/libvulkan.so",
+            ]
+            .iter()
+            .any(|p| std::path::Path::new(p).exists())
                 || std::env::var("VULKAN_SDK").ok().is_some_and(|sdk| {
                     std::path::Path::new(&format!("{}/lib/libvulkan.so", sdk)).exists()
+                        || std::path::Path::new(&format!("{}/lib/x86_64-linux-gnu/libvulkan.so", sdk))
+                            .exists()
                 })
         }
         #[cfg(target_os = "macos")]
@@ -167,6 +175,15 @@ fn vendor_name(vendor_id: u32) -> &'static str {
     }
 }
 
+/// Check if a queue family can dispatch compute work.
+/// Accepts COMPUTE queues (ideal) or GRAPHICS queues (software Vulkan fallback like lavapipe/SwiftShader).
+fn has_compute_queue(queues: &[vk::QueueFamilyProperties]) -> bool {
+    queues.iter().any(|q| {
+        q.queue_flags.contains(vk::QueueFlags::COMPUTE)
+            || q.queue_flags.contains(vk::QueueFlags::GRAPHICS)
+    })
+}
+
 pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
     let instance = VulkanBackend::new().create_instance()?;
     let physical_devices = VulkanBackend::new().enumerate_devices(&instance)?;
@@ -175,9 +192,7 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
     for (i, pd) in physical_devices.into_iter().enumerate() {
         let props = unsafe { instance.get_physical_device_properties(pd) };
         let queues = unsafe { instance.get_physical_device_queue_family_properties(pd) };
-        let has_compute = queues
-            .iter()
-            .any(|q| q.queue_flags.contains(vk::QueueFlags::COMPUTE));
+        let has_compute = has_compute_queue(&queues);
         if has_compute {
             let name = unsafe {
                 let len = props
