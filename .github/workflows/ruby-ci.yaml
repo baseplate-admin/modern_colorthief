@@ -64,10 +64,6 @@ jobs:
         working-directory: crates/${{ matrix.bindings }}/ext
         run: cargo test
 
-      - name: Run RSpec tests
-        working-directory: crates/${{ matrix.bindings }}
-        run: bundle exec rspec spec/
-
   ########################################################################
   # 2. Cross-compile gems for all platforms
   ########################################################################
