@@ -185,6 +185,7 @@ jobs:
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
           install_swiftshader: true
           cache: true
 
@@ -223,6 +224,7 @@ jobs:
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
           install_swiftshader: true
           cache: true
 
