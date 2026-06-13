@@ -15,8 +15,8 @@ on:
     paths:
       - 'crates/ruby-bindings/**'
       - 'crates/ruby-bindings-gpu/**'
-      - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
+      - 'crates/core_cpu/**'
       - 'crates/core/**'
       - '.github/workflows/ruby-ci.yaml'
       - 'Cargo.toml'
@@ -40,13 +40,29 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ matrix.os }}-cpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cpu-build-ruby${{ matrix.ruby }}-cargo-target-
+
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
           bundler-cache: true
-          cargo-cache: true
+          cargo-cache: false
           cache-version: v1-cpu-build
 
       - name: Build native extension
@@ -80,13 +96,29 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
 
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ matrix.os }}-gpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-gpu-build-ruby${{ matrix.ruby }}-cargo-target-
+
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
           bundler-cache: true
-          cargo-cache: true
+          cargo-cache: false
           cache-version: v1-gpu-build
 
       - name: Build native extension
@@ -115,13 +147,29 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ matrix.os }}-cpu-test-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cpu-test-ruby${{ matrix.ruby }}-cargo-target-
+
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
           bundler-cache: true
-          cargo-cache: true
+          cargo-cache: false
           cache-version: v1-cpu-test
 
       - name: Download built extension
@@ -146,13 +194,29 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ matrix.os }}-cpu-rspec-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cpu-rspec-ruby${{ matrix.ruby }}-cargo-target-
+
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
           bundler-cache: true
-          cargo-cache: true
+          cargo-cache: false
           cache-version: v1-cpu-rspec
 
       - name: Download built extension
@@ -189,13 +253,29 @@ jobs:
           install_swiftshader: true
           cache: true
 
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ matrix.os }}-gpu-test-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-gpu-test-ruby${{ matrix.ruby }}-cargo-target-
+
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
           bundler-cache: true
-          cargo-cache: true
+          cargo-cache: false
           cache-version: v1-gpu-test
 
       - name: Download built extension
@@ -228,13 +308,29 @@ jobs:
           install_swiftshader: true
           cache: true
 
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ matrix.os }}-gpu-rspec-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-gpu-rspec-ruby${{ matrix.ruby }}-cargo-target-
+
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
           bundler-cache: true
-          cargo-cache: true
+          cargo-cache: false
           cache-version: v1-gpu-rspec
 
       - name: Download built extension
