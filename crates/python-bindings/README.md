@@ -1,0 +1,53 @@
+[![Documentation Status](https://readthedocs.org/projects/modern-colorthief/badge/?version=latest)](https://modern-colorthief.readthedocs.io/en/latest/?badge=latest) [![Downloads](https://static.pepy.tech/badge/modern_colorthief)](https://pepy.tech/project/modern_colorthief) [![Pypi Badge](https://img.shields.io/pypi/v/modern_colorthief.svg)](https://pypi.org/project/modern_colorthief/)
+
+# Introduction :
+
+[`ColorThief`](https://github.com/fengsp/color-thief-py) reimagined
+
+
+## Examples :
+
+Here is a minimal example :
+
+```python
+from modern_colorthief import get_color
+
+path = ...
+
+print(get_color(path, 10))
+
+```
+
+<center><sub> If you want a comprehensive example please visit the <a href="https://github.com/baseplate-admin/modern_colorthief/blob/7b1a02ca44ca1c7b8e63cd4818caf1a506c18fde/tests/test_modern_colortheif_with_colorthief.py">test</a> file</sub></center>
+
+## Migration from `colorthief` :
+
+```diff
+- from colorthief import ColorThief
++ from modern_colorthief import get_color, get_palette
+
+
+image = '' # Path to a image
+
+- ColorThief(image).get_color()
++ get_color(image)
+
+
+- ColorThief(image).get_palette()
++ get_palette(image)
+```
+
+## Used Internally by :
+
+-   [`coreproject`](https://github.com/baseplate-admin/coreproject)
+
+## Contributing :
+
+If you like this project add a star.
+If you have problems or suggestions please put them in the [Issue Tracker](https://github.com/baseplate-admin/modern_colorthief/issues)
+If you like to add features. Fork this repo and submit a Pull Request. 
+
+# Roadmap :
+
+You tell me. If i have free time, I will implement it.
+

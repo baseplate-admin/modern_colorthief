@@ -1,0 +1,103 @@
+name: JVM CI
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ '*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  java-build:
+    name: Java build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '26'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build JVM native library
+        run: cargo build --release -p modern-colorthief-jvm
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - name: Verify shared library built
+        run: test -f target/release/libmodern_colorthief.so
+      - name: Upload native library
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-lib
+          path: target/release/libmodern_colorthief.so
+          retention-days: 1
+
+  junit-test:
+    name: JUnit tests
+    needs: java-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '26'
+      - name: Download native library
+        uses: actions/download-artifact@v4
+        with:
+          name: native-lib
+          path: crates/jvm-bindings/tests/native
+      - name: Verify native library
+        run: |
+          echo "=== native dir ==="
+          ls -laR crates/jvm-bindings/tests/native/
+          echo "=== find .so in workspace ==="
+          find . -name "*.so" -type f 2>/dev/null || true
+          echo "=== test must exist ==="
+          test -f crates/jvm-bindings/tests/native/libmodern_colorthief.so && echo "FOUND" || echo "MISSING"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.1'
+      - name: Generate Gradle wrapper
+        working-directory: crates/jvm-bindings/tests
+        run: gradle wrapper
+      - name: Run JUnit tests
+        working-directory: crates/jvm-bindings/tests
+        run: ./gradlew test --info
+
+  kotlin-build:
+    name: Kotlin build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '26'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - run: cargo build --release -p modern-colorthief-jvm
+
+  android-check:
+    name: Android check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+      - run: cargo check --target aarch64-linux-android -p modern-colorthief-core -p modern-colorthief-core-cpu

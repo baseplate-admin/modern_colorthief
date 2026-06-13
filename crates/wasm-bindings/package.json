@@ -1,0 +1,29 @@
+{
+    "name": "@modern_colorthief/wasm",
+    "version": "0.3.0",
+    "type": "module",
+    "description": "Modern color extraction from images, compiled to WebAssembly",
+    "license": "MIT",
+    "author": "baseplate-admin",
+    "main": "pkg/colorthief_wasm.js",
+    "module": "pkg/colorthief_wasm.js",
+    "types": "pkg/colorthief_wasm.d.ts",
+    "files": [
+        "pkg"
+    ],
+    "scripts": {
+        "remove": "rimraf pkg",
+        "build:wasm": "wasm-pack build --release",
+        "build": "npm run remove && npm run build:wasm",
+        "test": "vitest run"
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.1",
+        "happy-dom": "^17.0.0",
+        "jsdom": "^26.1.0",
+        "rimraf": "^6.1.2",
+        "vite-plugin-wasm": "^3.5.0",
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^4.0.14"
+    }
+}

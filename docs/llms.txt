@@ -1,0 +1,27 @@
+# modern_colorthief — API Index
+
+Modern ColorThief: High-performance color palette extraction from images.
+
+Rust core with bindings for multiple languages. Manual median-cut algorithm with rayon parallelism.
+
+## Bindings
+
+- [Python](../crates/python-bindings/llms.txt) — `pip install modern_colorthief`
+- [Node.js](../crates/node-bindings/llms.txt) — `npm install @modern_colorthief/node`
+- [WASM](../crates/wasm-bindings/llms.txt) — `npm install @modern_colorthief/wasm`
+- [JVM](../crates/jvm-bindings/llms.txt) — Java/Kotlin
+- [Ruby](../crates/ruby-bindings/llms.txt) — Ruby gem
+
+## Common API
+
+All bindings expose:
+
+- `getPalette(image, colorCount?, quality?)` → Array of [R, G, B] colors
+- `getColor(image, quality?)` → [R, G, B] dominant color
+
+Parameters:
+- `image` — File path, buffer, or language-specific image object
+- `colorCount` — Number of colors to extract (default: 10)
+- `quality` — Sampling quality 1-10, higher is faster but less accurate (default: 10)
+
+See [llms-full.txt](llms-full.txt) for complete documentation.

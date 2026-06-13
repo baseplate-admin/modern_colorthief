@@ -1,0 +1,40 @@
+name: PHP CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-php:
+    name: PHP build + test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          ini-file: development
+          extensions: gd
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev php-dev
+      - name: Build PHP extension
+        run: cargo build --release -p modern-colorthief-php
+      - name: Install PHP dependencies
+        working-directory: crates/php-bindings
+        run: composer install --no-interaction --prefer-dist
+      - name: Run PHP tests
+        working-directory: crates/php-bindings
+        run: php -d extension=../../target/release/libmodern_colorthief.so vendor/bin/pest
