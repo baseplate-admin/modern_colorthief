@@ -14,14 +14,9 @@
     "scripts": {
         "remove": "rimraf pkg",
         "build:wasm": "wasm-pack build --release",
-        "build": "npm run remove && npm run build:wasm",
-        "test": "vitest run"
+        "build": "npm run remove && npm run build:wasm"
     },
     "devDependencies": {
-        "@vitest/browser-playwright": "^4.1.8",
-        "playwright": "^1.50.0",
-        "rimraf": "^6.1.2",
-        "vite-plugin-wasm": "^3.5.0",
-        "vitest": "^4.0.14"
+        "rimraf": "^6.1.2"
     }
 }
