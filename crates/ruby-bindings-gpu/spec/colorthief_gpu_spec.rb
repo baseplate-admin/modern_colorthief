@@ -36,13 +36,6 @@ RSpec.describe ColorthiefGpu do
     pixels.pack('C*')
   end
 
-  # 4x4 multi-color gradient (16 unique-ish colors)
-  let(:multi_color_pixels) do
-    pixels = []
-    16.times { |i| pixels.push((i * 16) % 256, (i * 32) % 256, (i * 48) % 256, 255) }
-    pixels.pack('C*')
-  end
-
   # ---------------------------------------------------------------------------
   # Helper: run a block, skip gracefully when GPU is unavailable
   # ---------------------------------------------------------------------------
@@ -378,6 +371,49 @@ RSpec.describe ColorthiefGpu do
           empty = ''.b
           expect { described_class.get_color(empty, 0, 0, 1) }.to raise_error(RuntimeError)
         end
+      end
+    end
+  end
+
+  # ===================================================================
+  # See: https://oxidize-rb.org/docs/testing
+  # Memory verification under GC stress
+  # ===================================================================
+
+  describe 'memory management under GC stress' do
+    it 'survives repeated palette extraction with GC.stress' do
+      with_gpu do
+        GC.stress = true
+        100.times do
+          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          expect(palette).not_to be_empty
+        end
+      ensure
+        GC.stress = false
+      end
+    end
+
+    it 'survives repeated color extraction with GC.stress' do
+      with_gpu do
+        GC.stress = true
+        100.times do
+          color = described_class.get_color(solid_red_pixels, 10, 10, 1)
+          expect(color.length).to eq(3)
+        end
+      ensure
+        GC.stress = false
+      end
+    end
+
+    it 'survives mixed operations under GC stress' do
+      with_gpu do
+        GC.stress = true
+        50.times do
+          described_class.get_palette(two_color_pixels, 10, 10, 5, 1)
+          described_class.get_color(two_color_pixels, 10, 10, 1)
+        end
+      ensure
+        GC.stress = false
       end
     end
   end
