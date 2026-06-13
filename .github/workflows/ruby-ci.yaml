@@ -72,8 +72,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [native-test]
     if: needs.native-test.result == 'success'
-    env:
-      RB_SYS_DOCK_RUNTIME: podman
     strategy:
       fail-fast: false
       matrix:
@@ -91,12 +89,6 @@ jobs:
           cargo-vendor: true
           cache-version: v1-cross
           working-directory: crates/${{ matrix.bindings }}
-
-      - name: Install podman
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
-          podman --version || { echo "podman install failed"; exit 1; }
 
       - name: Cross-compile gem
         uses: oxidize-rb/actions/cross-gem@v1
