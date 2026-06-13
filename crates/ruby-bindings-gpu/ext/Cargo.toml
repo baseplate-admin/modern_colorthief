@@ -11,11 +11,6 @@ modern-colorthief-core-gpu = { path = "../../core_gpu" }
 magnus = "0.8"
 rb-sys.workspace = true
 
-# See: https://oxidize-rb.org/docs/api-reference/rb-sys-features
-# gc-stress wraps all Ruby C API calls with rb_gc_start() to detect memory safety bugs
-[features]
-gc-stress = ["rb-sys/gc-stress"]
-
 # See: https://oxidize-rb.org/docs/api-reference/test-helpers
 [dev-dependencies]
 rb-sys-env = "0.9"
