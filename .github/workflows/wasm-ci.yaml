@@ -83,8 +83,10 @@ jobs:
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-gpu
         run: |
-            npm config set allow-scripts true
-            npm install
+            npm --version
+            npm install --ignore-scripts=false 2>&1 || true
+            npm approve-scripts webgpu 2>/dev/null || true
+            npm install --ignore-scripts=false 2>&1
       - name: Run GPU Node.js tests
         working-directory: crates/wasm-bindings-gpu
         run: wasm-pack test --node --release --features node-tests
