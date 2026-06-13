@@ -49,7 +49,7 @@ jni = "0.21"
 
 # Ruby bindings
 magnus = "0.8"
-rb-sys = "0.9"
+rb-sys = { version = "0.9", features = ["global-allocator"] }
 
 # PHP bindings
 ext-php-rs = "0.15"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../lib/colorthief_ruby'
 
 RSpec.describe Colorthief do
@@ -263,6 +265,36 @@ RSpec.describe Colorthief do
       expect(palette).to include([255, 0, 0])
       expect(palette).to include([0, 255, 0])
       expect(palette).to include([0, 0, 255])
+    end
+  end
+
+  # See: https://oxidize-rb.org/docs/testing
+  # Memory verification under GC stress
+  describe 'memory management under GC stress' do
+    let(:stress_pixels) do
+      build_pixels(20, 20) { |x, y, _, _|
+        [x * 12, y * 12, (x + y) * 6, 255]
+      }
+    end
+
+    it 'survives repeated palette extraction with GC.stress' do
+      GC.stress = true
+      100.times do
+        palette = described_class.get_palette(stress_pixels, 20, 20, 5, 1)
+        expect(palette).not_to be_empty
+      end
+    ensure
+      GC.stress = false
+    end
+
+    it 'survives repeated color extraction with GC.stress' do
+      GC.stress = true
+      100.times do
+        color = described_class.get_color(stress_pixels, 20, 20, 1)
+        expect(color.length).to eq(3)
+      end
+    ensure
+      GC.stress = false
     end
   end
 end

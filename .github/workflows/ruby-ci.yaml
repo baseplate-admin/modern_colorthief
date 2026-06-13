@@ -2,7 +2,7 @@ name: Ruby CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, add-wasm ]
     paths:
       - 'crates/ruby-bindings/**'
       - 'crates/ruby-bindings-gpu/**'
@@ -69,43 +69,50 @@ jobs:
         run: bundle exec rspec spec/
 
   ########################################################################
-  # 2. Cross-compile gems for all 5 platforms
+  # 2. Cross-compile gems for all platforms
   ########################################################################
   cross-gem:
-    name: "cross-gem ${{ matrix.bindings }} — ${{ matrix.platform }}"
+    name: "cross-gem ${{ matrix.bindings }}"
     runs-on: ubuntu-latest
     needs: [native-test]
     if: needs.native-test.result == 'success'
     strategy:
       fail-fast: false
       matrix:
-        platform: [x86_64-linux, aarch64-linux, x86_64-darwin, arm64-darwin, x64-mingw-ucrt]
         bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Ruby and Rust
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler: latest
+          bundler-cache: true
+          working-directory: crates/${{ matrix.bindings }}
+
+      - name: Set up Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: "3.4"
-          bundler-cache: true
           cargo-cache: true
           cargo-vendor: true
           cache-version: v1-cross
-          working-directory: crates/${{ matrix.bindings }}
+          bundler-cache: false
 
       - name: Cross-compile gem
-        uses: oxidize-rb/actions/cross-gem@v1
-        with:
-          platform: ${{ matrix.platform }}
-          ruby-versions: "3.2,3.3,3.4"
-          working-directory: crates/${{ matrix.bindings }}
-          cache-save-always: true
+        working-directory: crates/${{ matrix.bindings }}
+        run: |
+          bundle install
+          bundle exec rake cross-native gem
 
       - name: Upload gem artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ matrix.bindings }}-${{ matrix.platform }}-gem"
+          name: "${{ matrix.bindings }}-gems"
           path: crates/${{ matrix.bindings }}/pkg/*.gem
           retention-days: 7
 
@@ -128,7 +135,7 @@ jobs:
       - name: Download gem artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: "${{ matrix.bindings }}-*-gem"
+          pattern: "${{ matrix.bindings }}-gems"
           path: gems/
           merge-multiple: true
 

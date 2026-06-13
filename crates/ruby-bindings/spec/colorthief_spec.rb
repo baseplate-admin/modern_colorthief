@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../lib/colorthief_ruby'
 
 RSpec.describe Colorthief do
@@ -71,6 +73,32 @@ RSpec.describe Colorthief do
       c1 = described_class.get_color(solid_red_pixels, 10, 10, 1)
       c2 = described_class.get_color(solid_red_pixels, 10, 10, 1)
       expect(c1).to eq(c2)
+    end
+  end
+
+  # See: https://oxidize-rb.org/docs/testing
+  # Memory verification: enable GC stress to detect leaks
+  describe 'memory management under GC stress' do
+    it 'survives repeated calls with GC.stress enabled' do
+      GC.stress = true
+      100.times do
+        palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+        expect(palette).not_to be_empty
+        color = described_class.get_color(solid_red_pixels, 10, 10, 1)
+        expect(color.length).to eq(3)
+      end
+    ensure
+      GC.stress = false
+    end
+
+    it 'does not leak memory across many allocations' do
+      GC.stress = true
+      50.times do
+        described_class.get_palette(two_color_pixels, 10, 10, 5, 1)
+        described_class.get_color(two_color_pixels, 10, 10, 1)
+      end
+    ensure
+      GC.stress = false
     end
   end
 end
