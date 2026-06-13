@@ -25,6 +25,9 @@ on:
 permissions:
   contents: read
 
+env:
+  VULKAN_VERSION: 1.4.304.1
+
 jobs:
   cpu-build:
     name: "cpu-build — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
@@ -74,7 +77,7 @@ jobs:
       - name: Install Vulkan SDK
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
-          vulkan_version: 1.4.304.1
+          vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
 
       - name: Set up Ruby and Rust
@@ -178,10 +181,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Vulkan SDK
+      - name: Install Vulkan SDK + SwiftShader
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
-          vulkan_version: 1.4.304.1
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
           cache: true
 
       - name: Set up Ruby and Rust
@@ -215,10 +219,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Vulkan SDK
+      - name: Install Vulkan SDK + SwiftShader
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
-          vulkan_version: 1.4.304.1
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
           cache: true
 
       - name: Set up Ruby and Rust
@@ -245,14 +250,9 @@ jobs:
         run: bundle exec rspec spec/
 
   cross-gem:
-    name: "cross-gem ${{ matrix.bindings }}"
+    name: cross-gem
     runs-on: ubuntu-latest
     needs: [cpu-test, cpu-rspec, gpu-test, gpu-rspec]
-    if: always() && (needs.cpu-test.result == 'success' || needs.cpu-test.result == 'skipped') && (needs.cpu-rspec.result == 'success' || needs.cpu-rspec.result == 'skipped') && (needs.gpu-test.result == 'success' || needs.gpu-test.result == 'skipped') && (needs.gpu-rspec.result == 'success' || needs.gpu-rspec.result == 'skipped')
-    strategy:
-      fail-fast: false
-      matrix:
-        bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
       - uses: actions/checkout@v6
 
@@ -264,8 +264,6 @@ jobs:
         with:
           ruby-version: "3.4"
           bundler: latest
-          bundler-cache: true
-          working-directory: crates/${{ matrix.bindings }}
 
       - name: Set up Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -276,38 +274,46 @@ jobs:
           cache-version: v1-cross
           bundler-cache: false
 
-      - name: Cross-compile gem
-        working-directory: crates/${{ matrix.bindings }}
+      - name: Cross-compile CPU gem
+        working-directory: crates/ruby-bindings
         run: |
           bundle install
           bundle exec rake cross-native gem
 
-      - name: Upload gem artifact
+      - name: Cross-compile GPU gem
+        working-directory: crates/ruby-bindings-gpu
+        run: |
+          bundle install
+          bundle exec rake cross-native gem
+
+      - name: Upload CPU gems
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ matrix.bindings }}-gems"
-          path: crates/${{ matrix.bindings }}/pkg/*.gem
+          name: ruby-bindings-gems
+          path: crates/ruby-bindings/pkg/*.gem
           retention-days: 7
 
-  publish:
-    name: Publish to RubyGems
+      - name: Upload GPU gems
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruby-bindings-gpu-gems
+          path: crates/ruby-bindings-gpu/pkg/*.gem
+          retention-days: 7
+
+  publish-cpu:
+    name: Publish CPU gem
     runs-on: ubuntu-latest
     needs: [cross-gem]
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: read
       id-token: write
-    strategy:
-      fail-fast: false
-      matrix:
-        bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
       - name: Download gem artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: "${{ matrix.bindings }}-gems"
+          name: ruby-bindings-gems
           path: gems/
-          merge-multiple: true
 
       - name: Publish to RubyGems
         uses: ruby/setup-ruby@v1
@@ -316,7 +322,28 @@ jobs:
           rubygems: latest
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-      - run: |
-          for gem in gems/*.gem; do
-            gem push "$gem"
-          done
+      - run: gem push gems/*.gem
+
+  publish-gpu:
+    name: Publish GPU gem
+    runs-on: ubuntu-latest
+    needs: [cross-gem]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download gem artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ruby-bindings-gpu-gems
+          path: gems/
+
+      - name: Publish to RubyGems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          rubygems: latest
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+      - run: gem push gems/*.gem
