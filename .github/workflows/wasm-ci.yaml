@@ -82,7 +82,7 @@ jobs:
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-gpu
-        run: npm install
+        run: npm ci --ignore-scripts=false
       - name: Run GPU Node.js tests
         working-directory: crates/wasm-bindings-gpu
         run: wasm-pack test --node --release --features node-tests
