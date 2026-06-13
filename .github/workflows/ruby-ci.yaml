@@ -26,35 +26,16 @@ permissions:
   contents: read
 
 jobs:
-  native-build:
-    name: "build ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+  cpu-build:
+    name: "cpu-build — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
         ruby: ["2.7", "3.2", "3.3", "3.4"]
-        bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
       - uses: actions/checkout@v6
-
-      - name: Install Vulkan SDK (Linux / GPU)
-        if: runner.os == 'Linux' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y vulkan-tools libvulkan1 libvulkan-dev
-
-      - name: Set up MoltenVK (macOS / GPU)
-        if: runner.os == 'macOS' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          brew install molten-vk
-          export VK_ICD_FILENAMES=/usr/local/opt/molten-vk/share/vulkan/icd.d/MoltenVK_IC.json
-
-      - name: Set up Vulkan SDK (Windows / GPU)
-        if: runner.os == 'Windows' && matrix.bindings == 'ruby-bindings-gpu'
-        uses: humbletim/setup-vulkan-sdk@v1
-        with:
-          vulkan-version-windows: latest
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -63,10 +44,10 @@ jobs:
           bundler: latest
           bundler-cache: true
           cargo-cache: true
-          cache-version: v1-build
+          cache-version: v1-cpu-build
 
       - name: Build native extension
-        working-directory: crates/${{ matrix.bindings }}
+        working-directory: crates/ruby-bindings
         run: |
           bundle install
           bundle exec rake compile
@@ -74,41 +55,27 @@ jobs:
       - name: Upload built extension
         uses: actions/upload-artifact@v4
         with:
-          name: "lib-${{ matrix.bindings }}-${{ matrix.os }}-ruby${{ matrix.ruby }}"
-          path: crates/${{ matrix.bindings }}/lib/
+          name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings/lib/
           retention-days: 1
           if-no-files-found: error
 
-  native-test:
-    name: "rust-test ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+  gpu-build:
+    name: "gpu-build — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
-    needs: [native-build]
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
         ruby: ["2.7", "3.2", "3.3", "3.4"]
-        bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Vulkan SDK (Linux / GPU)
-        if: runner.os == 'Linux' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y vulkan-tools libvulkan1 libvulkan-dev
-
-      - name: Set up MoltenVK (macOS / GPU)
-        if: runner.os == 'macOS' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          brew install molten-vk
-          export VK_ICD_FILENAMES=/usr/local/opt/molten-vk/share/vulkan/icd.d/MoltenVK_IC.json
-
-      - name: Set up Vulkan SDK (Windows / GPU)
-        if: runner.os == 'Windows' && matrix.bindings == 'ruby-bindings-gpu'
-        uses: humbletim/setup-vulkan-sdk@v1
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1
         with:
-          vulkan-version-windows: latest
+          vulkan_version: 1.4.304.1
+          cache: true
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -117,48 +84,64 @@ jobs:
           bundler: latest
           bundler-cache: true
           cargo-cache: true
-          cache-version: v1-test
+          cache-version: v1-gpu-build
+
+      - name: Build native extension
+        working-directory: crates/ruby-bindings-gpu
+        run: |
+          bundle install
+          bundle exec rake compile
+
+      - name: Upload built extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings-gpu/lib/
+          retention-days: 1
+          if-no-files-found: error
+
+  cpu-test:
+    name: "cpu-rust-test — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    needs: [cpu-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: true
+          cache-version: v1-cpu-test
 
       - name: Download built extension
         uses: actions/download-artifact@v4
         with:
-          name: "lib-${{ matrix.bindings }}-${{ matrix.os }}-ruby${{ matrix.ruby }}"
-          path: crates/${{ matrix.bindings }}/lib/
+          name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings/lib/
 
       - name: Run Rust tests
-        working-directory: crates/${{ matrix.bindings }}/ext
+        working-directory: crates/ruby-bindings/ext
         run: cargo test
 
-  rspec-test:
-    name: "rspec ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+  cpu-rspec:
+    name: "cpu-rspec — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
-    needs: [native-build]
+    needs: [cpu-build]
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
         ruby: ["2.7", "3.2", "3.3", "3.4"]
-        bindings: [ruby-bindings, ruby-bindings-gpu]
     steps:
       - uses: actions/checkout@v6
-
-      - name: Install Vulkan SDK (Linux / GPU)
-        if: runner.os == 'Linux' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y vulkan-tools libvulkan1 libvulkan-dev
-
-      - name: Set up MoltenVK (macOS / GPU)
-        if: runner.os == 'macOS' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          brew install molten-vk
-          export VK_ICD_FILENAMES=/usr/local/opt/molten-vk/share/vulkan/icd.d/MoltenVK_IC.json
-
-      - name: Set up Vulkan SDK (Windows / GPU)
-        if: runner.os == 'Windows' && matrix.bindings == 'ruby-bindings-gpu'
-        uses: humbletim/setup-vulkan-sdk@v1
-        with:
-          vulkan-version-windows: latest
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -167,27 +150,105 @@ jobs:
           bundler: latest
           bundler-cache: true
           cargo-cache: true
-          cache-version: v1-rspec
+          cache-version: v1-cpu-rspec
 
       - name: Download built extension
         uses: actions/download-artifact@v4
         with:
-          name: "lib-${{ matrix.bindings }}-${{ matrix.os }}-ruby${{ matrix.ruby }}"
-          path: crates/${{ matrix.bindings }}/lib/
+          name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings/lib/
 
       - name: Install dependencies
-        working-directory: crates/${{ matrix.bindings }}
+        working-directory: crates/ruby-bindings
         run: bundle install
 
       - name: Run RSpec tests
-        working-directory: crates/${{ matrix.bindings }}
+        working-directory: crates/ruby-bindings
+        run: bundle exec rspec spec/
+
+  gpu-test:
+    name: "gpu-rust-test — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    needs: [gpu-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: 1.4.304.1
+          cache: true
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: true
+          cache-version: v1-gpu-test
+
+      - name: Download built extension
+        uses: actions/download-artifact@v4
+        with:
+          name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings-gpu/lib/
+
+      - name: Run Rust tests
+        working-directory: crates/ruby-bindings-gpu/ext
+        run: cargo test
+
+  gpu-rspec:
+    name: "gpu-rspec — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    needs: [gpu-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: 1.4.304.1
+          cache: true
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: true
+          cache-version: v1-gpu-rspec
+
+      - name: Download built extension
+        uses: actions/download-artifact@v4
+        with:
+          name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings-gpu/lib/
+
+      - name: Install dependencies
+        working-directory: crates/ruby-bindings-gpu
+        run: bundle install
+
+      - name: Run RSpec tests
+        working-directory: crates/ruby-bindings-gpu
         run: bundle exec rspec spec/
 
   cross-gem:
     name: "cross-gem ${{ matrix.bindings }}"
     runs-on: ubuntu-latest
-    needs: [native-test, rspec-test]
-    if: needs.native-test.result == 'success' && needs.rspec-test.result == 'success'
+    needs: [cpu-test, cpu-rspec, gpu-test, gpu-rspec]
+    if: always() && (needs.cpu-test.result == 'success' || needs.cpu-test.result == 'skipped') && (needs.cpu-rspec.result == 'success' || needs.cpu-rspec.result == 'skipped') && (needs.gpu-test.result == 'success' || needs.gpu-test.result == 'skipped') && (needs.gpu-rspec.result == 'success' || needs.gpu-rspec.result == 'skipped')
     strategy:
       fail-fast: false
       matrix:
