@@ -1,20 +1,20 @@
-name: Ruby CI
+name: Ruby GPU CI
 
 on:
   push:
     branches: [ main, master, add-wasm ]
     paths:
-      - 'crates/ruby-bindings/**'
-      - 'crates/core_cpu/**'
+      - 'crates/ruby-bindings-gpu/**'
+      - 'crates/core_gpu/**'
       - 'crates/core/**'
-      - '.github/workflows/ruby-ci.yaml'
+      - '.github/workflows/ruby-gpu.yaml'
       - 'Cargo.toml'
   pull_request:
     paths:
-      - 'crates/ruby-bindings/**'
-      - 'crates/core_cpu/**'
+      - 'crates/ruby-bindings-gpu/**'
+      - 'crates/core_gpu/**'
       - 'crates/core/**'
-      - '.github/workflows/ruby-ci.yaml'
+      - '.github/workflows/ruby-gpu.yaml'
       - 'Cargo.toml'
   workflow_dispatch:
 
@@ -23,19 +23,24 @@ permissions:
 
 jobs:
   ########################################################################
-  # 1. Build native extension
+  # 1. Build native GPU extension
   ########################################################################
   native-build:
-    name: "build ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    name: "build gpu ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
         ruby: ["3.2", "3.3", "3.4"]
-        bindings: [ruby-bindings]
+        bindings: [ruby-bindings-gpu]
     steps:
       - uses: actions/checkout@v6
+
+      - name: Set up Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1
+        with:
+          version: latest
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -44,7 +49,7 @@ jobs:
           bundler: latest
           bundler-cache: true
           cargo-cache: true
-          cache-version: v1-build
+          cache-version: v1-gpu-build
 
       - name: Build native extension
         working-directory: crates/${{ matrix.bindings }}
@@ -64,7 +69,7 @@ jobs:
   # 2. Run Rust tests + RSpec tests in parallel
   ########################################################################
   native-test:
-    name: "test ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }} / ${{ matrix.test-type }}"
+    name: "test gpu ${{ matrix.bindings }} — ${{ matrix.os }} / ruby ${{ matrix.ruby }} / ${{ matrix.test-type }}"
     runs-on: ${{ matrix.os }}
     needs: [native-build]
     strategy:
@@ -72,10 +77,15 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
         ruby: ["3.2", "3.3", "3.4"]
-        bindings: [ruby-bindings]
+        bindings: [ruby-bindings-gpu]
         test-type: [rust, rspec]
     steps:
       - uses: actions/checkout@v6
+
+      - name: Set up Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1
+        with:
+          version: latest
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -84,7 +94,7 @@ jobs:
           bundler: latest
           bundler-cache: true
           cargo-cache: true
-          cache-version: v1-test
+          cache-version: v1-gpu-test
 
       - name: Download built extension
         uses: actions/download-artifact@v4
@@ -107,7 +117,7 @@ jobs:
         run: bundle exec rspec spec/
 
   ########################################################################
-  # 3. Cross-compile gems for all platforms
+  # 3. Cross-compile GPU gems for all platforms
   ########################################################################
   cross-gem:
     name: "cross-gem ${{ matrix.bindings }}"
@@ -117,7 +127,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bindings: [ruby-bindings]
+        bindings: [ruby-bindings-gpu]
     steps:
       - uses: actions/checkout@v6
 
@@ -138,7 +148,7 @@ jobs:
           ruby-version: "3.4"
           cargo-cache: true
           cargo-vendor: true
-          cache-version: v1-cross
+          cache-version: v1-gpu-cross
           bundler-cache: false
 
       - name: Cross-compile gem
@@ -155,7 +165,7 @@ jobs:
           retention-days: 7
 
   ########################################################################
-  # 4. Publish gems to RubyGems on tagged releases
+  # 4. Publish GPU gems to RubyGems on tagged releases
   ########################################################################
   publish:
     name: Publish to RubyGems
@@ -168,7 +178,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bindings: [ruby-bindings]
+        bindings: [ruby-bindings-gpu]
     steps:
       - name: Download gem artifacts
         uses: actions/download-artifact@v4
