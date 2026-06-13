@@ -45,15 +45,8 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - name: Install chromedriver
-        run: npm install -g chromedriver
-      - name: Install geckodriver
-        run: |
-          GECKODRIVER_URL=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r '.assets[] | select(.name | test("linux64")) | .browser_download_url')
-          curl -sL "$GECKODRIVER_URL" -o /tmp/geckodriver.tar.gz
-          tar -xzf /tmp/geckodriver.tar.gz -C /tmp/
-          sudo chmod +x /tmp/geckodriver
-          sudo mv /tmp/geckodriver /usr/local/bin/
+      - uses: nanasess/setup-chromedriver@v3
+      - uses: browser-actions/setup-geckodriver@latest
       - name: Run Chrome tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --headless --chrome --release --features browser-tests
@@ -68,16 +61,27 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - run: npm install -g chromedriver
-      - run: |
-          GECKODRIVER_URL=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r '.assets[] | select(.name | test("linux64")) | .browser_download_url')
-          curl -sL "$GECKODRIVER_URL" -o /tmp/geckodriver.tar.gz
-          tar -xzf /tmp/geckodriver.tar.gz -C /tmp/
-          sudo chmod +x /tmp/geckodriver
-          sudo mv /tmp/geckodriver /usr/local/bin/
+      - uses: nanasess/setup-chromedriver@v3
+      - uses: browser-actions/setup-geckodriver@latest
       - name: Run Firefox tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --headless --firefox --release --features browser-tests
+
+  gpu-chrome-tests:
+    name: GPU Chrome tests
+    runs-on: ubuntu-latest
+    needs: [wasm-gpu-build]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - uses: nanasess/setup-chromedriver@v3
+      - uses: browser-actions/setup-geckodriver@latest
+      - name: Run GPU Chrome tests
+        working-directory: crates/wasm-bindings-gpu
+        run: wasm-pack test --headless --chrome --release --features browser-tests
 
   gpu-firefox-tests:
     name: GPU Firefox tests
@@ -89,14 +93,8 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - run: npm install -g chromedriver
-      - name: Install geckodriver
-        run: |
-          GECKODRIVER_URL=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r '.assets[] | select(.name | test("linux64")) | .browser_download_url')
-          curl -sL "$GECKODRIVER_URL" -o /tmp/geckodriver.tar.gz
-          tar -xzf /tmp/geckodriver.tar.gz -C /tmp/
-          sudo chmod +x /tmp/geckodriver
-          sudo mv /tmp/geckodriver /usr/local/bin/
+      - uses: nanasess/setup-chromedriver@v3
+      - uses: browser-actions/setup-geckodriver@latest
       - name: Run GPU Firefox tests
         working-directory: crates/wasm-bindings-gpu
         run: wasm-pack test --headless --firefox --release --features browser-tests
@@ -117,21 +115,6 @@ jobs:
       - name: Run Node tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --node --release
-
-  gpu-chrome-tests:
-    name: GPU Chrome tests
-    runs-on: ubuntu-latest
-    needs: [wasm-gpu-build]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - run: npm install -g chromedriver
-      - name: Run GPU Chrome tests
-        working-directory: crates/wasm-bindings-gpu
-        run: wasm-pack test --headless --chrome --release --features browser-tests
 
   wasm-gpu-build:
     name: WASM GPU build
