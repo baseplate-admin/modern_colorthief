@@ -87,12 +87,8 @@ mod tests {
         buf
     }
 
-    fn build_image<W: Into<u32>, H: Into<u32>>(
-        width: W,
-        height: H,
-        pixel_fn: impl Fn(u32, u32) -> (u8, u8, u8),
-    ) -> Vec<u8> {
-        let (w, h) = (width.into(), height.into());
+    fn build_image(width: u32, height: u32, pixel_fn: impl Fn(u32, u32) -> (u8, u8, u8)) -> Vec<u8> {
+        let (w, h) = (width, height);
         let mut buf = Vec::with_capacity((w * h) as usize * 4);
         for y in 0..h {
             for x in 0..w {
@@ -104,7 +100,7 @@ mod tests {
     }
 
     fn rstring(data: &[u8]) -> RString {
-        RString::from_slice(data)
+        Ruby::get().unwrap().str_from_slice(data)
     }
 
     // ---------------------------------------------------------------------------
@@ -404,7 +400,7 @@ mod tests {
 
     #[ruby_test]
     fn test_gradient_image() {
-        let pixels = build_image(30, 30, |x, _, _| {
+        let pixels = build_image(30, 30, |x, _| {
             ((x * 8) as u8, 128, 64)
         });
         let rs = rstring(&pixels);
@@ -428,21 +424,21 @@ mod tests {
 
     #[ruby_test]
     fn test_empty_pixels_error() {
-        let rs = RString::new("");
+        let rs = Ruby::get().unwrap().str_new("");
         let result = get_palette(rs, 0, 0, 5, 1);
         assert!(result.is_err(), "empty pixels should error");
     }
 
     #[ruby_test]
     fn test_empty_pixels_color_error() {
-        let rs = RString::new("");
+        let rs = Ruby::get().unwrap().str_new("");
         let result = get_color(rs, 0, 0, 1);
         assert!(result.is_err(), "empty pixels should error for get_color");
     }
 
     #[ruby_test]
     fn test_zero_dimensions_error() {
-        let rs = RString::new("");
+        let rs = Ruby::get().unwrap().str_new("");
         let result = get_palette(rs, 0, 0, 5, 1);
         assert!(result.is_err());
     }
