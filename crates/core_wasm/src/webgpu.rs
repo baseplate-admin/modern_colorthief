@@ -14,8 +14,9 @@ extern "C" {
 }
 
 /// Check whether the current JS environment supports WebGPU.
+/// In browsers: checks `navigator.gpu`. In Node.js (node-webgpu): checks `GPU` global.
 fn has_webgpu() -> bool {
-    let has_it = js_eval("typeof navigator !== 'undefined' && !!navigator.gpu");
+    let has_it = js_eval("(typeof navigator !== 'undefined' && !!navigator.gpu) || (typeof GPU !== 'undefined')");
     has_it.as_bool().unwrap_or(false)
 }
 

@@ -17,6 +17,10 @@
         "build": "npm run remove && npm run build:wasm"
     },
     "devDependencies": {
+        "@dawn/gpu": "^0.1.0",
         "rimraf": "^6.1.2"
+    },
+    "wasm": {
+        "node-test-setup": "./test-webgpu-setup.mjs"
     }
 }

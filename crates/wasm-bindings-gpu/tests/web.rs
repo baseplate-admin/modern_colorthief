@@ -2,8 +2,6 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use wasm_bindgen_test::*;
 
-#[cfg(feature = "browser-tests")]
-wasm_bindgen_test_configure!(run_in_browser);
 
 #[allow(unused_imports)]
 use modern_colorthief_wasm_gpu::{
@@ -92,7 +90,7 @@ fn color_to_tuple(color: &js_sys::Array) -> (u8, u8, u8) {
 // Ported from Python test suite
 // ---------------------------------------------------------------------------
 
-#[cfg(feature = "browser-tests")]
+#[cfg(feature = "node-tests")]
 mod gpu {
     use super::*;
 

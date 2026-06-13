@@ -14,7 +14,7 @@ js-sys.workspace = true
 web-sys.workspace = true
 
 [features]
-browser-tests = []
+node-tests = []
 
 [dev-dependencies]
 wasm-bindgen-test = { workspace = true }
