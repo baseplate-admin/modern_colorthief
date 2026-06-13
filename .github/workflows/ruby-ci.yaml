@@ -43,9 +43,7 @@ jobs:
 
       - name: Install Vulkan SDK (Linux / GPU)
         if: runner.os == 'Linux' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y vulkan-sdk libvulkan1
+        uses: justinkb/setup-vulkan-sdk@v1
 
       - name: Set up MoltenVK (macOS / GPU)
         if: runner.os == 'macOS' && matrix.bindings == 'ruby-bindings-gpu'
@@ -101,9 +99,7 @@ jobs:
 
       - name: Install Vulkan SDK (Linux / GPU)
         if: runner.os == 'Linux' && matrix.bindings == 'ruby-bindings-gpu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y vulkan-sdk libvulkan1
+        uses: justinkb/setup-vulkan-sdk@v1
 
       - name: Set up MoltenVK (macOS / GPU)
         if: runner.os == 'macOS' && matrix.bindings == 'ruby-bindings-gpu'
