@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../lib/colorthief_ruby'
 
 RSpec.describe Colorthief do
@@ -110,6 +112,37 @@ RSpec.describe Colorthief do
         expect(palette.length).to be <= 3
         expect(palette).not_to be_empty
       end
+    end
+  end
+
+  # See: https://oxidize-rb.org/docs/testing
+  # Thread safety + GC stress combined
+  describe 'concurrent GC stress' do
+    it 'handles concurrent calls under GC stress' do
+      require 'thread'
+
+      GC.stress = true
+      pixels = []
+      100.times { pixels.push(100, 150, 200, 255) }
+      pixels = pixels.pack('C*')
+
+      results = []
+      threads = []
+
+      3.times do
+        t = Thread.new do
+          10.times do
+            results << described_class.get_color(pixels, 10, 10, 1)
+          end
+        end
+        threads << t
+      end
+
+      threads.each(&:join)
+      expect(results.length).to eq(30)
+      expect(results.uniq).to eq([[100, 150, 200]])
+    ensure
+      GC.stress = false
     end
   end
 end
