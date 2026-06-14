@@ -198,13 +198,33 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Vulkan SDK + SwiftShader
+      - name: Install Vulkan SDK + software renderers
+        if: ${{ !contains(matrix.os, 'windows') }}
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_lavapipe: true
           install_swiftshader: true
           cache: true
+
+      - name: Install Vulkan SDK + Lavapipe (Windows)
+        if: ${{ contains(matrix.os, 'windows') }}
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: false
+          cache: true
+
+      - name: Unregister SwiftShader ICD (Windows)
+        if: ${{ contains(matrix.os, 'windows') }}
+        shell: pwsh
+        run: |
+          $keys = Get-ItemProperty -Path "HKLM:\SOFTWARE\Khronos\Vulkan\Drivers" -ErrorAction SilentlyContinue
+          if ($keys) {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Khronos\Vulkan\Drivers" -Name "C:\hostedtoolcache\windows\swiftshader\5.0.0.1\x64\vk_swiftshader_icd.json" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Khronos\Vulkan\Drivers" -Name "C:\Swiftshader\vk_swiftshader_icd.json" -ErrorAction SilentlyContinue
+          }
 
       - name: Cache cargo registry
         uses: actions/cache@v4
