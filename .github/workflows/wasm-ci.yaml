@@ -46,7 +46,7 @@ jobs:
           targets: wasm32-unknown-unknown
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - uses: nanasess/setup-chromedriver@v3
-      - uses: browser-actions/setup-geckodriver@v2
+      - uses: browser-actions/setup-geckodriver@latest
       - name: Run Chrome tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --headless --chrome --release -- --features browser-tests
@@ -62,7 +62,7 @@ jobs:
           targets: wasm32-unknown-unknown
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - uses: nanasess/setup-chromedriver@v3
-      - uses: browser-actions/setup-geckodriver@v2
+      - uses: browser-actions/setup-geckodriver@latest
       - name: Run Firefox tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --headless --firefox --release -- --features browser-tests
@@ -83,6 +83,9 @@ jobs:
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-gpu
         run: npm ci
+      - name: Verify webgpu module loads
+        working-directory: crates/wasm-bindings-gpu
+        run: node test-webgpu-setup.mjs && echo "WebGPU OK"
       - name: Run GPU Node.js tests
         working-directory: crates/wasm-bindings-gpu
         run: wasm-pack test --node --release -- --features node-tests
