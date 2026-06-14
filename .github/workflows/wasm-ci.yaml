@@ -87,9 +87,13 @@ jobs:
             npm install --ignore-scripts=false 2>&1 || true
             npm approve-scripts webgpu 2>/dev/null || true
             npm install --ignore-scripts=false 2>&1
+      - name: Verify webgpu module loads
+        working-directory: crates/wasm-bindings-gpu
+        run: |
+            node -e "import('webgpu').then(m => { const g = m.create([]); console.log('webgpu create:', g); console.log('gpu:', typeof g); process.exit(g ? 0 : 1); }).catch(e => { console.error('webgpu import failed:', e.message); process.exit(1); })"
       - name: Run GPU Node.js tests
         working-directory: crates/wasm-bindings-gpu
-        run: wasm-pack test --node --release --features node-tests
+        run: wasm-pack test --node --release --features node-tests -- --no-capture
 
   cpu-node-tests:
     name: CPU Node.js tests
