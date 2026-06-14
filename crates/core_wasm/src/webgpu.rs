@@ -23,11 +23,19 @@ fn js_eval(code: &str) -> Result<JsValue, String> {
 /// Check whether the current JS environment supports WebGPU.
 /// Returns (is_available, diagnostic_info).
 fn has_webgpu() -> (bool, String) {
-    let diag = js_eval("JSON.stringify({\n        nav: typeof navigator,\n        gpu: typeof navigator !== 'undefined' ? typeof navigator.gpu : 'no-nav',\n        GPU: typeof GPU,\n    })")
-        .ok()\n        .and_then(|v| v.as_string())\n        .unwrap_or_default();
+    let diag = js_eval("JSON.stringify({nav: typeof navigator, gpu: typeof navigator !== 'undefined' ? typeof navigator.gpu : 'no-nav', GPU: typeof GPU})")
+        .ok()
+        .and_then(|v| v.as_string())
+        .unwrap_or_default();
 
     let check = "(typeof navigator !== 'undefined' && !!navigator.gpu) || (typeof GPU !== 'undefined')";
-    let result = js_eval(check)\n        .ok()\n        .and_then(|v| v.as_bool())\n        .unwrap_or(false);\n\n    (result, format!("env={}", diag))\n}\n\n
+    let result = js_eval(check)
+        .ok()
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+
+    (result, format!("env={}", diag))
+}
 
 /// Call the WebGPU extract function. Returns a `Vec<u8>` of RGB values.
 pub async fn extract_palette_webgpu(
