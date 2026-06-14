@@ -264,7 +264,7 @@ jobs:
         working-directory: crates/ruby-bindings
         run: |
           bundle install
-          bundle exec rake cross-native gem
+          bundle exec rake native
 
       - name: Upload CPU gems
         uses: actions/upload-artifact@v4
@@ -297,7 +297,7 @@ jobs:
         working-directory: crates/ruby-bindings-gpu
         run: |
           bundle install
-          bundle exec rake cross-native gem
+          bundle exec rake native
 
       - name: Upload GPU gems
         uses: actions/upload-artifact@v4
