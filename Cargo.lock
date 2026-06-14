@@ -1453,7 +1453,6 @@ dependencies = [
  "modern-colorthief-core-gpu",
  "rb-sys",
  "rb-sys-env",
- "rb-sys-test-helpers",
 ]
 
 [[package]]

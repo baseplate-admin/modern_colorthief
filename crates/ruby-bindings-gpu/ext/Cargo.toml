@@ -16,5 +16,3 @@ rb-sys.workspace = true
 [build-dependencies]
 rb-sys-env = "0.2.3"
 
-[dev-dependencies]
-rb-sys-test-helpers = "0.3"

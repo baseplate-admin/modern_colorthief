@@ -295,8 +295,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        os: [macos-15-intel, macos-latest, windows-latest]
         ruby: ["2.7", "3.2", "3.3", "3.4"]
+        # Note: ubuntu-latest excluded — GPU extension segfaults on Linux CI
+        # due to Vulkan software renderer incompatibility. gpu-build still
+        # runs on ubuntu-latest to catch compile errors.
     steps:
       - uses: actions/checkout@v6
 

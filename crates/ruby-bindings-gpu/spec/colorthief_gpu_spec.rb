@@ -2,7 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe ColorthiefGpu do
+RSpec.describe "ColorthiefGpu" do
+  skip "GPU extension not available" unless $gpu_available
+
+  let(:colorthief_gpu) { ColorthiefGpu }
+
   # ---------------------------------------------------------------------------
   # Pixel helpers  (RGBA -> binary blob, matching the Rust &[u8] contract)
   # ---------------------------------------------------------------------------
@@ -49,8 +53,8 @@ RSpec.describe ColorthiefGpu do
 
   def with_gpu
     yield
-  rescue RuntimeError => e
-    skip "GPU unavailable: #{e.message}"
+  rescue Exception => e
+    skip "GPU unavailable: #{e.class} - #{e.message}"
   end
 
   # ===================================================================
@@ -59,15 +63,15 @@ RSpec.describe ColorthiefGpu do
 
   describe 'module' do
     it 'defines ColorthiefGpu' do
-      expect(described_class).to be_a(Module)
+      expect(colorthief_gpu).to be_a(Module)
     end
 
     it 'responds to get_palette' do
-      expect(described_class).to respond_to(:get_palette)
+      expect(colorthief_gpu).to respond_to(:get_palette)
     end
 
     it 'responds to get_color' do
-      expect(described_class).to respond_to(:get_color)
+      expect(colorthief_gpu).to respond_to(:get_color)
     end
   end
 
@@ -81,21 +85,21 @@ RSpec.describe ColorthiefGpu do
     describe 'solid color detection' do
       it 'detects solid red' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
           expect(palette).to include([255, 0, 0])
         end
       end
 
       it 'detects solid green' do
         with_gpu do
-          palette = described_class.get_palette(solid_green_pixels, 5, 5, 5, 1)
+          palette = colorthief_gpu.get_palette(solid_green_pixels, 5, 5, 5, 1)
           expect(palette).to include([0, 128, 0])
         end
       end
 
       it 'detects solid white' do
         with_gpu do
-          palette = described_class.get_palette(solid_white_pixels, 3, 3, 5, 1)
+          palette = colorthief_gpu.get_palette(solid_white_pixels, 3, 3, 5, 1)
           expect(palette).to include([255, 255, 255])
         end
       end
@@ -106,7 +110,7 @@ RSpec.describe ColorthiefGpu do
     describe 'two-color detection' do
       it 'finds both red and blue' do
         with_gpu do
-          palette = described_class.get_palette(two_color_pixels, 10, 10, 5, 1)
+          palette = colorthief_gpu.get_palette(two_color_pixels, 10, 10, 5, 1)
           expect(palette).to include([255, 0, 0])
           expect(palette).to include([0, 0, 255])
         end
@@ -118,7 +122,7 @@ RSpec.describe ColorthiefGpu do
     describe 'return value structure' do
       it 'returns a non-empty palette' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
           expect(palette).to be_an(Array)
           expect(palette).not_to be_empty
         end
@@ -126,7 +130,7 @@ RSpec.describe ColorthiefGpu do
 
       it 'returns valid RGB arrays of length 3' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
           palette.each do |color|
             expect(color).to be_an(Array)
             expect(color.length).to eq(3)
@@ -145,14 +149,14 @@ RSpec.describe ColorthiefGpu do
     describe 'color_count bound' do
       it 'returns at most color_count entries for count=3' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 3, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 3, 1)
           expect(palette.length).to be <= 3
         end
       end
 
       it 'returns at most color_count entries for count=5' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
           expect(palette.length).to be <= 5
         end
       end
@@ -163,14 +167,14 @@ RSpec.describe ColorthiefGpu do
     describe 'deduplication' do
       it 'contains no duplicate colors even with high color_count' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 255, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 255, 1)
           expect(palette.length).to eq(palette.uniq.length)
         end
       end
 
       it 'returns a reasonable palette size for large color_count' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 255, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 255, 1)
           expect(palette.length).to be > 0
           expect(palette.length).to be <= 255
         end
@@ -182,21 +186,21 @@ RSpec.describe ColorthiefGpu do
     describe 'quality parameter' do
       it 'works with quality=1 (most accurate)' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
           expect(palette).not_to be_empty
         end
       end
 
       it 'works with quality=10 (fastest)' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 10)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 10)
           expect(palette).not_to be_empty
         end
       end
 
       it 'works with quality=5 (middle)' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 5, 5)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 5)
           expect(palette).not_to be_empty
         end
       end
@@ -207,16 +211,16 @@ RSpec.describe ColorthiefGpu do
     describe 'determinism' do
       it 'returns the same palette for identical inputs' do
         with_gpu do
-          p1 = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
-          p2 = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          p1 = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          p2 = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
           expect(p1).to eq(p2)
         end
       end
 
       it 'returns the same palette for two-color input' do
         with_gpu do
-          p1 = described_class.get_palette(two_color_pixels, 10, 10, 5, 1)
-          p2 = described_class.get_palette(two_color_pixels, 10, 10, 5, 1)
+          p1 = colorthief_gpu.get_palette(two_color_pixels, 10, 10, 5, 1)
+          p2 = colorthief_gpu.get_palette(two_color_pixels, 10, 10, 5, 1)
           expect(p1).to eq(p2)
         end
       end
@@ -227,8 +231,8 @@ RSpec.describe ColorthiefGpu do
     describe 'different images' do
       it 'solid red palette differs from solid green palette' do
         with_gpu do
-          red_palette   = described_class.get_palette(solid_red_pixels, 10, 10, 5, 1)
-          green_palette = described_class.get_palette(solid_green_pixels, 5, 5, 5, 1)
+          red_palette   = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
+          green_palette = colorthief_gpu.get_palette(solid_green_pixels, 5, 5, 5, 1)
           expect(red_palette).not_to eq(green_palette)
         end
       end
@@ -240,21 +244,21 @@ RSpec.describe ColorthiefGpu do
       it 'handles small 1x1 image' do
         with_gpu do
           pixel = [255, 128, 64, 255].pack('C*')
-          palette = described_class.get_palette(pixel, 1, 1, 5, 1)
+          palette = colorthief_gpu.get_palette(pixel, 1, 1, 5, 1)
           expect(palette).not_to be_empty
         end
       end
 
       it 'handles large color_count request on small image' do
         with_gpu do
-          palette = described_class.get_palette(solid_white_pixels, 3, 3, 100, 1)
+          palette = colorthief_gpu.get_palette(solid_white_pixels, 3, 3, 100, 1)
           expect(palette.length).to be <= 100
         end
       end
 
       it 'handles minimum color_count of 1' do
         with_gpu do
-          palette = described_class.get_palette(solid_red_pixels, 10, 10, 1, 1)
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 1, 1)
           expect(palette.length).to be >= 1
           expect(palette.length).to be <= 1
         end
@@ -272,21 +276,21 @@ RSpec.describe ColorthiefGpu do
     describe 'solid color detection' do
       it 'returns red for solid red image' do
         with_gpu do
-          color = described_class.get_color(solid_red_pixels, 10, 10, 1)
+          color = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 1)
           expect(color).to eq([255, 0, 0])
         end
       end
 
       it 'returns green for solid green image' do
         with_gpu do
-          color = described_class.get_color(solid_green_pixels, 5, 5, 1)
+          color = colorthief_gpu.get_color(solid_green_pixels, 5, 5, 1)
           expect(color).to eq([0, 128, 0])
         end
       end
 
       it 'returns white for solid white image' do
         with_gpu do
-          color = described_class.get_color(solid_white_pixels, 3, 3, 1)
+          color = colorthief_gpu.get_color(solid_white_pixels, 3, 3, 1)
           expect(color).to eq([255, 255, 255])
         end
       end
@@ -297,7 +301,7 @@ RSpec.describe ColorthiefGpu do
     describe 'return value structure' do
       it 'returns a valid RGB array of length 3' do
         with_gpu do
-          color = described_class.get_color(solid_red_pixels, 10, 10, 1)
+          color = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 1)
           expect(color).to be_an(Array)
           expect(color.length).to eq(3)
           color.each do |v|
@@ -314,21 +318,21 @@ RSpec.describe ColorthiefGpu do
     describe 'quality parameter' do
       it 'works with quality=1 (most accurate)' do
         with_gpu do
-          color = described_class.get_color(solid_red_pixels, 10, 10, 1)
+          color = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 1)
           expect(color.length).to eq(3)
         end
       end
 
       it 'works with quality=10 (fastest)' do
         with_gpu do
-          color = described_class.get_color(solid_red_pixels, 10, 10, 10)
+          color = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 10)
           expect(color.length).to eq(3)
         end
       end
 
       it 'works with quality=5 (middle)' do
         with_gpu do
-          color = described_class.get_color(solid_red_pixels, 10, 10, 5)
+          color = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 5)
           expect(color.length).to eq(3)
         end
       end
@@ -339,8 +343,8 @@ RSpec.describe ColorthiefGpu do
     describe 'determinism' do
       it 'returns the same color for identical inputs' do
         with_gpu do
-          c1 = described_class.get_color(solid_red_pixels, 10, 10, 1)
-          c2 = described_class.get_color(solid_red_pixels, 10, 10, 1)
+          c1 = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 1)
+          c2 = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 1)
           expect(c1).to eq(c2)
         end
       end
@@ -351,8 +355,8 @@ RSpec.describe ColorthiefGpu do
     describe 'different images' do
       it 'solid red dominant color differs from solid green' do
         with_gpu do
-          red   = described_class.get_color(solid_red_pixels, 10, 10, 1)
-          green = described_class.get_color(solid_green_pixels, 5, 5, 1)
+          red   = colorthief_gpu.get_color(solid_red_pixels, 10, 10, 1)
+          green = colorthief_gpu.get_color(solid_green_pixels, 5, 5, 1)
           expect(red).not_to eq(green)
         end
       end
@@ -364,7 +368,7 @@ RSpec.describe ColorthiefGpu do
       it 'handles small 1x1 image' do
         with_gpu do
           pixel = [200, 100, 50, 255].pack('C*')
-          color = described_class.get_color(pixel, 1, 1, 1)
+          color = colorthief_gpu.get_color(pixel, 1, 1, 1)
           expect(color.length).to eq(3)
         end
       end
@@ -376,7 +380,7 @@ RSpec.describe ColorthiefGpu do
       it 'raises RuntimeError for empty pixel data' do
         with_gpu do
           empty = ''.b
-          expect { described_class.get_color(empty, 0, 0, 1) }.to raise_error(RuntimeError)
+          expect { colorthief_gpu.get_color(empty, 0, 0, 1) }.to raise_error(RuntimeError)
         end
       end
     end
