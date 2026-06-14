@@ -190,11 +190,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-15-intel, macos-latest, windows-latest]
+        os: [macos-15-intel, macos-latest]
         ruby: ["2.7", "3.2", "3.3", "3.4"]
-        # Note: ubuntu-latest excluded — GPU extension segfaults on Linux CI
-        # due to Vulkan software renderer incompatibility. gpu-build still
-        # runs on ubuntu-latest to catch compile errors.
+        # Note: ubuntu-latest excluded — GPU extension segfaults on Linux CI.
+        # Note: windows-latest excluded — SwiftShader ICD causes segfault
+        # in Rust Vulkan bindings (ash::Entry::load) on headless runners.
+        # gpu-build still runs on both to catch compile errors.
     steps:
       - uses: actions/checkout@v6
 
@@ -257,13 +258,12 @@ jobs:
         with:
           ruby-version: "3.4"
           bundler: latest
+          bundler-cache: true
 
       - name: Cross-compile CPU gem
-        uses: oxidize-rb/actions/cross-gem@v1
-        with:
-          platform: x86_64-linux,aarch64-linux,x86_64-darwin,arm64-darwin,x64-mingw-ucrt
-          ruby-versions: 2.7,3.2,3.3,3.4
-          working-directory: crates/ruby-bindings
+        working-directory: crates/ruby-bindings
+        run: |
+          bundle exec rake cross-native gem
 
       - name: Upload CPU gems
         uses: actions/upload-artifact@v4
@@ -290,13 +290,12 @@ jobs:
         with:
           ruby-version: "3.4"
           bundler: latest
+          bundler-cache: true
 
       - name: Cross-compile GPU gem
-        uses: oxidize-rb/actions/cross-gem@v1
-        with:
-          platform: x86_64-linux,aarch64-linux,x86_64-darwin,arm64-darwin,x64-mingw-ucrt
-          ruby-versions: 2.7,3.2,3.3,3.4
-          working-directory: crates/ruby-bindings-gpu
+        working-directory: crates/ruby-bindings-gpu
+        run: |
+          bundle exec rake cross-native gem
 
       - name: Upload GPU gems
         uses: actions/upload-artifact@v4
