@@ -263,6 +263,7 @@ jobs:
       - name: Cross-compile CPU gem
         working-directory: crates/ruby-bindings
         run: |
+          bundle install
           bundle exec rake cross-native gem
 
       - name: Upload CPU gems
@@ -295,6 +296,7 @@ jobs:
       - name: Cross-compile GPU gem
         working-directory: crates/ruby-bindings-gpu
         run: |
+          bundle install
           bundle exec rake cross-native gem
 
       - name: Upload GPU gems
