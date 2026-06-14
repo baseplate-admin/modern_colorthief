@@ -42,6 +42,14 @@ pub async fn extract_palette_webgpu(
         return Err("WebGPU is not available in this environment".to_string());
     }
 
+    let expected_size = (width * height * 4) as usize;
+    if pixels.len() < expected_size {
+        return Err(format!(
+            "Buffer too small: expected {} bytes for {}x{} RGBA image, got {}",
+            expected_size, width, height, pixels.len()
+        ));
+    }
+
     let extract_fn = js_eval(JS_HELPER)?;
 
     // Build input object
