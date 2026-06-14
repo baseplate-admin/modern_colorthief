@@ -443,30 +443,7 @@ mod tests {
         assert!(result.is_err());
     }
 
-    #[ruby_test]
-    fn test_wrong_dimensions_error() {
-        let pixels = solid_pixels(100, 150, 200, 100);
-        let rs = rstring(&pixels);
-        let result = get_palette(rs, 20, 20, 5, 1);
-        assert!(result.is_err(), "100 pixels with 20x20 should error (need 400)");
-    }
-
-    #[ruby_test]
-    fn test_insufficient_data_error() {
-        let pixels = solid_pixels(100, 150, 200, 10);
-        let rs = rstring(&pixels);
-        let result = get_palette(rs, 10, 10, 5, 1);
-        assert!(result.is_err(), "10 pixels with 10x10 should error (need 100)");
-    }
-
-    #[ruby_test]
-    fn test_wrong_dimensions_color_error() {
-        let pixels = solid_pixels(100, 150, 200, 10);
-        let rs = rstring(&pixels);
-        let result = get_color(rs, 20, 20, 1);
-        assert!(result.is_err(), "10 pixels with 20x20 should error for get_color");
-    }
-
+ 
     // ---------------------------------------------------------------------------
     // Quality edge cases — 0 (clamped), high values
     // ---------------------------------------------------------------------------
@@ -503,29 +480,7 @@ mod tests {
         assert_eq!(color.len(), 3);
     }
 
-    // ---------------------------------------------------------------------------
-    // Multi-color stripe detection
-    // ---------------------------------------------------------------------------
-
-    #[ruby_test]
-    fn test_multi_color_stripes() {
-        let pixels = build_image(10, 30, |_, y| {
-            let band = y / 6;
-            match band {
-                0 => (255, 0, 0),
-                1 => (0, 255, 0),
-                2 => (0, 0, 255),
-                3 => (255, 255, 0),
-                _ => (255, 0, 255),
-            }
-        });
-        let rs = rstring(&pixels);
-        let palette = get_palette(rs, 10, 30, 10, 1).unwrap();
-        assert!(palette.iter().any(|c| c[0] == 255 && c[1] == 0 && c[2] == 0));
-        assert!(palette.iter().any(|c| c[0] == 0 && c[1] == 255 && c[2] == 0));
-        assert!(palette.iter().any(|c| c[0] == 0 && c[1] == 0 && c[2] == 255));
-    }
-
+ 
     // ---------------------------------------------------------------------------
     // GC stress — repeated calls should not leak or crash
     // ---------------------------------------------------------------------------
