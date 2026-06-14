@@ -206,14 +206,6 @@ jobs:
           install_swiftshader: true
           cache: true
 
-      - name: Install Vulkan SDK + SwiftShader (Windows)
-        if: runner.os == 'Windows'
-        shell: cmd
-        run: |
-          call "%VULKAN_SDK%\Bin\SetupDevEnv.bat"
-          echo Vulkan SDK: %VULKAN_SDK%
-          echo PATH includes: %PATH%
-
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -266,20 +258,12 @@ jobs:
           ruby-version: "3.4"
           bundler: latest
 
-      - name: Set up Rust
-        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
-        with:
-          ruby-version: "3.4"
-          cargo-cache: true
-          cargo-vendor: true
-          cache-version: v1-cross-cpu
-          bundler-cache: false
-
       - name: Cross-compile CPU gem
-        working-directory: crates/ruby-bindings
-        run: |
-          bundle install
-          bundle exec rake cross-native gem
+        uses: oxidize-rb/actions/cross-gem@v1
+        with:
+          platform: x86_64-linux,aarch64-linux,x86_64-darwin,arm64-darwin,x64-mingw-ucrt
+          ruby-versions: 2.7,3.2,3.3,3.4
+          working-directory: crates/ruby-bindings
 
       - name: Upload CPU gems
         uses: actions/upload-artifact@v4
@@ -307,20 +291,12 @@ jobs:
           ruby-version: "3.4"
           bundler: latest
 
-      - name: Set up Rust
-        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
-        with:
-          ruby-version: "3.4"
-          cargo-cache: true
-          cargo-vendor: true
-          cache-version: v1-cross-gpu
-          bundler-cache: false
-
       - name: Cross-compile GPU gem
-        working-directory: crates/ruby-bindings-gpu
-        run: |
-          bundle install
-          bundle exec rake cross-native gem
+        uses: oxidize-rb/actions/cross-gem@v1
+        with:
+          platform: x86_64-linux,aarch64-linux,x86_64-darwin,arm64-darwin,x64-mingw-ucrt
+          ruby-versions: 2.7,3.2,3.3,3.4
+          working-directory: crates/ruby-bindings-gpu
 
       - name: Upload GPU gems
         uses: actions/upload-artifact@v4
