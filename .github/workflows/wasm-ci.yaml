@@ -44,7 +44,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - run: cargo install wasm-pack --locked
       - uses: nanasess/setup-chromedriver@v3
       - uses: browser-actions/setup-geckodriver@latest
       - name: Run Chrome tests
@@ -60,7 +60,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - run: cargo install wasm-pack --locked
       - uses: nanasess/setup-chromedriver@v3
       - uses: browser-actions/setup-geckodriver@latest
       - name: Run Firefox tests
@@ -79,13 +79,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - name: Install Mesa Vulkan drivers (lavapipe software renderer)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
-      - name: Install Vulkan SDK
+      - run: cargo install wasm-pack --locked
+      - name: Install Vulkan SDK + Lavapipe
         uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          install_lavapipe: true
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-gpu
         run: npm ci
@@ -108,7 +106,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - run: cargo install wasm-pack --locked
       - name: Run Node tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --node --release
@@ -148,7 +146,7 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
-      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - run: cargo install wasm-pack --locked
       - working-directory: crates/wasm-bindings
         run: wasm-pack build --release
       - working-directory: crates/wasm-bindings
