@@ -183,7 +183,13 @@ impl VulkanBackend {
         }
     }
 
-    fn create_instance(&self) -> Result<ash::Instance, String> {
+    /// Create a Vulkan Entry + Instance pair where the Entry outlives the Instance.
+    ///
+    /// CRITICAL: ash::Entry loaded via `load_from()` must NOT be dropped while
+    /// the Instance is in use — the Instance resolves function pointers through
+    /// the Entry. Using the Instance after Entry drops is UB (segfaults on
+    /// Windows SwiftShader CI).
+    fn create_instance_pair(&self) -> Result<(ash::Entry, ash::Instance), String> {
         let loader_path = Self::find_vulkan_loader()
             .ok_or_else(Self::vulkan_not_found_error)?;
 
@@ -212,16 +218,10 @@ impl VulkanBackend {
             ..Default::default()
         };
 
-        unsafe { entry.create_instance(&create_info, None) }
-            .map_err(|e| format!("Vulkan instance creation failed: {:?}", e))
-    }
+        let instance = unsafe { entry.create_instance(&create_info, None) }
+            .map_err(|e| format!("Vulkan instance creation failed: {:?}", e))?;
 
-    fn enumerate_devices(
-        &self,
-        instance: &ash::Instance,
-    ) -> Result<Vec<vk::PhysicalDevice>, String> {
-        unsafe { instance.enumerate_physical_devices() }
-            .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))
+        Ok((entry, instance))
     }
 }
 
@@ -251,8 +251,12 @@ fn has_compute_queue(queues: &[vk::QueueFamilyProperties]) -> bool {
 }
 
 pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
-    let instance = VulkanBackend::new().create_instance()?;
-    let physical_devices = VulkanBackend::new().enumerate_devices(&instance)?;
+    // Keep Entry alive while Instance is used — Entry must NOT be dropped
+    // before Instance operations complete (UB per ash docs).
+    let (entry, instance) = VulkanBackend::new().create_instance_pair()?;
+
+    let physical_devices = unsafe { instance.enumerate_physical_devices() }
+        .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))?;
 
     let mut gpus = Vec::new();
     for (i, pd) in physical_devices.into_iter().enumerate() {
@@ -292,6 +296,8 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
         }
     }
 
+    // Entry is dropped here, after all Instance operations complete.
+    drop(entry);
     Ok(gpus)
 }
 
