@@ -214,19 +214,26 @@ jobs:
             Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
             Write-Host "Added $sdkBin to PATH for subsequent steps"
           }
-          # Point Vulkan loader to SwiftShader ICD only (avoid other ICDs that may crash)
-          $icdJson = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+          # SwiftShader is installed at C:\SwiftShader\ by jakoch/install-vulkan-sdk-action
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
           if (Test-Path $icdJson) {
             Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
             Write-Host "Set VK_ICD_FILENAMES=$icdJson"
           } else {
-            $altIcd = "$env:VULKAN_SDK\swiftshader\vk_swiftshader_icd.json"
-            if (Test-Path $altIcd) {
-              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$altIcd"
-              Write-Host "Set VK_ICD_FILENAMES=$altIcd"
+            # Fallback: search in VULKAN_SDK
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+              Write-Host "Set VK_ICD_FILENAMES=$fallbackIcd"
             } else {
-              Write-Error "vk_swiftshader_icd.json not found!"
-              exit 1
+              $altIcd = "$env:VULKAN_SDK\swiftshader\vk_swiftshader_icd.json"
+              if (Test-Path $altIcd) {
+                Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$altIcd"
+                Write-Host "Set VK_ICD_FILENAMES=$altIcd"
+              } else {
+                Write-Error "vk_swiftshader_icd.json not found!"
+                exit 1
+              }
             }
           }
 
