@@ -90,7 +90,6 @@ fn color_to_tuple(color: &js_sys::Array) -> (u8, u8, u8) {
 // Ported from Python test suite
 // ---------------------------------------------------------------------------
 
-#[cfg(feature = "node-tests")]
 mod gpu {
     use super::*;
 
@@ -449,6 +448,146 @@ mod gpu {
         let empty2 = js_sys::Uint8Array::new_with_length(0);
         let c = get_color_gpu_promise(empty2, 0, 0, 10);
         assert!(c.is_instance_of::<js_sys::Promise>());
+    }
+
+    // ---- RGB to hex (ported from test_cli_helper.py::test_rgb_to_hex) ----
+
+    fn rgb_to_hex(r: u8, g: u8, b: u8) -> String {
+        format!("#{:02x}{:02x}{:02x}", r, g, b)
+    }
+
+    #[wasm_bindgen_test]
+    fn rgb_to_hex_white() {
+        assert_eq!(rgb_to_hex(255, 255, 255), "#ffffff");
+    }
+
+    #[wasm_bindgen_test]
+    fn rgb_to_hex_black() {
+        assert_eq!(rgb_to_hex(0, 0, 0), "#000000");
+    }
+
+    #[wasm_bindgen_test]
+    fn rgb_to_hex_red() {
+        assert_eq!(rgb_to_hex(255, 0, 0), "#ff0000");
+    }
+
+    #[wasm_bindgen_test]
+    fn rgb_to_hex_small_values() {
+        assert_eq!(rgb_to_hex(1, 2, 3), "#010203");
+    }
+
+    #[wasm_bindgen_test]
+    fn rgb_to_hex_mid_values() {
+        assert_eq!(rgb_to_hex(179, 51, 55), "#b33337");
+    }
+
+    // ---- Error handling (ported from test_errors.py) ----
+
+    #[wasm_bindgen_test]
+    async fn rejects_truncated_buffer() {
+        // Ported from test_errors.py - truncated JPEG header
+        let truncated = js_sys::Uint8Array::from(&[0xFFu8, 0xD8, 0xFF, 0xE0, 0, 0, 0, 0, 0, 0][..]);
+        let result = JsFuture::from(get_palette_gpu_promise(truncated, 10, 10, 5, 10)).await;
+        assert!(result.is_err());
+    }
+
+    #[wasm_bindgen_test]
+    async fn rejects_oversized_dimensions() {
+        // Ported from test_errors.py - dimensions exceed buffer
+        let small = solid_pixels(100, 150, 200, 10, 10);
+        let pixels = pixels_view(&small);
+        let result = JsFuture::from(get_palette_gpu_promise(pixels, 100, 100, 5, 10)).await;
+        assert!(result.is_err());
+    }
+
+    #[wasm_bindgen_test]
+    async fn rejects_zero_width_color() {
+        let buf = solid_pixels(100, 150, 200, 10, 10);
+        let pixels = pixels_view(&buf);
+        let result = JsFuture::from(get_color_gpu_promise(pixels, 0, 10, 10)).await;
+        assert!(result.is_err());
+    }
+
+    #[wasm_bindgen_test]
+    async fn rejects_zero_height_color() {
+        let buf = solid_pixels(100, 150, 200, 10, 10);
+        let pixels = pixels_view(&buf);
+        let result = JsFuture::from(get_color_gpu_promise(pixels, 10, 0, 10)).await;
+        assert!(result.is_err());
+    }
+
+    // ---- Input type variety (ported from test_input_types.py) ----
+
+    #[wasm_bindgen_test]
+    async fn uint8array_input_gpu_palette() {
+        let buf = solid_pixels(100, 150, 200, 50, 50);
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 50, 50, 10, 10)).await.unwrap();
+        let palette: js_sys::Array = result.dyn_into().unwrap();
+        assert!(palette.length() > 0);
+    }
+
+    #[wasm_bindgen_test]
+    async fn uint8array_input_gpu_color() {
+        let buf = solid_pixels(100, 150, 200, 50, 50);
+        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 50, 50, 10)).await.unwrap();
+        let color: js_sys::Array = result.dyn_into().unwrap();
+        assert_eq!(color.length(), 3);
+    }
+
+    #[wasm_bindgen_test]
+    async fn arraybuffer_input_gpu_palette() {
+        let buf = solid_pixels(200, 100, 50, 50, 50);
+        let view = pixels_view(&buf);
+        let ab = view.buffer();
+        let result = JsFuture::from(get_palette_gpu_promise(
+            js_sys::Uint8Array::new(&ab), 50, 50, 10, 10,
+        )).await.unwrap();
+        let palette: js_sys::Array = result.dyn_into().unwrap();
+        assert!(palette.length() > 0);
+    }
+
+    #[wasm_bindgen_test]
+    async fn bytes_not_mutated_gpu() {
+        // Ported from test_input_types.py::test_bytes_not_mutated
+        let buf = solid_pixels(100, 150, 200, 50, 50);
+        let snapshot = buf.clone();
+        let _ = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 50, 50, 10, 10)).await.unwrap();
+        let _ = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 50, 50, 10)).await.unwrap();
+        assert_eq!(buf, snapshot);
+    }
+
+    // ---- Property invariants (ported from test_properties.py) ----
+
+    #[wasm_bindgen_test]
+    async fn color_returns_tuple_of_ints() {
+        // Ported from test_properties.py::test_color_returns_valid_rgb
+        let buf = solid_pixels(128, 64, 32, 50, 50);
+        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 50, 50, 10)).await.unwrap();
+        let color: js_sys::Array = result.dyn_into().unwrap();
+        assert_eq!(color.length(), 3);
+        for i in 0..3 {
+            let v = color.get(i).as_f64().unwrap();
+            assert!(v >= 0.0 && v <= 255.0);
+            assert_eq!(v, (v as u8) as f64, "color component should be an integer");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    async fn palette_entries_are_tuples_of_ints() {
+        // Ported from test_properties.py::test_palette_returns_valid_rgb_list
+        let buf = solid_pixels(100, 150, 200, 50, 50);
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 50, 50, 5, 10)).await.unwrap();
+        let palette: js_sys::Array = result.dyn_into().unwrap();
+        assert!(palette.length() > 0);
+        for i in 0..palette.length() {
+            let tuple = palette.get(i).dyn_into::<js_sys::Array>().unwrap();
+            assert_eq!(tuple.length(), 3);
+            for j in 0..3 {
+                let v = tuple.get(j).as_f64().unwrap();
+                assert!(v >= 0.0 && v <= 255.0);
+                assert_eq!(v, (v as u8) as f64, "palette entry should be an integer");
+            }
+        }
     }
 
     // ---- Version (ported from test_version.py) ----
