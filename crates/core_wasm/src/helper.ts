@@ -32,9 +32,9 @@ async function extractPaletteOnGpu(input: ExtractPaletteInput): Promise<Uint8Arr
     const samplingQuality: number = input.quality;
 
     // Request a WebGPU adapter and device
-    const gpu: GPU | undefined = (navigator as Navigator).gpu;
+    const gpu: GPU | undefined = (globalThis.navigator as Navigator).gpu;
     if (!gpu) {
-        throw new Error("WebGPU is not supported in this browser");
+        throw new Error("WebGPU is not supported in this environment");
     }
 
     const adapter: GPUAdapter | null = await gpu.requestAdapter();
