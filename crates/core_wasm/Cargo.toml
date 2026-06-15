@@ -22,5 +22,4 @@ swc_ecma_utils = "31.0.0"
 swc_ecma_visit = "25.0.0"
 
 [features]
-node-tests = []
 

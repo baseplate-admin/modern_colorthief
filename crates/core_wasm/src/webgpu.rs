@@ -20,29 +20,13 @@ fn js_eval(code: &str) -> Result<JsValue, String> {
 }
 
 /// Check whether WebGPU is available in this environment.
-/// In Node.js with the webgpu package, `navigator.gpu` is set on globalThis
-/// but the Function constructor's scope sees Node's built-in navigator (without .gpu).
-/// We check for `__webgpu_available` flag set by test-setup, falling back to
-/// the standard navigator.gpu check for browser environments.
-/// When the `node-tests` feature is enabled, we skip the check because the
-/// wasm-pack test runner may execute the test setup script in a different context
-/// where the `__webgpu_available` flag is not visible to the WASM `js_eval` scope.
-/// The webgpu module availability is verified by the npm install step.
+/// Uses `globalThis.eval` to access the global scope where `navigator.gpu`
+/// is polyfilled by the webgpu test-setup in Node.js contexts.
 fn has_webgpu() -> bool {
-    #[cfg(feature = "node-tests")]
-    {
-        // Skip the check during node-tests — the webgpu module is verified
-        // by the npm install step and test-setup script.
-        true
-    }
-    #[cfg(not(feature = "node-tests"))]
-    {
-        let check = "__webgpu_available || (typeof navigator !== 'undefined' && !!navigator.gpu)";
-        js_eval(check)
-            .ok()
-            .and_then(|v| v.as_bool())
-            .unwrap_or(false)
-    }
+    js_eval("typeof globalThis.navigator !== 'undefined' && !!globalThis.navigator.gpu")
+        .ok()
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false)
 }
 
 /// Call the WebGPU extract function. Returns a `Vec<u8>` of RGB values.

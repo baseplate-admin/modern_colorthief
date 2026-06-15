@@ -14,7 +14,6 @@ js-sys.workspace = true
 web-sys.workspace = true
 
 [features]
-node-tests = ["modern-colorthief-core-wasm/node-tests"]
 browser-tests = []
 
 [dev-dependencies]
