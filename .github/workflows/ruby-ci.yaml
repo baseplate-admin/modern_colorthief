@@ -190,12 +190,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-15-intel, macos-latest]
+        os: [macos-15-intel, macos-latest, windows-latest]
         ruby: ["2.7", "3.2", "3.3", "3.4"]
         # Note: ubuntu-latest excluded — GPU extension segfaults on Linux CI.
-        # Note: windows-latest excluded — SwiftShader ICD causes segfault
-        # in Rust Vulkan bindings (ash::Entry::load) on headless runners.
-        # gpu-build still runs on both to catch compile errors.
     steps:
       - uses: actions/checkout@v6
 
@@ -206,6 +203,32 @@ jobs:
           install_lavapipe: true
           install_swiftshader: true
           cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          # Add Vulkan SDK Bin to PATH so vulkan-1.dll is findable by ash crate
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            $env:PATH = "$sdkBin;$env:PATH"
+            [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "Process")
+          }
+          # Point Vulkan loader to SwiftShader ICD
+          $icdJson = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            [Environment]::SetEnvironmentVariable("VK_ICD_FILENAMES", $icdJson, "Process")
+            Write-Host "Set VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $altIcd = "$env:VULKAN_SDK\swiftshader\vk_swiftshader_icd.json"
+            if (Test-Path $altIcd) {
+              [Environment]::SetEnvironmentVariable("VK_ICD_FILENAMES", $altIcd, "Process")
+              Write-Host "Set VK_ICD_FILENAMES=$altIcd"
+            } else {
+              Write-Host "WARNING: vk_swiftshader_icd.json not found, listing SDK Bin contents..."
+              Get-ChildItem "$sdkBin" -ErrorAction SilentlyContinue | Select-Object Name
+            }
+          }
 
       - name: Cache cargo registry
         uses: actions/cache@v4

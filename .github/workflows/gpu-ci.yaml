@@ -9,24 +9,92 @@ on:
 permissions:
   contents: read
 
+env:
+  VULKAN_VERSION: 1.4.304.1
+
 jobs:
   gpu-test:
-    name: GPU tests (Vulkan)
-    runs-on: ubuntu-latest
+    name: GPU tests (Vulkan) — ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - name: Install Vulkan runtime
+
+      - name: Install Vulkan SDK + software renderers (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          # Add Vulkan SDK Bin to PATH so vulkan-1.dll is findable
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            $env:PATH = "$sdkBin;$env:PATH"
+            [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "Process")
+          }
+          # Point Vulkan loader to SwiftShader ICD
+          $icdJson = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            [Environment]::SetEnvironmentVariable("VK_ICD_FILENAMES", $icdJson, "Process")
+            Write-Host "Set VK_ICD_FILENAMES=$icdJson"
+          } else {
+            # Try alternative location used by some SDK versions
+            $altIcd = "$env:VULKAN_SDK\swiftshader\vk_swiftshader_icd.json"
+            if (Test-Path $altIcd) {
+              [Environment]::SetEnvironmentVariable("VK_ICD_FILENAMES", $altIcd, "Process")
+              Write-Host "Set VK_ICD_FILENAMES=$altIcd"
+            }
+          }
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
-      - name: Verify Vulkan
+
+      - name: Install Vulkan SDK + software renderers (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Verify Vulkan (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: vulkaninfo --summary
+
+      - name: Verify Vulkan (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path "$sdkBin\vulkaninfo.exe") {
+            & "$sdkBin\vulkaninfo.exe" --summary
+          } else {
+            Write-Host "vulkaninfo not found, checking loader..."
+            Get-ChildItem "$sdkBin" -Filter "*.dll" | Select-Object Name
+          }
+
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
       - name: Run GPU core tests
         run: cargo test -p modern-colorthief-core-gpu -- --include-ignored
 

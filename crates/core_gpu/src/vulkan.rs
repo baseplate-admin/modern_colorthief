@@ -44,6 +44,9 @@ impl VulkanBackend {
                 • AMD: https://www.amd.com/en/support\n\
                 • Intel: https://www.intel.com/content/www/us/en/download-center/home.html\n\
                 \n\
+                Or install the Vulkan SDK with SwiftShader for software rendering:\n\
+                https://vulkan.lunarg.com/sdk\n\
+                \n\
                 Vulkan ICD (vulkan-1.dll) is included with modern GPU drivers."
             .to_string();
         #[cfg(target_os = "linux")]
@@ -72,59 +75,116 @@ impl VulkanBackend {
         }
     }
 
-    /// Check if Vulkan loader is available on this system.
-    fn vulkan_loader_available() -> bool {
+    /// Find the Vulkan loader library path on this system.
+    /// Returns the explicit path if found, or None if not available.
+    fn find_vulkan_loader() -> Option<std::path::PathBuf> {
         #[cfg(target_os = "windows")]
         {
+            // Check current directory
             let vulkan_dll = std::path::Path::new("vulkan-1.dll");
             if vulkan_dll.exists() {
-                return true;
+                return Some(vulkan_dll.to_path_buf());
             }
-            std::env::var("SystemRoot").is_ok_and(|r| {
-                std::path::Path::new(&format!("{}\\System32\\vulkan-1.dll", r)).exists()
-            }) || std::env::var("VULKAN_SDK").is_ok_and(|sdk| {
-                std::path::Path::new(&format!("{}\\Bin\\vulkan-1.dll", sdk)).exists()
-            })
+
+            // Check System32
+            if let Ok(system_root) = std::env::var("SystemRoot") {
+                let sys_dll = format!("{}\\System32\\vulkan-1.dll", system_root);
+                if std::path::Path::new(&sys_dll).exists() {
+                    return Some(std::path::PathBuf::from(&sys_dll));
+                }
+            }
+
+            // Check Vulkan SDK Bin directory
+            if let Ok(sdk) = std::env::var("VULKAN_SDK") {
+                let sdk_bin_dll = format!("{}\\Bin\\vulkan-1.dll", sdk);
+                if std::path::Path::new(&sdk_bin_dll).exists() {
+                    return Some(std::path::PathBuf::from(&sdk_bin_dll));
+                }
+            }
+
+            // Check PATH directories for vulkan-1.dll
+            if let Ok(path_var) = std::env::var("PATH") {
+                for dir in std::env::split_paths(&path_var) {
+                    let dll_path = dir.join("vulkan-1.dll");
+                    if dll_path.exists() {
+                        return Some(dll_path);
+                    }
+                }
+            }
+            None
         }
         #[cfg(target_os = "linux")]
         {
-            [
+            let paths = [
                 "libvulkan.so",
+                "libvulkan.so.1",
                 "/usr/lib/libvulkan.so",
+                "/usr/lib/libvulkan.so.1",
                 "/usr/lib/x86_64-linux-gnu/libvulkan.so",
+                "/usr/lib/x86_64-linux-gnu/libvulkan.so.1",
                 "/usr/lib/i386-linux-gnu/libvulkan.so",
+                "/usr/lib/i386-linux-gnu/libvulkan.so.1",
                 "/usr/local/lib/libvulkan.so",
-            ]
-            .iter()
-            .any(|p| std::path::Path::new(p).exists())
-                || std::env::var("VULKAN_SDK").ok().is_some_and(|sdk| {
-                    std::path::Path::new(&format!("{}/lib/libvulkan.so", sdk)).exists()
-                        || std::path::Path::new(&format!("{}/lib/x86_64-linux-gnu/libvulkan.so", sdk))
-                            .exists()
-                })
+                "/usr/local/lib/libvulkan.so.1",
+            ];
+            for p in &paths {
+                if std::path::Path::new(p).exists() {
+                    return Some(std::path::PathBuf::from(p));
+                }
+            }
+            if let Ok(sdk) = std::env::var("VULKAN_SDK") {
+                for sub in &["lib/libvulkan.so", "lib/libvulkan.so.1", "lib/x86_64-linux-gnu/libvulkan.so"] {
+                    let full = std::path::Path::new(&format!("{}/{}", sdk, sub));
+                    if full.exists() {
+                        return Some(full.to_path_buf());
+                    }
+                }
+            }
+            // Check LD_LIBRARY_PATH / standard library paths
+            if let Ok(ld_path) = std::env::var("LD_LIBRARY_PATH") {
+                for dir in std::env::split_paths(&ld_path) {
+                    for name in &["libvulkan.so.1", "libvulkan.so"] {
+                        let lib = dir.join(name);
+                        if lib.exists() {
+                            return Some(lib);
+                        }
+                    }
+                }
+            }
         }
         #[cfg(target_os = "macos")]
         {
-            // Check for MoltenVK installation
-            std::fs::metadata("/usr/local/lib/libMoltenVK.dylib").is_ok()
-                || std::fs::metadata("/opt/homebrew/lib/libMoltenVK.dylib").is_ok()
-                || std::fs::metadata("libMoltenVK.dylib").is_ok()
-                || std::env::var("MOLTENVK_ROOT").ok().map_or(false, |root| {
-                    std::path::Path::new(&format!("{}/libMoltenVK.dylib", root)).exists()
-                })
+            let paths = [
+                "/usr/local/lib/libMoltenVK.dylib",
+                "/opt/homebrew/lib/libMoltenVK.dylib",
+                "libMoltenVK.dylib",
+            ];
+            for p in &paths {
+                if std::path::Path::new(p).exists() {
+                    return Some(std::path::PathBuf::from(p));
+                }
+            }
+            if let Ok(root) = std::env::var("MOLTENVK_ROOT") {
+                let p = std::path::Path::new(&format!("{}/libMoltenVK.dylib", root));
+                if p.exists() {
+                    return Some(p.to_path_buf());
+                }
+            }
         }
         #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
         {
-            false
+            None
         }
     }
 
     fn create_instance(&self) -> Result<ash::Instance, String> {
-        if !Self::vulkan_loader_available() {
-            return Err(Self::vulkan_not_found_error());
-        }
-        let entry = unsafe { ash::Entry::load() }
-            .map_err(|e| format!("Vulkan entry load failed: {}", e))?;
+        let loader_path = Self::find_vulkan_loader()
+            .ok_or_else(Self::vulkan_not_found_error)?;
+
+        // Use explicit path loading to avoid DLL search path issues on Windows.
+        // This is critical for SwiftShader on CI where vulkan-1.dll is not in PATH.
+        let entry = unsafe { ash::Entry::load_from(&loader_path) }
+            .map_err(|e| format!("Vulkan entry load failed from {:?}: {}", loader_path, e))?;
 
         let app_name = c"modern_colorthief";
         let app_info = vk::ApplicationInfo {
