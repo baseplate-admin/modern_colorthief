@@ -80,11 +80,12 @@ jobs:
         with:
           node-version: 22
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - name: Install Vulkan drivers (Dawn backend)
+      - name: Install Mesa Vulkan drivers (lavapipe software renderer)
         run: |
           sudo apt-get update
           sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
-          vulkaninfo --summary 2>&1 || true
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-gpu
         run: npm ci
