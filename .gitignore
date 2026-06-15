@@ -25,3 +25,4 @@ rustc-ice-*.txt
 NPM_TOKEN
 .env
 .claude/scheduled_tasks.lock
+/.playwright-mcp
