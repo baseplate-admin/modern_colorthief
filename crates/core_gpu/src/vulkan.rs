@@ -80,25 +80,29 @@ impl VulkanBackend {
     fn find_vulkan_loader() -> Option<std::path::PathBuf> {
         #[cfg(target_os = "windows")]
         {
+            use std::path::PathBuf;
+
             // Check current directory
-            let vulkan_dll = std::path::Path::new("vulkan-1.dll");
+            let vulkan_dll = PathBuf::from("vulkan-1.dll");
             if vulkan_dll.exists() {
-                return Some(vulkan_dll.to_path_buf());
+                return Some(vulkan_dll);
             }
 
             // Check System32
             if let Ok(system_root) = std::env::var("SystemRoot") {
-                let sys_dll = format!("{}\\System32\\vulkan-1.dll", system_root);
-                if std::path::Path::new(&sys_dll).exists() {
-                    return Some(std::path::PathBuf::from(&sys_dll));
+                let sys_dll = std::path::Path::new(&system_root)
+                    .join("System32")
+                    .join("vulkan-1.dll");
+                if sys_dll.exists() {
+                    return Some(sys_dll);
                 }
             }
 
             // Check Vulkan SDK Bin directory
             if let Ok(sdk) = std::env::var("VULKAN_SDK") {
-                let sdk_bin_dll = format!("{}\\Bin\\vulkan-1.dll", sdk);
-                if std::path::Path::new(&sdk_bin_dll).exists() {
-                    return Some(std::path::PathBuf::from(&sdk_bin_dll));
+                let sdk_bin_dll = std::path::Path::new(&sdk).join("Bin").join("vulkan-1.dll");
+                if sdk_bin_dll.exists() {
+                    return Some(sdk_bin_dll);
                 }
             }
 

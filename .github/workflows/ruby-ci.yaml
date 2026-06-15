@@ -211,22 +211,22 @@ jobs:
           # Add Vulkan SDK Bin to PATH so vulkan-1.dll is findable by ash crate
           $sdkBin = "$env:VULKAN_SDK\Bin"
           if (Test-Path $sdkBin) {
-            $env:PATH = "$sdkBin;$env:PATH"
-            [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "Process")
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+            Write-Host "Added $sdkBin to PATH for subsequent steps"
           }
-          # Point Vulkan loader to SwiftShader ICD
+          # Point Vulkan loader to SwiftShader ICD only (avoid other ICDs that may crash)
           $icdJson = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
           if (Test-Path $icdJson) {
-            [Environment]::SetEnvironmentVariable("VK_ICD_FILENAMES", $icdJson, "Process")
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
             Write-Host "Set VK_ICD_FILENAMES=$icdJson"
           } else {
             $altIcd = "$env:VULKAN_SDK\swiftshader\vk_swiftshader_icd.json"
             if (Test-Path $altIcd) {
-              [Environment]::SetEnvironmentVariable("VK_ICD_FILENAMES", $altIcd, "Process")
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$altIcd"
               Write-Host "Set VK_ICD_FILENAMES=$altIcd"
             } else {
-              Write-Host "WARNING: vk_swiftshader_icd.json not found, listing SDK Bin contents..."
-              Get-ChildItem "$sdkBin" -ErrorAction SilentlyContinue | Select-Object Name
+              Write-Error "vk_swiftshader_icd.json not found!"
+              exit 1
             }
           }
 
