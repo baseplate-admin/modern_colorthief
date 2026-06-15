@@ -77,7 +77,7 @@ impl VulkanBackend {
 
     /// Find the Vulkan loader library path on this system.
     /// Returns the explicit path if found, or None if not available.
-    fn find_vulkan_loader() -> Option<std::path::PathBuf> {
+    pub(crate) fn find_vulkan_loader() -> Option<std::path::PathBuf> {
         #[cfg(target_os = "windows")]
         {
             use std::path::PathBuf;

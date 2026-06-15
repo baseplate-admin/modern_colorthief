@@ -89,13 +89,16 @@ mod tests {
         assert!(result.is_err());
     }
 
+    /// Test that the Vulkan loader can be found (or not) without crashing.
+    /// Actual GPU extraction is tested in the integration test `vulkan_init_probe`,
+    /// because Vulkan instance creation may segfault on SwiftShader/llvmpipe CI runners.
     #[test]
-    #[ignore]
     fn test_gpu_or_not_available() {
-        let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(25);
-        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
-        if let Ok(palette) = result {
-            assert!(!palette.is_empty());
+        let loader_path = VulkanBackend::find_vulkan_loader();
+        // Either the loader is found or not — both are valid.
+        // If found, the loader path should point to an existing file.
+        if let Some(path) = loader_path {
+            assert!(path.exists(), "Vulkan loader path exists: {}", path.display());
         }
     }
 }

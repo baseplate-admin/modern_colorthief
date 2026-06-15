@@ -109,7 +109,7 @@ jobs:
             ${{ matrix.os }}-cargo-registry-
 
       - name: Run GPU core tests
-        run: cargo test -p modern-colorthief-core-gpu -- --include-ignored
+        run: cargo test -p modern-colorthief-core-gpu
 
   gpu-php-test:
     name: GPU PHP pest tests
@@ -141,7 +141,7 @@ jobs:
       - run: cargo build --release -p modern-colorthief-php-gpu
         working-directory: .
       - name: Run Rust GPU core tests
-        run: cargo test -p modern-colorthief-core-gpu -- --include-ignored
+        run: cargo test -p modern-colorthief-core-gpu
         working-directory: .
       - run: test -f ../../target/release/libmodern_colorthief_gpu.so
       - name: Install PHP dependencies
