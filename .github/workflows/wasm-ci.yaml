@@ -83,7 +83,7 @@ jobs:
       - name: Install Vulkan drivers (Dawn backend)
         run: |
           sudo apt-get update
-          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools vulkan-utils
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
           vulkaninfo --summary 2>&1 || true
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-gpu
