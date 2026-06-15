@@ -134,9 +134,9 @@ impl VulkanBackend {
             }
             if let Ok(sdk) = std::env::var("VULKAN_SDK") {
                 for sub in &["lib/libvulkan.so", "lib/libvulkan.so.1", "lib/x86_64-linux-gnu/libvulkan.so"] {
-                    let full = std::path::Path::new(&format!("{}/{}", sdk, sub));
-                    if full.exists() {
-                        return Some(full.to_path_buf());
+                    let sdk_path = format!("{}/{}", sdk, sub);
+                    if std::path::Path::new(&sdk_path).exists() {
+                        return Some(std::path::PathBuf::from(&sdk_path));
                     }
                 }
             }
@@ -151,6 +151,7 @@ impl VulkanBackend {
                     }
                 }
             }
+            None
         }
         #[cfg(target_os = "macos")]
         {
@@ -164,12 +165,13 @@ impl VulkanBackend {
                     return Some(std::path::PathBuf::from(p));
                 }
             }
-            if let Ok(root) = std::env::var("MOLTENVK_ROOT") {
-                let p = std::path::Path::new(&format!("{}/libMoltenVK.dylib", root));
-                if p.exists() {
-                    return Some(p.to_path_buf());
+           if let Ok(root) = std::env::var("MOLTENVK_ROOT") {
+                let moltenvk_path = format!("{}/libMoltenVK.dylib", root);
+                if std::path::Path::new(&moltenvk_path).exists() {
+                    return Some(std::path::PathBuf::from(&moltenvk_path));
                 }
             }
+            None
         }
         #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
         {
