@@ -7,7 +7,7 @@ Object.assign(globalThis, globals);
 if (typeof globalThis.navigator === 'undefined') {
     globalThis.navigator = {};
 }
-const gpu = create([]);
+const gpu = create(['backend=vulkan']);
 globalThis.navigator.gpu = gpu;
 
 // Set a flag readable from the Function constructor's scope
