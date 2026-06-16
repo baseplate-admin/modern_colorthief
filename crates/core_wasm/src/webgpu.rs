@@ -19,17 +19,13 @@ fn js_eval(code: &str) -> Result<JsValue, String> {
     Ok(result)
 }
 
-/// Check whether WebGPU is available in this environment.
-/// Uses `globalThis.eval` to access the global scope where `navigator.gpu`
-/// is polyfilled by the webgpu test-setup in Node.js contexts.
-fn has_webgpu() -> bool {
-    js_eval("typeof globalThis.navigator !== 'undefined' && !!globalThis.navigator.gpu")
-        .ok()
-        .and_then(|v| v.as_bool())
-        .unwrap_or(false)
-}
-
 /// Call the WebGPU extract function. Returns a `Vec<u8>` of RGB values.
+///
+/// Note: we do NOT gate on has_webgpu() here. The `globalThis.eval` check
+/// cannot reliably see `navigator.gpu` in the wasm-pack Node.js test runner
+/// because eval runs in a synthetic global scope that doesn't share
+/// polyfills applied to the real globalThis. Instead, we let the JS helper
+/// throw its own "WebGPU is not supported" error if the adapter is missing.
 pub async fn extract_palette_webgpu(
     pixels: &[u8],
     width: u32,
@@ -37,10 +33,6 @@ pub async fn extract_palette_webgpu(
     color_count: u8,
     quality: u8,
 ) -> Result<Vec<u8>, String> {
-    if !has_webgpu() {
-        return Err("WebGPU is not available in this environment".to_string());
-    }
-
     let expected_size = (width * height * 4) as usize;
     if pixels.len() < expected_size {
         return Err(format!(
