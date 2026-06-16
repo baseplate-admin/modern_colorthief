@@ -26,18 +26,8 @@ interface ExtractPaletteInput {
  * every invocation, meaning local `let` variables are reinitialized each
  * time. globalThis persists across eval calls in the same runtime.
  */
-const _gpuCache = "__wt_gpu_device";
-
-function getCachedDevice(): GPUDevice | null {
-    return (globalThis as any)[_gpuCache] as GPUDevice | null;
-}
-
-function setCachedDevice(device: GPUDevice | null): void {
-    (globalThis as any)[_gpuCache] = device;
-}
-
 async function getDevice(): Promise<GPUDevice> {
-    const cached = getCachedDevice();
+    const cached = (globalThis as any)["__wt_gpu_device"] as GPUDevice | null;
     if (cached) {
         return cached;
     }
@@ -54,12 +44,11 @@ async function getDevice(): Promise<GPUDevice> {
 
     const device = await adapter.requestDevice();
 
-    device.lost.then(({ reason, message }) => {
-        console.warn("GPU device lost:", reason, message);
-        setCachedDevice(null);
+    device.lost.then(() => {
+        (globalThis as any)["__wt_gpu_device"] = null;
     });
 
-    setCachedDevice(device);
+    (globalThis as any)["__wt_gpu_device"] = device;
     return device;
 }
 
