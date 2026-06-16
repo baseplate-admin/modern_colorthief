@@ -15,6 +15,45 @@ interface ExtractPaletteInput {
 }
 
 /**
+ * Cached GPU device reused across invocations.
+ *
+ * Dawn (Node.js WebGPU) expects devices to be long-lived and reused.
+ * Creating a new device per call causes device invalidation because
+ * pending GPU work from prior devices isn't drained before destruction.
+ */
+let gpuDevice: GPUDevice | null = null;
+
+/**
+ * Return the cached GPU device, creating one if needed.
+ * The device's `.lost` handler clears the cache on device loss so the
+ * next call gets a fresh device.
+ */
+async function getDevice(): Promise<GPUDevice> {
+    if (gpuDevice) {
+        return gpuDevice;
+    }
+
+    const gpu: GPU | undefined = (globalThis.navigator as Navigator).gpu;
+    if (!gpu) {
+        throw new Error("WebGPU is not supported in this environment");
+    }
+
+    const adapter: GPUAdapter | null = await gpu.requestAdapter();
+    if (!adapter) {
+        throw new Error("No GPU adapter is available on this device");
+    }
+
+    gpuDevice = await adapter.requestDevice();
+
+    gpuDevice.lost.then(({ reason, message }) => {
+        console.warn("GPU device lost:", reason, message);
+        gpuDevice = null;
+    });
+
+    return gpuDevice;
+}
+
+/**
  * WebGPU-based color palette extraction.
  *
  * Uses WebGPU compute shaders to efficiently extract dominant colors from raw
@@ -31,18 +70,8 @@ async function extractPaletteOnGpu(input: ExtractPaletteInput): Promise<Uint8Arr
     const maxColors: number = input.maxC;
     const samplingQuality: number = input.quality;
 
-    // Request a WebGPU adapter and device
-    const gpu: GPU | undefined = (globalThis.navigator as Navigator).gpu;
-    if (!gpu) {
-        throw new Error("WebGPU is not supported in this environment");
-    }
-
-    const adapter: GPUAdapter | null = await gpu.requestAdapter();
-    if (!adapter) {
-        throw new Error("No GPU adapter is available on this device");
-    }
-
-    const device: GPUDevice = await adapter.requestDevice();
+    // Reuse a cached GPU device (avoids Dawn device-lifecycle issues in Node.js)
+    const device: GPUDevice = await getDevice();
 
     // Derived dimensions for the compute shaders
     const totalPixels: number = imageWidth * imageHeight;
