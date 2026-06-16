@@ -182,7 +182,12 @@ jobs:
         working-directory: crates/ruby-bindings/ext
         run: cargo test
 
-   
+      - name: Run RSpec tests
+        working-directory: crates/ruby-bindings
+        run: |
+          bundle install
+          bundle exec rspec spec/
+
   gpu-rspec:
     name: "gpu-rspec — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
@@ -237,6 +242,11 @@ jobs:
             }
           }
 
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -275,6 +285,88 @@ jobs:
       - name: Run RSpec tests
         working-directory: crates/ruby-bindings-gpu
         run: bundle exec rspec spec/
+
+  gpu-rust-test:
+    name: "gpu-rust-test — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    needs: [gpu-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Vulkan SDK + software renderers
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ matrix.os }}-gpu-rust-test-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-gpu-rust-test-ruby${{ matrix.ruby }}-cargo-target-
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: false
+          cache-version: v1-gpu-rust-test
+
+      - name: Download built extension
+        uses: actions/download-artifact@v4
+        with:
+          name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings-gpu/lib/
+
+      - name: Install dependencies
+        working-directory: crates/ruby-bindings-gpu
+        run: bundle install
+
+      - name: Run Rust tests
+        working-directory: crates/ruby-bindings-gpu/ext
+        run: cargo test
 
   cross-gem-cpu:
     name: cross-gem-cpu

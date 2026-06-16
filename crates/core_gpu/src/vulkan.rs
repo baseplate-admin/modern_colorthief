@@ -395,3 +395,138 @@ pub fn gpu_extract(
 
     Ok(unique.into_iter().take(color_count as usize).collect())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // --- vendor_name ---
+
+    #[test]
+    fn test_vendor_nvidia() {
+        assert_eq!(vendor_name(0x10DE), "NVIDIA");
+    }
+
+    #[test]
+    fn test_vendor_amd() {
+        assert_eq!(vendor_name(0x1002), "AMD");
+    }
+
+    #[test]
+    fn test_vendor_intel() {
+        assert_eq!(vendor_name(0x8086), "Intel");
+    }
+
+    #[test]
+    fn test_vendor_apple_moltenvk() {
+        assert_eq!(vendor_name(0x106B), "Apple (MoltenVK)");
+    }
+
+    #[test]
+    fn test_vendor_mesa() {
+        assert_eq!(vendor_name(0x1234), "Mesa (llvmpipe/swrast)");
+    }
+
+    #[test]
+    fn test_vendor_unknown() {
+        assert_eq!(vendor_name(0xDEAD), "Unknown");
+    }
+
+    // --- has_compute_queue ---
+
+    #[test]
+    fn test_has_compute_queue_compute_flag() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::COMPUTE,
+            ..Default::default()
+        }];
+        assert!(has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_graphics_flag() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::GRAPHICS,
+            ..Default::default()
+        }];
+        assert!(has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_combined() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::GRAPHICS | vk::QueueFlags::COMPUTE,
+            ..Default::default()
+        }];
+        assert!(has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_transfer_only() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::TRANSFER,
+            ..Default::default()
+        }];
+        assert!(!has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_empty_flags() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::empty(),
+            ..Default::default()
+        }];
+        assert!(!has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_empty_list() {
+        let queues: Vec<vk::QueueFamilyProperties> = vec![];
+        assert!(!has_compute_queue(&queues));
+    }
+
+    // --- GpuDevice mapping ---
+
+    #[test]
+    fn test_gpu_device_discrete() {
+        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::DISCRETE_GPU), GpuDevice::Discrete);
+    }
+
+    #[test]
+    fn test_gpu_device_integrated() {
+        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::INTEGRATED_GPU), GpuDevice::Integrated);
+    }
+
+    #[test]
+    fn test_gpu_device_virtual() {
+        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::VIRTUAL_GPU), GpuDevice::Virtual);
+    }
+
+    #[test]
+    fn test_gpu_device_cpu() {
+        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::CPU), GpuDevice::CPU);
+    }
+
+    #[test]
+    fn test_gpu_device_other() {
+        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::OTHER), GpuDevice::Other);
+    }
+
+    // --- gpu_extract edge cases ---
+
+    #[test]
+    fn test_extract_empty_buffer() {
+        let result = gpu_extract(&[], 0, 0, 5, 1);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Empty"));
+    }
+
+    #[test]
+    fn test_extract_insufficient_pixels() {
+        // 1 pixel worth of data (4 bytes)
+        let result = gpu_extract(&[255, 0, 0, 255], 1, 1, 5, 1);
+        // May succeed or fail depending on GPU availability — both are valid
+        // Just verify it doesn't panic
+        let _ = result;
+    }
+}

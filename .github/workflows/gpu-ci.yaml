@@ -84,6 +84,11 @@ jobs:
           install_swiftshader: true
           cache: true
 
+      - name: Setup Vulkan environment (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
       - name: Verify Vulkan (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: vulkaninfo --summary
@@ -99,6 +104,18 @@ jobs:
             Write-Host "vulkaninfo not found, checking loader..."
             Get-ChildItem "$sdkBin" -Filter "*.dll" | Select-Object Name
           }
+
+      - name: Verify Vulkan (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          if command -v vulkaninfo &>/dev/null; then
+            vulkaninfo --summary
+          else
+            echo "vulkaninfo not found, checking MoltenVK..."
+            echo "MOLTENVK_ROOT=${MOLTENVK_ROOT:-<not set>}"
+            ls "${MOLTENVK_ROOT:-/dev/null}/libMoltenVK.dylib" 2>/dev/null || echo "MoltenVK loader not found"
+          fi
 
       - name: Cache cargo registry
         uses: actions/cache@v4

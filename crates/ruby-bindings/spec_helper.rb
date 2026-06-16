@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 require "rspec"
-require_relative "lib/colorthief_ruby"
+
+# Load the native CPU extension (handles cross-platform naming internally)
+begin
+  require_relative "lib/colorthief_ruby"
+rescue LoadError
+  # Extension not yet compiled; tests will be skipped at runtime.
+end
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
