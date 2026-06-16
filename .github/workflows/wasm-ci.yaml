@@ -76,7 +76,7 @@ jobs:
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-gpu
         run: npm ci
-       - name: Verify webgpu module loads
+      - name: Verify webgpu module loads
         working-directory: crates/wasm-bindings-gpu
         run: node test-webgpu-setup.cjs && echo "WebGPU OK"
       - name: Run GPU Node.js tests
