@@ -24,25 +24,15 @@ interface ExtractPaletteInput {
  * The GPU device is cached on globalThis so it survives across js_eval() calls.
  * Dawn (Node.js WebGPU) expects devices to be long-lived and reused.
  *
+ * @param gpu - GPU instance from the global object (passed from Rust).
  * @param input - The input parameters for palette extraction.
  * @returns A flat Uint8Array of RGB values (3 bytes per color).
  */
-async function extractPaletteOnGpu(input: ExtractPaletteInput): Promise<Uint8Array> {
+async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promise<Uint8Array> {
     // Get or create a cached GPU device
     // globalThis persists across js_eval() calls in the same runtime
     let device = (globalThis as any)["__wt_gpu_device"] as GPUDevice | null;
     if (!device) {
-        // Try multiple paths to find the WebGPU API:
-        // - globalThis.navigator.gpu (standard)
-        // - global.navigator.gpu (Dawn polyfills POSIX global)
-        // - globalThis.gpu (fallback)
-        let gpu: GPU | undefined = (globalThis.navigator as Navigator)?.gpu;
-        if (!gpu) {
-            gpu = ((globalThis as any).global?.navigator as Navigator)?.gpu;
-        }
-        if (!gpu) {
-            gpu = (globalThis as any).gpu as GPU | undefined;
-        }
         if (!gpu) {
             throw new Error("WebGPU is not supported in this environment");
         }
