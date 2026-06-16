@@ -12,7 +12,23 @@ on:
       - master
     tags:
       - '*'
+    paths:
+      - 'crates/python-bindings/**'
+      - 'crates/python-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/python-ci.yaml'
+      - 'Cargo.toml'
   pull_request:
+    paths:
+      - 'crates/python-bindings/**'
+      - 'crates/python-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/python-ci.yaml'
+      - 'Cargo.toml'
   workflow_dispatch:
 
 permissions:
@@ -271,18 +287,67 @@ jobs:
       - run: pytest tests/ -v
 
   gpu-test:
-    name: GPU Python tests
-    runs-on: ubuntu-latest
+    name: GPU Python tests — ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     needs: [linux]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
     defaults:
       run:
         working-directory: crates/python-bindings-gpu
+    env:
+      VULKAN_VERSION: 1.4.304.1
     steps:
       - uses: actions/checkout@v6
-      - name: Install Vulkan runtime
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Install Vulkan SDK + SwiftShader (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
         uses: actions/cache@v4

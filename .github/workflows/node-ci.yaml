@@ -4,7 +4,23 @@ on:
   push:
     branches: [ main, master ]
     tags: [ '*' ]
+    paths:
+      - 'crates/node-bindings/**'
+      - 'crates/node-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/node-ci.yaml'
+      - 'Cargo.toml'
   pull_request:
+    paths:
+      - 'crates/node-bindings/**'
+      - 'crates/node-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/node-ci.yaml'
+      - 'Cargo.toml'
   workflow_dispatch:
 
 permissions:

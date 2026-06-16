@@ -4,7 +4,23 @@ on:
   push:
     branches: [ main, master ]
     tags: [ '*' ]
+    paths:
+      - 'crates/jvm-bindings/**'
+      - 'crates/jvm-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/jvm-ci.yaml'
+      - 'Cargo.toml'
   pull_request:
+    paths:
+      - 'crates/jvm-bindings/**'
+      - 'crates/jvm-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/jvm-ci.yaml'
+      - 'Cargo.toml'
   workflow_dispatch:
 
 permissions:
@@ -12,6 +28,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  VULKAN_VERSION: 1.4.304.1
 
 jobs:
   java-build:
@@ -103,14 +120,47 @@ jobs:
       - run: cargo check --target aarch64-linux-android -p modern-colorthief-core -p modern-colorthief-core-cpu
 
   gpu-java-build:
-    name: GPU Java build
-    runs-on: ubuntu-latest
+    name: GPU Java build — ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v6
-      - name: Install Vulkan runtime
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
         uses: actions/cache@v5
@@ -121,34 +171,90 @@ jobs:
         run: cargo build --release -p modern-colorthief-jvm-gpu
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
-      - name: Verify shared library built
+      - name: Verify shared library built (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: test -f target/release/libmodern_colorthief_gpu.so
+      - name: Verify shared library built (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: Test-Path target\release\modern_colorthief_gpu.dll
       - name: Upload GPU native library
         uses: actions/upload-artifact@v4
         with:
-          name: gpu-native-lib
+          name: "gpu-native-lib-${{ matrix.os }}"
           path: target/release/libmodern_colorthief_gpu.so
+          retention-days: 1
+      - name: Upload GPU native library (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: "gpu-native-lib-${{ matrix.os }}"
+          path: target/release/modern_colorthief_gpu.dll
           retention-days: 1
 
   gpu-junit-test:
-    name: GPU JUnit tests
+    name: GPU JUnit tests — ${{ matrix.os }}
     needs: [gpu-java-build]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '26'
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
       - name: Download GPU native library
         uses: actions/download-artifact@v4
         with:
-          name: gpu-native-lib
+          name: "gpu-native-lib-${{ matrix.os }}"
           path: crates/jvm-bindings-gpu/tests/native
-      - name: Verify native library
+      - name: Verify native library (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           ls -la crates/jvm-bindings-gpu/tests/native/
           test -f crates/jvm-bindings-gpu/tests/native/libmodern_colorthief_gpu.so
+      - name: Verify native library (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Get-ChildItem crates/jvm-bindings-gpu/tests/native/
+          Test-Path crates/jvm-bindings-gpu/tests/native/modern_colorthief_gpu.dll
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.5.1'

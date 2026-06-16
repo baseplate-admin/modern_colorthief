@@ -3,7 +3,23 @@ name: PHP CI
 on:
   push:
     branches: [main, master]
+    paths:
+      - 'crates/php-bindings/**'
+      - 'crates/php-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/php-ci.yaml'
+      - 'Cargo.toml'
   pull_request:
+    paths:
+      - 'crates/php-bindings/**'
+      - 'crates/php-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/php-ci.yaml'
+      - 'Cargo.toml'
   workflow_dispatch:
 
 permissions:
