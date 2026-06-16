@@ -29,6 +29,9 @@ fn get_gpu() -> Result<JsValue, String> {
         .map_err(|e| format!("Failed to get navigator from global object: {:?}", e))?;
     let gpu = js_sys::Reflect::get(&navigator, &JsValue::from_str("gpu"))
         .map_err(|_| "navigator.gpu is not set (WebGPU polyfill may not be active)".to_string())?;
+    if gpu.is_undefined() || gpu.is_null() {
+        return Err("navigator.gpu is undefined/null (WebGPU polyfill may not be active)".to_string());
+    }
     Ok(gpu)
 }
 
