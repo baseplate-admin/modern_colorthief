@@ -26,3 +26,6 @@ NPM_TOKEN
 .env
 /.playwright-mcp
 .claude/scheduled_tasks.lock
+
+# Ruby bundler lock files — let CI regenerate per ruby version
+**/Gemfile.lock

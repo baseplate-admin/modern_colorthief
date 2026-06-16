@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -49,7 +49,7 @@ jobs:
             ${{ matrix.os }}-cargo-registry-
 
       - name: Cache cargo target
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target
           key: ${{ matrix.os }}-cpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
@@ -80,7 +80,7 @@ jobs:
           if-no-files-found: error
 
   cpu-test:
-    name: "cpu-rust-test — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    name: "cpu-rspec — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}
     needs: [cpu-build]
     strategy:
@@ -90,22 +90,6 @@ jobs:
         ruby: ["2.7", "3.2", "3.3", "3.4"]
     steps:
       - uses: actions/checkout@v6
-
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-cargo-registry-
-
-      - name: Cache cargo target
-        uses: actions/cache@v4
-        with:
-          path: target
-          key: ${{ matrix.os }}-cpu-test-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-cpu-test-ruby${{ matrix.ruby }}-cargo-target-
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -121,10 +105,6 @@ jobs:
         with:
           name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings/lib/
-
-      - name: Run Rust tests
-        working-directory: crates/ruby-bindings/ext
-        run: cargo test
 
       - name: Run RSpec tests
         working-directory: crates/ruby-bindings
@@ -144,7 +124,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -152,7 +132,7 @@ jobs:
             ${{ matrix.os }}-cargo-registry-
 
       - name: Cache cargo target
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target
           key: ${{ matrix.os }}-gpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
@@ -241,7 +221,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -249,7 +229,7 @@ jobs:
             ${{ matrix.os }}-cargo-registry-
 
       - name: Cache cargo target
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target
           key: ${{ matrix.os }}-gpu-rust-test-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}

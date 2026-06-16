@@ -82,7 +82,7 @@ jobs:
           find . -name "*.so" -type f 2>/dev/null || true
           echo "=== test must exist ==="
           test -f crates/jvm-bindings/tests/native/libmodern_colorthief.so && echo "FOUND" || echo "MISSING"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '9.5.1'
       - name: Generate Gradle wrapper
@@ -255,7 +255,7 @@ jobs:
         run: |
           Get-ChildItem crates/jvm-bindings-gpu/tests/native/
           Test-Path crates/jvm-bindings-gpu/tests/native/modern_colorthief_gpu.dll
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '9.5.1'
       - name: Generate Gradle wrapper
