@@ -83,7 +83,7 @@ jobs:
         working-directory: crates/wasm-bindings-gpu
         run: wasm-pack test --node --release
         env:
-          NODE_OPTIONS: "--require $(pwd)/test-webgpu-setup.cjs"
+          NODE_OPTIONS: "--require ${{ github.workspace }}/crates/wasm-bindings-gpu/test-webgpu-setup.cjs"
 
   cpu-chrome-tests:
     name: CPU Chrome tests
