@@ -41,6 +41,10 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
             throw new Error("No GPU adapter is available on this device");
         }
         device = await adapter.requestDevice();
+    }
+    // Set up device.lost handler and cache the device
+    // (separate from device assignment to avoid minifier chaining issues)
+    if (device) {
         device.lost.then(() => {
             (globalThis as any)["__wt_gpu_device"] = null;
         });
