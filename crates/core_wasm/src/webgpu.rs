@@ -14,10 +14,9 @@ extern "C" {
 ///
 /// Uses raw_module to bypass js_sys's cached global object reference,
 /// which is stale because it's captured before the WebGPU polyfill runs.
-/// raw_module JS executes at call time, reading the real globalThis.
-#[wasm_bindgen(raw_module = "")]
+/// raw_module expressions are evaluated at call time, reading the real globalThis.
+#[wasm_bindgen(raw_module = "globalThis.navigator && globalThis.navigator.gpu")]
 extern "C" {
-    #[wasm_bindgen(js_name = "function(){return globalThis.navigator&&globalThis.navigator.gpu}")]
     fn get_gpu_runtime() -> JsValue;
 }
 
