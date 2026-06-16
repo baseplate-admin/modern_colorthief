@@ -101,3 +101,60 @@ jobs:
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
       - run: cargo check --target aarch64-linux-android -p modern-colorthief-core -p modern-colorthief-core-cpu
+
+  gpu-java-build:
+    name: GPU Java build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Vulkan runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build GPU native library
+        run: cargo build --release -p modern-colorthief-jvm-gpu
+      - name: Run Rust GPU tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+      - name: Verify shared library built
+        run: test -f target/release/libmodern_colorthief_gpu.so
+      - name: Upload GPU native library
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-native-lib
+          path: target/release/libmodern_colorthief_gpu.so
+          retention-days: 1
+
+  gpu-junit-test:
+    name: GPU JUnit tests
+    needs: [gpu-java-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '26'
+      - name: Download GPU native library
+        uses: actions/download-artifact@v4
+        with:
+          name: gpu-native-lib
+          path: crates/jvm-bindings-gpu/tests/native
+      - name: Verify native library
+        run: |
+          ls -la crates/jvm-bindings-gpu/tests/native/
+          test -f crates/jvm-bindings-gpu/tests/native/libmodern_colorthief_gpu.so
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.1'
+      - name: Generate Gradle wrapper
+        working-directory: crates/jvm-bindings-gpu/tests
+        run: gradle wrapper
+      - name: Run GPU JUnit tests
+        working-directory: crates/jvm-bindings-gpu/tests
+        run: ./gradlew test --info

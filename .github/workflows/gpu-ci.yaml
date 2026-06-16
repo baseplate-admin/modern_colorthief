@@ -179,28 +179,24 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - name: Install build tools
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install maturin pytest Pillow
+          uv venv .venv
+          uv pip install maturin pytest Pillow
       - name: Build GPU Python module
-        run: |
-          source .venv/bin/activate
-          maturin develop --release
+        run: uv run maturin develop --release
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
         working-directory: .
       - name: Run GPU Python tests
-        run: |
-          source .venv/bin/activate
-          pytest tests/ -v
+        run: uv run pytest tests/ -v

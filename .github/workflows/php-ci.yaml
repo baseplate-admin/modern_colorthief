@@ -32,9 +32,46 @@ jobs:
           sudo apt-get install -y libclang-dev php-dev
       - name: Build PHP extension
         run: cargo build --release -p modern-colorthief-php
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Install PHP dependencies
         working-directory: crates/php-bindings
         run: composer install --no-interaction --prefer-dist
       - name: Run PHP tests
         working-directory: crates/php-bindings
         run: php -d extension=../../target/release/libmodern_colorthief.so vendor/bin/pest
+
+  gpu-php-test:
+    name: GPU PHP tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Vulkan runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          ini-file: development
+          extensions: gd
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev php-dev
+      - name: Build GPU PHP extension
+        run: cargo build --release -p modern-colorthief-php-gpu
+      - name: Run Rust GPU tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+      - name: Install PHP dependencies
+        working-directory: crates/php-bindings-gpu
+        run: composer install --no-interaction --prefer-dist
+      - name: Run GPU PHP tests
+        working-directory: crates/php-bindings-gpu
+        run: php -d extension=../../target/release/libmodern_colorthief_gpu.so vendor/bin/pest

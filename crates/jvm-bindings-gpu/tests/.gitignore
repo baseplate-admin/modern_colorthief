@@ -1,0 +1,5 @@
+.gradle/
+build/
+native/
+gradlew
+gradle-wrapper.jar
