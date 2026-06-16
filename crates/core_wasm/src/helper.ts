@@ -32,7 +32,17 @@ async function extractPaletteOnGpu(input: ExtractPaletteInput): Promise<Uint8Arr
     // globalThis persists across js_eval() calls in the same runtime
     let device = (globalThis as any)["__wt_gpu_device"] as GPUDevice | null;
     if (!device) {
-        const gpu: GPU | undefined = (globalThis.navigator as Navigator).gpu;
+        // Try multiple paths to find the WebGPU API:
+        // - globalThis.navigator.gpu (standard)
+        // - global.navigator.gpu (Dawn polyfills POSIX global)
+        // - globalThis.gpu (fallback)
+        let gpu: GPU | undefined = (globalThis.navigator as Navigator)?.gpu;
+        if (!gpu) {
+            gpu = ((globalThis as any).global?.navigator as Navigator)?.gpu;
+        }
+        if (!gpu) {
+            gpu = (globalThis as any).gpu as GPU | undefined;
+        }
         if (!gpu) {
             throw new Error("WebGPU is not supported in this environment");
         }
