@@ -9,3 +9,4 @@ if (typeof globalThis.navigator === 'undefined') {
 }
 const gpu = create(['backend=vulkan']);
 globalThis.navigator.gpu = gpu;
+console.log('[test-setup] WebGPU polyfill applied, navigator.gpu =', !!globalThis.navigator.gpu);

@@ -10,29 +10,21 @@ extern "C" {
     fn js_eval_global(code: &str) -> JsValue;
 }
 
+/// Read `globalThis.navigator.gpu` at runtime via raw_module.
+///
+/// Uses raw_module to bypass js_sys's cached global object reference,
+/// which is stale because it's captured before the WebGPU polyfill runs.
+/// raw_module JS executes at call time, reading the real globalThis.
+#[wasm_bindgen(raw_module = "")]
+extern "C" {
+    #[wasm_bindgen(js_name = "function(){return globalThis.navigator&&globalThis.navigator.gpu}")]
+    fn get_gpu_runtime() -> JsValue;
+}
+
 /// Evaluate a JavaScript string in the global scope.
 fn js_eval(code: &str) -> Result<JsValue, String> {
     let result = js_eval_global(&format!("({})", code));
     Ok(result)
-}
-
-/// Read `navigator.gpu` from the global object via js_sys.
-///
-/// This reads the WebGPU polyfill from the same global object that
-/// wasm-bindgen uses for web_sys bindings. The `globalThis.eval()`
-/// scope in Node.js may have a different `globalThis` than the real
-/// global object, so we read the GPU reference here and pass it
-/// as a parameter to the JS helper function.
-fn get_gpu() -> Result<JsValue, String> {
-    let global_obj = js_sys::global();
-    let navigator = js_sys::Reflect::get(&global_obj, &JsValue::from_str("navigator"))
-        .map_err(|e| format!("Failed to get navigator from global object: {:?}", e))?;
-    let gpu = js_sys::Reflect::get(&navigator, &JsValue::from_str("gpu"))
-        .map_err(|_| "navigator.gpu is not set (WebGPU polyfill may not be active)".to_string())?;
-    if gpu.is_undefined() || gpu.is_null() {
-        return Err("navigator.gpu is undefined/null (WebGPU polyfill may not be active)".to_string());
-    }
-    Ok(gpu)
 }
 
 /// Call the WebGPU extract function. Returns a `Vec<u8>` of RGB values.
@@ -51,8 +43,11 @@ pub async fn extract_palette_webgpu(
         ));
     }
 
-    // Read GPU from the global object (same mechanism as web_sys bindings)
-    let gpu = get_gpu().map_err(|e| format!("WebGPU setup error: {}", e))?;
+    // Read GPU from globalThis at runtime (bypasses js_sys cached global)
+    let gpu = get_gpu_runtime();
+    if gpu.is_undefined() || gpu.is_null() {
+        return Err("WebGPU is not available: navigator.gpu is not set (polyfill may not be active)".to_string());
+    }
 
     let extract_fn = js_eval(JS_HELPER)?;
 
