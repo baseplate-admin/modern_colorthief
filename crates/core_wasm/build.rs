@@ -3,8 +3,6 @@ use std::process;
 
 use swc_common::{FileName, GLOBALS, Mark, SourceMap, sync::Lrc};
 use swc_ecma_codegen::{Config as EmitConfig, Emitter, text_writer::JsWriter};
-use swc_ecma_minifier::optimize;
-use swc_ecma_minifier::option::{CompressOptions, ExtraOptions, MangleOptions, MinifyOptions};
 use swc_ecma_parser::{Parser, StringInput, Syntax, TsSyntax, lexer::Lexer};
 use swc_ecma_transforms_typescript::{Config, typescript};
 use swc_ecma_visit::swc_ecma_ast::{Pass, Program};
@@ -25,7 +23,7 @@ fn main() {
     let helper_source = std::fs::read_to_string(helper_path).unwrap();
     let shader_source = std::fs::read_to_string(shader_path).unwrap();
 
-   // Validate original shader with naga (catches author errors)
+    // Validate original shader with naga (catches author errors)
     validate_wgsl(&shader_source, "original shader");
 
     // Minify WGSL shader before embedding
@@ -45,8 +43,8 @@ fn main() {
     // Embed the WGSL shader into the helper source
     let combined = helper_source.replace("$$<WGSL_PLACEHOLDER>$$", &escaped_wgsl);
 
-    // Parse as TypeScript, strip types, minify with SWC
-    let minified = GLOBALS.set(&Default::default(), || {
+    // Parse as TypeScript, strip types, emit JS (no minification)
+    let emitted = GLOBALS.set(&Default::default(), || {
         let cm: Lrc<SourceMap> = Default::default();
 
         // --- Step 1: Parse TypeScript ---
@@ -73,73 +71,19 @@ fn main() {
         let mut program = Program::Module(module);
         stripper.process(&mut program);
 
-        // --- Step 3: Minify with SWC ---
- let minify_options = MinifyOptions {
-            compress: Some(CompressOptions {
-                dead_code: true,
-                drop_console: true,
-                drop_debugger: true,
-                evaluate: false,
-                side_effects: true,
-                unused: true,
-                sequences: 3,
-                reduce_vars: true,
-                reduce_fns: true,
-                collapse_vars: true,
-                comparisons: true,
-                conditionals: false,
-                directives: true,
-                hoist_props: true,
-                if_return: true,
-                inline: 3,
-                join_vars: true,
-                loops: true,
-                merge_imports: true,
-                negate_iife: true,
-                props: true,
-                typeofs: true,
-                module: false,
-                ..Default::default()
-            }),
-            mangle: Some(MangleOptions {
-                top_level: Some(false),
-                keep_class_names: false,
-                keep_fn_names: false,
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        let extra_options = ExtraOptions {
-            unresolved_mark,
-            top_level_mark,
-            mangle_name_cache: None,
-        };
-
-        let optimized = optimize(
-            program,
-            cm.clone(),
-            None,
-            None,
-            &minify_options,
-            &extra_options,
-        );
-
-        // --- Step 4: Emit minified JS ---
+        // --- Step 3: Emit JS (type-stripped only, no minification) ---
+        // SWC minification corrupts embedded WGSL string literals at runtime.
         let mut output = Vec::new();
- let mut emitter = Emitter {
-            cfg: EmitConfig::default()
-                .with_minify(true)
-                .with_ascii_only(true)
-                .with_omit_last_semi(true),
+        let mut emitter = Emitter {
+            cfg: EmitConfig::default(),
             comments: None,
             cm: cm.clone(),
             wr: JsWriter::new(cm, "\n", &mut output, None),
         };
 
         emitter
-            .emit_program(&optimized)
-            .expect("Failed to emit minified JS");
+            .emit_program(&program)
+            .expect("Failed to emit JS");
 
         String::from_utf8(output).expect("JS output is not valid UTF-8")
     });
@@ -147,14 +91,14 @@ fn main() {
     // Write to OUT_DIR
     let out_dir = std::env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("helper.min.js");
-    std::fs::write(&dest_path, &minified).expect("Failed to write minified JS");
+    std::fs::write(&dest_path, &emitted).expect("Failed to write JS");
 
     println!(
         "cargo:warning=WGSL shader: {} -> {} bytes, full JS: {} -> {} bytes",
         shader_source.len(),
         minified_wgsl.len(),
         combined.len(),
-        minified.len()
+        emitted.len()
     );
 }
 
@@ -273,7 +217,7 @@ fn validate_wgsl(source: &str, label: &str) {
         process::exit(1);
     });
 
-  println!(
+    println!(
         "cargo:warning={label}: {} types, {} functions, {} global vars, {} entry points",
         module.types.len(),
         module.functions.len(),
