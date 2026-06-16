@@ -297,9 +297,8 @@ mod tests {
         // 3 bytes — not enough for one RGBA pixel
         let result = extract_palette_from_buffer(&[255, 0, 0], 1, 1, 5, 1);
         // Should either succeed with 0 colors or error
-        match result {
-            Ok(palette) => assert!(palette.is_empty()),
-            Err(_) => {}
+        if let Ok(palette) = result {
+            assert!(palette.is_empty())
         }
     }
 

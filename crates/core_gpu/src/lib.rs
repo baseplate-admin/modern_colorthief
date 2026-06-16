@@ -246,7 +246,7 @@ mod tests {
         assert_eq!(d1, d2);
         assert_ne!(d1, d3);
         // Verify Clone and Copy
-        let _clone = d1.clone();
+        let _clone = d1;
         let _copy = d1;
     }
 

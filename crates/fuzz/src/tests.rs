@@ -20,9 +20,9 @@ fn palettes_approximately_equal(a: &[(u8, u8, u8)], b: &[(u8, u8, u8)], toleranc
 
     for ca in a {
         let matched = b.iter().any(|cb| {
-            let dr = (ca.0 as i32 - cb.0 as i32).unsigned_abs() as u32;
-            let dg = (ca.1 as i32 - cb.1 as i32).unsigned_abs() as u32;
-            let db = (ca.2 as i32 - cb.2 as i32).unsigned_abs() as u32;
+            let dr = (ca.0 as i32 - cb.0 as i32).unsigned_abs();
+            let dg = (ca.1 as i32 - cb.1 as i32).unsigned_abs();
+            let db = (ca.2 as i32 - cb.2 as i32).unsigned_abs();
             dr + dg + db <= tolerance
         });
         if !matched {
@@ -31,9 +31,9 @@ fn palettes_approximately_equal(a: &[(u8, u8, u8)], b: &[(u8, u8, u8)], toleranc
     }
     for cb in b {
         let matched = a.iter().any(|ca| {
-            let dr = (ca.0 as i32 - cb.0 as i32).unsigned_abs() as u32;
-            let dg = (ca.1 as i32 - cb.1 as i32).unsigned_abs() as u32;
-            let db = (ca.2 as i32 - cb.2 as i32).unsigned_abs() as u32;
+            let dr = (ca.0 as i32 - cb.0 as i32).unsigned_abs();
+            let dg = (ca.1 as i32 - cb.1 as i32).unsigned_abs();
+            let db = (ca.2 as i32 - cb.2 as i32).unsigned_abs();
             dr + dg + db <= tolerance
         });
         if !matched {
@@ -56,18 +56,14 @@ fn solid_buffer(r: u8, g: u8, b: u8, width: u32, height: u32) -> Vec<u8> {
 
 /// Generate a two-color buffer (half one color, half another).
 fn two_color_buffer(
-    r1: u8,
-    g1: u8,
-    b1: u8,
-    r2: u8,
-    g2: u8,
-    b2: u8,
+    c1: (u8, u8, u8),
+    c2: (u8, u8, u8),
     width: u32,
     height: u32,
 ) -> Vec<u8> {
     let half = (width * height) as usize / 2;
-    let mut buf = [r1, g1, b1, 255].repeat(half);
-    buf.extend([r2, g2, b2, 255].repeat((width * height) as usize - half));
+    let mut buf = [c1.0, c1.1, c1.2, 255].repeat(half);
+    buf.extend([c2.0, c2.1, c2.2, 255].repeat((width * height) as usize - half));
     buf
 }
 
@@ -91,12 +87,8 @@ fn gradient_buffer(width: u32, height: u32, r_start: u8, r_end: u8, g: u8, b: u8
 fn checkerboard_buffer(
     width: u32,
     height: u32,
-    r1: u8,
-    g1: u8,
-    b1: u8,
-    r2: u8,
-    g2: u8,
-    b2: u8,
+    c1: (u8, u8, u8),
+    c2: (u8, u8, u8),
     tile_size: u32,
 ) -> Vec<u8> {
     let mut buf = Vec::with_capacity((width * height) as usize * 4);
@@ -104,9 +96,9 @@ fn checkerboard_buffer(
         for x in 0..width {
             let tile = (x / tile_size + y / tile_size) % 2;
             let (r, g, b) = if tile == 0 {
-                (r1, g1, b1)
+                (c1.0, c1.1, c1.2)
             } else {
-                (r2, g2, b2)
+                (c2.0, c2.1, c2.2)
             };
             buf.extend_from_slice(&[r, g, b, 255]);
         }
@@ -203,7 +195,7 @@ fn assert_cpu_gpu_both_valid(
 /// color_thief requires max_colors >= 2 and quality 1..10.
 fn assert_cpu_vs_reference(buf: &[u8], color_count: u8, quality: u8, tolerance: u32, label: &str) {
     let ct_count = color_count.max(2);
-    let ct_quality = quality.max(1).min(10);
+    let ct_quality = quality.clamp(1, 10);
 
     let cpu = cpu_extract(buf, 50, 50, color_count, quality);
     let ref_result = get_palette(buf, ColorFormat::Rgba, ct_quality, ct_count);
@@ -215,9 +207,9 @@ fn assert_cpu_vs_reference(buf: &[u8], color_count: u8, quality: u8, tolerance: 
             // Check: every CPU color has a nearby match in the reference palette
             let all_matched = cpu_palette.iter().all(|ca| {
                 ref_tuples.iter().any(|cb| {
-                    let dr = (ca.0 as i32 - cb.0 as i32).unsigned_abs() as u32;
-                    let dg = (ca.1 as i32 - cb.1 as i32).unsigned_abs() as u32;
-                    let db = (ca.2 as i32 - cb.2 as i32).unsigned_abs() as u32;
+                    let dr = (ca.0 as i32 - cb.0 as i32).unsigned_abs();
+                    let dg = (ca.1 as i32 - cb.1 as i32).unsigned_abs();
+                    let db = (ca.2 as i32 - cb.2 as i32).unsigned_abs();
                     dr + dg + db <= tolerance
                 })
             });
@@ -304,25 +296,25 @@ fn fuzz_cpu_gpu_solid_mid_gray() {
 
 #[test]
 fn fuzz_cpu_gpu_two_colors_rgb() {
-    let buf = two_color_buffer(255, 0, 0, 0, 255, 0, 50, 50);
+    let buf = two_color_buffer((255, 0, 0), (0, 255, 0), 50, 50);
     assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 30, "two_colors_rgb");
 }
 
 #[test]
 fn fuzz_cpu_gpu_two_colors_blue_purple() {
-    let buf = two_color_buffer(0, 0, 255, 128, 0, 128, 50, 50);
+    let buf = two_color_buffer((0, 0, 255), (128, 0, 128), 50, 50);
     assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 30, "two_colors_blue_purple");
 }
 
 #[test]
 fn fuzz_cpu_gpu_two_colors_complementary() {
-    let buf = two_color_buffer(255, 128, 0, 0, 128, 255, 50, 50);
+    let buf = two_color_buffer((255, 128, 0), (0, 128, 255), 50, 50);
     assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 30, "two_colors_complementary");
 }
 
 #[test]
 fn fuzz_cpu_gpu_two_colors_near_black() {
-    let buf = two_color_buffer(10, 10, 10, 50, 50, 50, 50, 50);
+    let buf = two_color_buffer((10, 10, 10), (50, 50, 50), 50, 50);
     assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 30, "two_colors_near_black");
 }
 
@@ -338,13 +330,13 @@ fn fuzz_cpu_gpu_horizontal_gradient() {
 
 #[test]
 fn fuzz_cpu_gpu_checkerboard() {
-    let buf = checkerboard_buffer(60, 60, 200, 50, 50, 50, 50, 200, 4);
+    let buf = checkerboard_buffer(60, 60, (200, 50, 50), (50, 50, 200), 4);
     assert_cpu_gpu_both_valid(&buf, 60, 60, 5, 1, "checkerboard");
 }
 
 #[test]
 fn fuzz_cpu_gpu_checkerboard_fine() {
-    let buf = checkerboard_buffer(80, 80, 255, 0, 0, 0, 0, 255, 2);
+    let buf = checkerboard_buffer(80, 80, (255, 0, 0), (0, 0, 255), 2);
     assert_cpu_gpu_both_valid(&buf, 80, 80, 5, 1, "checkerboard_fine");
 }
 
@@ -586,13 +578,13 @@ fn fuzz_cpu_vs_ref_solid_blue() {
 
 #[test]
 fn fuzz_cpu_vs_ref_two_colors() {
-    let buf = two_color_buffer(255, 0, 0, 0, 255, 0, 50, 50);
+    let buf = two_color_buffer((255, 0, 0), (0, 255, 0), 50, 50);
     assert_cpu_vs_reference(&buf, 5, 1, 30, "two_colors");
 }
 
 #[test]
 fn fuzz_cpu_vs_ref_two_colors_blue_purple() {
-    let buf = two_color_buffer(0, 0, 255, 128, 0, 128, 50, 50);
+    let buf = two_color_buffer((0, 0, 255), (128, 0, 128), 50, 50);
     assert_cpu_vs_reference(&buf, 5, 1, 30, "two_colors_blue_purple");
 }
 
@@ -604,7 +596,7 @@ fn fuzz_cpu_vs_ref_gradient() {
 
 #[test]
 fn fuzz_cpu_vs_ref_checkerboard() {
-    let buf = checkerboard_buffer(60, 60, 200, 50, 50, 50, 50, 200, 4);
+    let buf = checkerboard_buffer(60, 60, (200, 50, 50), (50, 50, 200), 4);
     assert_cpu_vs_reference(&buf, 5, 1, 40, "checkerboard");
 }
 
@@ -683,7 +675,7 @@ fn fuzz_ref_solid_dominant_color() {
 
 #[test]
 fn fuzz_ref_two_colors_found() {
-    let buf = two_color_buffer(255, 0, 0, 0, 255, 0, 50, 50);
+    let buf = two_color_buffer((255, 0, 0), (0, 255, 0), 50, 50);
     let palette = get_palette(&buf, ColorFormat::Rgba, 1, 5).unwrap();
     let has_red = palette.iter().any(|c| c.r > 200 && c.g < 55 && c.b < 55);
     let has_green = palette.iter().any(|c| c.r < 55 && c.g > 200 && c.b < 55);
@@ -775,7 +767,7 @@ fn fuzz_all_three_solid_red() {
 
 #[test]
 fn fuzz_all_three_two_colors() {
-    let buf = two_color_buffer(255, 0, 0, 0, 0, 255, 50, 50);
+    let buf = two_color_buffer((255, 0, 0), (0, 0, 255), 50, 50);
     let cpu = cpu_extract(&buf, 50, 50, 5, 1);
     let gpu = gpu_extract(&buf, 50, 50, 5, 1);
     let ref_result = get_palette(&buf, ColorFormat::Rgba, 1, 5);
