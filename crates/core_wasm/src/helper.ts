@@ -15,22 +15,31 @@ interface ExtractPaletteInput {
 }
 
 /**
- * Cached GPU device reused across invocations.
+ * Cached GPU device persisted on globalThis so it survives across
+ * separate js_eval() invocations.
  *
  * Dawn (Node.js WebGPU) expects devices to be long-lived and reused.
  * Creating a new device per call causes device invalidation because
  * pending GPU work from prior devices isn't drained before destruction.
+ *
+ * We use globalThis because js_eval re-evaluates the helper source on
+ * every invocation, meaning local `let` variables are reinitialized each
+ * time. globalThis persists across eval calls in the same runtime.
  */
-let gpuDevice: GPUDevice | null = null;
+const _gpuCache = "__wt_gpu_device";
 
-/**
- * Return the cached GPU device, creating one if needed.
- * The device's `.lost` handler clears the cache on device loss so the
- * next call gets a fresh device.
- */
+function getCachedDevice(): GPUDevice | null {
+    return (globalThis as any)[_gpuCache] as GPUDevice | null;
+}
+
+function setCachedDevice(device: GPUDevice | null): void {
+    (globalThis as any)[_gpuCache] = device;
+}
+
 async function getDevice(): Promise<GPUDevice> {
-    if (gpuDevice) {
-        return gpuDevice;
+    const cached = getCachedDevice();
+    if (cached) {
+        return cached;
     }
 
     const gpu: GPU | undefined = (globalThis.navigator as Navigator).gpu;
@@ -43,14 +52,15 @@ async function getDevice(): Promise<GPUDevice> {
         throw new Error("No GPU adapter is available on this device");
     }
 
-    gpuDevice = await adapter.requestDevice();
+    const device = await adapter.requestDevice();
 
-    gpuDevice.lost.then(({ reason, message }) => {
+    device.lost.then(({ reason, message }) => {
         console.warn("GPU device lost:", reason, message);
-        gpuDevice = null;
+        setCachedDevice(null);
     });
 
-    return gpuDevice;
+    setCachedDevice(device);
+    return device;
 }
 
 /**
