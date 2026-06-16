@@ -78,7 +78,7 @@ jobs:
         run: npm ci
       - name: Verify webgpu module loads
         working-directory: crates/wasm-bindings-gpu
-        run: node test-webgpu-setup.mjs && echo "WebGPU OK"
+        run: node test-webgpu-setup.cjs && echo "WebGPU OK"
       - name: Run GPU Node.js tests
         working-directory: crates/wasm-bindings-gpu
         run: wasm-pack test --node --release
