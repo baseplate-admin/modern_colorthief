@@ -16,27 +16,20 @@ fn js_eval(code: &str) -> Result<JsValue, String> {
     Ok(result)
 }
 
-/// Read `navigator.gpu` via a getter function defined by the test polyfill.
+/// Read `navigator.gpu` from the global object via js_sys.
 ///
-/// js_sys::global() caches the global object at WASM load time, before the
-/// WebGPU polyfill runs. The polyfill defines __wt_get_gpu on globalThis
-/// via Object.defineProperty. Calling this getter reads globalThis.navigator.gpu
-/// at call time, bypassing the stale cached reference.
+/// The WebGPU polyfill is loaded via NODE_OPTIONS --require in CI,
+/// so js_sys::global() captures the polyfilled state at WASM init time.
 fn get_gpu() -> Result<JsValue, String> {
     let global_obj = js_sys::global();
-    let getter = js_sys::Reflect::get(&global_obj, &JsValue::from_str("__wt_get_gpu"))
-        .map_err(|e| format!("Failed to get __wt_get_gpu getter: {:?}", e))?;
-    if getter.is_undefined() || getter.is_null() {
-        return Err("__wt_get_gpu not defined (polyfill may not have run)".to_string());
-    }
-    let getter_fn = getter.dyn_ref::<js_sys::Function>()
-        .ok_or("__wt_get_gpu is not a function")?;
-    let result = getter_fn.call0(&global_obj)
-        .map_err(|e| format!("__wt_get_gpu call failed: {:?}", e))?;
-    if result.is_undefined() || result.is_null() {
-        Err("navigator.gpu is not set (WebGPU polyfill may not be active)".to_string())
+    let navigator = js_sys::Reflect::get(&global_obj, &JsValue::from_str("navigator"))
+        .map_err(|e| format!("Failed to get navigator: {:?}", e))?;
+    let gpu = js_sys::Reflect::get(&navigator, &JsValue::from_str("gpu"))
+        .map_err(|_| "navigator.gpu is not set (WebGPU polyfill may not be active)".to_string())?;
+    if gpu.is_undefined() || gpu.is_null() {
+        Err("navigator.gpu is undefined/null (WebGPU polyfill may not be active)".to_string())
     } else {
-        Ok(result)
+        Ok(gpu)
     }
 }
 
