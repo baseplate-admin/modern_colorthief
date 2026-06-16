@@ -10,11 +10,7 @@ use rand::{Rng, SeedableRng};
 
 /// Compare two palettes for approximate equality.
 /// Each color in one palette should have a close match in the other.
-fn palettes_approximately_equal(
-    a: &[(u8, u8, u8)],
-    b: &[(u8, u8, u8)],
-    tolerance: u32,
-) -> bool {
+fn palettes_approximately_equal(a: &[(u8, u8, u8)], b: &[(u8, u8, u8)], tolerance: u32) -> bool {
     if a.is_empty() && b.is_empty() {
         return true;
     }
@@ -107,7 +103,11 @@ fn checkerboard_buffer(
     for y in 0..height {
         for x in 0..width {
             let tile = (x / tile_size + y / tile_size) % 2;
-            let (r, g, b) = if tile == 0 { (r1, g1, b1) } else { (r2, g2, b2) };
+            let (r, g, b) = if tile == 0 {
+                (r1, g1, b1)
+            } else {
+                (r2, g2, b2)
+            };
             buf.extend_from_slice(&[r, g, b, 255]);
         }
     }
@@ -170,8 +170,16 @@ fn assert_cpu_gpu_both_valid(
 
     match (cpu, gpu) {
         (Ok(cpu_palette), Ok(gpu_palette)) => {
-            assert!(!cpu_palette.is_empty(), "{}: CPU returned non-empty palette", label);
-            assert!(!gpu_palette.is_empty(), "{}: GPU returned non-empty palette", label);
+            assert!(
+                !cpu_palette.is_empty(),
+                "{}: CPU returned non-empty palette",
+                label
+            );
+            assert!(
+                !gpu_palette.is_empty(),
+                "{}: GPU returned non-empty palette",
+                label
+            );
             assert!(
                 cpu_palette.len() <= color_count as usize,
                 "{}: CPU returned more than color_count colors",
@@ -193,13 +201,7 @@ fn assert_cpu_gpu_both_valid(
 /// Different algorithms produce different intermediate colors, so we check that
 /// each CPU color has a nearby match in the reference palette (one-directional).
 /// color_thief requires max_colors >= 2 and quality 1..10.
-fn assert_cpu_vs_reference(
-    buf: &[u8],
-    color_count: u8,
-    quality: u8,
-    tolerance: u32,
-    label: &str,
-) {
+fn assert_cpu_vs_reference(buf: &[u8], color_count: u8, quality: u8, tolerance: u32, label: &str) {
     let ct_count = color_count.max(2);
     let ct_quality = quality.max(1).min(10);
 
@@ -208,7 +210,8 @@ fn assert_cpu_vs_reference(
 
     match (cpu, ref_result) {
         (Ok(cpu_palette), Ok(ref_palette)) => {
-            let ref_tuples: Vec<(u8, u8, u8)> = ref_palette.iter().map(|c| (c.r, c.g, c.b)).collect();
+            let ref_tuples: Vec<(u8, u8, u8)> =
+                ref_palette.iter().map(|c| (c.r, c.g, c.b)).collect();
             // Check: every CPU color has a nearby match in the reference palette
             let all_matched = cpu_palette.iter().all(|ca| {
                 ref_tuples.iter().any(|cb| {
@@ -222,9 +225,7 @@ fn assert_cpu_vs_reference(
                 all_matched,
                 "{}: Each CPU color should have a nearby match in color_thief palette.\n\
                  CPU: {:?}\nref: {:?}",
-                label,
-                cpu_palette,
-                ref_tuples
+                label, cpu_palette, ref_tuples
             );
         }
         (Ok(p), Err(e)) => {
@@ -389,7 +390,14 @@ fn fuzz_cpu_gpu_random_seed_1337() {
 #[test]
 fn fuzz_cpu_gpu_random_varied_dimensions() {
     let mut rng = StdRng::seed_from_u64(777);
-    let dimensions = [(32, 32), (50, 30), (30, 50), (100, 50), (50, 100), (128, 64)];
+    let dimensions = [
+        (32, 32),
+        (50, 30),
+        (30, 50),
+        (100, 50),
+        (50, 100),
+        (128, 64),
+    ];
     for (w, h) in dimensions {
         let buf = random_buffer(w, h, &mut rng);
         assert_cpu_gpu_both_valid(&buf, w, h, 5, 1, &format!("random_{}x{}", w, h));
@@ -667,7 +675,9 @@ fn fuzz_ref_solid_dominant_color() {
             && (dominant.g as i32 - 100).unsigned_abs() < 30
             && (dominant.b as i32 - 50).unsigned_abs() < 30,
         "color_thief dominant color should be near (200, 100, 50), got ({}, {}, {})",
-        dominant.r, dominant.g, dominant.b
+        dominant.r,
+        dominant.g,
+        dominant.b
     );
 }
 
@@ -684,7 +694,10 @@ fn fuzz_ref_two_colors_found() {
 fn fuzz_ref_gradient_multiple_colors() {
     let buf = gradient_buffer(60, 60, 0, 255, 128, 64);
     let palette = get_palette(&buf, ColorFormat::Rgba, 1, 5).unwrap();
-    assert!(palette.len() >= 2, "color_thief should find >= 2 colors in gradient");
+    assert!(
+        palette.len() >= 2,
+        "color_thief should find >= 2 colors in gradient"
+    );
 }
 
 #[test]
@@ -701,7 +714,9 @@ fn fuzz_ref_dominant_color_with_accent() {
             && (dominant.g as i32 - 150).unsigned_abs() < 40
             && (dominant.b as i32 - 200).unsigned_abs() < 40,
         "color_thief should find dominant color near (100, 150, 200), got ({}, {}, {})",
-        dominant.r, dominant.g, dominant.b
+        dominant.r,
+        dominant.g,
+        dominant.b
     );
 }
 
@@ -746,8 +761,13 @@ fn fuzz_all_three_solid_red() {
             // All three should find red
             let cpu_red = cpu_p.iter().any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
             let gpu_red = gpu_p.iter().any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
-            let ref_red = ref_tuples.iter().any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
-            assert!(cpu_red || gpu_red || ref_red, "At least one backend should find red");
+            let ref_red = ref_tuples
+                .iter()
+                .any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
+            assert!(
+                cpu_red || gpu_red || ref_red,
+                "At least one backend should find red"
+            );
         }
         _ => { /* Some backends unavailable */ }
     }

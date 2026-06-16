@@ -137,7 +137,11 @@ impl VulkanBackend {
                 }
             }
             if let Ok(sdk) = std::env::var("VULKAN_SDK") {
-                for sub in &["lib/libvulkan.so", "lib/libvulkan.so.1", "lib/x86_64-linux-gnu/libvulkan.so"] {
+                for sub in &[
+                    "lib/libvulkan.so",
+                    "lib/libvulkan.so.1",
+                    "lib/x86_64-linux-gnu/libvulkan.so",
+                ] {
                     let sdk_path = format!("{}/{}", sdk, sub);
                     if std::path::Path::new(&sdk_path).exists() {
                         return Some(std::path::PathBuf::from(&sdk_path));
@@ -169,7 +173,7 @@ impl VulkanBackend {
                     return Some(std::path::PathBuf::from(p));
                 }
             }
-           if let Ok(root) = std::env::var("MOLTENVK_ROOT") {
+            if let Ok(root) = std::env::var("MOLTENVK_ROOT") {
                 let moltenvk_path = format!("{}/libMoltenVK.dylib", root);
                 if std::path::Path::new(&moltenvk_path).exists() {
                     return Some(std::path::PathBuf::from(&moltenvk_path));
@@ -190,8 +194,7 @@ impl VulkanBackend {
     /// the Entry. Using the Instance after Entry drops is UB (segfaults on
     /// Windows SwiftShader CI).
     fn create_instance_pair(&self) -> Result<(ash::Entry, ash::Instance), String> {
-        let loader_path = Self::find_vulkan_loader()
-            .ok_or_else(Self::vulkan_not_found_error)?;
+        let loader_path = Self::find_vulkan_loader().ok_or_else(Self::vulkan_not_found_error)?;
 
         // Use explicit path loading to avoid DLL search path issues on Windows.
         // This is critical for SwiftShader on CI where vulkan-1.dll is not in PATH.
@@ -489,17 +492,26 @@ mod tests {
 
     #[test]
     fn test_gpu_device_discrete() {
-        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::DISCRETE_GPU), GpuDevice::Discrete);
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::DISCRETE_GPU),
+            GpuDevice::Discrete
+        );
     }
 
     #[test]
     fn test_gpu_device_integrated() {
-        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::INTEGRATED_GPU), GpuDevice::Integrated);
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::INTEGRATED_GPU),
+            GpuDevice::Integrated
+        );
     }
 
     #[test]
     fn test_gpu_device_virtual() {
-        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::VIRTUAL_GPU), GpuDevice::Virtual);
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::VIRTUAL_GPU),
+            GpuDevice::Virtual
+        );
     }
 
     #[test]
@@ -509,7 +521,10 @@ mod tests {
 
     #[test]
     fn test_gpu_device_other() {
-        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::OTHER), GpuDevice::Other);
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::OTHER),
+            GpuDevice::Other
+        );
     }
 
     // --- gpu_extract edge cases ---

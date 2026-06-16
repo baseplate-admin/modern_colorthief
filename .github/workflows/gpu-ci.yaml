@@ -110,7 +110,7 @@ jobs:
         shell: bash
         run: |
           if command -v vulkaninfo &>/dev/null; then
-            vulkaninfo --summary
+            vulkaninfo --summary || echo "vulkaninfo failed - MoltenVK driver may not be loadable in this runner, but cargo tests use the Vulkan loader which can find it"
           else
             echo "vulkaninfo not found, checking MoltenVK..."
             echo "MOLTENVK_ROOT=${MOLTENVK_ROOT:-<not set>}"
@@ -189,11 +189,18 @@ jobs:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install build tools
-        run: pip install maturin pytest Pillow
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install maturin pytest Pillow
       - name: Build GPU Python module
-        run: maturin develop --release
+        run: |
+          source .venv/bin/activate
+          maturin develop --release
       - name: Run Rust core tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
         working-directory: .
       - name: Run GPU Python tests
-        run: pytest tests/ -v
+        run: |
+          source .venv/bin/activate
+          pytest tests/ -v

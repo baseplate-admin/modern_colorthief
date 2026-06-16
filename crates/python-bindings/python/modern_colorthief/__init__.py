@@ -23,7 +23,7 @@ def _to_rgba_pixels(image):
             raise TypeError(
                 f"image must be a file path, bytes, BytesIO, or PIL Image, not {type(image).__name__}"
             )
-    except (FileNotFoundError, UnidentifiedImageError) as e:
+    except (FileNotFoundError, IsADirectoryError, UnidentifiedImageError) as e:
         raise ValueError(str(e))
     img = img.convert("RGBA")
     width, height = img.size

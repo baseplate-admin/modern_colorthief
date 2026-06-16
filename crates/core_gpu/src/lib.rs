@@ -98,7 +98,11 @@ mod tests {
         // Either the loader is found or not — both are valid.
         // If found, the loader path should point to an existing file.
         if let Some(path) = loader_path {
-            assert!(path.exists(), "Vulkan loader path exists: {}", path.display());
+            assert!(
+                path.exists(),
+                "Vulkan loader path exists: {}",
+                path.display()
+            );
         }
     }
 
@@ -112,7 +116,9 @@ mod tests {
                 assert!(!palette.is_empty(), "palette should not be empty");
                 // Should contain a color close to red
                 assert!(
-                    palette.iter().any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55),
+                    palette
+                        .iter()
+                        .any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55),
                     "palette should contain a red-dominant color"
                 );
             }
@@ -132,7 +138,9 @@ mod tests {
             Ok(palette) => {
                 assert!(!palette.is_empty());
                 assert!(
-                    palette.iter().any(|(r, g, b)| *r < 55 && *g > 200 && *b < 55),
+                    palette
+                        .iter()
+                        .any(|(r, g, b)| *r < 55 && *g > 200 && *b < 55),
                     "palette should contain a green-dominant color"
                 );
             }
@@ -149,7 +157,9 @@ mod tests {
             Ok(palette) => {
                 assert!(!palette.is_empty());
                 assert!(
-                    palette.iter().any(|(r, g, b)| *r < 55 && *g < 55 && *b > 200),
+                    palette
+                        .iter()
+                        .any(|(r, g, b)| *r < 55 && *g < 55 && *b > 200),
                     "palette should contain a blue-dominant color"
                 );
             }
@@ -163,7 +173,10 @@ mod tests {
         let buffer: Vec<u8> = [100u8, 150, 200, 255].repeat(100);
         let result = extract_palette_from_buffer(&buffer, 10, 10, 1, 1);
         if let Ok(palette) = result {
-            assert!(palette.len() <= 1, "color_count=1 should return at most 1 color");
+            assert!(
+                palette.len() <= 1,
+                "color_count=1 should return at most 1 color"
+            );
         }
     }
 
@@ -175,7 +188,11 @@ mod tests {
             let result = extract_palette_from_buffer(&buffer, 10, 10, 5, quality);
             match result {
                 Ok(palette) => {
-                    assert!(!palette.is_empty(), "quality={} should return colors", quality);
+                    assert!(
+                        !palette.is_empty(),
+                        "quality={} should return colors",
+                        quality
+                    );
                 }
                 Err(_) => { /* GPU not available */ }
             }

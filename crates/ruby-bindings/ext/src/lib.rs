@@ -87,7 +87,11 @@ mod tests {
         buf
     }
 
-    fn build_image(width: u32, height: u32, pixel_fn: impl Fn(u32, u32) -> (u8, u8, u8)) -> Vec<u8> {
+    fn build_image(
+        width: u32,
+        height: u32,
+        pixel_fn: impl Fn(u32, u32) -> (u8, u8, u8),
+    ) -> Vec<u8> {
         let (w, h) = (width, height);
         let mut buf = Vec::with_capacity((w * h) as usize * 4);
         for y in 0..h {
@@ -149,7 +153,9 @@ mod tests {
         let rs = rstring(&pixels);
         let palette = get_palette(rs, 3, 3, 5, 1).unwrap();
         assert!(!palette.is_empty());
-        assert!(palette.iter().any(|c| c[0] > 200 && c[1] > 200 && c[2] > 200));
+        assert!(palette
+            .iter()
+            .any(|c| c[0] > 200 && c[1] > 200 && c[2] > 200));
     }
 
     // ---------------------------------------------------------------------------
@@ -179,7 +185,10 @@ mod tests {
         for color in &palette {
             assert_eq!(color.len(), 3, "each color should have 3 channels");
             for &v in color {
-                assert!((v as i32) >= 0 && (v as i32) <= 255, "channel values in [0, 255]");
+                assert!(
+                    (v as i32) >= 0 && (v as i32) <= 255,
+                    "channel values in [0, 255]"
+                );
             }
         }
     }
@@ -204,7 +213,11 @@ mod tests {
         let pixels = solid_pixels(200, 100, 50, 400);
         let rs = rstring(&pixels);
         let palette = get_palette(rs, 20, 20, 1, 1).unwrap();
-        assert_eq!(palette.len(), 1, "color_count=1 should return exactly 1 color");
+        assert_eq!(
+            palette.len(),
+            1,
+            "color_count=1 should return exactly 1 color"
+        );
     }
 
     #[ruby_test]
@@ -328,7 +341,10 @@ mod tests {
         let rs2 = rstring(&green);
         let c1 = get_color(rs1, 10, 10, 1).unwrap();
         let c2 = get_color(rs2, 10, 10, 1).unwrap();
-        assert_ne!(c1, c2, "different images should yield different dominant colors");
+        assert_ne!(
+            c1, c2,
+            "different images should yield different dominant colors"
+        );
     }
 
     // ---------------------------------------------------------------------------
@@ -371,9 +387,7 @@ mod tests {
 
     #[ruby_test]
     fn test_non_square_wide() {
-        let pixels = build_image(10, 2, |x, _| {
-            if x < 5 { (255, 0, 0) } else { (0, 0, 255) }
-        });
+        let pixels = build_image(10, 2, |x, _| if x < 5 { (255, 0, 0) } else { (0, 0, 255) });
         let rs = rstring(&pixels);
         let color = get_color(rs, 10, 2, 1).unwrap();
         assert_eq!(color.len(), 3);
@@ -382,7 +396,11 @@ mod tests {
     #[ruby_test]
     fn test_non_square_tall() {
         let pixels = build_image(2, 10, |_, y| {
-            if y < 5 { (200, 100, 50) } else { (50, 100, 200) }
+            if y < 5 {
+                (200, 100, 50)
+            } else {
+                (50, 100, 200)
+            }
         });
         let rs = rstring(&pixels);
         let palette = get_palette(rs, 2, 10, 5, 1).unwrap();
@@ -395,14 +413,14 @@ mod tests {
         let pixels = solid_pixels(170, 85, 220, 10_000);
         let rs = rstring(&pixels);
         let palette = get_palette(rs, 100, 100, 10, 1).unwrap();
-        assert!(palette.iter().any(|c| c[0] == 170 && c[1] == 85 && c[2] == 220));
+        assert!(palette
+            .iter()
+            .any(|c| c[0] == 170 && c[1] == 85 && c[2] == 220));
     }
 
     #[ruby_test]
     fn test_gradient_image() {
-        let pixels = build_image(30, 30, |x, _| {
-            ((x * 8) as u8, 128, 64)
-        });
+        let pixels = build_image(30, 30, |x, _| ((x * 8) as u8, 128, 64));
         let rs = rstring(&pixels);
         let palette = get_palette(rs, 30, 30, 5, 1).unwrap();
         assert!(!palette.is_empty());
@@ -411,7 +429,11 @@ mod tests {
     #[ruby_test]
     fn test_checkerboard() {
         let pixels = build_image(50, 50, |x, y| {
-            if (x + y) % 2 == 0 { (200, 50, 50) } else { (50, 50, 200) }
+            if (x + y) % 2 == 0 {
+                (200, 50, 50)
+            } else {
+                (50, 50, 200)
+            }
         });
         let rs = rstring(&pixels);
         let palette = get_palette(rs, 50, 50, 5, 1).unwrap();
@@ -443,7 +465,6 @@ mod tests {
         assert!(result.is_err());
     }
 
- 
     // ---------------------------------------------------------------------------
     // Quality edge cases — 0 (clamped), high values
     // ---------------------------------------------------------------------------
@@ -480,7 +501,6 @@ mod tests {
         assert_eq!(color.len(), 3);
     }
 
- 
     // ---------------------------------------------------------------------------
     // GC stress — repeated calls should not leak or crash
     // ---------------------------------------------------------------------------

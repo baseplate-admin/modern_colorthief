@@ -204,15 +204,7 @@ mod tests {
         [r, g, b, 255].repeat(count)
     }
 
-    fn two_color_buffer(
-        r1: u8,
-        g1: u8,
-        b1: u8,
-        r2: u8,
-        g2: u8,
-        b2: u8,
-        count: usize,
-    ) -> Vec<u8> {
+    fn two_color_buffer(r1: u8, g1: u8, b1: u8, r2: u8, g2: u8, b2: u8, count: usize) -> Vec<u8> {
         let mut buf = solid_buffer(r1, g1, b1, count);
         buf.extend(solid_buffer(r2, g2, b2, count));
         buf
@@ -459,10 +451,7 @@ mod tests {
     #[test]
     fn test_bucket_avg() {
         let bucket = Bucket {
-            pixels: vec![
-                Color { r: 255, g: 0, b: 0 },
-                Color { r: 0, g: 0, b: 255 },
-            ],
+            pixels: vec![Color { r: 255, g: 0, b: 0 }, Color { r: 0, g: 0, b: 255 }],
         };
         let avg = bucket.avg();
         assert_eq!(avg.r, 127); // (255 + 0) / 2 = 127
@@ -475,7 +464,11 @@ mod tests {
         let bucket = Bucket {
             pixels: vec![
                 Color { r: 0, g: 0, b: 0 },
-                Color { r: 255, g: 255, b: 255 },
+                Color {
+                    r: 255,
+                    g: 255,
+                    b: 255,
+                },
             ],
         };
         let vol = bucket.volume();
@@ -486,7 +479,11 @@ mod tests {
     #[test]
     fn test_bucket_single_pixel_volume() {
         let bucket = Bucket {
-            pixels: vec![Color { r: 100, g: 100, b: 100 }],
+            pixels: vec![Color {
+                r: 100,
+                g: 100,
+                b: 100,
+            }],
         };
         let vol = bucket.volume();
         // spread: 0*0*0 = 0, but max(1) * 1 = 1
@@ -498,7 +495,11 @@ mod tests {
         let bucket = Bucket {
             pixels: vec![
                 Color { r: 0, g: 10, b: 10 },
-                Color { r: 255, g: 20, b: 20 },
+                Color {
+                    r: 255,
+                    g: 20,
+                    b: 20,
+                },
             ],
         };
         assert_eq!(longest_axis(&bucket), 0); // red axis has largest spread
@@ -509,7 +510,11 @@ mod tests {
         let bucket = Bucket {
             pixels: vec![
                 Color { r: 10, g: 0, b: 10 },
-                Color { r: 20, g: 255, b: 20 },
+                Color {
+                    r: 20,
+                    g: 255,
+                    b: 20,
+                },
             ],
         };
         assert_eq!(longest_axis(&bucket), 1); // green axis has largest spread
@@ -520,7 +525,11 @@ mod tests {
         let bucket = Bucket {
             pixels: vec![
                 Color { r: 10, g: 10, b: 0 },
-                Color { r: 20, g: 20, b: 255 },
+                Color {
+                    r: 20,
+                    g: 20,
+                    b: 255,
+                },
             ],
         };
         assert_eq!(longest_axis(&bucket), 2); // blue axis has largest spread
