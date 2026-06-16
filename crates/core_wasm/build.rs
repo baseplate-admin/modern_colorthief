@@ -32,25 +32,17 @@ fn main() {
     // Validate minified shader with naga (catches minifier bugs)
     validate_wgsl(&minified_wgsl, "minified shader");
 
-    // Escape WGSL for embedding in a JS string literal
-    let escaped_wgsl = minified_wgsl
-        .replace('\\', "\\\\")
-        .replace('\n', "\\n")
-        .replace('"', "\\\"")
-        .replace("`", "\\`")
-        .replace('\r', "");
-
-    // Embed the WGSL shader into the helper source
-    let combined = helper_source.replace("$$<WGSL_PLACEHOLDER>$$", &escaped_wgsl);
-
-    // Parse as TypeScript, strip types, emit JS (no minification)
+    // Parse as TypeScript, strip types, emit JS
+    // Note: WGSL is NOT embedded in the helper source - we use a template literal
+    // placeholder `${__WGSL_SHADER_CODE__}` that SWC preserves as a runtime expression.
+    // The actual WGSL string is injected into the emitted JS after SWC processing.
     let emitted = GLOBALS.set(&Default::default(), || {
         let cm: Lrc<SourceMap> = Default::default();
 
         // --- Step 1: Parse TypeScript ---
         let fm = cm.new_source_file(
             FileName::Custom("helper.ts".into()).into(),
-            combined.clone(),
+            helper_source.clone(),
         );
 
         let lexer = Lexer::new(
@@ -71,8 +63,7 @@ fn main() {
         let mut program = Program::Module(module);
         stripper.process(&mut program);
 
-        // --- Step 3: Emit JS (type-stripped only, no minification) ---
-        // SWC minification corrupts embedded WGSL string literals at runtime.
+        // --- Step 3: Emit JS ---
         let mut output = Vec::new();
         let mut emitter = Emitter {
             cfg: EmitConfig::default(),
@@ -88,17 +79,22 @@ fn main() {
         String::from_utf8(output).expect("JS output is not valid UTF-8")
     });
 
+    // Inject WGSL shader into the emitted JS (after SWC processing)
+    // This ensures the WGSL string never passes through SWC's AST/code-gen pipeline.
+    let wgsl_placeholder = "${__WGSL_SHADER_CODE__}";
+    let final_js = emitted.replace(wgsl_placeholder, &minified_wgsl);
+
     // Write to OUT_DIR
     let out_dir = std::env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("helper.min.js");
-    std::fs::write(&dest_path, &emitted).expect("Failed to write JS");
+    std::fs::write(&dest_path, &final_js).expect("Failed to write JS");
 
     println!(
         "cargo:warning=WGSL shader: {} -> {} bytes, full JS: {} -> {} bytes",
         shader_source.len(),
         minified_wgsl.len(),
-        combined.len(),
-        emitted.len()
+        helper_source.len(),
+        final_js.len()
     );
 }
 

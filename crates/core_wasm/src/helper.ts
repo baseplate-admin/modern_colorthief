@@ -111,7 +111,7 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
 
     // Create the shader module from the embedded WGSL code
     const shaderModule: GPUShaderModule = device.createShaderModule({
-        code: "$$<WGSL_PLACEHOLDER>$$",
+        code: `${__WGSL_SHADER_CODE__}`,
     });
 
     // First pass: sample pixels and compute per-chunk average colors
