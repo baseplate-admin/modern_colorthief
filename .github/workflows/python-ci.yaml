@@ -3,7 +3,7 @@
 #
 #    maturin generate-ci github --platform all
 #
-name: CI
+name: Python CI
 
 on:
   push:
