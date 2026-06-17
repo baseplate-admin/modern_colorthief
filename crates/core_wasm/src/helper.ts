@@ -67,13 +67,14 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
         throw new Error("Image dimensions must be positive");
     }
 
-    // Convert RGBA u8 (0-255) to vec4<f32> (0.0-1.0) for the shader
-    const pixelData: Float32Array = new Float32Array(totalPixels * 4);
+   // Convert RGBA u8 (0-255) to vec4<f32> (0.0-1.0) for the shader
+    const pixelData: ArrayBuffer = new ArrayBuffer(totalPixels * 16);
+    const pixelView: DataView = new DataView(pixelData);
     for (let i = 0; i < totalPixels; i++) {
-        pixelData[i * 4]     = rawPixels[i * 4]     / 255.0;
-        pixelData[i * 4 + 1] = rawPixels[i * 4 + 1] / 255.0;
-        pixelData[i * 4 + 2] = rawPixels[i * 4 + 2] / 255.0;
-        pixelData[i * 4 + 3] = rawPixels[i * 4 + 3] / 255.0;
+        pixelView.setFloat32(i * 16,     rawPixels[i * 4]     / 255.0, true);
+        pixelView.setFloat32(i * 16 + 4, rawPixels[i * 4 + 1] / 255.0, true);
+        pixelView.setFloat32(i * 16 + 8, rawPixels[i * 4 + 2] / 255.0, true);
+        pixelView.setFloat32(i * 16 + 12, rawPixels[i * 4 + 3] / 255.0, true);
     }
 
     // Allocate the uniform buffer for shader parameters
