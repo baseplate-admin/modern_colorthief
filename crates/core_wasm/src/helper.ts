@@ -83,19 +83,13 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
     // Buffer to hold the final deduplicated color palette
     const uniqueColorBuffer: GPUBuffer = device.createBuffer({
         size: maxColors * 12,
-        usage:
-            GPUBufferUsage.STORAGE |
-            GPUBufferUsage.COPY_SRC |
-            GPUBufferUsage.MAP_READ,
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
 
     // Buffer to hold the count of unique colors found
     const colorCountBuffer: GPUBuffer = device.createBuffer({
         size: 4, // single u32
-        usage:
-            GPUBufferUsage.STORAGE |
-            GPUBufferUsage.COPY_SRC |
-            GPUBufferUsage.MAP_READ,
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
 
     // Staging buffers to read results back from GPU to CPU
