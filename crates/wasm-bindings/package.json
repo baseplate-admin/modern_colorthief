@@ -14,7 +14,8 @@
     "scripts": {
         "remove": "rimraf pkg",
         "build:wasm": "wasm-pack build --release",
-        "build": "npm run remove && npm run build:wasm"
+        "build": "npm run remove && npm run build:wasm",
+        "test": "wasm-pack test --node --release"
     },
     "devDependencies": {
         "rimraf": "^6.1.2"
