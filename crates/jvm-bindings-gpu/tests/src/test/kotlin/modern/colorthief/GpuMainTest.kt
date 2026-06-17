@@ -22,7 +22,7 @@ object GpuLibProbe {
     fun isAvailable(): Boolean = available
 }
 
-@EnabledIf("GpuLibProbe.isAvailable")
+@EnabledIf("modern.colorthief.GpuLibProbe.isAvailable")
 class GpuMainTest {
     // ---------------------------------------------------------------------------
     // Solid color detection
