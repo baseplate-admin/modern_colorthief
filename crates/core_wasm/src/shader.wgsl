@@ -46,7 +46,7 @@ fn dedup(@builtin(global_invocation_id) gid: vec3<u32>) {
     var found: bool = false;
     for (var i: u32 = 0u; i < cnt; i = i + 1u) {
         let e = unique[i];
-        if (abs(e.x - col.x) < 1.5 && abs(e.y - col.y) < 1.5 && abs(e.z - col.z) < 1.5) {
+        if (abs(e.x - col.x) < 0.006 && abs(e.y - col.y) < 0.006 && abs(e.z - col.z) < 0.006) {
             found = true;
             break;
         }
