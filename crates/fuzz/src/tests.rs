@@ -55,12 +55,7 @@ fn solid_buffer(r: u8, g: u8, b: u8, width: u32, height: u32) -> Vec<u8> {
 }
 
 /// Generate a two-color buffer (half one color, half another).
-fn two_color_buffer(
-    c1: (u8, u8, u8),
-    c2: (u8, u8, u8),
-    width: u32,
-    height: u32,
-) -> Vec<u8> {
+fn two_color_buffer(c1: (u8, u8, u8), c2: (u8, u8, u8), width: u32, height: u32) -> Vec<u8> {
     let half = (width * height) as usize / 2;
     let mut buf = [c1.0, c1.1, c1.2, 255].repeat(half);
     buf.extend([c2.0, c2.1, c2.2, 255].repeat((width * height) as usize - half));

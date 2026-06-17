@@ -245,7 +245,7 @@ mod tests {
         let rs = rstring(&pixels);
         let palette = get_palette(rs, 10, 10, 255, 1).unwrap();
         assert!(palette.len() <= 255);
-        assert!(palette.len() >= 1, "solid image returns at least 1 color");
+        assert!(!palette.is_empty(), "solid image returns at least 1 color");
     }
 
     // ---------------------------------------------------------------------------
