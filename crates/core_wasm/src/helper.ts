@@ -222,12 +222,12 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
     const actualColorCount: number = countView.getUint32(0, true);
     const colorView: DataView = new DataView(stagingColorBuffer.getMappedRange());
 
-   // Convert float32 color data to uint8 output array
+   // Convert float32 color data (0.0-1.0) to uint8 (0-255) output array
     const result: Uint8Array = new Uint8Array(actualColorCount * 3);
     for (let i: number = 0; i < actualColorCount; i++) {
-        result[i * 3] = Math.round(colorView.getFloat32(i * 12, true));
-        result[i * 3 + 1] = Math.round(colorView.getFloat32(i * 12 + 4, true));
-        result[i * 3 + 2] = Math.round(colorView.getFloat32(i * 12 + 8, true));
+        result[i * 3] = Math.round(colorView.getFloat32(i * 12, true) * 255);
+        result[i * 3 + 1] = Math.round(colorView.getFloat32(i * 12 + 4, true) * 255);
+        result[i * 3 + 2] = Math.round(colorView.getFloat32(i * 12 + 8, true) * 255);
     }
 
     // Clean up: unmap staging buffers
