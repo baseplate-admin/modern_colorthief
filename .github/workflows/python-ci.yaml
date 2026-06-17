@@ -318,6 +318,7 @@ jobs:
       - name: Setup Vulkan environment (macOS)
         if: startsWith(matrix.os, 'macos')
         shell: bash
+        working-directory: .
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - uses: dtolnay/rust-toolchain@stable
@@ -478,6 +479,7 @@ jobs:
       - name: Setup Vulkan environment (macOS)
         if: startsWith(matrix.os, 'macos')
         shell: bash
+        working-directory: .
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Install uv
