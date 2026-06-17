@@ -11,20 +11,20 @@ RSpec.describe "Colorthief" do
   # Pixel helpers  (RGBA -> binary blob, matching the Rust &[u8] contract)
   # ---------------------------------------------------------------------------
 
-  def self.solid_pixels(r, g, b, count)
+  def solid_pixels(r, g, b, count)
     pixels = []
     count.times { pixels.push(r, g, b, 255) }
     pixels.pack('C*')
   end
 
-  def self.two_color_pixels(r1, g1, b1, r2, g2, b2, count1: 50, count2: 50)
+  def two_color_pixels(r1, g1, b1, r2, g2, b2, count1: 50, count2: 50)
     pixels = []
     count1.times { pixels.push(r1, g1, b1, 255) }
     count2.times { pixels.push(r2, g2, b2, 255) }
     pixels.pack('C*')
   end
 
-  def self.build_image(width, height, &pixel_fn)
+  def build_image(width, height, &pixel_fn)
     pixels = []
     (0...height).each do |y|
       (0...width).each do |x|
