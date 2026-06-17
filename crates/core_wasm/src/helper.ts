@@ -121,23 +121,20 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
         compute: { module: shaderModule, entryPoint: "dedup" },
     });
 
-    // Bind group for the sampling pipeline
+    // Bind group for the sampling pipeline (uses bindings 0, 1, 2)
     const samplingBindGroup: GPUBindGroup = device.createBindGroup({
         layout: samplingPipeline.getBindGroupLayout(0),
         entries: [
             { binding: 0, resource: { buffer: pixelBuffer } },
             { binding: 1, resource: { buffer: uniformBuffer } },
             { binding: 2, resource: { buffer: chunkColorBuffer } },
-            { binding: 3, resource: { buffer: uniqueColorBuffer } },
-            { binding: 4, resource: { buffer: colorCountBuffer } },
         ],
     });
 
-    // Bind group for the deduplication pipeline
+    // Bind group for the deduplication pipeline (uses bindings 1, 2, 3, 4)
     const deduplicationBindGroup: GPUBindGroup = device.createBindGroup({
         layout: deduplicationPipeline.getBindGroupLayout(0),
         entries: [
-            { binding: 0, resource: { buffer: pixelBuffer } },
             { binding: 1, resource: { buffer: uniformBuffer } },
             { binding: 2, resource: { buffer: chunkColorBuffer } },
             { binding: 3, resource: { buffer: uniqueColorBuffer } },
