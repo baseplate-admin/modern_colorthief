@@ -141,7 +141,10 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
       - run: cargo install wasm-pack --locked
-      - uses: browser-actions/setup-geckodriver@main
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: npm install -g geckodriver
       - name: Run Firefox tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --headless --firefox --release -- --features browser-tests
