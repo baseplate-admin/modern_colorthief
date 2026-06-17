@@ -32,6 +32,9 @@ fn main() {
     // Validate minified shader with naga (catches minifier bugs)
     validate_wgsl(&minified_wgsl, "minified shader");
 
+    // Insert newlines between functions to keep line-lengths short for Dawn parser
+    let wgsl_with_newlines = insert_newlines_between_functions(&minified_wgsl);
+
     // Parse as TypeScript, strip types, emit JS
     // Note: WGSL is NOT embedded in the helper source - we use a template literal
     // placeholder `${__WGSL_SHADER_CODE__}` that SWC preserves as a runtime expression.
@@ -82,7 +85,7 @@ fn main() {
     // Inject WGSL shader into the emitted JS (after SWC processing)
     // This ensures the WGSL string never passes through SWC's AST/code-gen pipeline.
     let wgsl_placeholder = "${__WGSL_SHADER_CODE__}";
-    let final_js = emitted.replace(wgsl_placeholder, &minified_wgsl);
+    let final_js = emitted.replace(wgsl_placeholder, &wgsl_with_newlines);
 
     // Write to OUT_DIR
     let out_dir = std::env::var("OUT_DIR").unwrap();
@@ -180,6 +183,31 @@ fn minify_wgsl(source: &str) -> String {
     }
 
     out.trim_end().to_string()
+}
+
+/// Insert newlines between function bodies to keep line-lengths short.
+/// The Dawn WGSL parser has a line-length limit for single-line input.
+fn insert_newlines_between_functions(wgsl: &str) -> String {
+    let mut result = String::with_capacity(wgsl.len() + 10);
+    let mut brace_depth = 0i32;
+    let mut in_function = false;
+
+    for c in wgsl.chars() {
+        result.push(c);
+        if c == '{' {
+            brace_depth += 1;
+            in_function = true;
+        } else if c == '}' {
+            brace_depth -= 1;
+            if brace_depth == 0 && in_function {
+                // End of function body - insert newline before next token
+                result.push('\n');
+                in_function = false;
+            }
+        }
+    }
+
+    result
 }
 
 /// Check if character needs a separator from the preceding token
