@@ -62,6 +62,20 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
     const numberOfChunks: number = Math.ceil(Math.sqrt(totalPixels)) * 4;
     const uniformBufferSize: number = 24; // 6 u32 values x 4 bytes
 
+    // Validate dimensions
+    if (imageWidth <= 0 || imageHeight <= 0) {
+        throw new Error("Image dimensions must be positive");
+    }
+
+    // Convert RGBA u8 (0-255) to vec4<f32> (0.0-1.0) for the shader
+    const pixelData: Float32Array = new Float32Array(totalPixels * 4);
+    for (let i = 0; i < totalPixels; i++) {
+        pixelData[i * 4]     = rawPixels[i * 4]     / 255.0;
+        pixelData[i * 4 + 1] = rawPixels[i * 4 + 1] / 255.0;
+        pixelData[i * 4 + 2] = rawPixels[i * 4 + 2] / 255.0;
+        pixelData[i * 4 + 3] = rawPixels[i * 4 + 3] / 255.0;
+    }
+
     // Allocate the uniform buffer for shader parameters
     const uniformBuffer: GPUBuffer = device.createBuffer({
         size: uniformBufferSize,
@@ -157,7 +171,7 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
     );
 
     // Upload raw pixel data to the GPU
-    device.queue.writeBuffer(pixelBuffer, 0, rawPixels as unknown as GPUAllowSharedBufferSource);
+    device.queue.writeBuffer(pixelBuffer, 0, pixelData as unknown as GPUAllowSharedBufferSource);
 
     // Encode and dispatch the sampling compute pass
     const samplingEncoder: GPUCommandEncoder = device.createCommandEncoder();
