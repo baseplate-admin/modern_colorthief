@@ -37,7 +37,7 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
     }
 }
 
-@compute @workgroup_size(64) @entry_point("dedup")
+@compute @workgroup_size(64)
 fn dedup(@builtin(global_invocation_id) gid: vec3<u32>) {
     let idx = gid.x;
     if (idx >= params.num_chunks) { return; }
