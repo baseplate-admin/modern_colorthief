@@ -3,7 +3,8 @@ members = [
     "crates/core",
     "crates/core_cpu",
     "crates/core_gpu",
-    "crates/core_wasm",
+   "crates/core_wasm",
+    "crates/fuzz",
     "crates/python-bindings",
     "crates/wasm-bindings",
     "crates/wasm-bindings-gpu",
@@ -15,6 +16,8 @@ members = [
     "crates/php-bindings",
     "crates/php-bindings-gpu",
     "crates/python-bindings-gpu",
+    "crates/ruby-bindings/ext",
+    "crates/ruby-bindings-gpu/ext",
 ]
 resolver = "2"
 
@@ -33,7 +36,7 @@ modern-colorthief-core-wasm = { path = "crates/core_wasm" }
 rayon = "1.10"
 
 # Python bindings
-pyo3 = { version = "0.28", features = ["abi3-py39"] }
+pyo3 = { version = "0.29", features = ["abi3-py39"] }
 
 # Node.js bindings
 napi = { version = "3.1", features = ["full"] }
@@ -45,14 +48,24 @@ wasm-bindgen = "0.2"
 wasm-bindgen-test = "0.3"
 wasm-bindgen-futures = "0.4"
 js-sys = "0.3"
-web-sys = { version = "0.3", features = ["Window", "Document", "HtmlImageElement", "HtmlCanvasElement", "CanvasRenderingContext2d", "ImageData", "Blob", "Url", "console"] }
+web-sys = { version = "0.3", features = [
+    "Window",
+    "Document",
+    "HtmlImageElement",
+    "HtmlCanvasElement",
+    "CanvasRenderingContext2d",
+    "ImageData",
+    "Blob",
+    "Url",
+    "console",
+] }
 
 # JVM bindings
 jni = "0.21"
 
 # Ruby bindings
 magnus = "0.8"
-rb-sys = "0.9"
+rb-sys = { version = "0.9", features = ["global-allocator"] }
 
 # PHP bindings
 ext-php-rs = "0.15"
@@ -71,4 +84,3 @@ codegen-units = 1
 lto = "fat"
 opt-level = 3
 strip = true
-

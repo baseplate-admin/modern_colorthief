@@ -2,39 +2,86 @@ name: JVM CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     tags: [ '*' ]
+    paths:
+      - 'crates/jvm-bindings/**'
+      - 'crates/jvm-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/jvm-ci.yaml'
+      - 'Cargo.toml'
   pull_request:
+    paths:
+      - 'crates/jvm-bindings/**'
+      - 'crates/jvm-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/jvm-ci.yaml'
+      - 'Cargo.toml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
+env:
+  VULKAN_VERSION: 1.4.304.1
+
 jobs:
-  java-build:
-    name: Java 26 build
+  # =========================================================================
+  # CPU build — build native lib, run Rust core tests, upload artifact
+  # =========================================================================
+  cpu-build:
+    name: "cpu-build"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '26'
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ubuntu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Build JVM native library
         run: cargo build --release -p modern-colorthief-jvm
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Verify shared library built
         run: test -f target/release/libmodern_colorthief.so
-      - name: Copy native lib for JNI
-        run: cp target/release/libmodern_colorthief.so /tmp/
-      - uses: gradle/actions/setup-gradle@v4
+      - name: Upload native library
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-lib-cpu
+          path: target/release/libmodern_colorthief.so
+          retention-days: 1
+
+  # =========================================================================
+  # CPU integration tests — download native lib, run JUnit
+  # =========================================================================
+  cpu-test:
+    name: "cpu-junit"
+    needs: [cpu-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '26'
+      - name: Download native library
+        uses: actions/download-artifact@v4
+        with:
+          name: native-lib-cpu
+          path: crates/jvm-bindings/tests/native
+      - name: Verify native library
+        run: test -f crates/jvm-bindings/tests/native/libmodern_colorthief.so
+      - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '9.5.1'
       - name: Generate Gradle wrapper
@@ -42,27 +89,201 @@ jobs:
         run: gradle wrapper
       - name: Run JUnit tests
         working-directory: crates/jvm-bindings/tests
-        run: |
-          export JAVA_TOOL_OPTIONS="-Djava.library.path=/tmp"
-          ./gradlew test
+        run: ./gradlew test --info
 
-  kotlin-build:
-    name: Kotlin build
-    runs-on: ubuntu-latest
+  # =========================================================================
+  # GPU build — build GPU native lib on all 3 OS, run Rust GPU tests, upload
+  # =========================================================================
+  gpu-build:
+    name: "gpu-build — ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-java@v4
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
         with:
-          distribution: temurin
-          java-version: '26'
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Install Vulkan SDK + SwiftShader (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo build --release -p modern-colorthief-jvm
+      - name: Build GPU native library
+        run: cargo build --release -p modern-colorthief-jvm-gpu
+      - name: Run Rust GPU tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+      - name: Verify shared library (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: test -f target/release/libmodern_colorthief_gpu.so
+      - name: Verify shared library (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: test -f target/release/libmodern_colorthief_gpu.dylib
+      - name: Verify shared library (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: Test-Path target\release\modern_colorthief_gpu.dll
+      - name: Upload GPU native library (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: "native-lib-gpu-${{ matrix.os }}"
+          path: target/release/libmodern_colorthief_gpu.so
+          retention-days: 1
+      - name: Upload GPU native library (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: actions/upload-artifact@v4
+        with:
+          name: "native-lib-gpu-${{ matrix.os }}"
+          path: target/release/libmodern_colorthief_gpu.dylib
+          retention-days: 1
+      - name: Upload GPU native library (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: "native-lib-gpu-${{ matrix.os }}"
+          path: target/release/modern_colorthief_gpu.dll
+          retention-days: 1
 
+  # =========================================================================
+  # GPU integration tests — download GPU native lib, run JUnit GPU
+  # =========================================================================
+  gpu-test:
+    name: "gpu-junit — ${{ matrix.os }}"
+    needs: [gpu-build]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '26'
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Install Vulkan SDK + SwiftShader (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Download GPU native library
+        uses: actions/download-artifact@v4
+        with:
+          name: "native-lib-gpu-${{ matrix.os }}"
+          path: crates/jvm-bindings-gpu/tests/native
+      - name: Verify native library (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: test -f crates/jvm-bindings-gpu/tests/native/libmodern_colorthief_gpu.so
+      - name: Verify native library (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: test -f crates/jvm-bindings-gpu/tests/native/libmodern_colorthief_gpu.dylib
+      - name: Verify native library (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: Test-Path crates/jvm-bindings-gpu/tests/native/modern_colorthief_gpu.dll
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '9.5.1'
+      - name: Generate Gradle wrapper
+        working-directory: crates/jvm-bindings-gpu/tests
+        run: gradle wrapper
+      - name: Run GPU JUnit tests
+        working-directory: crates/jvm-bindings-gpu/tests
+        run: ./gradlew test --info
+
+  # =========================================================================
+  # Android cross-compile check
+  # =========================================================================
   android-check:
     name: Android check
     runs-on: ubuntu-latest

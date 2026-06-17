@@ -44,6 +44,9 @@ impl VulkanBackend {
                 • AMD: https://www.amd.com/en/support\n\
                 • Intel: https://www.intel.com/content/www/us/en/download-center/home.html\n\
                 \n\
+                Or install the Vulkan SDK with SwiftShader for software rendering:\n\
+                https://vulkan.lunarg.com/sdk\n\
+                \n\
                 Vulkan ICD (vulkan-1.dll) is included with modern GPU drivers."
             .to_string();
         #[cfg(target_os = "linux")]
@@ -72,51 +75,131 @@ impl VulkanBackend {
         }
     }
 
-    /// Check if Vulkan loader is available on this system.
-    fn vulkan_loader_available() -> bool {
+    /// Find the Vulkan loader library path on this system.
+    /// Returns the explicit path if found, or None if not available.
+    pub(crate) fn find_vulkan_loader() -> Option<std::path::PathBuf> {
         #[cfg(target_os = "windows")]
         {
-            let vulkan_dll = std::path::Path::new("vulkan-1.dll");
+            use std::path::PathBuf;
+
+            // Check current directory
+            let vulkan_dll = PathBuf::from("vulkan-1.dll");
             if vulkan_dll.exists() {
-                return true;
+                return Some(vulkan_dll);
             }
-            std::env::var("SystemRoot").is_ok_and(|r| {
-                std::path::Path::new(&format!("{}\\System32\\vulkan-1.dll", r)).exists()
-            }) || std::env::var("VULKAN_SDK").is_ok_and(|sdk| {
-                std::path::Path::new(&format!("{}\\Bin\\vulkan-1.dll", sdk)).exists()
-            })
+
+            // Check System32
+            if let Ok(system_root) = std::env::var("SystemRoot") {
+                let sys_dll = std::path::Path::new(&system_root)
+                    .join("System32")
+                    .join("vulkan-1.dll");
+                if sys_dll.exists() {
+                    return Some(sys_dll);
+                }
+            }
+
+            // Check Vulkan SDK Bin directory
+            if let Ok(sdk) = std::env::var("VULKAN_SDK") {
+                let sdk_bin_dll = std::path::Path::new(&sdk).join("Bin").join("vulkan-1.dll");
+                if sdk_bin_dll.exists() {
+                    return Some(sdk_bin_dll);
+                }
+            }
+
+            // Check PATH directories for vulkan-1.dll
+            if let Ok(path_var) = std::env::var("PATH") {
+                for dir in std::env::split_paths(&path_var) {
+                    let dll_path = dir.join("vulkan-1.dll");
+                    if dll_path.exists() {
+                        return Some(dll_path);
+                    }
+                }
+            }
+            None
         }
         #[cfg(target_os = "linux")]
         {
-            std::fs::metadata("libvulkan.so").is_ok()
-                || std::fs::metadata("/usr/lib/libvulkan.so").is_ok()
-                || std::fs::metadata("/usr/lib/x86_64-linux-gnu/libvulkan.so").is_ok()
-                || std::env::var("VULKAN_SDK").ok().is_some_and(|sdk| {
-                    std::path::Path::new(&format!("{}/lib/libvulkan.so", sdk)).exists()
-                })
+            let paths = [
+                "libvulkan.so",
+                "libvulkan.so.1",
+                "/usr/lib/libvulkan.so",
+                "/usr/lib/libvulkan.so.1",
+                "/usr/lib/x86_64-linux-gnu/libvulkan.so",
+                "/usr/lib/x86_64-linux-gnu/libvulkan.so.1",
+                "/usr/lib/i386-linux-gnu/libvulkan.so",
+                "/usr/lib/i386-linux-gnu/libvulkan.so.1",
+                "/usr/local/lib/libvulkan.so",
+                "/usr/local/lib/libvulkan.so.1",
+            ];
+            for p in &paths {
+                if std::path::Path::new(p).exists() {
+                    return Some(std::path::PathBuf::from(p));
+                }
+            }
+            if let Ok(sdk) = std::env::var("VULKAN_SDK") {
+                for sub in &[
+                    "lib/libvulkan.so",
+                    "lib/libvulkan.so.1",
+                    "lib/x86_64-linux-gnu/libvulkan.so",
+                ] {
+                    let sdk_path = format!("{}/{}", sdk, sub);
+                    if std::path::Path::new(&sdk_path).exists() {
+                        return Some(std::path::PathBuf::from(&sdk_path));
+                    }
+                }
+            }
+            // Check LD_LIBRARY_PATH / standard library paths
+            if let Ok(ld_path) = std::env::var("LD_LIBRARY_PATH") {
+                for dir in std::env::split_paths(&ld_path) {
+                    for name in &["libvulkan.so.1", "libvulkan.so"] {
+                        let lib = dir.join(name);
+                        if lib.exists() {
+                            return Some(lib);
+                        }
+                    }
+                }
+            }
+            None
         }
         #[cfg(target_os = "macos")]
         {
-            // Check for MoltenVK installation
-            std::fs::metadata("/usr/local/lib/libMoltenVK.dylib").is_ok()
-                || std::fs::metadata("/opt/homebrew/lib/libMoltenVK.dylib").is_ok()
-                || std::fs::metadata("libMoltenVK.dylib").is_ok()
-                || std::env::var("MOLTENVK_ROOT").ok().map_or(false, |root| {
-                    std::path::Path::new(&format!("{}/libMoltenVK.dylib", root)).exists()
-                })
+            let paths = [
+                "/usr/local/lib/libMoltenVK.dylib",
+                "/opt/homebrew/lib/libMoltenVK.dylib",
+                "libMoltenVK.dylib",
+            ];
+            for p in &paths {
+                if std::path::Path::new(p).exists() {
+                    return Some(std::path::PathBuf::from(p));
+                }
+            }
+            if let Ok(root) = std::env::var("MOLTENVK_ROOT") {
+                let moltenvk_path = format!("{}/libMoltenVK.dylib", root);
+                if std::path::Path::new(&moltenvk_path).exists() {
+                    return Some(std::path::PathBuf::from(&moltenvk_path));
+                }
+            }
+            None
         }
         #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
         {
-            false
+            None
         }
     }
 
-    fn create_instance(&self) -> Result<ash::Instance, String> {
-        if !Self::vulkan_loader_available() {
-            return Err(Self::vulkan_not_found_error());
-        }
-        let entry = unsafe { ash::Entry::load() }
-            .map_err(|e| format!("Vulkan entry load failed: {}", e))?;
+    /// Create a Vulkan Entry + Instance pair where the Entry outlives the Instance.
+    ///
+    /// CRITICAL: ash::Entry loaded via `load_from()` must NOT be dropped while
+    /// the Instance is in use — the Instance resolves function pointers through
+    /// the Entry. Using the Instance after Entry drops is UB (segfaults on
+    /// Windows SwiftShader CI).
+    fn create_instance_pair(&self) -> Result<(ash::Entry, ash::Instance), String> {
+        let loader_path = Self::find_vulkan_loader().ok_or_else(Self::vulkan_not_found_error)?;
+
+        // Use explicit path loading to avoid DLL search path issues on Windows.
+        // This is critical for SwiftShader on CI where vulkan-1.dll is not in PATH.
+        let entry = unsafe { ash::Entry::load_from(&loader_path) }
+            .map_err(|e| format!("Vulkan entry load failed from {:?}: {}", loader_path, e))?;
 
         let app_name = c"modern_colorthief";
         let app_info = vk::ApplicationInfo {
@@ -138,16 +221,10 @@ impl VulkanBackend {
             ..Default::default()
         };
 
-        unsafe { entry.create_instance(&create_info, None) }
-            .map_err(|e| format!("Vulkan instance creation failed: {:?}", e))
-    }
+        let instance = unsafe { entry.create_instance(&create_info, None) }
+            .map_err(|e| format!("Vulkan instance creation failed: {:?}", e))?;
 
-    fn enumerate_devices(
-        &self,
-        instance: &ash::Instance,
-    ) -> Result<Vec<vk::PhysicalDevice>, String> {
-        unsafe { instance.enumerate_physical_devices() }
-            .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))
+        Ok((entry, instance))
     }
 }
 
@@ -167,17 +244,28 @@ fn vendor_name(vendor_id: u32) -> &'static str {
     }
 }
 
+/// Check if a queue family can dispatch compute work.
+/// Accepts COMPUTE queues (ideal) or GRAPHICS queues (software Vulkan fallback like lavapipe/SwiftShader).
+fn has_compute_queue(queues: &[vk::QueueFamilyProperties]) -> bool {
+    queues.iter().any(|q| {
+        q.queue_flags.contains(vk::QueueFlags::COMPUTE)
+            || q.queue_flags.contains(vk::QueueFlags::GRAPHICS)
+    })
+}
+
 pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
-    let instance = VulkanBackend::new().create_instance()?;
-    let physical_devices = VulkanBackend::new().enumerate_devices(&instance)?;
+    // Keep Entry alive while Instance is used — Entry must NOT be dropped
+    // before Instance operations complete (UB per ash docs).
+    let (entry, instance) = VulkanBackend::new().create_instance_pair()?;
+
+    let physical_devices = unsafe { instance.enumerate_physical_devices() }
+        .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))?;
 
     let mut gpus = Vec::new();
     for (i, pd) in physical_devices.into_iter().enumerate() {
         let props = unsafe { instance.get_physical_device_properties(pd) };
         let queues = unsafe { instance.get_physical_device_queue_family_properties(pd) };
-        let has_compute = queues
-            .iter()
-            .any(|q| q.queue_flags.contains(vk::QueueFlags::COMPUTE));
+        let has_compute = has_compute_queue(&queues);
         if has_compute {
             let name = unsafe {
                 let len = props
@@ -211,6 +299,8 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
         }
     }
 
+    // Entry is dropped here, after all Instance operations complete.
+    drop(entry);
     Ok(gpus)
 }
 
@@ -307,4 +397,151 @@ pub fn gpu_extract(
     });
 
     Ok(unique.into_iter().take(color_count as usize).collect())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // --- vendor_name ---
+
+    #[test]
+    fn test_vendor_nvidia() {
+        assert_eq!(vendor_name(0x10DE), "NVIDIA");
+    }
+
+    #[test]
+    fn test_vendor_amd() {
+        assert_eq!(vendor_name(0x1002), "AMD");
+    }
+
+    #[test]
+    fn test_vendor_intel() {
+        assert_eq!(vendor_name(0x8086), "Intel");
+    }
+
+    #[test]
+    fn test_vendor_apple_moltenvk() {
+        assert_eq!(vendor_name(0x106B), "Apple (MoltenVK)");
+    }
+
+    #[test]
+    fn test_vendor_mesa() {
+        assert_eq!(vendor_name(0x1234), "Mesa (llvmpipe/swrast)");
+    }
+
+    #[test]
+    fn test_vendor_unknown() {
+        assert_eq!(vendor_name(0xDEAD), "Unknown");
+    }
+
+    // --- has_compute_queue ---
+
+    #[test]
+    fn test_has_compute_queue_compute_flag() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::COMPUTE,
+            ..Default::default()
+        }];
+        assert!(has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_graphics_flag() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::GRAPHICS,
+            ..Default::default()
+        }];
+        assert!(has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_combined() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::GRAPHICS | vk::QueueFlags::COMPUTE,
+            ..Default::default()
+        }];
+        assert!(has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_transfer_only() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::TRANSFER,
+            ..Default::default()
+        }];
+        assert!(!has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_empty_flags() {
+        let queues = vec![vk::QueueFamilyProperties {
+            queue_flags: vk::QueueFlags::empty(),
+            ..Default::default()
+        }];
+        assert!(!has_compute_queue(&queues));
+    }
+
+    #[test]
+    fn test_has_compute_queue_empty_list() {
+        let queues: Vec<vk::QueueFamilyProperties> = vec![];
+        assert!(!has_compute_queue(&queues));
+    }
+
+    // --- GpuDevice mapping ---
+
+    #[test]
+    fn test_gpu_device_discrete() {
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::DISCRETE_GPU),
+            GpuDevice::Discrete
+        );
+    }
+
+    #[test]
+    fn test_gpu_device_integrated() {
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::INTEGRATED_GPU),
+            GpuDevice::Integrated
+        );
+    }
+
+    #[test]
+    fn test_gpu_device_virtual() {
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::VIRTUAL_GPU),
+            GpuDevice::Virtual
+        );
+    }
+
+    #[test]
+    fn test_gpu_device_cpu() {
+        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::CPU), GpuDevice::CPU);
+    }
+
+    #[test]
+    fn test_gpu_device_other() {
+        assert_eq!(
+            GpuDevice::from(vk::PhysicalDeviceType::OTHER),
+            GpuDevice::Other
+        );
+    }
+
+    // --- gpu_extract edge cases ---
+
+    #[test]
+    fn test_extract_empty_buffer() {
+        let result = gpu_extract(&[], 0, 0, 5, 1);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Empty"));
+    }
+
+    #[test]
+    fn test_extract_insufficient_pixels() {
+        // 1 pixel worth of data (4 bytes)
+        let result = gpu_extract(&[255, 0, 0, 255], 1, 1, 5, 1);
+        // May succeed or fail depending on GPU availability — both are valid
+        // Just verify it doesn't panic
+        let _ = result;
+    }
 }

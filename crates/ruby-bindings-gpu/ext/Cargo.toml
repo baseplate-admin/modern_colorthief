@@ -5,9 +5,16 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
-name = "modern_colorthief_gpu"
 
 [dependencies]
 modern-colorthief-core-gpu = { path = "../../core_gpu" }
 magnus = "0.8"
-rb-sys = "0.9"
+rb-sys.workspace = true
+
+# rb-sys-env is required by build.rs to set up Ruby build environment
+# See: https://oxidize-rb.org/docs/api-reference/rb-sys-env
+[build-dependencies]
+rb-sys-env = "0.2.3"
+
+[dev-dependencies]
+rb-sys-test-helpers = "0.3"

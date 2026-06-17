@@ -1,0 +1,10 @@
+[package]
+name = "modern-colorthief-fuzz"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+rand = "0.8"
+modern-colorthief-core-cpu = { workspace = true }
+modern-colorthief-core-gpu = { workspace = true }
+color-thief = "0.2"

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "mkmf"
+require "rb_sys/mkmf"
 
-# This extconf is used by the gem build process.
-# The actual Rust compilation is handled by the Rakefile via `cargo build`.
-create_makefile("modern_colorthief")
+create_rust_makefile("modern_colorthief/modern_colorthief")

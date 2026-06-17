@@ -2,24 +2,31 @@
 
 require "rbconfig"
 
-# Load the native extension.
-# When installed as a gem, the compiled library is in lib/modern_colorthief/.
-# When running from source, it's expected in lib/modern_colorthief/ next to this file.
+# Determine expected library base name
+lib_base = "modern_colorthief"
 
-LIB_DIR = File.expand_path("modern_colorthief", __dir__)
+# Search for the library file in lib/, handling lib-prefixed and non-prefixed names
+lib_dir = __dir__
+lib_ext = RbConfig::CONFIG["DLEXT"]
+lib_candidates = [
+  "#{lib_base}.#{lib_ext}",       # modern_colorthief.so, .bundle, .dylib
+  "lib#{lib_base}.#{lib_ext}",    # libmodern_colorthief.so, .dylib
+  "#{lib_base}.so",               # Linux
+  "lib#{lib_base}.so",
+  "#{lib_base}.dylib",            # macOS
+  "lib#{lib_base}.dylib",
+  "#{lib_base}.bundle",           # Ruby ext
+  "lib#{lib_base}.bundle",
+  "#{lib_base}.dll",              # Windows
+  "lib#{lib_base}.dll",
+  "#{lib_base}.so.dll",           # Windows rb-sys
+  "lib#{lib_base}.so.dll"
+]
 
-lib_name = case RbConfig::CONFIG["host_os"]
-when /linux/ then "modern_colorthief.so"
-when /darwin|mac/ then "modern_colorthief.bundle"
-when /windows|mingw/ then "modern_colorthief.dll"
-else "modern_colorthief.so"
-end
+lib_file = lib_candidates.find { |name| File.exist?(File.join(lib_dir, name)) }
 
-lib_path = File.join(LIB_DIR, lib_name)
-
-if File.exist?(lib_path)
-  require lib_path
+if lib_file
+  require File.join(lib_dir, lib_file)
 else
-  # Fallback: try loading from Ruby load path (for gem installs)
-  require "modern_colorthief/#{lib_name}"
+  require lib_base
 end

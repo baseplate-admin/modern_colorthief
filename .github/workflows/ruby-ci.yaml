@@ -2,77 +2,416 @@ name: Ruby CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, add-wasm ]
+    paths:
+      - 'crates/ruby-bindings/**'
+      - 'crates/ruby-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/ruby-ci.yaml'
+      - 'Cargo.toml'
   pull_request:
+    paths:
+      - 'crates/ruby-bindings/**'
+      - 'crates/ruby-bindings-gpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/ruby-ci.yaml'
+      - 'Cargo.toml'
   workflow_dispatch:
 
-# https://github.com/oxidize-rb/actions
+permissions:
+  contents: read
+
+env:
+  VULKAN_VERSION: 1.4.304.1
 
 jobs:
-  ruby-cpu-build:
-    name: Ruby CPU build + test
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
+  cpu-build:
+    name: "cpu-build — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v5
+        with:
+          path: target
+          key: ${{ matrix.os }}-cpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cpu-build-ruby${{ matrix.ruby }}-cargo-target-
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: false
+          cache-version: v1-cpu-build
+
+      - name: Build native extension
         working-directory: crates/ruby-bindings
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Ruby and Rust
-        uses: oxidize-rb/actions/setup-ruby-and-rust@main
-        with:
-          ruby-version: "3.4"
-          bundler-cache: false
-          cargo-cache: true
-          cargo-vendor: true
-          cache-version: v0-cpu
-          working-directory: crates/ruby-bindings
-
-      - name: Build native extension
-        run: rake build
-
-      - name: Run RSpec tests
         run: |
           bundle install
-          bundle exec rspec spec/
+          bundle exec rake compile
 
-      - name: Cross-compile with cross-gem
-        uses: oxidize-rb/actions/cross-gem@v1
+      - name: Upload built extension
+        uses: actions/upload-artifact@v4
         with:
-          platform: x86_64-linux
-          ruby-versions: "3.4"
-          working-directory: crates/ruby-bindings
+          name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings/lib/
+          retention-days: 1
+          if-no-files-found: error
 
-  ruby-gpu-build:
-    name: Ruby GPU build + test
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
+  cpu-test:
+    name: "cpu-rspec — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    needs: [cpu-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: false
+          cache-version: v1-cpu-test
+
+      - name: Download built extension
+        uses: actions/download-artifact@v4
+        with:
+          name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings/lib/
+
+      - name: Run RSpec tests
+        working-directory: crates/ruby-bindings
+        run: |
+          bundle install
+          bundle exec rspec -I. spec/
+
+  gpu-build:
+    name: "gpu-build — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v5
+        with:
+          path: target
+          key: ${{ matrix.os }}-gpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-gpu-build-ruby${{ matrix.ruby }}-cargo-target-
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: false
+          cache-version: v1-gpu-build
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + software renderers (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Install Vulkan SDK + software renderers (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Build native extension
         working-directory: crates/ruby-bindings-gpu
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Ruby and Rust
-        uses: oxidize-rb/actions/setup-ruby-and-rust@main
-        with:
-          ruby-version: "3.4"
-          bundler-cache: false
-          cargo-cache: true
-          cargo-vendor: true
-          cache-version: v0-gpu
-          working-directory: crates/ruby-bindings-gpu
-
-      - name: Build native extension
-        run: rake build
-
-      - name: Run RSpec tests
         run: |
           bundle install
-          bundle exec rspec spec/
+          bundle exec rake compile
 
-      - name: Cross-compile with cross-gem
-        uses: oxidize-rb/actions/cross-gem@v1
+      - name: Upload built extension
+        uses: actions/upload-artifact@v4
         with:
-          platform: x86_64-linux
-          ruby-versions: "3.4"
-          working-directory: crates/ruby-bindings-gpu
+          name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings-gpu/lib/
+          retention-days: 1
+          if-no-files-found: error
+
+  gpu-rust-test:
+    name: "gpu-rust-test — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
+    runs-on: ${{ matrix.os }}
+    needs: [gpu-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        ruby: ["2.7", "3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-cargo-registry-
+
+      - name: Cache cargo target
+        uses: actions/cache@v5
+        with:
+          path: target
+          key: ${{ matrix.os }}-gpu-rust-test-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-gpu-rust-test-ruby${{ matrix.ruby }}-cargo-target-
+
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: latest
+          bundler-cache: true
+          cargo-cache: false
+          cache-version: v1-gpu-rust-test
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + software renderers (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Install Vulkan SDK + software renderers (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Download built extension
+        uses: actions/download-artifact@v4
+        with:
+          name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
+          path: crates/ruby-bindings-gpu/lib/
+
+      - name: Install dependencies
+        working-directory: crates/ruby-bindings-gpu
+        run: bundle install
+
+      - name: Run Rust GPU tests
+        working-directory: crates/ruby-bindings-gpu/ext
+        run: cargo test -p modern-colorthief-core-gpu
+
+      - name: Run RSpec tests
+        working-directory: crates/ruby-bindings-gpu
+        run: bundle exec rspec spec/
+
+  cross-gem-cpu:
+    name: cross-gem-cpu
+    runs-on: ubuntu-latest
+    needs: [cpu-test]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler: latest
+          bundler-cache: true
+
+      - name: Cross-compile CPU gem
+        working-directory: crates/ruby-bindings
+        run: |
+          bundle install
+          bundle exec rake native
+
+      - name: Upload CPU gems
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruby-bindings-gems
+          path: crates/ruby-bindings/pkg/*.gem
+          retention-days: 7
+
+  cross-gem-gpu:
+    name: cross-gem-gpu
+    runs-on: ubuntu-latest
+    needs: [gpu-rust-test]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Vulkan runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler: latest
+          bundler-cache: true
+
+      - name: Cross-compile GPU gem
+        working-directory: crates/ruby-bindings-gpu
+        run: |
+          bundle install
+          bundle exec rake native
+
+      - name: Upload GPU gems
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruby-bindings-gpu-gems
+          path: crates/ruby-bindings-gpu/pkg/*.gem
+          retention-days: 7
+
+  publish-cpu:
+    name: Publish CPU gem
+    runs-on: ubuntu-latest
+    needs: [cross-gem-cpu]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download gem artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ruby-bindings-gems
+          path: gems/
+
+      - name: Publish to RubyGems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          rubygems: latest
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+      - run: gem push gems/*.gem
+
+  publish-gpu:
+    name: Publish GPU gem
+    runs-on: ubuntu-latest
+    needs: [cross-gem-gpu]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download gem artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ruby-bindings-gpu-gems
+          path: gems/
+
+      - name: Publish to RubyGems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          rubygems: latest
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+      - run: gem push gems/*.gem
