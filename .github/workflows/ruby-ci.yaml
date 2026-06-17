@@ -110,7 +110,7 @@ jobs:
         working-directory: crates/ruby-bindings
         run: |
           bundle install
-          bundle exec rspec --require ./ spec/
+          bundle exec rspec -I. spec/
 
   gpu-build:
     name: "gpu-build — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
