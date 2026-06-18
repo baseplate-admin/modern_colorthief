@@ -1,5 +1,5 @@
 [package]
-name = "modern-colorthief-wasm-gpu"
+name = "modern-colorthief-webgpu"
 version.workspace = true
 edition.workspace = true
 
@@ -7,7 +7,7 @@ edition.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-modern-colorthief-core-wasm = { workspace = true }
+modern-colorthief-core-webgpu = { workspace = true }
 wasm-bindgen.workspace = true
 wasm-bindgen-futures = "0.4"
 js-sys.workspace = true

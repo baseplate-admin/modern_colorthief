@@ -2,9 +2,34 @@
 name = "modern-colorthief-fuzz"
 version.workspace = true
 edition.workspace = true
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
 
 [dependencies]
 rand = "0.8"
+libfuzzer-sys = "0.4"
 modern-colorthief-core-cpu = { workspace = true }
 modern-colorthief-core-gpu = { workspace = true }
+
+[features]
+default = ["libfuzzer-sys/arbitrary"]
+
+[[bin]]
+name = "palette_extract"
+path = "fuzz_targets/palette_extract.rs"
+test = false
+
+[[bin]]
+name = "color_extract"
+path = "fuzz_targets/color_extract.rs"
+test = false
+
+[[bin]]
+name = "cpu_gpu_consistency"
+path = "fuzz_targets/cpu_gpu_consistency.rs"
+test = false
+
+[dev-dependencies]
 color-thief = "0.2"

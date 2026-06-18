@@ -3,11 +3,11 @@ members = [
     "crates/core",
     "crates/core_cpu",
     "crates/core_gpu",
-   "crates/core_wasm",
+    "crates/core_webgpu",
     "crates/fuzz",
     "crates/python-bindings",
     "crates/wasm-bindings",
-    "crates/wasm-bindings-gpu",
+    "crates/wasm-bindings-webgpu",
     "crates/node-bindings",
     "crates/node-bindings-gpu",
     "crates/node-bindings-wasm",
@@ -30,7 +30,7 @@ edition = "2024"
 modern-colorthief-core = { path = "crates/core" }
 modern-colorthief-core-cpu = { path = "crates/core_cpu" }
 modern-colorthief-core-gpu = { path = "crates/core_gpu" }
-modern-colorthief-core-wasm = { path = "crates/core_wasm" }
+modern-colorthief-core-webgpu = { path = "crates/core_webgpu" }
 
 # Parallelism
 rayon = "1.10"

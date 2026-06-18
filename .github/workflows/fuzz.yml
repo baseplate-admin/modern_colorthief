@@ -13,6 +13,9 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
+  # ============================================================
+  # Property-based fuzz tests (cargo test) with PGO
+  # ============================================================
   fuzz-test:
     name: "fuzz — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -90,17 +93,54 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-fuzz-cargo-registry-
 
-      - name: Run fuzz tests
-        run: cargo pgo test -- -p modern-colorthief-fuzz --target ${{ matrix.target }} --test-threads=1
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-fuzz --target ${{ matrix.target }} -- --test-threads=1
 
-      - name: Upload PGO profiles
-        if: matrix.os == 'ubuntu-latest' && always()
-        uses: actions/upload-artifact@v4
+      - name: Run fuzz property tests (PGO)
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+        run: cargo test -p modern-colorthief-fuzz --target ${{ matrix.target }} -- --test-threads=1
+
+  # ============================================================
+  # Actual fuzzing with libfuzzer (cargo fuzz) on Linux
+  # ============================================================
+  fuzz-run:
+    name: "fuzz run — ${{ matrix.target }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [palette_extract, color_extract, cpu_gpu_consistency]
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz --locked
+
+      - name: Install Vulkan runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
         with:
-          name: pgo-profiles-fuzz
-          path: target/pgo-profiles
-          retention-days: 1
+          path: ~/.cargo/registry
+          key: ubuntu-fuzz-run-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ubuntu-fuzz-run-cargo-registry-
 
+      - name: Run fuzz target
+        run: |
+          cd crates/fuzz
+          cargo fuzz build ${{ matrix.target }} --sanitizer none
+          cargo fuzz run ${{ matrix.target }} -- -max_total_time=30 -max_len=65536
+
+  # ============================================================
+  # Core CPU unit tests with PGO
+  # ============================================================
   fuzz-core-cpu:
     name: "fuzz core_cpu unit tests — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -132,9 +172,17 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-fuzz-cpu-cargo-registry-
 
-      - name: Run core_cpu tests
+      - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target ${{ matrix.target }}
 
+      - name: Run core_cpu tests (PGO)
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu --target ${{ matrix.target }}
+
+  # ============================================================
+  # Core GPU unit tests with SwiftShader
+  # ============================================================
   fuzz-core-gpu:
     name: "fuzz core_gpu unit tests — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -199,5 +247,10 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
 
-      - name: Run core_gpu tests
-        run: cargo test -p modern-colorthief-core-gpu -- --target ${{ matrix.target }}
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core-gpu --target ${{ matrix.target }}
+
+      - name: Run core_gpu tests (PGO)
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+        run: cargo test -p modern-colorthief-core-gpu --target ${{ matrix.target }}

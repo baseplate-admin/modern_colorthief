@@ -11,3 +11,4 @@ dependencies = ["Pillow>=10.0"]
 manifest-path = "Cargo.toml"
 module-name = "modern_colorthief_gpu"
 python-source = "python"
+pgo-command = "python -c \"from modern_colorthief_gpu import extract_palette_from_buffer_py, extract_dominant_color_from_buffer_py; buf = bytes([0, 0, 0, 255]) * 10000; extract_palette_from_buffer_py(buf, 100, 100, 5, 1); extract_dominant_color_from_buffer_py(buf, 100, 100, 1)\""

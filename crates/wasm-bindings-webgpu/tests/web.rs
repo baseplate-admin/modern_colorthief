@@ -4,7 +4,7 @@ use wasm_bindgen_test::*;
 
 
 #[allow(unused_imports)]
-use modern_colorthief_wasm_gpu::{
+use modern_colorthief_webgpu::{
     get_palette_gpu_promise, get_color_gpu_promise, get_version,
 };
 

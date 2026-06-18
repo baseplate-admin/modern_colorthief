@@ -1,5 +1,5 @@
 [package]
-name = "modern-colorthief-core-wasm"
+name = "modern-colorthief-core-webgpu"
 version.workspace = true
 edition.workspace = true
 
@@ -22,4 +22,3 @@ swc_ecma_utils = "31.0.0"
 swc_ecma_visit = "25.0.0"
 
 [features]
-

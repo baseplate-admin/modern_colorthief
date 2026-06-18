@@ -270,7 +270,7 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Run Rust GPU unit tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -- --target ${{ matrix.target }}
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target ${{ matrix.target }}
 
   gpu-junit:
     name: "gpu-junit — ${{ matrix.os }}"

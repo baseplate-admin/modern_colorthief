@@ -6,7 +6,7 @@ on:
     tags: [ '*' ]
     paths:
       - 'crates/wasm-bindings/**'
-      - 'crates/wasm-bindings-gpu/**'
+      - 'crates/wasm-bindings-webgpu/**'
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
@@ -15,7 +15,7 @@ on:
   pull_request:
     paths:
       - 'crates/wasm-bindings/**'
-      - 'crates/wasm-bindings-gpu/**'
+      - 'crates/wasm-bindings-webgpu/**'
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
@@ -45,10 +45,10 @@ jobs:
         with:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-wasm -p modern-colorthief-wasm -p modern-colorthief-wasm-gpu -p modern-colorthief-node-wasm
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-core-wasm -p modern-colorthief-wasm -p modern-colorthief-wasm-gpu -p modern-colorthief-node-wasm
+      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
       - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
 
   wasm-pack-build:
@@ -84,8 +84,8 @@ jobs:
         with:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-wasm -p modern-colorthief-wasm-gpu
-      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-core-wasm -p modern-colorthief-wasm-gpu
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
+      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
 
   gpu-node-tests:
     name: GPU Node.js tests
@@ -105,16 +105,16 @@ jobs:
         with:
           install_lavapipe: true
       - name: Install node-webgpu (Dawn) + deps
-        working-directory: crates/wasm-bindings-gpu
+        working-directory: crates/wasm-bindings-webgpu
         run: npm ci
       - name: Verify webgpu module loads
-        working-directory: crates/wasm-bindings-gpu
+        working-directory: crates/wasm-bindings-webgpu
         run: node test-webgpu-setup.cjs && echo "WebGPU OK"
       - name: Run GPU Node.js tests
-        working-directory: crates/wasm-bindings-gpu
+        working-directory: crates/wasm-bindings-webgpu
         run: wasm-pack test --node --release
         env:
-          NODE_OPTIONS: "--require ${{ github.workspace }}/crates/wasm-bindings-gpu/test-webgpu-setup.cjs"
+          NODE_OPTIONS: "--require ${{ github.workspace }}/crates/wasm-bindings-webgpu/test-webgpu-setup.cjs"
 
   cpu-chrome-tests:
     name: CPU Chrome tests
