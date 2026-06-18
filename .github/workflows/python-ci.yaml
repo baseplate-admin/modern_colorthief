@@ -30,9 +30,6 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
-  # =========================================================================
-  # CPU wheel builds — one job per platform family (used for release + testing)
-  # =========================================================================
   cpu-linux:
     runs-on: ubuntu-22.04
     strategy:
@@ -46,7 +43,28 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: 3.14
-      - name: Build wheels
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+        working-directory: .
+      - name: PGO profile generation (x86_64 only)
+        if: matrix.target == 'x86_64'
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+        working-directory: .
+      - name: Build wheels (PGO x86_64)
+        if: matrix.target == 'x86_64'
+        uses: PyO3/maturin-action@v1
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+        with:
+          target: ${{ matrix.target }}
+          args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          manylinux: auto
+      - name: Build wheels (cross-compile)
+        if: matrix.target != 'x86_64'
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
@@ -73,7 +91,28 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: 3.14
-      - name: Build wheels
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+        working-directory: .
+      - name: PGO profile generation (x86_64 only)
+        if: matrix.target == 'x86_64'
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+        working-directory: .
+      - name: Build wheels (PGO x86_64)
+        if: matrix.target == 'x86_64'
+        uses: PyO3/maturin-action@v1
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+        with:
+          target: ${{ matrix.target }}
+          args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          manylinux: musllinux_1_2
+      - name: Build wheels (cross-compile)
+        if: matrix.target != 'x86_64'
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
@@ -110,7 +149,31 @@ jobs:
         with:
           python-version: 3.14
           architecture: ${{ matrix.platform.python_arch }}
-      - name: Build wheels
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+        working-directory: .
+      - name: PGO profile generation (x64)
+        if: matrix.platform.target == 'x64'
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-pc-windows-msvc
+        working-directory: .
+      - name: PGO profile generation (aarch64)
+        if: matrix.platform.target == 'aarch64'
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target aarch64-pc-windows-msvc
+        working-directory: .
+      - name: Build wheels (PGO native)
+        if: matrix.platform.target != 'x86'
+        uses: PyO3/maturin-action@v1
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+        with:
+          target: ${{ matrix.platform.target }}
+          args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
+          sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      - name: Build wheels (cross-compile x86)
+        if: matrix.platform.target == 'x86'
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
@@ -140,8 +203,24 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: 3.14
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+        working-directory: .
+      - name: PGO profile generation (x86_64)
+        if: matrix.platform.target == 'x86_64'
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-apple-darwin
+        working-directory: .
+      - name: PGO profile generation (aarch64)
+        if: matrix.platform.target == 'aarch64'
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target aarch64-apple-darwin
+        working-directory: .
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
         with:
           target: ${{ matrix.platform.target }}
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
@@ -195,9 +274,6 @@ jobs:
           path: dist
           retention-days: 7
 
-  # =========================================================================
-  # CPU integration tests — download built wheel, run pytest
-  # =========================================================================
   cpu-pytest:
     name: "cpu-pytest — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -258,9 +334,6 @@ jobs:
       - name: Run pytest
         run: pytest tests/ -v
 
-  # =========================================================================
-  # GPU build — build GPU Python module on all 3 OS (no tests, Vulkan available)
-  # =========================================================================
   gpu-build:
     name: "gpu-build — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -322,18 +395,29 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+        working-directory: .
       - name: Cache cargo registry
         uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-python-gpu-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --release
+        working-directory: .
+
       - name: Install uv
         uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
 
-      - name: Build GPU Python module
+      - name: Build GPU Python module (PGO)
+        env:
+          RUSTFLAGS: "-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
         run: |
           uv venv .venv
           uv pip install maturin
@@ -346,9 +430,6 @@ jobs:
           path: crates/python-bindings-gpu/dist
           retention-days: 1
 
-  # =========================================================================
-  # GPU Rust unit tests — run Rust GPU unit tests (Vulkan required)
-  # =========================================================================
   gpu-rust-test:
     name: "gpu-rust-test — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -417,9 +498,6 @@ jobs:
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
         working-directory: .
 
-  # =========================================================================
-  # GPU integration tests — download built GPU wheel, run pytest GPU
-  # =========================================================================
   gpu-pytest:
     name: "gpu-pytest — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -506,9 +584,6 @@ jobs:
       - name: Run GPU pytest
         run: uv run pytest tests/ -v
 
-  # =========================================================================
-  # Release — collect all wheels, attest, publish
-  # =========================================================================
   release:
     name: Release
     runs-on: ubuntu-latest

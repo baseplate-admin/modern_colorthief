@@ -30,9 +30,6 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
-  # =========================================================================
-  # CPU build — build native lib, run Rust core unit tests, upload artifact
-  # =========================================================================
   cpu-build:
     name: "cpu-build"
     runs-on: ubuntu-latest
@@ -43,27 +40,30 @@ jobs:
           distribution: temurin
           java-version: '26'
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
       - name: Cache cargo registry
         uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ubuntu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build JVM native library
-        run: cargo build --release -p modern-colorthief-jvm
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+      - name: Build JVM native library (PGO)
+        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-jvm
       - name: Run Rust core unit tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Verify shared library built
-        run: test -f target/release/libmodern_colorthief.so
+        run: test -f target/x86_64-unknown-linux-gnu/release/libmodern_colorthief.so
       - name: Upload native library
         uses: actions/upload-artifact@v4
         with:
           name: native-lib-cpu
-          path: target/release/libmodern_colorthief.so
+          path: target/x86_64-unknown-linux-gnu/release/libmodern_colorthief.so
           retention-days: 1
 
-  # =========================================================================
-  # CPU integration tests — download native lib, run JUnit
-  # =========================================================================
   cpu-junit:
     name: "cpu-junit"
     needs: [cpu-build]
@@ -91,16 +91,19 @@ jobs:
         working-directory: crates/jvm-bindings/tests
         run: ./gradlew test --info
 
-  # =========================================================================
-  # GPU build — build GPU native lib on all 3 OS (no tests, Vulkan available)
-  # =========================================================================
   gpu-build:
     name: "gpu-build — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
     steps:
       - uses: actions/checkout@v6
 
@@ -151,48 +154,51 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
       - name: Cache cargo registry
         uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build GPU native library
-        run: cargo build --release -p modern-colorthief-jvm-gpu
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target ${{ matrix.target }}
+      - name: Build GPU native library (PGO)
+        run: cargo pgo optimize -- --release --target ${{ matrix.target }} -p modern-colorthief-jvm-gpu
       - name: Verify shared library (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: test -f target/release/libmodern_colorthief_gpu.so
+        run: test -f target/x86_64-unknown-linux-gnu/release/libmodern_colorthief_gpu.so
       - name: Verify shared library (macOS)
         if: startsWith(matrix.os, 'macos')
-        run: test -f target/release/libmodern_colorthief_gpu.dylib
+        run: test -f target/x86_64-apple-darwin/release/libmodern_colorthief_gpu.dylib
       - name: Verify shared library (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
-        run: Test-Path target\release\modern_colorthief_gpu.dll
+        run: Test-Path target\x86_64-pc-windows-msvc\release\modern_colorthief_gpu.dll
       - name: Upload GPU native library (Linux)
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
           name: "native-lib-gpu-${{ matrix.os }}"
-          path: target/release/libmodern_colorthief_gpu.so
+          path: target/x86_64-unknown-linux-gnu/release/libmodern_colorthief_gpu.so
           retention-days: 1
       - name: Upload GPU native library (macOS)
         if: startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@v4
         with:
           name: "native-lib-gpu-${{ matrix.os }}"
-          path: target/release/libmodern_colorthief_gpu.dylib
+          path: target/x86_64-apple-darwin/release/libmodern_colorthief_gpu.dylib
           retention-days: 1
       - name: Upload GPU native library (Windows)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: "native-lib-gpu-${{ matrix.os }}"
-          path: target/release/modern_colorthief_gpu.dll
+          path: target/x86_64-pc-windows-msvc/release/modern_colorthief_gpu.dll
           retention-days: 1
 
-  # =========================================================================
-  # GPU Rust unit tests — run Rust GPU unit tests (Vulkan required)
-  # =========================================================================
   gpu-rust-test:
     name: "gpu-rust-test — ${{ matrix.os }}"
     needs: [gpu-build]
@@ -200,7 +206,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
     steps:
       - uses: actions/checkout@v6
 
@@ -258,11 +270,8 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Run Rust GPU unit tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -- --target ${{ matrix.target }}
 
-  # =========================================================================
-  # GPU integration tests — download GPU native lib, run JUnit GPU
-  # =========================================================================
   gpu-junit:
     name: "gpu-junit — ${{ matrix.os }}"
     needs: [gpu-build]
@@ -350,9 +359,6 @@ jobs:
         working-directory: crates/jvm-bindings-gpu/tests
         run: ./gradlew test --info
 
-  # =========================================================================
-  # Android cross-compile check
-  # =========================================================================
   android-check:
     name: Android check
     runs-on: ubuntu-latest

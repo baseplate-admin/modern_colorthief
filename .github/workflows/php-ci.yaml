@@ -29,9 +29,6 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
-  # =========================================================================
-  # CPU build — build PHP extension, run Rust core tests, upload artifact
-  # =========================================================================
   cpu-build:
     name: "cpu-build"
     runs-on: ubuntu-latest
@@ -43,29 +40,32 @@ jobs:
           ini-file: development
           extensions: gd
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
       - name: Cache cargo registry
         uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ubuntu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev php-dev
-      - name: Build PHP extension
-        run: cargo build --release -p modern-colorthief-php
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+      - name: Build PHP extension (PGO)
+        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-php
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
         uses: actions/upload-artifact@v4
         with:
           name: native-lib-php-cpu
-          path: target/release/libmodern_colorthief.so
+          path: target/x86_64-unknown-linux-gnu/release/libmodern_colorthief.so
           retention-days: 1
 
-  # =========================================================================
-  # CPU integration tests — download extension, run Pest
-  # =========================================================================
   cpu-test:
     name: "cpu-pest"
     needs: [cpu-build]
@@ -91,9 +91,6 @@ jobs:
         working-directory: crates/php-bindings
         run: php -d extension=../../target/release/libmodern_colorthief.so vendor/bin/pest
 
-  # =========================================================================
-  # GPU build — build GPU PHP extension, run Rust GPU tests, upload artifact
-  # =========================================================================
   gpu-build:
     name: "gpu-build"
     runs-on: ubuntu-latest
@@ -109,29 +106,32 @@ jobs:
           ini-file: development
           extensions: gd
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
       - name: Cache cargo registry
         uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ubuntu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev php-dev
-      - name: Build GPU PHP extension
-        run: cargo build --release -p modern-colorthief-php-gpu
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target x86_64-unknown-linux-gnu
+      - name: Build GPU PHP extension (PGO)
+        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-php-gpu
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
         uses: actions/upload-artifact@v4
         with:
           name: native-lib-php-gpu
-          path: target/release/libmodern_colorthief_gpu.so
+          path: target/x86_64-unknown-linux-gnu/release/libmodern_colorthief_gpu.so
           retention-days: 1
 
-  # =========================================================================
-  # GPU integration tests — download extension, run Pest GPU
-  # =========================================================================
   gpu-test:
     name: "gpu-pest"
     needs: [gpu-build]

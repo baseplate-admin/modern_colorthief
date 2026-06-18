@@ -19,11 +19,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            target: x86_64-apple-darwin
 
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
 
       - name: Install Vulkan SDK + SwiftShader (Windows)
         if: matrix.os == 'windows-latest'
@@ -80,7 +91,15 @@ jobs:
             ${{ matrix.os }}-fuzz-cargo-registry-
 
       - name: Run fuzz tests
-        run: cargo test -p modern-colorthief-fuzz -- --test-threads=1
+        run: cargo pgo test -- -p modern-colorthief-fuzz --target ${{ matrix.target }} --test-threads=1
+
+      - name: Upload PGO profiles
+        if: matrix.os == 'ubuntu-latest' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgo-profiles-fuzz
+          path: target/pgo-profiles
+          retention-days: 1
 
   fuzz-core-cpu:
     name: "fuzz core_cpu unit tests — ${{ matrix.os }}"
@@ -88,11 +107,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            target: x86_64-apple-darwin
 
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
 
       - name: Cache cargo registry
         uses: actions/cache@v4
@@ -103,7 +133,7 @@ jobs:
             ${{ matrix.os }}-fuzz-cpu-cargo-registry-
 
       - name: Run core_cpu tests
-        run: cargo test -p modern-colorthief-core-cpu
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target ${{ matrix.target }}
 
   fuzz-core-gpu:
     name: "fuzz core_gpu unit tests — ${{ matrix.os }}"
@@ -111,11 +141,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            target: x86_64-apple-darwin
 
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
 
       - name: Install Vulkan SDK + SwiftShader (Windows)
         if: matrix.os == 'windows-latest'
@@ -159,4 +200,4 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Run core_gpu tests
-        run: cargo test -p modern-colorthief-core-gpu
+        run: cargo test -p modern-colorthief-core-gpu -- --target ${{ matrix.target }}
