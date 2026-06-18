@@ -3,7 +3,7 @@
 //! Fuzz dominant color extraction from raw RGBA buffers.
 //! Exercises both CPU and GPU backends to find crashes in the dominant-color path.
 
-use libfuzzer_sys::arbitrary::{Arbitrary, Result, Unstructured};
+use libfuzzer_sys::arbitrary::{Arbitrary, Error};
 
 #[derive(Debug, Arbitrary)]
 struct ColorInput {

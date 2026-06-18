@@ -3,7 +3,7 @@
 //! Differential fuzzer: verify CPU and GPU backends produce consistent results.
 //! Feeds the same image to both backends and checks that palettes match within tolerance.
 
-use libfuzzer_sys::arbitrary::{Arbitrary, Result, Unstructured};
+use libfuzzer_sys::arbitrary::{Arbitrary, Error};
 
 #[derive(Debug, Arbitrary)]
 struct ConsistencyInput {

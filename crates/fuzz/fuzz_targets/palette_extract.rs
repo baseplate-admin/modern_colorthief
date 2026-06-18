@@ -4,7 +4,7 @@
 //! Exercises both CPU and GPU backends with arbitrary image data to find crashes
 //! and panics in the quantization pipeline.
 
-use libfuzzer_sys::arbitrary::{Arbitrary, Result, Unstructured};
+use libfuzzer_sys::arbitrary::{Arbitrary, Error};
 
 #[derive(Debug, Arbitrary)]
 struct PaletteInput {

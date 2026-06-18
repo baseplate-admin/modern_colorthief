@@ -9,12 +9,9 @@ cargo-fuzz = true
 
 [dependencies]
 rand = "0.8"
-libfuzzer-sys = "0.4"
+libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
 modern-colorthief-core-cpu = { workspace = true }
 modern-colorthief-core-gpu = { workspace = true }
-
-[features]
-default = ["libfuzzer-sys/arbitrary"]
 
 [[bin]]
 name = "palette_extract"
