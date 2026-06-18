@@ -6,7 +6,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "tsdown",
+        "build": "vite build",
         "prepublishOnly": "npm run build"
     },
     "napi": {
@@ -19,8 +19,9 @@
     "devDependencies": {
         "@types/node": "^24.10.1",
         "sharp": ">=0.33.0",
-        "tsdown": "^0.22.2",
         "typescript": "^6.0.3",
+        "vite": "^7.0.0",
+        "vite-plugin-dts": "^4.0.0",
         "vitest": "^4.0.14"
     },
     "peerDependencies": {

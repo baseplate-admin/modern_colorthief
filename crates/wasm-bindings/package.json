@@ -15,15 +15,9 @@
         "remove": "rimraf pkg",
         "build:wasm": "wasm-pack build --release",
         "build": "npm run remove && npm run build:wasm",
-        "test": "vitest run"
+        "test": "wasm-pack test --node --release"
     },
     "devDependencies": {
-        "@types/node": "^24.10.1",
-        "happy-dom": "^17.0.0",
-        "jsdom": "^26.1.0",
-        "rimraf": "^6.1.2",
-        "vite-plugin-wasm": "^3.5.0",
-        "vite-tsconfig-paths": "^5.1.4",
-        "vitest": "^4.0.14"
+        "rimraf": "^6.1.2"
     }
 }

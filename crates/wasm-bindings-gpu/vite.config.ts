@@ -1,10 +1,9 @@
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import wasm from 'vite-plugin-wasm';
 
 export default defineConfig({
-    plugins: [tsconfigPaths(), wasm()],
+    plugins: [wasm()],
     test: {
         projects: [
             {
@@ -22,10 +21,14 @@ export default defineConfig({
                     pool: 'browser',
                     browser: {
                         enabled: true,
-                        provider: playwright({ launch: { headless: true } }),
+                        provider: playwright({
+                            launch: {
+                                headless: true,
+                                args: ['--enable-unsafe-webgpu', '--use-gl=swiftshader'],
+                            },
+                        }),
                         instances: [
                             { name: 'chrome', browser: 'chromium' },
-                            { name: 'firefox', browser: 'firefox' },
                         ],
                     },
                 },

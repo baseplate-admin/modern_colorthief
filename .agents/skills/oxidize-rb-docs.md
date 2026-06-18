@@ -9,8 +9,7 @@ globs:
   - "**/extconf.rb"
   - "**/Rakefile"
   - "**/*.gemspec"
-models:
-  - sonnet
+
 ---
 
 # Oxidize-rb Docs Research Skill

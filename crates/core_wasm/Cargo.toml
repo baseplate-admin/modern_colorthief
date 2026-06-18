@@ -1,0 +1,25 @@
+[package]
+name = "modern-colorthief-core-wasm"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+modern-colorthief-core = { workspace = true }
+wasm-bindgen.workspace = true
+wasm-bindgen-futures = "0.4"
+js-sys.workspace = true
+web-sys = { workspace = true, features = ["console"] }
+
+[build-dependencies]
+naga = { version = "29", default-features = false, features = ["wgsl-in"] }
+serde_json = "1"
+swc_common = "23.0.1"
+swc_ecma_codegen = "28.0.1"
+swc_ecma_minifier = "55.0"
+swc_ecma_parser = "41.0.1"
+swc_ecma_transforms_typescript = "49.0.0"
+swc_ecma_utils = "31.0.0"
+swc_ecma_visit = "25.0.0"
+
+[features]
+
