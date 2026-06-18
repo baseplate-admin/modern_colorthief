@@ -2,7 +2,7 @@ name: Fuzz Tests
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, add-wasm]
   pull_request:
   workflow_dispatch:
 
