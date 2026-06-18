@@ -13,20 +13,5 @@ libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
 modern-colorthief-core-cpu = { workspace = true }
 modern-colorthief-core-gpu = { workspace = true }
 
-[[bin]]
-name = "palette_extract"
-path = "fuzz_targets/palette_extract.rs"
-test = false
-
-[[bin]]
-name = "color_extract"
-path = "fuzz_targets/color_extract.rs"
-test = false
-
-[[bin]]
-name = "cpu_gpu_consistency"
-path = "fuzz_targets/cpu_gpu_consistency.rs"
-test = false
-
 [dev-dependencies]
 color-thief = "0.2"
