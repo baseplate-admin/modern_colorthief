@@ -3,7 +3,6 @@ name: swc-build
 description: Use SWC for all JS/TS transformation and minification in Rust build scripts; use naga for WGSL shader validation
 metadata:
   type: skill
-  model: haiku
 ---
 
 # SWC Build-Step Skill

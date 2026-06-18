@@ -4,8 +4,7 @@ name: github-cicd
 globs:
   - ".github/workflows/**/*.yml"
   - ".github/workflows/**/*.yaml"
-models:
-  - sonnet
+
 ---
 
 # GitHub CI/CD Expert Skill
