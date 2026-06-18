@@ -2,7 +2,7 @@ name: JVM CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master, add-wasm ]
     tags: [ '*' ]
     paths:
       - 'crates/jvm-bindings/**'
@@ -31,7 +31,7 @@ env:
 
 jobs:
   # =========================================================================
-  # CPU build — build native lib, run Rust core tests, upload artifact
+  # CPU build — build native lib, run Rust core unit tests, upload artifact
   # =========================================================================
   cpu-build:
     name: "cpu-build"
@@ -50,7 +50,7 @@ jobs:
           key: ubuntu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Build JVM native library
         run: cargo build --release -p modern-colorthief-jvm
-      - name: Run Rust core tests
+      - name: Run Rust core unit tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Verify shared library built
         run: test -f target/release/libmodern_colorthief.so
@@ -64,7 +64,7 @@ jobs:
   # =========================================================================
   # CPU integration tests — download native lib, run JUnit
   # =========================================================================
-  cpu-test:
+  cpu-junit:
     name: "cpu-junit"
     needs: [cpu-build]
     runs-on: ubuntu-latest
@@ -92,7 +92,7 @@ jobs:
         run: ./gradlew test --info
 
   # =========================================================================
-  # GPU build — build GPU native lib on all 3 OS, run Rust GPU tests, upload
+  # GPU build — build GPU native lib on all 3 OS (no tests, Vulkan available)
   # =========================================================================
   gpu-build:
     name: "gpu-build — ${{ matrix.os }}"
@@ -158,8 +158,6 @@ jobs:
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Build GPU native library
         run: cargo build --release -p modern-colorthief-jvm-gpu
-      - name: Run Rust GPU tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Verify shared library (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: test -f target/release/libmodern_colorthief_gpu.so
@@ -193,9 +191,79 @@ jobs:
           retention-days: 1
 
   # =========================================================================
+  # GPU Rust unit tests — run Rust GPU unit tests (Vulkan required)
+  # =========================================================================
+  gpu-rust-test:
+    name: "gpu-rust-test — ${{ matrix.os }}"
+    needs: [gpu-build]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Install Vulkan SDK + SwiftShader (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Run Rust GPU unit tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+
+  # =========================================================================
   # GPU integration tests — download GPU native lib, run JUnit GPU
   # =========================================================================
-  gpu-test:
+  gpu-junit:
     name: "gpu-junit — ${{ matrix.os }}"
     needs: [gpu-build]
     runs-on: ${{ matrix.os }}
@@ -271,6 +339,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: Test-Path crates/jvm-bindings-gpu/tests/native/modern_colorthief_gpu.dll
+
       - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: '9.5.1'

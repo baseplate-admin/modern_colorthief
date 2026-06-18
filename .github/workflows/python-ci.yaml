@@ -2,7 +2,7 @@ name: Python CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master, add-wasm ]
     tags: [ '*' ]
     paths:
       - 'crates/python-bindings/**'
@@ -198,10 +198,10 @@ jobs:
   # =========================================================================
   # CPU integration tests — download built wheel, run pytest
   # =========================================================================
-  cpu-test:
+  cpu-pytest:
     name: "cpu-pytest — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
-    needs: [cpu-linux]
+    needs: [cpu-linux, cpu-windows, cpu-macos]
     strategy:
       fail-fast: false
       matrix:
@@ -209,6 +209,7 @@ jobs:
     defaults:
       run:
         working-directory: crates/python-bindings
+        shell: bash
     steps:
       - uses: actions/checkout@v6
 
@@ -258,7 +259,7 @@ jobs:
         run: pytest tests/ -v
 
   # =========================================================================
-  # GPU build — build GPU Python module on all 3 OS, upload artifact
+  # GPU build — build GPU Python module on all 3 OS (no tests, Vulkan available)
   # =========================================================================
   gpu-build:
     name: "gpu-build — ${{ matrix.os }}"
@@ -317,6 +318,7 @@ jobs:
       - name: Setup Vulkan environment (macOS)
         if: startsWith(matrix.os, 'macos')
         shell: bash
+        working-directory: .
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - uses: dtolnay/rust-toolchain@stable
@@ -345,21 +347,25 @@ jobs:
           retention-days: 1
 
   # =========================================================================
-  # GPU tests — download built GPU wheel, run Rust GPU tests + pytest GPU
+  # GPU Rust unit tests — run Rust GPU unit tests (Vulkan required)
   # =========================================================================
-  gpu-test:
-    name: "gpu-test — ${{ matrix.os }}"
+  gpu-rust-test:
+    name: "gpu-rust-test — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     needs: [gpu-build]
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, windows-latest]
-    defaults:
-      run:
-        working-directory: crates/python-bindings-gpu
     steps:
       - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-python-gpu-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -407,27 +413,89 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
 
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Cache cargo registry
-        uses: actions/cache@v5
+      - name: Run Rust GPU unit tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+        working-directory: .
+
+  # =========================================================================
+  # GPU integration tests — download built GPU wheel, run pytest GPU
+  # =========================================================================
+  gpu-pytest:
+    name: "gpu-pytest — ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    needs: [gpu-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
+    defaults:
+      run:
+        working-directory: crates/python-bindings-gpu
+        shell: bash
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
         with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-python-gpu-${{ hashFiles('**/Cargo.lock') }}
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Install Vulkan SDK + SwiftShader (macOS)
+        if: startsWith(matrix.os, 'macos')
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+
+      - name: Setup Vulkan environment (macOS)
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        working-directory: .
+        run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Install uv
         uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
 
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
       - name: Download GPU wheel
         uses: actions/download-artifact@v4
         with:
           name: "wheel-gpu-${{ matrix.os }}"
           path: crates/python-bindings-gpu/dist
-
-      - name: Run Rust GPU tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
-        working-directory: .
 
       - name: Install GPU wheel + pytest
         run: |
@@ -445,7 +513,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-    needs: [cpu-test, gpu-test]
+    needs: [cpu-pytest, gpu-rust-test, gpu-pytest]
     permissions:
       id-token: write
       contents: write

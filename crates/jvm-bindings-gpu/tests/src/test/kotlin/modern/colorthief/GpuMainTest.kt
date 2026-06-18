@@ -1,29 +1,21 @@
 package modern.colorthief
 
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.condition.EnabledIf
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-// ---------------------------------------------------------------------------
-// GPU availability probe
-// ---------------------------------------------------------------------------
+class GpuMainTest {
 
-object GpuLibProbe {
-    private var available: Boolean = false
-    init {
-        try {
-            System.loadLibrary("modern_colorthief_gpu")
-            available = true
-        } catch (_: Throwable) {
+    companion object {
+        init {
+            try {
+                System.loadLibrary("modern_colorthief_gpu")
+            } catch (_: Throwable) {
+            }
         }
     }
-    fun isAvailable(): Boolean = available
-}
 
-@EnabledIf("GpuLibProbe.isAvailable")
-class GpuMainTest {
     // ---------------------------------------------------------------------------
     // Solid color detection
     // ---------------------------------------------------------------------------
