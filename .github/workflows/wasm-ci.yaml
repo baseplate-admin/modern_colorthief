@@ -3,6 +3,7 @@ name: WASM CI
 on:
   push:
     branches: [ main, master ]
+    tags: ['*']
     paths:
       - 'crates/wasm-bindings/**'
       - 'crates/wasm-bindings-webgpu/**'
@@ -11,8 +12,6 @@ on:
       - 'crates/core/**'
       - '.github/workflows/wasm-ci.yaml'
       - 'Cargo.toml'
-  push:
-    tags: ['*']
   pull_request:
     paths:
       - 'crates/wasm-bindings/**'

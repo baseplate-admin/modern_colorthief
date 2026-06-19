@@ -3,6 +3,7 @@ name: PHP CI
 on:
   push:
     branches: [main, master]
+    tags: ['*']
     paths:
       - 'crates/php-bindings/**'
       - 'crates/php-bindings-gpu/**'
@@ -11,8 +12,6 @@ on:
       - 'crates/core/**'
       - '.github/workflows/php-ci.yaml'
       - 'Cargo.toml'
-  push:
-    tags: ['*']
   pull_request:
     paths:
       - 'crates/php-bindings/**'

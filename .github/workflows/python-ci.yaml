@@ -3,6 +3,7 @@ name: Python CI
 on:
   push:
     branches: [ main, master ]
+    tags: ['*']
     paths:
       - 'crates/python-bindings/**'
       - 'crates/python-bindings-gpu/**'
@@ -11,8 +12,6 @@ on:
       - 'crates/core/**'
       - '.github/workflows/python-ci.yaml'
       - 'Cargo.toml'
-  push:
-    tags: ['*']
   pull_request:
     paths:
       - 'crates/python-bindings/**'

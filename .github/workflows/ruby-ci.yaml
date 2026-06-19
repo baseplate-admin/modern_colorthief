@@ -3,6 +3,7 @@ name: Ruby CI
 on:
   push:
     branches: [ main, master ]
+    tags: ['*']
     paths:
       - 'crates/ruby-bindings/**'
       - 'crates/ruby-bindings-gpu/**'

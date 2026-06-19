@@ -3,6 +3,7 @@ name: JVM CI
 on:
   push:
     branches: [ main, master ]
+    tags: ['*']
     paths:
       - 'crates/jvm-bindings/**'
       - 'crates/jvm-bindings-gpu/**'
@@ -11,8 +12,6 @@ on:
       - 'crates/core/**'
       - '.github/workflows/jvm-ci.yaml'
       - 'Cargo.toml'
-  push:
-    tags: ['*']
   pull_request:
     paths:
       - 'crates/jvm-bindings/**'
