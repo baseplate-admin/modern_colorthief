@@ -2,11 +2,8 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use wasm_bindgen_test::*;
 
-
 #[allow(unused_imports)]
-use modern_colorthief_webgpu::{
-    get_palette_gpu_promise, get_color_gpu_promise, get_version,
-};
+use modern_colorthief_webgpu::{get_color_gpu_promise, get_palette_gpu_promise, get_version};
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -98,18 +95,28 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn palette_solid_red() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
         assert!(!colors.is_empty());
         let (r, g, b) = colors[0];
-        assert!(r > 200 && g < 55 && b < 55, "expected red, got ({},{},{})", r, g, b);
+        assert!(
+            r > 200 && g < 55 && b < 55,
+            "expected red, got ({},{},{})",
+            r,
+            g,
+            b
+        );
     }
 
     #[wasm_bindgen_test]
     async fn palette_solid_green() {
         let buf = solid_pixels(0, 255, 0, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette_to_vec(&palette)[0].1 > 200);
     }
@@ -117,7 +124,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn palette_white() {
         let buf = solid_pixels(255, 255, 255, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let (r, g, b) = palette_to_vec(&palette)[0];
         assert!(r > 200 && g > 200 && b > 200);
@@ -126,7 +135,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn palette_black() {
         let buf = solid_pixels(0, 0, 0, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let (r, g, b) = palette_to_vec(&palette)[0];
         assert!(r < 55 && g < 55 && b < 55);
@@ -137,7 +148,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn palette_valid_rgb() {
         let buf = solid_pixels(100, 150, 200, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         for i in 0..palette.length() {
             let tuple = palette.get(i).dyn_into::<js_sys::Array>().unwrap();
@@ -152,7 +165,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn palette_non_empty() {
         let buf = solid_pixels(100, 150, 200, 50, 50);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 50, 50, 10, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 50, 50, 10, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -160,7 +175,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn palette_respects_color_count() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() <= 5);
     }
@@ -170,17 +187,31 @@ mod gpu {
         // Ported from test_properties.py::test_palette_count_bounded
         for &count in &[3u8, 5u8] {
             let buf = gradient_pixels(200, 200);
-            let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 200, 200, count, 10)).await.unwrap();
+            let result = JsFuture::from(get_palette_gpu_promise(
+                pixels_view(&buf),
+                200,
+                200,
+                count,
+                10,
+            ))
+            .await
+            .unwrap();
             let palette: js_sys::Array = result.dyn_into().unwrap();
-            assert!(palette.length() <= count as u32,
-                "palette length {} exceeds requested count {}", palette.length(), count);
+            assert!(
+                palette.length() <= count as u32,
+                "palette length {} exceeds requested count {}",
+                palette.length(),
+                count
+            );
         }
     }
 
     #[wasm_bindgen_test]
     async fn palette_no_duplicates() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
         let unique: std::collections::HashSet<_> = colors.clone().into_iter().collect();
@@ -191,7 +222,15 @@ mod gpu {
     async fn palette_deduplication_large() {
         // Ported from test_deduplication.py::test_deduplication
         let buf = gradient_pixels(512, 512);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 512, 512, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(
+            pixels_view(&buf),
+            512,
+            512,
+            100,
+            10,
+        ))
+        .await
+        .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
         let unique: std::collections::HashSet<_> = colors.clone().into_iter().collect();
@@ -202,8 +241,12 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn palette_deterministic() {
         let buf = solid_pixels(200, 100, 50, 100, 100);
-        let p1 = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10)).await.unwrap();
-        let p2 = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10)).await.unwrap();
+        let p1 = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10))
+            .await
+            .unwrap();
+        let p2 = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10))
+            .await
+            .unwrap();
         let p1_arr: js_sys::Array = p1.dyn_into().unwrap();
         let p2_arr: js_sys::Array = p2.dyn_into().unwrap();
         assert_eq!(palette_to_vec(&p1_arr), palette_to_vec(&p2_arr));
@@ -215,7 +258,10 @@ mod gpu {
     async fn palette_quality_variation() {
         let buf = solid_pixels(100, 150, 200, 200, 200);
         for &q in &[1u8, 5u8, 10u8] {
-            let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 200, 200, 10, q)).await.unwrap();
+            let result =
+                JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 200, 200, 10, q))
+                    .await
+                    .unwrap();
             let palette: js_sys::Array = result.dyn_into().unwrap();
             assert!(palette.length() > 0);
         }
@@ -224,7 +270,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn quality_min_valid() {
         let buf = solid_pixels(100, 150, 200, 100, 100);
-        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 1)).await.unwrap();
+        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 1))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
     }
@@ -232,7 +280,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn quality_max_valid() {
         let buf = solid_pixels(100, 150, 200, 100, 100);
-        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
     }
@@ -242,7 +292,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn color_solid_red() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         let (r, g, b) = color_to_tuple(&color);
         assert!(r > 200 && g < 55 && b < 55);
@@ -251,7 +303,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn color_valid_rgb() {
         let buf = solid_pixels(50, 100, 150, 100, 100);
-        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
         for i in 0..3 {
@@ -263,8 +317,12 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn color_deterministic() {
         let buf = solid_pixels(200, 100, 50, 100, 100);
-        let c1 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10)).await.unwrap();
-        let c2 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let c1 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
+        let c2 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let c1_arr: js_sys::Array = c1.dyn_into().unwrap();
         let c2_arr: js_sys::Array = c2.dyn_into().unwrap();
         assert_eq!(color_to_tuple(&c1_arr), color_to_tuple(&c2_arr));
@@ -273,8 +331,12 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn color_consistent_across_quality() {
         let buf = solid_pixels(200, 100, 50, 200, 200);
-        let c1 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 200, 200, 1)).await.unwrap();
-        let c2 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 200, 200, 10)).await.unwrap();
+        let c1 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 200, 200, 1))
+            .await
+            .unwrap();
+        let c2 = JsFuture::from(get_color_gpu_promise(pixels_view(&buf), 200, 200, 10))
+            .await
+            .unwrap();
         let c1_arr: js_sys::Array = c1.dyn_into().unwrap();
         let c2_arr: js_sys::Array = c2.dyn_into().unwrap();
         let (r1, g1, b1) = color_to_tuple(&c1_arr);
@@ -290,8 +352,12 @@ mod gpu {
     async fn different_images_different_colors() {
         let red_buf = solid_pixels(255, 0, 0, 100, 100);
         let blue_buf = solid_pixels(0, 0, 255, 100, 100);
-        let c1 = JsFuture::from(get_color_gpu_promise(pixels_view(&red_buf), 100, 100, 10)).await.unwrap();
-        let c2 = JsFuture::from(get_color_gpu_promise(pixels_view(&blue_buf), 100, 100, 10)).await.unwrap();
+        let c1 = JsFuture::from(get_color_gpu_promise(pixels_view(&red_buf), 100, 100, 10))
+            .await
+            .unwrap();
+        let c2 = JsFuture::from(get_color_gpu_promise(pixels_view(&blue_buf), 100, 100, 10))
+            .await
+            .unwrap();
         let c1_arr: js_sys::Array = c1.dyn_into().unwrap();
         let c2_arr: js_sys::Array = c2.dyn_into().unwrap();
         assert_ne!(
@@ -306,11 +372,17 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn two_color_detection() {
         let buf = two_color_pixels(255, 0, 0, 0, 0, 255, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
-        let has_red = colors.iter().any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
-        let has_blue = colors.iter().any(|(r, g, b)| *r < 55 && *g < 55 && *b > 200);
+        let has_red = colors
+            .iter()
+            .any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
+        let has_blue = colors
+            .iter()
+            .any(|(r, g, b)| *r < 55 && *g < 55 && *b > 200);
         assert!(has_red || has_blue);
     }
 
@@ -319,7 +391,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn edge_1x1() {
         let buf = solid_pixels(255, 128, 64, 1, 1);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 1, 1, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 1, 1, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -327,7 +401,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn edge_2x2() {
         let buf = solid_pixels(128, 64, 32, 2, 2);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 2, 2, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 2, 2, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -335,7 +411,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn edge_large_image() {
         let buf = solid_pixels(100, 200, 150, 500, 500);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 500, 500, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 500, 500, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -343,7 +421,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn edge_wide_image() {
         let buf = solid_pixels(200, 100, 50, 1000, 10);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 1000, 10, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 1000, 10, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -351,7 +431,9 @@ mod gpu {
     #[wasm_bindgen_test]
     async fn edge_tall_image() {
         let buf = solid_pixels(200, 100, 50, 10, 1000);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 10, 1000, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 10, 1000, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -397,10 +479,30 @@ mod gpu {
     async fn concurrent_gpu_palette_calls() {
         let buf = solid_pixels(100, 150, 200, 100, 100);
         let promises = js_sys::Array::new();
-        promises.push(&get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10));
-        promises.push(&get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10));
-        promises.push(&get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10));
-        let results = JsFuture::from(js_sys::Promise::all(&promises)).await.unwrap();
+        promises.push(&get_palette_gpu_promise(
+            pixels_view(&buf),
+            100,
+            100,
+            10,
+            10,
+        ));
+        promises.push(&get_palette_gpu_promise(
+            pixels_view(&buf),
+            100,
+            100,
+            10,
+            10,
+        ));
+        promises.push(&get_palette_gpu_promise(
+            pixels_view(&buf),
+            100,
+            100,
+            10,
+            10,
+        ));
+        let results = JsFuture::from(js_sys::Promise::all(&promises))
+            .await
+            .unwrap();
         let results: js_sys::Array = results.dyn_into().unwrap();
         assert_eq!(results.length(), 3);
         for i in 0..results.length() {
@@ -416,7 +518,9 @@ mod gpu {
         promises.push(&get_color_gpu_promise(pixels_view(&buf), 100, 100, 10));
         promises.push(&get_color_gpu_promise(pixels_view(&buf), 100, 100, 10));
         promises.push(&get_color_gpu_promise(pixels_view(&buf), 100, 100, 10));
-        let results = JsFuture::from(js_sys::Promise::all(&promises)).await.unwrap();
+        let results = JsFuture::from(js_sys::Promise::all(&promises))
+            .await
+            .unwrap();
         let results: js_sys::Array = results.dyn_into().unwrap();
         assert_eq!(results.length(), 3);
         let first = results.get(0).dyn_into::<js_sys::Array>().unwrap();
@@ -433,7 +537,9 @@ mod gpu {
         promises.push(&get_color_gpu_promise(pixels_view(&buf), 100, 100, 10));
         promises.push(&get_palette_gpu_promise(pixels_view(&buf), 100, 100, 3, 10));
         promises.push(&get_color_gpu_promise(pixels_view(&buf), 100, 100, 10));
-        let results = JsFuture::from(js_sys::Promise::all(&promises)).await.unwrap();
+        let results = JsFuture::from(js_sys::Promise::all(&promises))
+            .await
+            .unwrap();
         let results: js_sys::Array = results.dyn_into().unwrap();
         assert_eq!(results.length(), 3);
     }
@@ -492,7 +598,10 @@ mod gpu {
     #[wasm_bindgen_test]
     fn version_is_string() {
         let v = get_version();
-        assert!(v.chars().all(|c| c.is_ascii_digit() || c == '.' || c == '-' || c == '_'));
+        assert!(
+            v.chars()
+                .all(|c| c.is_ascii_digit() || c == '.' || c == '-' || c == '_')
+        );
     }
 
     #[wasm_bindgen_test]
@@ -500,8 +609,14 @@ mod gpu {
         let v = get_version();
         let parts: Vec<&str> = v.split('.').collect();
         assert!(parts.len() >= 2, "version should have at least major.minor");
-        assert!(parts[0].parse::<u32>().is_ok(), "major version should be numeric");
-        assert!(parts[1].parse::<u32>().is_ok(), "minor version should be numeric");
+        assert!(
+            parts[0].parse::<u32>().is_ok(),
+            "major version should be numeric"
+        );
+        assert!(
+            parts[1].parse::<u32>().is_ok(),
+            "minor version should be numeric"
+        );
     }
 
     #[wasm_bindgen_test]
@@ -523,7 +638,8 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn gpu_palette_available() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10)).await;
+        let result =
+            JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 100, 100, 10, 10)).await;
         if let Ok(res) = result {
             let palette: js_sys::Array = res.dyn_into().unwrap();
             assert!(palette.length() > 0);

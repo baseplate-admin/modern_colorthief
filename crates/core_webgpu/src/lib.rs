@@ -55,8 +55,7 @@ async fn extract_palette_async(
         return Err("Empty pixel buffer".to_string());
     }
 
-    let raw = webgpu::extract_palette_webgpu(buffer, width, height, color_count, quality)
-        .await?;
+    let raw = webgpu::extract_palette_webgpu(buffer, width, height, color_count, quality).await?;
 
     let mut colors = Vec::with_capacity(raw.len() / 3);
     let mut i = 0;

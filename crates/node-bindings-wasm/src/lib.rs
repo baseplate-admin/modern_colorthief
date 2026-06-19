@@ -22,9 +22,9 @@ pub fn get_palette(
     quality: u8,
 ) -> js_sys::Promise {
     wasm_bindgen_futures::future_to_promise(async move {
-        let palette = extract_palette_from_buffer(
-            &pixels.to_vec(), width, height, color_count, quality,
-        ).map_err(|e| JsValue::from_str(&e))?;
+        let palette =
+            extract_palette_from_buffer(&pixels.to_vec(), width, height, color_count, quality)
+                .map_err(|e| JsValue::from_str(&e))?;
 
         let result = js_sys::Array::new();
         for (r, g, b) in palette {
@@ -58,9 +58,8 @@ pub fn get_color(
     quality: u8,
 ) -> js_sys::Promise {
     wasm_bindgen_futures::future_to_promise(async move {
-        let mut palette = extract_palette_from_buffer(
-            &pixels.to_vec(), width, height, 5, quality,
-        ).map_err(|e| JsValue::from_str(&e))?;
+        let mut palette = extract_palette_from_buffer(&pixels.to_vec(), width, height, 5, quality)
+            .map_err(|e| JsValue::from_str(&e))?;
 
         if let Some((r, g, b)) = palette.pop() {
             let result = js_sys::Array::new();

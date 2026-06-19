@@ -6,8 +6,7 @@ use wasm_bindgen_test::*;
 wasm_bindgen_test_configure!(run_in_browser);
 
 use modern_colorthief_wasm::{
-    get_palette_from_pixels, get_color_from_pixels,
-    get_palette_promise, get_color_promise, version,
+    get_color_from_pixels, get_color_promise, get_palette_from_pixels, get_palette_promise, version,
 };
 
 // ---------------------------------------------------------------------------
@@ -103,7 +102,7 @@ mod browser {
         assert!(p.is_instance_of::<js_sys::Promise>());
     }
 
-   #[wasm_bindgen_test]
+    #[wasm_bindgen_test]
     async fn decode_image_via_canvas() {
         let window = web_sys::window().unwrap();
         let document = window.document().unwrap();
@@ -111,7 +110,11 @@ mod browser {
         let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
         canvas.set_width(100);
         canvas.set_height(100);
-        let ctx = canvas.get_context("2d").unwrap().unwrap().unchecked_into::<web_sys::CanvasRenderingContext2d>();
+        let ctx = canvas
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .unchecked_into::<web_sys::CanvasRenderingContext2d>();
         set_fill_style(&ctx, "rgb(255,0,0)");
         ctx.fill_rect(0.0, 0.0, 100.0, 100.0);
         let image_data = ctx.get_image_data(0.0, 0.0, 100.0, 100.0).unwrap();
@@ -131,7 +134,11 @@ mod browser {
         let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
         canvas.set_width(200);
         canvas.set_height(150);
-        let ctx = canvas.get_context("2d").unwrap().unwrap().unchecked_into::<web_sys::CanvasRenderingContext2d>();
+        let ctx = canvas
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .unchecked_into::<web_sys::CanvasRenderingContext2d>();
         set_fill_style(&ctx, "rgb(0,255,0)");
         ctx.fill_rect(0.0, 0.0, 200.0, 150.0);
         let image_data = ctx.get_image_data(0.0, 0.0, 200.0, 150.0).unwrap();
@@ -140,14 +147,24 @@ mod browser {
 
     #[wasm_bindgen_test]
     async fn canvas_solid_colors() {
-        for (r, g, b) in [(255u8, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255), (0, 0, 0)] {
+        for (r, g, b) in [
+            (255u8, 0, 0),
+            (0, 255, 0),
+            (0, 0, 255),
+            (255, 255, 255),
+            (0, 0, 0),
+        ] {
             let window = web_sys::window().unwrap();
             let document = window.document().unwrap();
             let canvas = document.create_element("canvas").unwrap();
             let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
             canvas.set_width(10);
             canvas.set_height(10);
-            let ctx = canvas.get_context("2d").unwrap().unwrap().unchecked_into::<web_sys::CanvasRenderingContext2d>();
+            let ctx = canvas
+                .get_context("2d")
+                .unwrap()
+                .unwrap()
+                .unchecked_into::<web_sys::CanvasRenderingContext2d>();
             set_fill_style(&ctx, &format!("rgb({},{},{})", r, g, b));
             ctx.fill_rect(0.0, 0.0, 10.0, 10.0);
             let data = ctx.get_image_data(0.0, 0.0, 10.0, 10.0).unwrap().data();
@@ -174,17 +191,27 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn solid_red() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
         let (r, g, b) = colors[0];
-        assert!(r > 200 && g < 55 && b < 55, "expected red, got ({},{},{})", r, g, b);
+        assert!(
+            r > 200 && g < 55 && b < 55,
+            "expected red, got ({},{},{})",
+            r,
+            g,
+            b
+        );
     }
 
     #[wasm_bindgen_test]
     async fn solid_green() {
         let buf = solid_pixels(0, 255, 0, 100, 100);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette_to_vec(&palette)[0].1 > 200);
     }
@@ -192,7 +219,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn solid_white() {
         let buf = solid_pixels(255, 255, 255, 100, 100);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let (r, g, b) = palette_to_vec(&palette)[0];
         assert!(r > 200 && g > 200 && b > 200);
@@ -201,7 +230,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn solid_black() {
         let buf = solid_pixels(0, 0, 0, 100, 100);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let (r, g, b) = palette_to_vec(&palette)[0];
         assert!(r < 55 && g < 55 && b < 55);
@@ -212,7 +243,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn color_from_pixels_red() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         let (r, g, b) = color_to_tuple(&color);
         assert!(r > 200 && g < 55 && b < 55);
@@ -221,7 +254,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn color_from_pixels_green() {
         let buf = solid_pixels(0, 255, 0, 100, 100);
-        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         let (r, g, b) = color_to_tuple(&color);
         assert!(r < 55 && g > 200 && b < 55);
@@ -230,7 +265,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn color_rgb_length() {
         let buf = solid_pixels(255, 0, 0, 100, 100);
-        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
     }
@@ -240,12 +277,18 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn two_color_detection() {
         let buf = two_color_pixels(255, 0, 0, 0, 0, 255, 100, 100);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
         assert!(colors.len() >= 2);
-        let has_red = colors.iter().any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
-        let has_blue = colors.iter().any(|(r, g, b)| *r < 55 && *g < 55 && *b > 200);
+        let has_red = colors
+            .iter()
+            .any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55);
+        let has_blue = colors
+            .iter()
+            .any(|(r, g, b)| *r < 55 && *g < 55 && *b > 200);
         assert!(has_red || has_blue);
     }
 
@@ -254,7 +297,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn valid_rgb_values() {
         let buf = solid_pixels(100, 150, 200, 100, 100);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 10, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 10, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         for i in 0..palette.length() {
             let tuple = palette.get(i).dyn_into::<js_sys::Array>().unwrap();
@@ -269,7 +314,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn color_returns_valid_rgb() {
         let buf = solid_pixels(128, 64, 32, 50, 50);
-        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 50, 50, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 50, 50, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
         for i in 0..3 {
@@ -281,7 +328,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn palette_non_empty() {
         let buf = solid_pixels(100, 150, 200, 50, 50);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 50, 50, 10, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 50, 50, 10, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -290,7 +339,15 @@ mod pixels {
     async fn respects_color_count() {
         for &count in &[3u8, 5u8] {
             let buf = solid_pixels(128, 64, 32, 100, 100);
-            let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, count, 10)).await.unwrap();
+            let result = JsFuture::from(get_palette_from_pixels(
+                pixels_view(&buf),
+                100,
+                100,
+                count,
+                10,
+            ))
+            .await
+            .unwrap();
             let palette: js_sys::Array = result.dyn_into().unwrap();
             assert!(palette.length() <= count as u32);
         }
@@ -301,10 +358,22 @@ mod pixels {
         // Ported from test_properties.py::test_palette_count_bounded
         for &count in &[3u8, 5u8] {
             let buf = gradient_pixels(200, 200);
-            let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 200, 200, count, 10)).await.unwrap();
+            let result = JsFuture::from(get_palette_from_pixels(
+                pixels_view(&buf),
+                200,
+                200,
+                count,
+                10,
+            ))
+            .await
+            .unwrap();
             let palette: js_sys::Array = result.dyn_into().unwrap();
-            assert!(palette.length() <= count as u32,
-                "palette length {} exceeds requested count {}", palette.length(), count);
+            assert!(
+                palette.length() <= count as u32,
+                "palette length {} exceeds requested count {}",
+                palette.length(),
+                count
+            );
         }
     }
 
@@ -313,7 +382,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn no_duplicates() {
         let buf = solid_pixels(100, 150, 200, 100, 100);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 20, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 20, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
         let unique: std::collections::HashSet<_> = colors.clone().into_iter().collect();
@@ -325,7 +396,15 @@ mod pixels {
         // Ported from test_deduplication.py::test_deduplication
         // Request 255 colors and verify no duplicates
         let buf = gradient_pixels(1024, 1024);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 1024, 1024, 255, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(
+            pixels_view(&buf),
+            1024,
+            1024,
+            255,
+            10,
+        ))
+        .await
+        .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         let colors = palette_to_vec(&palette);
         let unique: std::collections::HashSet<_> = colors.clone().into_iter().collect();
@@ -341,8 +420,12 @@ mod pixels {
     async fn different_images_different_colors() {
         let red_buf = solid_pixels(255, 0, 0, 100, 100);
         let blue_buf = solid_pixels(0, 0, 255, 100, 100);
-        let c1 = JsFuture::from(get_color_from_pixels(pixels_view(&red_buf), 100, 100, 10)).await.unwrap();
-        let c2 = JsFuture::from(get_color_from_pixels(pixels_view(&blue_buf), 100, 100, 10)).await.unwrap();
+        let c1 = JsFuture::from(get_color_from_pixels(pixels_view(&red_buf), 100, 100, 10))
+            .await
+            .unwrap();
+        let c2 = JsFuture::from(get_color_from_pixels(pixels_view(&blue_buf), 100, 100, 10))
+            .await
+            .unwrap();
         let c1_arr: js_sys::Array = c1.dyn_into().unwrap();
         let c2_arr: js_sys::Array = c2.dyn_into().unwrap();
         assert_ne!(
@@ -357,8 +440,12 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn determinism() {
         let buf = solid_pixels(180, 90, 45, 100, 100);
-        let p1 = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
-        let p2 = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10)).await.unwrap();
+        let p1 = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
+        let p2 = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, 10))
+            .await
+            .unwrap();
         let p1_arr: js_sys::Array = p1.dyn_into().unwrap();
         let p2_arr: js_sys::Array = p2.dyn_into().unwrap();
         assert_eq!(palette_to_vec(&p1_arr), palette_to_vec(&p2_arr));
@@ -367,8 +454,12 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn color_determinism() {
         let buf = solid_pixels(180, 90, 45, 100, 100);
-        let c1 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10)).await.unwrap();
-        let c2 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let c1 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
+        let c2 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let c1_arr: js_sys::Array = c1.dyn_into().unwrap();
         let c2_arr: js_sys::Array = c2.dyn_into().unwrap();
         assert_eq!(color_to_tuple(&c1_arr), color_to_tuple(&c2_arr));
@@ -378,8 +469,12 @@ mod pixels {
     async fn consistent_across_quality_settings() {
         // Different quality settings should return the same dominant color for solid images
         let buf = solid_pixels(200, 100, 50, 200, 200);
-        let c1 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 200, 200, 1)).await.unwrap();
-        let c2 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 200, 200, 10)).await.unwrap();
+        let c1 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 200, 200, 1))
+            .await
+            .unwrap();
+        let c2 = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 200, 200, 10))
+            .await
+            .unwrap();
         let c1_arr: js_sys::Array = c1.dyn_into().unwrap();
         let c2_arr: js_sys::Array = c2.dyn_into().unwrap();
         let (r1, g1, b1) = color_to_tuple(&c1_arr);
@@ -396,7 +491,9 @@ mod pixels {
     async fn quality_bounds() {
         let buf = solid_pixels(200, 100, 50, 100, 100);
         for &q in &[1u8, 5u8, 10u8] {
-            let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, q)).await.unwrap();
+            let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 100, 100, 5, q))
+                .await
+                .unwrap();
             let palette: js_sys::Array = result.dyn_into().unwrap();
             assert!(palette.length() > 0, "quality={} returned empty palette", q);
         }
@@ -406,7 +503,9 @@ mod pixels {
     async fn quality_min_valid() {
         // Ported from test_edge_cases.py::test_quality_min_valid
         let buf = solid_pixels(100, 150, 200, 100, 100);
-        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 1)).await.unwrap();
+        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 1))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
     }
@@ -415,7 +514,9 @@ mod pixels {
     async fn quality_ten_fastest() {
         // Ported from test_edge_cases.py::test_quality_ten_fastest
         let buf = solid_pixels(100, 150, 200, 100, 100);
-        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 100, 100, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
     }
@@ -425,7 +526,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn edge_1x1() {
         let buf = solid_pixels(255, 128, 64, 1, 1);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 1, 1, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 1, 1, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -433,7 +536,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn edge_2x2() {
         let buf = solid_pixels(128, 64, 32, 2, 2);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 2, 2, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 2, 2, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -441,7 +546,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn edge_large_image() {
         let buf = solid_pixels(100, 200, 150, 500, 500);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 500, 500, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 500, 500, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -449,7 +556,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn edge_wide_image() {
         let buf = solid_pixels(200, 100, 50, 1000, 10);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 1000, 10, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 1000, 10, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -457,7 +566,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn edge_tall_image() {
         let buf = solid_pixels(200, 100, 50, 10, 1000);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 10, 1000, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 10, 1000, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -496,9 +607,11 @@ mod pixels {
     async fn accepts_partial_pixel_data() {
         // The raw pixel API processes whatever bytes are given without validation.
         let short = js_sys::Uint8Array::from(&[0xFFu8, 0xD8, 0xFF, 0xE0, 0, 0, 0, 0, 0, 0][..]);
-        let result = JsFuture::from(get_palette_from_pixels(short, 100, 100, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(short, 100, 100, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
-  let _ = &palette; // result is a valid JS Array
+        let _ = &palette; // result is a valid JS Array
     }
 
     #[wasm_bindgen_test]
@@ -509,7 +622,9 @@ mod pixels {
             data[i] = (i * 7 + 13) as u8;
         }
         let pixels = js_sys::Uint8Array::from(&data[..]);
-        let result = JsFuture::from(get_palette_from_pixels(pixels, 20, 20, 5, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels, 20, 20, 5, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -519,7 +634,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn uint8array_input_palette() {
         let buf = solid_pixels(100, 150, 200, 50, 50);
-        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 50, 50, 10, 10)).await.unwrap();
+        let result = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 50, 50, 10, 10))
+            .await
+            .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -527,7 +644,9 @@ mod pixels {
     #[wasm_bindgen_test]
     async fn uint8array_input_color() {
         let buf = solid_pixels(100, 150, 200, 50, 50);
-        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 50, 50, 10)).await.unwrap();
+        let result = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 50, 50, 10))
+            .await
+            .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
     }
@@ -539,8 +658,14 @@ mod pixels {
         let view = pixels_view(&buf);
         let ab = view.buffer();
         let result = JsFuture::from(get_palette_from_pixels(
-            js_sys::Uint8Array::new(&ab), 50, 50, 10, 10,
-        )).await.unwrap();
+            js_sys::Uint8Array::new(&ab),
+            50,
+            50,
+            10,
+            10,
+        ))
+        .await
+        .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
         assert!(palette.length() > 0);
     }
@@ -551,8 +676,13 @@ mod pixels {
         let view = pixels_view(&buf);
         let ab = view.buffer();
         let result = JsFuture::from(get_color_from_pixels(
-            js_sys::Uint8Array::new(&ab), 50, 50, 10,
-        )).await.unwrap();
+            js_sys::Uint8Array::new(&ab),
+            50,
+            50,
+            10,
+        ))
+        .await
+        .unwrap();
         let color: js_sys::Array = result.dyn_into().unwrap();
         assert_eq!(color.length(), 3);
     }
@@ -562,8 +692,12 @@ mod pixels {
         // Ported from test_input_types.py::test_bytes_not_mutated
         let buf = solid_pixels(100, 150, 200, 50, 50);
         let snapshot = buf.clone();
-        let _ = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 50, 50, 10, 10)).await.unwrap();
-        let _ = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 50, 50, 10)).await.unwrap();
+        let _ = JsFuture::from(get_palette_from_pixels(pixels_view(&buf), 50, 50, 10, 10))
+            .await
+            .unwrap();
+        let _ = JsFuture::from(get_color_from_pixels(pixels_view(&buf), 50, 50, 10))
+            .await
+            .unwrap();
         assert_eq!(buf, snapshot);
     }
 
@@ -574,9 +708,17 @@ mod pixels {
         let buf = solid_pixels(100, 150, 200, 100, 100);
         let promises = js_sys::Array::new();
         for _ in 0..3 {
-            promises.push(&get_palette_from_pixels(pixels_view(&buf), 100, 100, 10, 10));
+            promises.push(&get_palette_from_pixels(
+                pixels_view(&buf),
+                100,
+                100,
+                10,
+                10,
+            ));
         }
-        let results = JsFuture::from(js_sys::Promise::all(&promises)).await.unwrap();
+        let results = JsFuture::from(js_sys::Promise::all(&promises))
+            .await
+            .unwrap();
         let results: js_sys::Array = results.dyn_into().unwrap();
         assert_eq!(results.length(), 3);
         for i in 0..results.length() {
@@ -592,7 +734,9 @@ mod pixels {
         for _ in 0..3 {
             promises.push(&get_color_from_pixels(pixels_view(&buf), 100, 100, 10));
         }
-        let results = JsFuture::from(js_sys::Promise::all(&promises)).await.unwrap();
+        let results = JsFuture::from(js_sys::Promise::all(&promises))
+            .await
+            .unwrap();
         let results: js_sys::Array = results.dyn_into().unwrap();
         assert_eq!(results.length(), 3);
         let first = results.get(0).dyn_into::<js_sys::Array>().unwrap();
@@ -610,7 +754,9 @@ mod pixels {
         promises.push(&get_color_from_pixels(pixels_view(&buf), 100, 100, 10));
         promises.push(&get_palette_from_pixels(pixels_view(&buf), 100, 100, 3, 10));
         promises.push(&get_color_from_pixels(pixels_view(&buf), 100, 100, 10));
-        let results = JsFuture::from(js_sys::Promise::all(&promises)).await.unwrap();
+        let results = JsFuture::from(js_sys::Promise::all(&promises))
+            .await
+            .unwrap();
         let results: js_sys::Array = results.dyn_into().unwrap();
         assert_eq!(results.length(), 3);
     }
@@ -640,7 +786,10 @@ mod pixels {
     #[wasm_bindgen_test]
     fn version_is_string() {
         let v = version();
-        assert!(v.chars().all(|c| c.is_ascii_digit() || c == '.' || c == '-' || c == '_'));
+        assert!(
+            v.chars()
+                .all(|c| c.is_ascii_digit() || c == '.' || c == '-' || c == '_')
+        );
     }
 
     #[wasm_bindgen_test]
@@ -648,8 +797,14 @@ mod pixels {
         let v = version();
         let parts: Vec<&str> = v.split('.').collect();
         assert!(parts.len() >= 2, "version should have at least major.minor");
-        assert!(parts[0].parse::<u32>().is_ok(), "major version should be numeric");
-        assert!(parts[1].parse::<u32>().is_ok(), "minor version should be numeric");
+        assert!(
+            parts[0].parse::<u32>().is_ok(),
+            "major version should be numeric"
+        );
+        assert!(
+            parts[1].parse::<u32>().is_ok(),
+            "minor version should be numeric"
+        );
     }
 
     #[wasm_bindgen_test]

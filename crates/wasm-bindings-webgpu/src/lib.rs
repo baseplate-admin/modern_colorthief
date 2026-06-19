@@ -29,8 +29,14 @@ pub fn get_palette_gpu_promise(
     let buf = pixels.to_vec();
     wasm_bindgen_futures::future_to_promise(async move {
         let palette = modern_colorthief_core_webgpu::extract_palette_from_buffer_webgpu(
-            &buf, width, height, color_count, quality,
-        ).await.map_err(|e| JsValue::from_str(&e))?;
+            &buf,
+            width,
+            height,
+            color_count,
+            quality,
+        )
+        .await
+        .map_err(|e| JsValue::from_str(&e))?;
 
         let result = js_sys::Array::new();
         for (r, g, b) in palette {
@@ -67,7 +73,9 @@ pub fn get_color_gpu_promise(
     wasm_bindgen_futures::future_to_promise(async move {
         let (r, g, b) = modern_colorthief_core_webgpu::extract_color_from_buffer_webgpu(
             &buf, width, height, quality,
-        ).await.map_err(|e| JsValue::from_str(&e))?;
+        )
+        .await
+        .map_err(|e| JsValue::from_str(&e))?;
 
         let result = js_sys::Array::new();
         result.push(&JsValue::from(f64::from(r)));

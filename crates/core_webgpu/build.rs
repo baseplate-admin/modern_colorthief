@@ -255,7 +255,9 @@ fn strip_entry_point_attrs(s: &str) -> String {
     let chars: Vec<char> = s.chars().collect();
     let mut i = 0;
     while i < chars.len() {
-        if i + MARKER.len() <= chars.len() && chars[i..i + MARKER.len()].iter().collect::<String>() == MARKER {
+        if i + MARKER.len() <= chars.len()
+            && chars[i..i + MARKER.len()].iter().collect::<String>() == MARKER
+        {
             i += MARKER.len();
             while i < chars.len() && chars[i] != '"' {
                 i += 1;
@@ -310,22 +312,34 @@ fn load_tsconfig() -> Config {
 
     let mut config = Config::default();
 
-    if let Some(true) = options.get("verbatimModuleSyntax").and_then(|v| v.as_bool()) {
+    if let Some(true) = options
+        .get("verbatimModuleSyntax")
+        .and_then(|v| v.as_bool())
+    {
         config.verbatim_module_syntax = true;
     }
 
-    if let Some(val) = options.get("importNotUsedAsValues").and_then(|v| v.as_str()) {
+    if let Some(val) = options
+        .get("importNotUsedAsValues")
+        .and_then(|v| v.as_str())
+    {
         config.import_not_used_as_values = match val {
             "preserve" => swc_ecma_transforms_typescript::ImportsNotUsedAsValues::Preserve,
             _ => swc_ecma_transforms_typescript::ImportsNotUsedAsValues::Remove,
         };
     }
 
-    if let Some(true) = options.get("nativeClassProperties").and_then(|v| v.as_bool()) {
+    if let Some(true) = options
+        .get("nativeClassProperties")
+        .and_then(|v| v.as_bool())
+    {
         config.native_class_properties = true;
     }
 
-    if let Some(false) = options.get("useDefineForClassFields").and_then(|v| v.as_bool()) {
+    if let Some(false) = options
+        .get("useDefineForClassFields")
+        .and_then(|v| v.as_bool())
+    {
         config.native_class_properties = false;
     }
 

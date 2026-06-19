@@ -45,13 +45,15 @@ pub async fn extract_palette_webgpu(
     if pixels.len() < expected_size {
         return Err(format!(
             "Buffer too small: expected {} bytes for {}x{} RGBA image, got {}",
-            expected_size, width, height, pixels.len()
+            expected_size,
+            width,
+            height,
+            pixels.len()
         ));
     }
 
     // Read GPU via getter function (bypasses js_sys cached global)
-    let gpu = get_gpu()
-        .map_err(|e| format!("WebGPU setup error: {}", e))?;
+    let gpu = get_gpu().map_err(|e| format!("WebGPU setup error: {}", e))?;
 
     let extract_fn = js_eval(JS_HELPER)?;
 
