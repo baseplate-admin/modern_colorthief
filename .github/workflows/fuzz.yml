@@ -1,8 +1,8 @@
-name: Fuzz Tests
+name: Fuzz
 
 on:
   push:
-    branches: [main, master, add-wasm]
+    branches: [main, master]
   pull_request:
   workflow_dispatch:
 
@@ -14,10 +14,10 @@ env:
 
 jobs:
   # ============================================================
-  # Property-based fuzz tests (cargo test)
+  # Property-based fuzz tests (cargo test -p modern-colorthief-fuzz)
   # ============================================================
   fuzz-test:
-    name: "fuzz — ${{ matrix.os }}"
+    name: "fuzz property tests — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -86,10 +86,11 @@ jobs:
         run: cargo test -p modern-colorthief-fuzz -- --test-threads=1
 
   # ============================================================
-  # Core CPU unit tests
+  # LibFuzzer build check (cargo fuzz check)
+  # Mirrors wasmtime's `cargo fuzz check --dev` pattern
   # ============================================================
-  fuzz-core-cpu:
-    name: "fuzz core_cpu — ${{ matrix.os }}"
+  fuzz-check:
+    name: "fuzz check — ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -98,33 +99,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ matrix.os }}-fuzz-cpu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-fuzz-cpu-cargo-registry-
-
-      - name: Run core_cpu tests
-        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-
-  # ============================================================
-  # Core GPU unit tests with SwiftShader
-  # ============================================================
-  fuzz-core-gpu:
-    name: "fuzz core_gpu — ${{ matrix.os }}"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@nightly
 
       - name: Install Vulkan SDK + SwiftShader (Windows)
         if: matrix.os == 'windows-latest'
@@ -167,5 +142,9 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
 
-      - name: Run core_gpu tests
-        run: cargo test -p modern-colorthief-core-gpu
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz --locked
+
+      - name: Check all fuzz targets compile
+        run: cargo fuzz check --all --dev
+        working-directory: fuzz

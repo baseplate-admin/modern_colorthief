@@ -2,7 +2,7 @@ name: JVM CI
 
 on:
   push:
-    branches: [ main, master, add-wasm ]
+    branches: [ main, master ]
     tags: [ '*' ]
     paths:
       - 'crates/jvm-bindings/**'
@@ -10,7 +10,6 @@ on:
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
-      - 'crates/fuzz/**'
       - '.github/workflows/jvm-ci.yaml'
       - 'Cargo.toml'
   pull_request:
@@ -20,7 +19,6 @@ on:
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
-      - 'crates/fuzz/**'
       - '.github/workflows/jvm-ci.yaml'
       - 'Cargo.toml'
   workflow_dispatch:

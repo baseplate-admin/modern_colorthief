@@ -46,12 +46,9 @@ jobs:
       - name: Run clippy
         run: cargo clippy --all-targets -- -D warnings
 
-  core-test:
-    name: Core tests
+  core-test-pgo:
+    name: Core tests + PGO build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        crate: [modern-colorthief-core, modern-colorthief-core-cpu]
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
@@ -69,15 +66,12 @@ jobs:
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
         run: cargo install cargo-pgo --locked --version 0.3.0
-      - name: Run PGO instrumented tests
-        run: cargo pgo test -- -p ${{ matrix.crate }} --target x86_64-unknown-linux-gnu
-      - name: Upload PGO profiles
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: "pgo-profiles-${{ matrix.crate }}"
-          path: target/pgo-profiles
-          retention-days: 1
+      - name: PGO profile generation (run instrumented tests)
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+      - name: Build with PGO
+        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - name: Verify PGO build
+        run: ls -lh target/x86_64-unknown-linux-gnu/release/libmodern_colorthief*
 
   check:
     name: Core check

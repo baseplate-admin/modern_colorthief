@@ -4,14 +4,10 @@ version.workspace = true
 edition.workspace = true
 publish = false
 
-[package.metadata]
-cargo-fuzz = true
-
 [dependencies]
-rand = "0.8"
-libfuzzer-sys = { version = "0.4", features = ["arbitrary-derive"] }
 modern-colorthief-core-cpu = { workspace = true }
 modern-colorthief-core-gpu = { workspace = true }
+rand = "0.8"
 
 [dev-dependencies]
 color-thief = "0.2"

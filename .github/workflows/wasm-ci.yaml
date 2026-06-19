@@ -10,7 +10,6 @@ on:
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
-      - 'crates/fuzz/**'
       - '.github/workflows/wasm-ci.yaml'
       - 'Cargo.toml'
   pull_request:
@@ -20,7 +19,6 @@ on:
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
-      - 'crates/fuzz/**'
       - '.github/workflows/wasm-ci.yaml'
       - 'Cargo.toml'
   workflow_dispatch:
