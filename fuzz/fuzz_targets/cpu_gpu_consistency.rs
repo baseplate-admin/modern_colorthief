@@ -3,9 +3,7 @@
 //! Differential fuzzer: verify CPU and GPU backends produce consistent results.
 //! Feeds the same image to both backends and checks that palettes match within tolerance.
 
-use libfuzzer_sys::fuzz;
-
-fuzz!(|data: &[u8]| {
+libfuzzer_sys::fuzz_target!(|data: &[u8]| {
     if data.len() < 8 {
         return;
     }

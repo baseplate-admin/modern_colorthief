@@ -3,9 +3,7 @@
 //! Fuzz dominant color extraction from raw RGBA buffers.
 //! Exercises both CPU and GPU backends to find crashes in the dominant-color path.
 
-use libfuzzer_sys::fuzz;
-
-fuzz!(|data: &[u8]| {
+libfuzzer_sys::fuzz_target!(|data: &[u8]| {
     if data.len() < 8 {
         return;
     }

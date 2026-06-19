@@ -4,9 +4,7 @@
 //! Exercises both CPU and GPU backends with arbitrary image data to find crashes
 //! and panics in the quantization pipeline.
 
-use libfuzzer_sys::fuzz;
-
-fuzz!(|data: &[u8]| {
+libfuzzer_sys::fuzz_target!(|data: &[u8]| {
     if data.len() < 8 {
         return;
     }

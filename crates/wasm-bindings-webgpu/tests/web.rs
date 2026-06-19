@@ -22,6 +22,7 @@ fn solid_pixels(r: u8, g: u8, b: u8, w: u32, h: u32) -> Vec<u8> {
 }
 
 #[allow(dead_code, clippy::too_many_arguments)]
+fn two_color_pixels(r1: u8, g1: u8, b1: u8, r2: u8, g2: u8, b2: u8, w: u32, h: u32) -> Vec<u8> {
     let mut buf = vec![0u8; (w * h * 4) as usize];
     for y in 0..h {
         for x in 0..w {
