@@ -74,7 +74,7 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - name: PGO profile merge
-        run: cargo pgo merge
+        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
       - name: Build WASM with PGO
         run: |
           if [ -f target/pgo-profiles/merged.profdata ]; then
@@ -135,7 +135,7 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target x86_64-unknown-linux-gnu
       - name: PGO profile merge
-        run: cargo pgo merge
+        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
       - run: cargo install wasm-pack --locked
       - uses: actions/setup-node@v6
         with:
@@ -171,7 +171,7 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - name: PGO profile merge
-        run: cargo pgo merge
+        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
       - run: cargo install wasm-pack --locked
       - uses: nanasess/setup-chromedriver@v3
       - name: Run Chrome tests (PGO)
@@ -197,7 +197,7 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - name: PGO profile merge
-        run: cargo pgo merge
+        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
       - run: cargo install wasm-pack --locked
       - uses: browser-actions/setup-geckodriver@latest
         with:
@@ -229,7 +229,7 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - name: PGO profile merge
-        run: cargo pgo merge
+        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
       - run: cargo install wasm-pack --locked
       - name: Run Node tests (PGO)
         working-directory: crates/wasm-bindings

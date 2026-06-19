@@ -75,7 +75,7 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
-        run: cargo pgo merge
+        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings
@@ -83,9 +83,6 @@ jobs:
           if [ -f target/pgo-profiles/merged.profdata ]; then
             export RUSTFLAGS="-Cprofile-use=target/pgo-profiles/merged.profdata"
           fi
-          bundle install
-          bundle exec rake compile
-        run: |
           bundle install
           bundle exec rake compile
 
@@ -221,7 +218,7 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
 
       - name: PGO profile merge
-        run: cargo pgo merge
+        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings-gpu
