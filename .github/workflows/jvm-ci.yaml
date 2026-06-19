@@ -50,9 +50,9 @@ jobs:
       - name: Install cargo-pgo
         run: cargo install cargo-pgo --locked --version 0.3.0
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+        run: cargo pgo test --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu --
       - name: Build JVM native library (PGO)
-        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-jvm
+        run: cargo pgo optimize --target x86_64-unknown-linux-gnu -p modern-colorthief-jvm -- --release
       - name: Run Rust core unit tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Verify shared library built
@@ -164,9 +164,9 @@ jobs:
       - name: Install cargo-pgo
         run: cargo install cargo-pgo --locked --version 0.3.0
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target ${{ matrix.target }}
+        run: cargo pgo test --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --
       - name: Build GPU native library (PGO)
-        run: cargo pgo optimize -- --release --target ${{ matrix.target }} -p modern-colorthief-jvm-gpu
+        run: cargo pgo optimize --target ${{ matrix.target }} -p modern-colorthief-jvm-gpu -- --release
       - name: Verify shared library (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: test -f target/x86_64-unknown-linux-gnu/release/libmodern_colorthief_gpu.so

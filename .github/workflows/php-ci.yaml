@@ -54,9 +54,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libclang-dev php-dev
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+        run: cargo pgo test --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu --
       - name: Build PHP extension (PGO)
-        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-php
+        run: cargo pgo optimize --target x86_64-unknown-linux-gnu -p modern-colorthief-php -- --release
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
@@ -120,9 +120,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libclang-dev php-dev
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target x86_64-unknown-linux-gnu
+        run: cargo pgo test --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --
       - name: Build GPU PHP extension (PGO)
-        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-php-gpu
+        run: cargo pgo optimize --target x86_64-unknown-linux-gnu -p modern-colorthief-php-gpu -- --release
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension

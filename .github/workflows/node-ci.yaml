@@ -49,13 +49,13 @@ jobs:
         working-directory: crates/node-bindings
         run: npm install --legacy-peer-deps
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+        run: cargo pgo test --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu --
       - name: Build node bindings (PGO)
-        run: cargo pgo optimize -- --release --target x86_64-unknown-linux-gnu -p modern-colorthief-node
+        run: cargo pgo optimize --target x86_64-unknown-linux-gnu -p modern-colorthief-node -- --release
       - name: Prepare node artifact
         run: |
           mkdir -p crates/node-bindings/artifacts
-          cp target/x86_64-unknown-linux-gnu/release/libmodern_colorthief.so crates/node-bindings/artifacts/modern_colorthief.node
+          cp target/x86_64-unknown-linux-gnu/release/libmodern_colorthief_node.so crates/node-bindings/artifacts/modern_colorthief.node
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - uses: actions/upload-artifact@v4
