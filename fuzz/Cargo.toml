@@ -8,8 +8,7 @@ edition = "2024"
 cargo-fuzz = true
 
 [dependencies]
-arbitrary = { version = "1", features = ["derive"] }
-libfuzzer-sys = { version = "0.4", features = ["arbitrary", "arbitrary-derive"] }
+libfuzzer-sys = "0.4"
 modern-colorthief-core-cpu = { path = "../crates/core_cpu" }
 modern-colorthief-core-gpu = { path = "../crates/core_gpu" }
 
