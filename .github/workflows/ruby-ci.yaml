@@ -75,7 +75,7 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
-        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
+        run: find target -name '*.profraw' -print0 | xargs -0 llvm-profdata merge -o target/pgo-profiles/merged.profdata
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings
@@ -218,7 +218,7 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
 
       - name: PGO profile merge
-        run: llvm-profdata merge -o target/pgo-profiles/merged.profdata target/pgo-profiles/*.profraw
+        run: find target -name '*.profraw' -print0 | xargs -0 llvm-profdata merge -o target/pgo-profiles/merged.profdata
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings-gpu
