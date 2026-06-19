@@ -1,4 +1,5 @@
 #![allow(clippy::needless_range_loop, clippy::useless_vec)]
+use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use wasm_bindgen_test::*;
 
