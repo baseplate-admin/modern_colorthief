@@ -1,6 +1,21 @@
-from modern_colorthief_gpu import get_color, get_palette
+import tempfile
+
 from PIL import Image
 
+from modern_colorthief_gpu import (
+    extract_dominant_color,
+    extract_dominant_color_from_buffer,
+    extract_palette,
+    extract_palette_from_buffer,
+)
+
 img = Image.new("RGB", (100, 100), color=(200, 100, 50))
-get_palette(img, 5)
-get_color(img)
+
+with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp:
+    img.save(tmp.name, format="PNG")
+    extract_palette(tmp.name, 5)
+    extract_dominant_color(tmp.name)
+
+pixels = img.convert("RGBA").tobytes()
+extract_palette_from_buffer(pixels, 100, 100, 5)
+extract_dominant_color_from_buffer(pixels, 100, 100)
