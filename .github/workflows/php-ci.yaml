@@ -11,6 +11,8 @@ on:
       - 'crates/core/**'
       - '.github/workflows/php-ci.yaml'
       - 'Cargo.toml'
+  push:
+    tags: ['*']
   pull_request:
     paths:
       - 'crates/php-bindings/**'
@@ -30,8 +32,38 @@ env:
 
 jobs:
   cpu-build:
-    name: "cpu-build"
-    runs-on: ubuntu-latest
+    name: "cpu-build — ${{ matrix.target }}"
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - x86_64-pc-windows-msvc
+        include:
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-latest
+            lib: libmodern_colorthief.so
+            shell: bash
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-latest
+            lib: libmodern_colorthief.so
+            shell: bash
+          - target: x86_64-apple-darwin
+            runner: macos-15-intel
+            lib: libmodern_colorthief.dylib
+            shell: bash
+          - target: aarch64-apple-darwin
+            runner: macos-latest
+            lib: libmodern_colorthief.dylib
+            shell: bash
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+            lib: modern_colorthief.dll
+            shell: pwsh
     steps:
       - uses: actions/checkout@v6
       - uses: shivammathur/setup-php@v2
@@ -42,34 +74,69 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
+          targets: ${{ matrix.target }}
       - name: Cache cargo registry
         uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
-          key: ubuntu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo install cargo-pgo --locked --version 0.3.0
-      - name: Install system dependencies
+      - name: Install cross (aarch64-linux)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: cargo install cross --locked
+      - name: Install system dependencies (Linux)
+        if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev php-dev
+      - name: Install system dependencies (macOS)
+        if: ${{ contains(matrix.target, '-apple-darwin') }}
+        run: |
+          brew install llvm
+      - name: Install system dependencies (Windows)
+        if: ${{ contains(matrix.target, '-windows-') }}
+        run: choco install llvm
       - name: PGO profile generation
-        run: cargo pgo test --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu --
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
+        run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build PHP extension (PGO)
-        run: cargo pgo optimize --target x86_64-unknown-linux-gnu -p modern-colorthief-php -- --release
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
+        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-php --release
+      - name: Build PHP extension (cross-compile)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-php
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
         uses: actions/upload-artifact@v4
         with:
-          name: native-lib-php-cpu
-          path: target/x86_64-unknown-linux-gnu/release/libmodern_colorthief.so
-          retention-days: 1
+          name: "native-lib-php-cpu-${{ matrix.target }}"
+          path: target/${{ matrix.target }}/release/${{ matrix.lib }}
+          retention-days: 7
 
   cpu-test:
-    name: "cpu-pest"
+    name: "cpu-test — ${{ matrix.os }}"
     needs: [cpu-build]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            lib: libmodern_colorthief.so
+            shell: bash
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            lib: libmodern_colorthief.dylib
+            shell: bash
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            lib: modern_colorthief.dll
+            shell: pwsh
     steps:
       - uses: actions/checkout@v6
       - uses: shivammathur/setup-php@v2
@@ -80,26 +147,54 @@ jobs:
       - name: Download native extension
         uses: actions/download-artifact@v4
         with:
-          name: native-lib-php-cpu
+          name: native-lib-php-cpu-${{ matrix.target }}
           path: target/release
       - name: Verify extension
-        run: test -f target/release/libmodern_colorthief.so
+        shell: ${{ matrix.shell }}
+        run: test -f target/release/${{ matrix.lib }}
       - name: Install PHP dependencies
         working-directory: crates/php-bindings
         run: composer install --no-interaction --prefer-dist
       - name: Run PHP tests
+        shell: ${{ matrix.shell }}
         working-directory: crates/php-bindings
-        run: php -d extension=../../target/release/libmodern_colorthief.so vendor/bin/pest
+        run: php -d extension=../../target/release/${{ matrix.lib }} vendor/bin/pest
 
   gpu-build:
-    name: "gpu-build"
-    runs-on: ubuntu-latest
+    name: "gpu-build — ${{ matrix.target }}"
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - x86_64-pc-windows-msvc
+        include:
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-latest
+            lib: libmodern_colorthief_gpu.so
+            shell: bash
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-latest
+            lib: libmodern_colorthief_gpu.so
+            shell: bash
+          - target: x86_64-apple-darwin
+            runner: macos-15-intel
+            lib: libmodern_colorthief_gpu.dylib
+            shell: bash
+          - target: aarch64-apple-darwin
+            runner: macos-latest
+            lib: libmodern_colorthief_gpu.dylib
+            shell: bash
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+            lib: modern_colorthief_gpu.dll
+            shell: pwsh
     steps:
       - uses: actions/checkout@v6
-      - name: Install Vulkan runtime
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -108,55 +203,244 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
+          targets: ${{ matrix.target }}
       - name: Cache cargo registry
         uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
-          key: ubuntu-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Vulkan runtime (Linux)
+        if: ${{ contains(matrix.target, '-linux-gnu') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: ${{ contains(matrix.target, '-windows-') }}
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+      - name: Setup SwiftShader (Windows)
+        if: ${{ contains(matrix.target, '-windows-') }}
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+      - name: Install Vulkan SDK + SwiftShader (macOS)
+        if: ${{ contains(matrix.target, '-apple-darwin') }}
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+      - name: Setup Vulkan environment (macOS)
+        if: ${{ contains(matrix.target, '-apple-darwin') }}
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Install cargo-pgo
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo install cargo-pgo --locked --version 0.3.0
-      - name: Install system dependencies
+      - name: Install cross (aarch64-linux)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: cargo install cross --locked
+      - name: Install system dependencies (Linux)
+        if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev php-dev
+      - name: Install system dependencies (macOS)
+        if: ${{ contains(matrix.target, '-apple-darwin') }}
+        run: |
+          brew install llvm
+      - name: Install system dependencies (Windows)
+        if: ${{ contains(matrix.target, '-windows-') }}
+        run: choco install llvm
       - name: PGO profile generation
-        run: cargo pgo test --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
+        run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Build GPU PHP extension (PGO)
-        run: cargo pgo optimize --target x86_64-unknown-linux-gnu -p modern-colorthief-php-gpu -- --release
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
+        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-php-gpu --release
+      - name: Build GPU PHP extension (cross-compile)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-php-gpu
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
         uses: actions/upload-artifact@v4
         with:
-          name: native-lib-php-gpu
-          path: target/x86_64-unknown-linux-gnu/release/libmodern_colorthief_gpu.so
-          retention-days: 1
+          name: "native-lib-php-gpu-${{ matrix.target }}"
+          path: target/${{ matrix.target }}/release/${{ matrix.lib }}
+          retention-days: 7
 
   gpu-test:
-    name: "gpu-pest"
+    name: "gpu-test — ${{ matrix.os }}"
     needs: [gpu-build]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            lib: libmodern_colorthief_gpu.so
+            shell: bash
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            lib: libmodern_colorthief_gpu.dylib
+            shell: bash
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            lib: modern_colorthief_gpu.dll
+            shell: pwsh
     steps:
       - uses: actions/checkout@v6
-      - name: Install Vulkan runtime
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           ini-file: development
           extensions: gd
+      - name: Install Vulkan runtime (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+      - name: Setup SwiftShader (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+      - name: Install Vulkan SDK + SwiftShader (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+      - name: Setup Vulkan environment (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Download GPU native extension
         uses: actions/download-artifact@v4
         with:
-          name: native-lib-php-gpu
+          name: native-lib-php-gpu-${{ matrix.target }}
           path: target/release
       - name: Verify GPU extension
-        run: test -f target/release/libmodern_colorthief_gpu.so
+        shell: ${{ matrix.shell }}
+        run: test -f target/release/${{ matrix.lib }}
       - name: Install PHP dependencies
         working-directory: crates/php-bindings-gpu
         run: composer install --no-interaction --prefer-dist
       - name: Run GPU PHP tests
+        shell: ${{ matrix.shell }}
         working-directory: crates/php-bindings-gpu
-        run: php -d extension=../../target/release/libmodern_colorthief_gpu.so vendor/bin/pest
+        run: php -d extension=../../target/release/${{ matrix.lib }} vendor/bin/pest
+
+  publish-cpu:
+    name: Publish CPU to Packagist
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [cpu-test]
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download all CPU native libraries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-lib-php-cpu-*
+          path: crates/php-bindings/native
+      - name: Stage native libraries
+        run: |
+          # Flatten directory structure: move .so/.dll/.dylib up to native/
+          find crates/php-bindings/native -type f \( -name '*.so' -o -name '*.dll' -o -name '*.dylib' \) -exec mv {} crates/php-bindings/native/ \;
+          # Remove empty target directories
+          find crates/php-bindings/native -mindepth 1 -type d -delete
+          # Verify
+          ls -la crates/php-bindings/native/
+      - name: Create GitHub release with CPU binaries
+        uses: softprops/action-gh-release@v2
+        with:
+          files: crates/php-bindings/native/*
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update Packagist
+        run: |
+          curl -X POST "https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}" \
+            -H "Authorization: Bearer ${{ secrets.PACKAGIST_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"repository":{"url":"https://github.com/${{ github.repository }}"}}'
+
+  publish-gpu:
+    name: Publish GPU to Packagist
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [gpu-test]
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download all GPU native libraries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-lib-php-gpu-*
+          path: crates/php-bindings-gpu/native
+      - name: Stage GPU native libraries
+        run: |
+          # Flatten directory structure: move .so/.dll/.dylib up to native/
+          find crates/php-bindings-gpu/native -type f \( -name '*.so' -o -name '*.dll' -o -name '*.dylib' \) -exec mv {} crates/php-bindings-gpu/native/ \;
+          # Remove empty target directories
+          find crates/php-bindings-gpu/native -mindepth 1 -type d -delete
+          # Verify
+          ls -la crates/php-bindings-gpu/native/
+      - name: Upload GPU binaries to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: crates/php-bindings-gpu/native/*
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Update Packagist GPU package
+        run: |
+          curl -X POST "https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}" \
+            -H "Authorization: Bearer ${{ secrets.PACKAGIST_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"repository":{"url":"https://github.com/${{ github.repository }}"}}'

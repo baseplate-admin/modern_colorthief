@@ -5,6 +5,10 @@
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "files": [
+        "dist",
+        "artifacts"
+    ],
     "scripts": {
         "build": "vite build",
         "prepublishOnly": "npm run build"

@@ -3,6 +3,7 @@ name: Core
 on:
   push:
     branches: [main, master]
+    tags: ['*']
   pull_request:
   workflow_dispatch:
 
@@ -67,9 +68,9 @@ jobs:
       - name: Install cargo-pgo
         run: cargo install cargo-pgo --locked --version 0.3.0
       - name: PGO profile generation (run instrumented tests)
-        run: cargo pgo test --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu --
+        run: cargo pgo test -- --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build with PGO
-        run: cargo pgo optimize --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu -- --release
+        run: cargo pgo optimize -- --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu --release
       - name: Verify PGO build
         run: ls -lh target/x86_64-unknown-linux-gnu/release/libmodern_colorthief*
 
@@ -90,3 +91,34 @@ jobs:
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Check all crates compile
         run: cargo check --workspace
+
+  publish:
+    name: Publish to crates.io
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [core-test-pgo, clippy, fmt]
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev php-dev
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Publish modern-colorthief-core to crates.io
+        run: cargo publish -p modern-colorthief-core --allow-dirty
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Sleep between publishes
+        run: sleep 30
+      - name: Publish modern-colorthief-core-cpu to crates.io
+        run: cargo publish -p modern-colorthief-core-cpu --allow-dirty
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

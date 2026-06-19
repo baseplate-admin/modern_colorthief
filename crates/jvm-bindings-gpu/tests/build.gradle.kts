@@ -1,6 +1,9 @@
 plugins {
     `java`
+    `maven-publish`
+    signing
     kotlin("jvm") version "2.4.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 group = "modern.colorthief.gpu"
@@ -28,6 +31,8 @@ dependencies {
 
 java {
     toolchain { languageVersion.set(JavaLanguageVersion.of(26)) }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 kotlin {
@@ -61,4 +66,63 @@ tasks.named<Test>("test") {
     doFirst {
         logger.lifecycle("Test classpath: ${classpath.asPath}")
     }
+}
+
+// Include native libraries in JAR under META-INF/natives/
+tasks.jar {
+    from("native") {
+        into("META-INF/natives")
+        include("*")
+    }
+}
+
+// Configure publishing artifacts
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+
+            pom {
+                name.set("Modern ColorThief JVM GPU")
+                description.set("Fast color palette extraction from images via JVM GPU bindings")
+                url.set("https://github.com/baseplate-admin/modern_colorthief")
+
+                scm {
+                    connection.set("scm:git:git://github.com/baseplate-admin/modern_colorthief.git")
+                    developerConnection.set("scm:git:ssh://github.com/baseplate-admin/modern_colorthief.git")
+                    url.set("https://github.com/baseplate-admin/modern_colorthief")
+                }
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("baseplate-admin")
+                        name.set("baseplate-admin")
+                    }
+                }
+            }
+        }
+    }
+
+    if (findProperty("signingInMemoryKey") != null) {
+        signing {
+            useInMemoryPgpKeys(
+                findProperty("signingInMemoryKey") as String,
+                findProperty("signingInMemoryPassword") as String
+            )
+            sign(publishing.publications["maven"])
+        }
+    }
+}
+
+nexusPublishing {
+    packageGroup.set("modern")
+    repositoryDescription.set("modern_colorthief JVM GPU bindings ${project.version}")
+    useStaging.set(!gradle.startParameter.isDryRun)
 }

@@ -71,7 +71,7 @@ jobs:
           cargo install cargo-pgo --locked --version 0.3.0
 
       - name: PGO profile generation
-        run: cargo pgo test -p modern-colorthief-core -p modern-colorthief-core-cpu --
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
         run: cargo pgo merge
@@ -93,7 +93,7 @@ jobs:
         with:
           name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings/lib/
-          retention-days: 1
+          retention-days: 7
           if-no-files-found: error
 
   cpu-test:
@@ -217,7 +217,7 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: PGO profile generation
-        run: cargo pgo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
 
       - name: PGO profile merge
         run: cargo pgo merge
@@ -236,7 +236,7 @@ jobs:
         with:
           name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings-gpu/lib/
-          retention-days: 1
+          retention-days: 7
           if-no-files-found: error
 
   gpu-rust-test:
@@ -339,7 +339,7 @@ jobs:
 
       - name: Run Rust GPU tests (PGO)
         working-directory: crates/ruby-bindings-gpu/ext
-        run: cargo pgo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
 
       - name: Run RSpec tests
         working-directory: crates/ruby-bindings-gpu

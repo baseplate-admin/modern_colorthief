@@ -3,6 +3,9 @@
     "description": "PHP bindings for modern_colorthief - fast color palette extraction",
     "type": "library",
     "license": "MIT",
+    "files": [
+        "native/*"
+    ],
     "require": {
         "php": ">=8.2"
     },
@@ -17,5 +20,8 @@
         "platform": {
             "php": "8.2"
         }
+    },
+    "archive": {
+        "exclude": ["/native"]
     }
 }

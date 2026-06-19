@@ -3,7 +3,6 @@ name: Python CI
 on:
   push:
     branches: [ main, master ]
-    tags: [ '*' ]
     paths:
       - 'crates/python-bindings/**'
       - 'crates/python-bindings-gpu/**'
@@ -12,6 +11,8 @@ on:
       - 'crates/core/**'
       - '.github/workflows/python-ci.yaml'
       - 'Cargo.toml'
+  push:
+    tags: ['*']
   pull_request:
     paths:
       - 'crates/python-bindings/**'
@@ -382,7 +383,7 @@ jobs:
         with:
           name: "wheel-gpu-${{ matrix.os }}"
           path: crates/python-bindings-gpu/dist
-          retention-days: 1
+          retention-days: 7
 
   gpu-rust-test:
     name: "gpu-rust-test — ${{ matrix.os }}"
@@ -539,10 +540,10 @@ jobs:
         run: uv run pytest tests/ -v
 
   release:
-    name: Release
+    name: Release CPU to PyPI
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-    needs: [cpu-pytest, gpu-rust-test, gpu-pytest]
+    needs: [cpu-pytest, gpu-rust-test, gpu-pytest, cpu-sdist, cpu-musllinux, cpu-android]
     permissions:
       id-token: write
       contents: write
@@ -564,8 +565,34 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         uses: astral-sh/setup-uv@v8.2.0
 
-      - name: Publish to PyPI
+      - name: Publish CPU to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: uv publish 'wheels-cpu/*'
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+
+  release-gpu:
+    name: Release GPU to PyPI
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
+    needs: [gpu-build, gpu-pytest]
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Download GPU wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-gpu-*
+          merge-mappings: true
+          path: wheels-gpu
+
+      - name: Install uv
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: astral-sh/setup-uv@v8.2.0
+
+      - name: Publish GPU to PyPI
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: uv publish 'wheels-gpu/*'
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
