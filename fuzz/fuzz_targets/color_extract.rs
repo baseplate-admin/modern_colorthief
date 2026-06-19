@@ -32,12 +32,17 @@ libfuzzer_sys::fuzz_target!(|data: &[u8]| {
     };
 
     let cpu_result =
-        modern_colorthief_core_cpu::extract_dominant_color_from_buffer(&pixels, width, height, quality);
+        modern_colorthief_core_cpu::extract_palette_from_buffer(&pixels, width, height, 1, quality);
     let gpu_result =
-        modern_colorthief_core_gpu::extract_dominant_color_from_buffer(&pixels, width, height, quality);
+        modern_colorthief_core_gpu::extract_palette_from_buffer(&pixels, width, height, 1, quality);
 
     match (cpu_result, gpu_result) {
-        (Ok(cpu_color), Ok(gpu_color)) => {
+        (Ok(cpu_palette), Ok(gpu_palette)) => {
+            if cpu_palette.is_empty() || gpu_palette.is_empty() {
+                return;
+            }
+            let cpu_color = cpu_palette[0];
+            let gpu_color = gpu_palette[0];
             let dr = (cpu_color.0 as i32 - gpu_color.0 as i32).unsigned_abs();
             let dg = (cpu_color.1 as i32 - gpu_color.1 as i32).unsigned_abs();
             let db = (cpu_color.2 as i32 - gpu_color.2 as i32).unsigned_abs();
