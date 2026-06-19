@@ -374,7 +374,7 @@ jobs:
       - name: Build GPU Python module (PGO)
         run: |
           uv venv .venv
-          uv pip install maturin Pillow
+          uv pip install maturin
           uv run maturin build --release --out dist --pgo
 
       - name: Upload GPU wheel

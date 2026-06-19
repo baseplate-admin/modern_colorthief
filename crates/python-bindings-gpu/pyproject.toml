@@ -11,4 +11,4 @@ dependencies = ["Pillow>=10.0"]
 manifest-path = "Cargo.toml"
 module-name = "modern_colorthief_gpu"
 python-source = "python"
-pgo-command = "python pgo_profile.py"
+pgo-command = "pip install Pillow && python pgo_profile.py"

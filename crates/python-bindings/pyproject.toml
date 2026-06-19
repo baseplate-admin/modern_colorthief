@@ -33,4 +33,4 @@ build-backend = "maturin"
 features = ["pyo3/extension-module"]
 python-source = "python"
 module-name = "modern_colorthief._modern_colorthief"
-pgo-command = "python pgo_profile.py"
+pgo-command = "pip install Pillow && python pgo_profile.py"
