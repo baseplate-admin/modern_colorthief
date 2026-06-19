@@ -75,13 +75,17 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
-        run: find target -name '*.profraw' -print0 | xargs -0 llvm-profdata merge -o target/pgo-profiles/merged.profdata
+        run: |
+          PROFILES=$(find target/pgo -name '*.profraw' 2>/dev/null)
+          if [ -n "$PROFILES" ]; then
+            echo "$PROFILES" | xargs llvm-profdata merge -o target/pgo/merged.profdata
+          fi
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings
         run: |
-          if [ -f target/pgo-profiles/merged.profdata ]; then
-            export RUSTFLAGS="-Cprofile-use=target/pgo-profiles/merged.profdata"
+          if [ -f target/pgo/merged.profdata ]; then
+            export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
           fi
           bundle install
           bundle exec rake compile
@@ -218,13 +222,17 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
 
       - name: PGO profile merge
-        run: find target -name '*.profraw' -print0 | xargs -0 llvm-profdata merge -o target/pgo-profiles/merged.profdata
+        run: |
+          PROFILES=$(find target/pgo -name '*.profraw' 2>/dev/null)
+          if [ -n "$PROFILES" ]; then
+            echo "$PROFILES" | xargs llvm-profdata merge -o target/pgo/merged.profdata
+          fi
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings-gpu
         run: |
-          if [ -f target/pgo-profiles/merged.profdata ]; then
-            export RUSTFLAGS="-Cprofile-use=target/pgo-profiles/merged.profdata"
+          if [ -f target/pgo/merged.profdata ]; then
+            export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
           fi
           bundle install
           bundle exec rake compile
