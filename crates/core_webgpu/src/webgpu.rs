@@ -103,4 +103,3 @@ pub async fn extract_palette_webgpu(
     uint8.copy_to(&mut out);
     Ok(out)
 }
-

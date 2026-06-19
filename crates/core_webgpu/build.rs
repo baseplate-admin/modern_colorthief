@@ -75,9 +75,7 @@ fn main() {
             wr: JsWriter::new(cm, "\n", &mut output, None),
         };
 
-        emitter
-            .emit_program(&program)
-            .expect("Failed to emit JS");
+        emitter.emit_program(&program).expect("Failed to emit JS");
 
         String::from_utf8(output).expect("JS output is not valid UTF-8")
     });

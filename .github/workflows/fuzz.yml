@@ -143,8 +143,8 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Install cargo-fuzz
-        run: cargo install cargo-fuzz --locked
+        run: cargo install cargo-fuzz --version 0.13.1
 
       - name: Check all fuzz targets compile
-        run: cargo fuzz check --all --dev
+        run: cargo fuzz check --dev
         working-directory: fuzz

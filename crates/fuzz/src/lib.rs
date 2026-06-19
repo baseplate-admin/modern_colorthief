@@ -8,7 +8,11 @@
 mod tests;
 
 /// Compare two palettes for approximate equality.
-pub fn palettes_approximately_equal(a: &[(u8, u8, u8)], b: &[(u8, u8, u8)], tolerance: u32) -> bool {
+pub fn palettes_approximately_equal(
+    a: &[(u8, u8, u8)],
+    b: &[(u8, u8, u8)],
+    tolerance: u32,
+) -> bool {
     if a.is_empty() && b.is_empty() {
         return true;
     }
