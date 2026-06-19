@@ -35,6 +35,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+          components: llvm-tools-preview
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -45,10 +46,15 @@ jobs:
         with:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
       - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
+      - name: Build WASM with PGO
+        run: cargo pgo optimize -- --release --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
       - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
 
   wasm-pack-build:
@@ -57,12 +63,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - working-directory: crates/wasm-bindings
-        run: wasm-pack build --release --target nodejs
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
+      - name: Build WASM with PGO
+        run: |
+          export RUSTFLAGS="-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+          wasm-pack build --release --target nodejs
+        working-directory: crates/wasm-bindings
       - working-directory: crates/wasm-bindings
         run: npm install && npm test
 
@@ -74,6 +89,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+          components: llvm-tools-preview
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -84,8 +100,17 @@ jobs:
         with:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+      - name: Install Vulkan runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
       - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
-      - run: cargo build --target wasm32-unknown-unknown --release -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target x86_64-unknown-linux-gnu
+      - name: Build WASM GPU with PGO
+        run: cargo pgo optimize -- --release --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
 
   gpu-node-tests:
     name: GPU Node.js tests
@@ -96,23 +121,30 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: cargo install wasm-pack --locked
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
       - name: Install Vulkan SDK + Lavapipe
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
           install_lavapipe: true
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target x86_64-unknown-linux-gnu
+      - run: cargo install wasm-pack --locked
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-webgpu
         run: npm ci
       - name: Verify webgpu module loads
         working-directory: crates/wasm-bindings-webgpu
         run: node test-webgpu-setup.cjs && echo "WebGPU OK"
-      - name: Run GPU Node.js tests
+      - name: Run GPU Node.js tests (PGO)
         working-directory: crates/wasm-bindings-webgpu
-        run: wasm-pack test --node --release
+        run: |
+          export RUSTFLAGS="-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+          wasm-pack test --node --release
         env:
           NODE_OPTIONS: "--require ${{ github.workspace }}/crates/wasm-bindings-webgpu/test-webgpu-setup.cjs"
 
@@ -125,11 +157,18 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - run: cargo install wasm-pack --locked
       - uses: nanasess/setup-chromedriver@v3
-      - name: Run Chrome tests
+      - name: Run Chrome tests (PGO)
         working-directory: crates/wasm-bindings
-        run: wasm-pack test --headless --chrome --release -- --features browser-tests
+        run: |
+          export RUSTFLAGS="-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+          wasm-pack test --headless --chrome --release -- --features browser-tests
 
   cpu-firefox-tests:
     name: CPU Firefox tests
@@ -140,14 +179,21 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+          components: llvm-tools-preview
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - run: cargo install wasm-pack --locked
       - uses: browser-actions/setup-geckodriver@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: geckodriver --version
-      - name: Run Firefox tests
+      - name: Run Firefox tests (PGO)
         working-directory: crates/wasm-bindings
-        run: wasm-pack test --headless --firefox --release -- --features browser-tests
+        run: |
+          export RUSTFLAGS="-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+          wasm-pack test --headless --firefox --release -- --features browser-tests
 
   cpu-node-tests:
     name: CPU Node.js tests
@@ -158,10 +204,17 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
+          components: llvm-tools-preview
       - uses: actions/setup-node@v6
         with:
           node-version: 22
+      - name: Install cargo-pgo
+        run: cargo install cargo-pgo --locked --version 0.3.0
+      - name: PGO profile generation
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - run: cargo install wasm-pack --locked
-      - name: Run Node tests
+      - name: Run Node tests (PGO)
         working-directory: crates/wasm-bindings
-        run: wasm-pack test --node --release
+        run: |
+          export RUSTFLAGS="-Cprofile-use=${{ github.workspace }}/target/pgo-profiles/merged.profdata"
+          wasm-pack test --node --release
