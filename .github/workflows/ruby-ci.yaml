@@ -72,7 +72,7 @@ jobs:
           cargo install cargo-pgo --locked --version 0.3.0
 
       - name: PGO profile generation
-        run: cargo pgo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
         shell: bash
@@ -218,7 +218,7 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: PGO profile generation
-        run: cargo pgo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
         shell: bash
