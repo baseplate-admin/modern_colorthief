@@ -72,21 +72,20 @@ jobs:
           cargo install cargo-pgo --locked --version 0.3.0
 
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo pgo test -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
+        shell: bash
         run: |
           PROFILES=$(find target/pgo -name '*.profraw' 2>/dev/null)
           if [ -n "$PROFILES" ]; then
-            echo "$PROFILES" | xargs llvm-profdata merge -o target/pgo/merged.profdata
+            llvm-profdata merge $PROFILES -o target/pgo/merged.profdata
           fi
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings
         run: |
-          if [ -f target/pgo/merged.profdata ]; then
-            export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
-          fi
+          export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
           bundle install
           bundle exec rake compile
 
@@ -219,21 +218,20 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+        run: cargo pgo test -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: PGO profile merge
+        shell: bash
         run: |
           PROFILES=$(find target/pgo -name '*.profraw' 2>/dev/null)
           if [ -n "$PROFILES" ]; then
-            echo "$PROFILES" | xargs llvm-profdata merge -o target/pgo/merged.profdata
+            llvm-profdata merge $PROFILES -o target/pgo/merged.profdata
           fi
 
       - name: Build native extension (PGO)
         working-directory: crates/ruby-bindings-gpu
         run: |
-          if [ -f target/pgo/merged.profdata ]; then
-            export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
-          fi
+          export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
           bundle install
           bundle exec rake compile
 
@@ -281,11 +279,6 @@ jobs:
           bundler-cache: true
           cargo-cache: false
           cache-version: v1-gpu-rust-test
-
-      - name: Install llvm-tools-preview + cargo-pgo
-        run: |
-          rustup component add llvm-tools-preview
-          cargo install cargo-pgo --locked --version 0.3.0
 
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -343,9 +336,8 @@ jobs:
         working-directory: crates/ruby-bindings-gpu
         run: bundle install
 
-      - name: Run Rust GPU tests (PGO)
-        working-directory: crates/ruby-bindings-gpu/ext
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+      - name: Run Rust GPU tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
 
       - name: Run RSpec tests
         working-directory: crates/ruby-bindings-gpu

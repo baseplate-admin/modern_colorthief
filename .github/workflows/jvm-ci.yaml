@@ -86,10 +86,10 @@ jobs:
         run: cargo install cross --locked
       - name: PGO profile generation
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo pgo test --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build JVM native library (PGO)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-jvm --release
+        run: cargo pgo optimize --target ${{ matrix.target }} -p modern-colorthief-jvm --release
       - name: Build JVM native library (cross-compile)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-jvm
@@ -230,9 +230,9 @@ jobs:
       - name: Install cargo-pgo
         run: cargo install cargo-pgo --locked --version 0.3.0
       - name: PGO profile generation
-        run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+        run: cargo pgo test --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build GPU native library (PGO)
-        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-jvm-gpu --release
+        run: cargo pgo optimize --target ${{ matrix.target }} -p modern-colorthief-jvm-gpu --release
       - name: Verify shared library
         shell: ${{ matrix.shell }}
         run: test -f target/${{ matrix.target }}/release/${{ matrix.lib }}
