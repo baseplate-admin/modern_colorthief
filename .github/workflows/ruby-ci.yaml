@@ -74,20 +74,15 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
-      - name: PGO profile merge
+      - name: Build native extension (PGO)
         shell: bash
         run: |
-          PROFILES=$(find target/pgo -name '*.profraw' 2>/dev/null)
-          if [ -n "$PROFILES" ]; then
-            llvm-profdata merge $PROFILES -o target/pgo/merged.profdata
-          fi
-
-      - name: Build native extension (PGO)
-        working-directory: crates/ruby-bindings
-        run: |
-          export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
+          cd crates/ruby-bindings
           bundle install
-          bundle exec rake compile
+          # Use cargo pgo optimize to build with PGO (handles profile merge internally)
+          cargo pgo optimize --release -p modern_colorthief
+          # Copy the compiled library to lib/ for the gem
+          cp target/release/libmodern-colorthief.* lib/
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
@@ -220,20 +215,15 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
-      - name: PGO profile merge
+      - name: Build native extension (PGO)
         shell: bash
         run: |
-          PROFILES=$(find target/pgo -name '*.profraw' 2>/dev/null)
-          if [ -n "$PROFILES" ]; then
-            llvm-profdata merge $PROFILES -o target/pgo/merged.profdata
-          fi
-
-      - name: Build native extension (PGO)
-        working-directory: crates/ruby-bindings-gpu
-        run: |
-          export RUSTFLAGS="-Cprofile-use=target/pgo/merged.profdata"
+          cd crates/ruby-bindings-gpu
           bundle install
-          bundle exec rake compile
+          # Use cargo pgo optimize to build with PGO (handles profile merge internally)
+          cargo pgo optimize --release -p modern_colorthief_gpu
+          # Copy the compiled library to lib/ for the gem
+          cp target/release/libmodern-colorthief-gpu.* lib/
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
