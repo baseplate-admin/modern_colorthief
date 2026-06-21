@@ -66,40 +66,20 @@ jobs:
           cargo-cache: false
           cache-version: v1-cpu-build
 
-      - name: Install llvm-tools-preview + cargo-pgo (non-Windows)
-        if: matrix.os != 'windows-latest'
+      - name: Install llvm-tools-preview + cargo-pgo
         run: |
           rustup component add llvm-tools-preview
           cargo install cargo-pgo --locked --version 0.3.0
 
-      - name: Install llvm-tools-preview (Windows)
-        if: matrix.os == 'windows-latest'
-        run: rustup component add llvm-tools-preview
-
       - name: PGO profile generation
-        if: matrix.os != 'windows-latest'
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: Build native extension (PGO)
-        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           cd crates/ruby-bindings
           bundle install
-          # Use cargo pgo optimize to build with PGO (handles profile merge internally)
           cargo pgo optimize -- --release -p modern_colorthief
-          # Copy the compiled library to lib/ for the gem
-          cp target/release/libmodern-colorthief.* lib/
-
-      - name: Build native extension (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: |
-          cd crates/ruby-bindings
-          bundle install
-          # PGO not supported on Windows GNU toolchain, use regular release build
-          cargo build --release -p modern_colorthief
-          # Copy the compiled library to lib/ for the gem
           cp target/release/libmodern-colorthief.* lib/
 
       - name: Upload built extension
@@ -179,15 +159,10 @@ jobs:
           cargo-cache: false
           cache-version: v1-gpu-build
 
-      - name: Install llvm-tools-preview + cargo-pgo (non-Windows)
-        if: matrix.os != 'windows-latest'
+      - name: Install llvm-tools-preview + cargo-pgo
         run: |
           rustup component add llvm-tools-preview
           cargo install cargo-pgo --locked --version 0.3.0
-
-      - name: Install llvm-tools-preview (Windows)
-        if: matrix.os == 'windows-latest'
-        run: rustup component add llvm-tools-preview
 
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -236,29 +211,14 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: PGO profile generation
-        if: matrix.os != 'windows-latest'
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
 
       - name: Build native extension (PGO)
-        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           cd crates/ruby-bindings-gpu
           bundle install
-          # Use cargo pgo optimize to build with PGO (handles profile merge internally)
           cargo pgo optimize -- --release -p modern_colorthief_gpu
-          # Copy the compiled library to lib/ for the gem
-          cp target/release/libmodern-colorthief-gpu.* lib/
-
-      - name: Build native extension (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: |
-          cd crates/ruby-bindings-gpu
-          bundle install
-          # PGO not supported on Windows GNU toolchain, use regular release build
-          cargo build --release -p modern_colorthief_gpu
-          # Copy the compiled library to lib/ for the gem
           cp target/release/libmodern-colorthief-gpu.* lib/
 
       - name: Upload built extension
