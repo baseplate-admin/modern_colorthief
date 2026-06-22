@@ -97,9 +97,9 @@ jobs:
       - name: Install system dependencies (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
         run: choco install llvm
-      - name: Install LLVM tools (PGO)
+      - name: Install LLVM tools (PGO nightly)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: rustup component add llvm-tools-preview
+        run: rustup component add llvm-tools-preview --toolchain nightly
       - name: PGO profile generation
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
@@ -114,9 +114,12 @@ jobs:
           RUSTUP_TOOLCHAIN: nightly
           MACOSX_DEPLOYMENT_TARGET: 10.12
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
+      - name: Build cross image (aarch64-linux)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
       - name: Build Rust core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p php-bindings --pre-build "apt-get update && apt-get install -y libonig-dev php8.2-dev"
+        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p php-bindings
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust core tests
@@ -281,9 +284,9 @@ jobs:
       - name: Install system dependencies (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
         run: choco install llvm
-      - name: Install LLVM tools (PGO)
+      - name: Install LLVM tools (PGO nightly)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: rustup component add llvm-tools-preview
+        run: rustup component add llvm-tools-preview --toolchain nightly
       - name: PGO profile generation
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
@@ -298,9 +301,12 @@ jobs:
           RUSTUP_TOOLCHAIN: nightly
           MACOSX_DEPLOYMENT_TARGET: 10.12
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
+      - name: Build cross image (aarch64-linux)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
       - name: Build Rust GPU core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu --pre-build "apt-get update && apt-get install -y libonig-dev php8.2-dev"
+        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust GPU tests

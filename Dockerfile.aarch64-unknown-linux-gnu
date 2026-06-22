@@ -1,0 +1,3 @@
+FROM cross:aarch64-unknown-linux-gnu
+
+RUN apt-get update && apt-get install -y libonig-dev php8.2-dev
