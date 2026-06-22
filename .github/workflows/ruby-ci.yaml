@@ -49,14 +49,6 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-cargo-registry-
 
-      - name: Cache cargo target
-        uses: actions/cache@v5
-        with:
-          path: target
-          key: ${{ matrix.os }}-cpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-cpu-build-ruby${{ matrix.ruby }}-cargo-target-
-
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
@@ -80,12 +72,15 @@ jobs:
 
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
+        env:
+          RUBY_SYS_LLVM_PRECEDENCE: fallible
 
       - name: Build native extension (PGO)
         shell: bash
         run: |
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
           cargo build --release -p modern_colorthief
+          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings
           bundle install
           if [[ "$RUNNER_OS" == "Windows" ]]; then
@@ -93,6 +88,8 @@ jobs:
           else
             cp ../../target/release/libmodern-colorthief.* lib/
           fi
+        env:
+          RUBY_SYS_LLVM_PRECEDENCE: fallible
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
@@ -153,14 +150,6 @@ jobs:
           key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ matrix.os }}-cargo-registry-
-
-      - name: Cache cargo target
-        uses: actions/cache@v5
-        with:
-          path: target
-          key: ${{ matrix.os }}-gpu-build-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-gpu-build-ruby${{ matrix.ruby }}-cargo-target-
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1
@@ -231,12 +220,15 @@ jobs:
 
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
+        env:
+          RUBY_SYS_LLVM_PRECEDENCE: fallible
 
       - name: Build native extension (PGO)
         shell: bash
         run: |
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
           cargo build --release -p modern_colorthief_gpu
+          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings-gpu
           bundle install
           if [[ "$RUNNER_OS" == "Windows" ]]; then
@@ -244,6 +236,8 @@ jobs:
           else
             cp ../../target/release/libmodern-colorthief-gpu.* lib/
           fi
+        env:
+          RUBY_SYS_LLVM_PRECEDENCE: fallible
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
@@ -272,14 +266,6 @@ jobs:
           key: ${{ matrix.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ matrix.os }}-cargo-registry-
-
-      - name: Cache cargo target
-        uses: actions/cache@v5
-        with:
-          path: target
-          key: ${{ matrix.os }}-gpu-rust-test-ruby${{ matrix.ruby }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-gpu-rust-test-ruby${{ matrix.ruby }}-cargo-target-
 
       - name: Set up Ruby and Rust
         uses: oxidize-rb/actions/setup-ruby-and-rust@v1

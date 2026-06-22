@@ -34,6 +34,11 @@ fn extract_dominant_color_from_buffer_py(
     height: u32,
     quality: u8,
 ) -> PyResult<(u8, u8, u8)> {
+    if width == 0 || height == 0 {
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "Image dimensions must be positive",
+        ));
+    }
     py.detach(move || {
         extract_palette_from_buffer(buffer, width, height, 1, quality)
             .map_err(pyo3::exceptions::PyRuntimeError::new_err)?
