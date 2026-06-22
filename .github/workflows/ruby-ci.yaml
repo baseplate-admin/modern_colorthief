@@ -72,14 +72,14 @@ jobs:
           cargo install cargo-pgo --locked --version 0.3.0
 
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
 
       - name: Build native extension (PGO)
         shell: bash
         run: |
+          cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
           cd crates/ruby-bindings
           bundle install
-          cargo pgo optimize -- -p modern_colorthief
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             cp ../../target/release/modern_colorthief.dll lib/
           else
@@ -215,14 +215,14 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: PGO profile generation
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief_gpu
 
       - name: Build native extension (PGO)
         shell: bash
         run: |
+          cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief_gpu
           cd crates/ruby-bindings-gpu
           bundle install
-          cargo pgo optimize -- -p modern_colorthief_gpu
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             cp ../../target/release/modern_colorthief_gpu.dll lib/
           else
