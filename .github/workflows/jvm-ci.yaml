@@ -219,7 +219,7 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
 
-     - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview rust-lld
       - name: Cache cargo registry
