@@ -87,7 +87,7 @@ fn list_gpus_py(py: Python) -> PyResult<Vec<pyo3::Bound<pyo3::types::PyDict>>> {
 }
 
 #[pymodule]
-fn gpu(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn modern_colorthief_gpu(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction![extract_palette_from_buffer_py](m)?)?;
     m.add_function(wrap_pyfunction![extract_dominant_color_from_buffer_py](m)?)?;
     m.add_function(wrap_pyfunction![extract_palette_py](m)?)?;

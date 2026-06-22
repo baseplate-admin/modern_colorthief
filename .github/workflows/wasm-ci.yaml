@@ -54,7 +54,7 @@ jobs:
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build WASM with PGO
-        run: cargo pgo optimize -- --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm --release
+        run: cargo pgo optimize -- --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
       - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
 
   wasm-pack-build:
@@ -74,7 +74,7 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
       - name: Build WASM with PGO
-        run: cargo pgo optimize -- -p modern-colorthief-wasm --release
+        run: cargo pgo optimize -- -p modern-colorthief-wasm
         working-directory: crates/wasm-bindings
       - working-directory: crates/wasm-bindings
         run: npm install && npm test
@@ -108,7 +108,7 @@ jobs:
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu --target x86_64-unknown-linux-gnu
       - name: Build WASM GPU with PGO
-        run: cargo pgo optimize -- --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu --release
+        run: cargo pgo optimize -- --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
 
   gpu-node-tests:
     name: GPU Node.js tests

@@ -79,8 +79,12 @@ jobs:
         run: |
           cd crates/ruby-bindings
           bundle install
-          cargo pgo optimize -- --release -p modern_colorthief
-          cp target/release/libmodern-colorthief.* lib/
+          cargo pgo optimize -- -p modern_colorthief
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cp ../../target/release/modern_colorthief.dll lib/
+          else
+            cp ../../target/release/libmodern-colorthief.* lib/
+          fi
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
@@ -218,8 +222,12 @@ jobs:
         run: |
           cd crates/ruby-bindings-gpu
           bundle install
-          cargo pgo optimize -- --release -p modern_colorthief_gpu
-          cp target/release/libmodern-colorthief-gpu.* lib/
+          cargo pgo optimize -- -p modern_colorthief_gpu
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cp ../../target/release/modern_colorthief_gpu.dll lib/
+          else
+            cp ../../target/release/libmodern-colorthief-gpu.* lib/
+          fi
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4

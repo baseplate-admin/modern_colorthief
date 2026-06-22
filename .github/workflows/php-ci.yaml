@@ -102,7 +102,7 @@ jobs:
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build PHP extension (PGO)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-php --release
+        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-php
       - name: Build PHP extension (cross-compile)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-php
@@ -272,7 +272,7 @@ jobs:
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build GPU PHP extension (PGO)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-php-gpu --release
+        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-php-gpu
       - name: Build GPU PHP extension (cross-compile)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-php-gpu

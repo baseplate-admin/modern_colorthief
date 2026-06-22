@@ -84,7 +84,7 @@ jobs:
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build node bindings (PGO)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-node --release
+        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-node
       - name: Build node bindings (cross-compile)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-node
