@@ -67,7 +67,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           rustup toolchain install nightly
-          rustup component add llvm-tools-preview
+          rustup component add llvm-tools-preview --toolchain nightly
           rustup default nightly
 
       - name: PGO profile generation
@@ -169,7 +169,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           rustup toolchain install nightly
-          rustup component add llvm-tools-preview
+          rustup component add llvm-tools-preview --toolchain nightly
           rustup default nightly
 
       - name: Install Vulkan runtime (Linux)

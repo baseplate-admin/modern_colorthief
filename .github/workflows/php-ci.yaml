@@ -116,10 +116,17 @@ jobs:
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
       - name: Build cross image (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
+        run: |
+          docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
+          cat > Cross.toml << 'EOF'
+          [target.aarch64-unknown-linux-gnu]
+          image = "php-cross-aarch64"
+          EOF
       - name: Build Rust core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p php-bindings
+        run: |
+          cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p php-bindings
+          rm -f Cross.toml
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust core tests
@@ -303,10 +310,17 @@ jobs:
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
       - name: Build cross image (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
+        run: |
+          docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
+          cat > Cross.toml << 'EOF'
+          [target.aarch64-unknown-linux-gnu]
+          image = "php-cross-aarch64"
+          EOF
       - name: Build Rust GPU core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
+        run: |
+          cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
+          rm -f Cross.toml
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust GPU tests
