@@ -85,9 +85,6 @@ jobs:
       - name: Install cross (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: cargo install cross --locked
-      - name: Build cross Docker image (aarch64-linux)
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: docker build -f Dockerfile.aarch64-php -t modern-colorthief-aarch64-php .
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
@@ -102,7 +99,7 @@ jobs:
         run: choco install llvm
       - name: Install LLVM tools (PGO)
         if: ${{ !contains(matrix.target, 'aarch64') }}
-        run: rustup component add --toolchain nightly llvm-tools-preview
+        run: rustup component add --toolchain nightly llvm-tools-preview rust-lld
       - name: PGO profile generation
         if: ${{ !contains(matrix.target, 'aarch64') }}
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
@@ -119,9 +116,9 @@ jobs:
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
       - name: Build Rust core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p php-bindings --pre-build "apt-get update && apt-get install -y libonig-dev php8.1-dev"
         env:
-          CROSS_TARGET_AARCH64_UNKNOWN_LINUX_GNU_IMAGE: modern-colorthief-aarch64-php
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
@@ -272,9 +269,6 @@ jobs:
       - name: Install cross (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: cargo install cross --locked
-      - name: Build cross Docker image (aarch64-linux)
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: docker build -f Dockerfile.aarch64-php -t modern-colorthief-aarch64-php .
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
@@ -289,7 +283,7 @@ jobs:
         run: choco install llvm
       - name: Install LLVM tools (PGO)
         if: ${{ !contains(matrix.target, 'aarch64') }}
-        run: rustup component add --toolchain nightly llvm-tools-preview
+        run: rustup component add --toolchain nightly llvm-tools-preview rust-lld
       - name: PGO profile generation
         if: ${{ !contains(matrix.target, 'aarch64') }}
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
@@ -306,9 +300,9 @@ jobs:
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
       - name: Build Rust GPU core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
+        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu --pre-build "apt-get update && apt-get install -y libonig-dev php8.1-dev"
         env:
-          CROSS_TARGET_AARCH64_UNKNOWN_LINUX_GNU_IMAGE: modern-colorthief-aarch64-php
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension

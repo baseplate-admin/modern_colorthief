@@ -125,6 +125,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
+      - name: Install rust-lld (Windows)
+        run: rustup component add rust-lld
       - name: Build wheels (PGO native x64)
         if: matrix.platform.target == 'x64'
         uses: PyO3/maturin-action@v1
@@ -340,6 +342,10 @@ jobs:
         shell: bash
         working-directory: .
         run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Install rust-lld (Windows GPU)
+        if: matrix.os == 'windows-latest'
+        run: rustup component add rust-lld
 
       - uses: dtolnay/rust-toolchain@stable
         with:
