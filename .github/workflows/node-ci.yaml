@@ -89,7 +89,7 @@ jobs:
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
         run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-node
       - name: Prepare node artifact
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+        shell: bash
         run: |
           mkdir -p crates/node-bindings/artifacts
           cp target/${{ matrix.target }}/release/${{ matrix.lib }} crates/node-bindings/artifacts/modern_colorthief.node

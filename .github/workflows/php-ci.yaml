@@ -149,13 +149,13 @@ jobs:
           name: native-lib-php-cpu-${{ matrix.target }}
           path: target/release
       - name: Verify extension
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+        shell: bash
         run: test -f target/release/${{ matrix.lib }}
       - name: Install PHP dependencies
         working-directory: crates/php-bindings
         run: composer install --no-interaction --prefer-dist
       - name: Run PHP tests
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+        shell: bash
         working-directory: crates/php-bindings
         run: php -d extension=../../target/release/${{ matrix.lib }} vendor/bin/pest
 
@@ -360,13 +360,13 @@ jobs:
           name: native-lib-php-gpu-${{ matrix.target }}
           path: target/release
       - name: Verify GPU extension
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+        shell: bash
         run: test -f target/release/${{ matrix.lib }}
       - name: Install PHP dependencies
         working-directory: crates/php-bindings-gpu
         run: composer install --no-interaction --prefer-dist
       - name: Run GPU PHP tests
-        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+        shell: bash
         working-directory: crates/php-bindings-gpu
         run: php -d extension=../../target/release/${{ matrix.lib }} vendor/bin/pest
 
