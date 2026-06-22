@@ -135,7 +135,7 @@ jobs:
           name: native-lib-cpu-${{ matrix.target }}
           path: crates/jvm-bindings/tests/native
       - name: Verify native library
-        shell: ${{ matrix.shell }}
+        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
         run: test -f crates/jvm-bindings/tests/native/${{ matrix.lib }}
       - uses: gradle/actions/setup-gradle@v6
         with:
@@ -234,7 +234,7 @@ jobs:
       - name: Build GPU native library (PGO)
         run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-jvm-gpu
       - name: Verify shared library
-        shell: ${{ matrix.shell }}
+        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
         run: test -f target/${{ matrix.target }}/release/${{ matrix.lib }}
       - name: Upload GPU native library
         uses: actions/upload-artifact@v4
@@ -400,7 +400,7 @@ jobs:
           name: native-lib-gpu-${{ matrix.target }}
           path: crates/jvm-bindings-gpu/tests/native
       - name: Verify native library
-        shell: ${{ matrix.shell }}
+        shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
         run: test -f crates/jvm-bindings-gpu/tests/native/${{ matrix.lib }}
 
       - uses: gradle/actions/setup-gradle@v6
