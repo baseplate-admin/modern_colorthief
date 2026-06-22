@@ -92,7 +92,7 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
     // Intermediate buffer for per-chunk average colors
     const chunkColorBuffer: GPUBuffer = device.createBuffer({
         size: numberOfChunks * 12, // vec3<f32> per chunk = 12 bytes
-        usage: GPUBufferUsage.STORAGE,
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
 
     // Staging buffer to read chunk colors back from GPU to CPU

@@ -85,6 +85,7 @@ jobs:
         shell: bash
         run: |
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
+          cargo build --release -p modern_colorthief
           cd crates/ruby-bindings
           bundle install
           if [[ "$RUNNER_OS" == "Windows" ]]; then
@@ -235,6 +236,7 @@ jobs:
         shell: bash
         run: |
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
+          cargo build --release -p modern_colorthief_gpu
           cd crates/ruby-bindings-gpu
           bundle install
           if [[ "$RUNNER_OS" == "Windows" ]]; then

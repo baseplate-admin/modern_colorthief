@@ -14,6 +14,11 @@ fn extract_palette_from_buffer_py(
     color_count: u8,
     quality: u8,
 ) -> PyResult<Vec<(u8, u8, u8)>> {
+    if width == 0 || height == 0 {
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "Image dimensions must be positive",
+        ));
+    }
     py.detach(move || {
         extract_palette_from_buffer(buffer, width, height, color_count, quality)
             .map_err(pyo3::exceptions::PyRuntimeError::new_err)
