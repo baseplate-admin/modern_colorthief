@@ -3,5 +3,5 @@ RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:ondrej/php && \
     apt-get update && \
-    apt-get install -y php8.4-dev libclang-dev && \
+    apt-get install -y php8.1-dev libclang-dev && \
     rm -rf /var/lib/apt/lists/*
