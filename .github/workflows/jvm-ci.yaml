@@ -230,9 +230,9 @@ jobs:
       - name: Install cargo-pgo
         run: cargo install cargo-pgo --locked --version 0.3.0
       - name: PGO profile generation
-        run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
+        run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Build GPU native library (PGO)
-        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-jvm-gpu
+        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-core-gpu -p modern-colorthief-jvm-gpu
       - name: Verify shared library
         shell: bash
         run: test -f target/${{ matrix.target }}/release/${{ matrix.lib }}
