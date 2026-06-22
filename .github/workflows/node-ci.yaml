@@ -63,7 +63,7 @@ jobs:
           node-version: 22
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: llvm-tools-preview rust-lld
+          components: llvm-tools-preview
           targets: ${{ matrix.target }}
       - name: Cache cargo registry
         uses: actions/cache@v5
