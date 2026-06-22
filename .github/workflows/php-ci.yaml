@@ -71,6 +71,12 @@ jobs:
           ini-file: development
           extensions: gd
       - uses: dtolnay/rust-toolchain@stable
+        if: ${{ !contains(matrix.target, '-windows-') }}
+        with:
+          components: llvm-tools-preview
+          targets: ${{ matrix.target }}
+      - uses: dtolnay/rust-toolchain@nightly
+        if: ${{ contains(matrix.target, '-windows-') }}
         with:
           components: llvm-tools-preview
           targets: ${{ matrix.target }}
@@ -200,6 +206,12 @@ jobs:
           ini-file: development
           extensions: gd
       - uses: dtolnay/rust-toolchain@stable
+        if: ${{ !contains(matrix.target, '-windows-') }}
+        with:
+          components: llvm-tools-preview
+          targets: ${{ matrix.target }}
+      - uses: dtolnay/rust-toolchain@nightly
+        if: ${{ contains(matrix.target, '-windows-') }}
         with:
           components: llvm-tools-preview
           targets: ${{ matrix.target }}

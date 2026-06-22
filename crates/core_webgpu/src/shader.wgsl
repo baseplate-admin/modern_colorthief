@@ -10,8 +10,6 @@ struct Params {
 @group(0) @binding(0) var<storage, read>       pixels:       array<vec4<f32>>;
 @group(0) @binding(1) var<uniform>             params:       Params;
 @group(0) @binding(2) var<storage, read_write> chunk_colors: array<vec3<f32>>;
-@group(0) @binding(3) var<storage, read_write> unique:       array<vec3<f32>>;
-@group(0) @binding(4) var<storage, read_write> ucount:       array<u32>;
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
@@ -34,25 +32,5 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
     }
     if (n > 0u) {
         chunk_colors[c] = vec3<f32>(r / f32(n), g / f32(n), b / f32(n));
-    }
-}
-
-@compute @workgroup_size(64)
-fn dedup(@builtin(global_invocation_id) gid: vec3<u32>) {
-    let idx = gid.x;
-    if (idx >= params.num_chunks) { return; }
-    let col = chunk_colors[idx];
-    var cnt: u32 = ucount[0];
-    var found: bool = false;
-    for (var i: u32 = 0u; i < cnt; i = i + 1u) {
-        let e = unique[i];
-        if (abs(e.x - col.x) < 0.006 && abs(e.y - col.y) < 0.006 && abs(e.z - col.z) < 0.006) {
-            found = true;
-            break;
-        }
-    }
-    if (!found && cnt < params.color_count) {
-        unique[cnt] = col;
-        ucount[0] = cnt + 1u;
     }
 }

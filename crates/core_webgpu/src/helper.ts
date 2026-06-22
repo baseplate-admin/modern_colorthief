@@ -18,8 +18,8 @@ interface ExtractPaletteInput {
  * WebGPU-based color palette extraction.
  *
  * Uses WebGPU compute shaders to efficiently extract dominant colors from raw
- * pixel data. Runs entirely on the GPU, suitable for processing large images
- * in the browser without blocking the main thread.
+ * pixel data. Runs entirely on the GPU for sampling, with CPU-side deduplication
+ * to guarantee correctness (avoids race conditions in concurrent GPU dedup).
  *
  * The GPU device is cached on globalThis so it survives across js_eval() calls.
  * Dawn (Node.js WebGPU) expects devices to be long-lived and reused.
@@ -95,26 +95,9 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
         usage: GPUBufferUsage.STORAGE,
     });
 
-    // Buffer to hold the final deduplicated color palette
-    const uniqueColorBuffer: GPUBuffer = device.createBuffer({
-        size: maxColors * 12,
-        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
-    });
-
-    // Buffer to hold the count of unique colors found
-    const colorCountBuffer: GPUBuffer = device.createBuffer({
-        size: 4, // single u32
-        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
-    });
-
-    // Staging buffers to read results back from GPU to CPU
-    const stagingColorBuffer: GPUBuffer = device.createBuffer({
-        size: maxColors * 12,
-        usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
-    });
-
-    const stagingCountBuffer: GPUBuffer = device.createBuffer({
-        size: 4,
+    // Staging buffer to read chunk colors back from GPU to CPU
+    const stagingChunkBuffer: GPUBuffer = device.createBuffer({
+        size: numberOfChunks * 12,
         usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
     });
 
@@ -124,16 +107,10 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
         code: wgslCode,
     });
 
-    // First pass: sample pixels and compute per-chunk average colors
+    // Sampling pipeline: sample pixels and compute per-chunk average colors
     const samplingPipeline: GPUComputePipeline = device.createComputePipeline({
         layout: "auto",
         compute: { module: shaderModule, entryPoint: "main" },
-    });
-
-    // Second pass: deduplicate similar colors to produce the final palette
-    const deduplicationPipeline: GPUComputePipeline = device.createComputePipeline({
-        layout: "auto",
-        compute: { module: shaderModule, entryPoint: "dedup" },
     });
 
     // Bind group for the sampling pipeline (uses bindings 0, 1, 2)
@@ -143,17 +120,6 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
             { binding: 0, resource: { buffer: pixelBuffer } },
             { binding: 1, resource: { buffer: uniformBuffer } },
             { binding: 2, resource: { buffer: chunkColorBuffer } },
-        ],
-    });
-
-    // Bind group for the deduplication pipeline (uses bindings 1, 2, 3, 4)
-    const deduplicationBindGroup: GPUBindGroup = device.createBindGroup({
-        layout: deduplicationPipeline.getBindGroupLayout(0),
-        entries: [
-            { binding: 1, resource: { buffer: uniformBuffer } },
-            { binding: 2, resource: { buffer: chunkColorBuffer } },
-            { binding: 3, resource: { buffer: uniqueColorBuffer } },
-            { binding: 4, resource: { buffer: colorCountBuffer } },
         ],
     });
 
@@ -182,57 +148,41 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
     samplingPass.dispatchWorkgroups(Math.ceil(numberOfChunks / 64));
     samplingPass.end();
 
-    // Encode and dispatch the deduplication compute pass
-    const deduplicationEncoder: GPUCommandEncoder = device.createCommandEncoder();
-    const deduplicationPass: GPUComputePassEncoder = deduplicationEncoder.beginComputePass();
-    deduplicationPass.setPipeline(deduplicationPipeline);
-    deduplicationPass.setBindGroup(0, deduplicationBindGroup);
-    deduplicationPass.dispatchWorkgroups(Math.ceil(numberOfChunks / 64));
-    deduplicationPass.end();
-
-    // Copy results from GPU buffers to staging buffers for reading back
+    // Copy chunk colors to staging buffer for CPU readback
     const copyEncoder: GPUCommandEncoder = device.createCommandEncoder();
     copyEncoder.copyBufferToBuffer(
-        uniqueColorBuffer,
+        chunkColorBuffer,
         0,
-        stagingColorBuffer,
+        stagingChunkBuffer,
         0,
-        maxColors * 12,
-    );
-    copyEncoder.copyBufferToBuffer(
-        colorCountBuffer,
-        0,
-        stagingCountBuffer,
-        0,
-        4,
+        numberOfChunks * 12,
     );
 
-    // Submit all command buffers and wait for GPU completion
-    device.queue.submit([
-        samplingEncoder.finish(),
-        deduplicationEncoder.finish(),
-        copyEncoder.finish(),
-    ]);
+    // Submit sampling + copy and wait for GPU completion
+    device.queue.submit([samplingEncoder.finish(), copyEncoder.finish()]);
 
-    // Map staging buffers and read results back to CPU
-    await stagingColorBuffer.mapAsync(GPUMapMode.READ);
-    await stagingCountBuffer.mapAsync(GPUMapMode.READ);
+    // Map staging buffer and read chunk colors back to CPU
+    await stagingChunkBuffer.mapAsync(GPUMapMode.READ);
+    const chunkArrayBuffer: ArrayBuffer = stagingChunkBuffer.getMappedRange();
+    const chunkView: DataView = new DataView(chunkArrayBuffer);
 
-    const countView: DataView = new DataView(stagingCountBuffer.getMappedRange());
-    const actualColorCount: number = countView.getUint32(0, true);
-    const colorView: DataView = new DataView(stagingColorBuffer.getMappedRange());
+    // Convert float32 color data (0.0-1.0) to uint8 (0-255) and deduplicate
+    const seen = new Set<string>();
+    const unique: number[] = [];
 
-   // Convert float32 color data (0.0-1.0) to uint8 (0-255) output array
-    const result: Uint8Array = new Uint8Array(actualColorCount * 3);
-    for (let i: number = 0; i < actualColorCount; i++) {
-        result[i * 3] = Math.round(colorView.getFloat32(i * 12, true) * 255);
-        result[i * 3 + 1] = Math.round(colorView.getFloat32(i * 12 + 4, true) * 255);
-        result[i * 3 + 2] = Math.round(colorView.getFloat32(i * 12 + 8, true) * 255);
+    for (let i = 0; i < numberOfChunks && unique.length < maxColors; i++) {
+        const r = Math.round(chunkView.getFloat32(i * 12, true) * 255);
+        const g = Math.round(chunkView.getFloat32(i * 12 + 4, true) * 255);
+        const b = Math.round(chunkView.getFloat32(i * 12 + 8, true) * 255);
+        const key = `${r},${g},${b}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            unique.push(r, g, b);
+        }
     }
 
-    // Clean up: unmap staging buffers
-    stagingColorBuffer.unmap();
-    stagingCountBuffer.unmap();
+    // Clean up: unmap and release staging buffer
+    stagingChunkBuffer.unmap();
 
-    return result;
+    return new Uint8Array(unique);
 }

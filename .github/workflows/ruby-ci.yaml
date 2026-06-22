@@ -71,6 +71,13 @@ jobs:
           rustup component add llvm-tools-preview
           cargo install cargo-pgo --locked --version 0.3.0
 
+      - name: Install nightly Rust (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          rustup toolchain install nightly
+          rustup component add llvm-tools-preview --toolchain nightly
+          rustup default nightly
+
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
 
@@ -167,6 +174,13 @@ jobs:
         run: |
           rustup component add llvm-tools-preview
           cargo install cargo-pgo --locked --version 0.3.0
+
+      - name: Install nightly Rust (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          rustup toolchain install nightly
+          rustup component add llvm-tools-preview --toolchain nightly
+          rustup default nightly
 
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'

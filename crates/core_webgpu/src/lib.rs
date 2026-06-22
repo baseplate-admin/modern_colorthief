@@ -6,6 +6,18 @@ use modern_colorthief_core::PaletteExtractor;
 #[derive(Default)]
 pub struct WebGpuExtractor;
 
+/// Deduplicate colors preserving first-seen order, capped at `max` entries.
+fn dedup_colors(colors: Vec<(u8, u8, u8)>, max: usize) -> Vec<(u8, u8, u8)> {
+    let mut seen = std::collections::HashSet::with_capacity(colors.len());
+    let mut out = Vec::with_capacity(colors.len());
+    for c in colors {
+        if seen.insert(c) && out.len() < max {
+            out.push(c);
+        }
+    }
+    out
+}
+
 impl PaletteExtractor for WebGpuExtractor {
     fn extract_palette(
         &self,
@@ -63,7 +75,7 @@ async fn extract_palette_async(
         colors.push((raw[i], raw[i + 1], raw[i + 2]));
         i += 3;
     }
-    Ok(colors)
+    Ok(dedup_colors(colors, color_count as usize))
 }
 
 async fn extract_color_async(
