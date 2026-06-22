@@ -1,3 +1,5 @@
+#[cfg(windows)]
+#![feature(abi_vectorcall)]
 use ext_php_rs::prelude::*;
 
 fn pixels_to_bytes(pixels: Vec<i64>) -> PhpResult<Vec<u8>> {
