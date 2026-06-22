@@ -86,7 +86,7 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             cp ../../target/release/modern_colorthief.dll lib/
           else
-            cp ../../target/release/libmodern-colorthief.* lib/
+            cp ../../target/release/libmodern_colorthief.* lib/
           fi
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
@@ -234,7 +234,7 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             cp ../../target/release/modern_colorthief_gpu.dll lib/
           else
-            cp ../../target/release/libmodern-colorthief-gpu.* lib/
+            cp ../../target/release/libmodern_colorthief_gpu.* lib/
           fi
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
