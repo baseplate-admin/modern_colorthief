@@ -80,7 +80,7 @@ jobs:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo install cargo-pgo --locked --version 0.3.0
       - name: Install cross (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
@@ -98,15 +98,15 @@ jobs:
         if: ${{ contains(matrix.target, '-windows-') }}
         run: choco install llvm
       - name: Install LLVM tools (PGO)
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: rustup component add --toolchain nightly llvm-tools-preview rust-lld
       - name: PGO profile generation
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
         env:
           RUSTUP_TOOLCHAIN: nightly
       - name: Build PHP extension (PGO)
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
           cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
           cargo build --release --target ${{ matrix.target }} -p modern-colorthief-php
@@ -122,7 +122,7 @@ jobs:
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         uses: actions/upload-artifact@v4
         with:
           name: "native-lib-php-cpu-${{ matrix.target }}"
@@ -264,7 +264,7 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Install cargo-pgo
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo install cargo-pgo --locked --version 0.3.0
       - name: Install cross (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
@@ -282,15 +282,15 @@ jobs:
         if: ${{ contains(matrix.target, '-windows-') }}
         run: choco install llvm
       - name: Install LLVM tools (PGO)
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: rustup component add --toolchain nightly llvm-tools-preview rust-lld
       - name: PGO profile generation
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
         env:
           RUSTUP_TOOLCHAIN: nightly
       - name: Build GPU PHP extension (PGO)
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
           cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
           cargo build --release --target ${{ matrix.target }} -p modern-colorthief-php-gpu
@@ -306,7 +306,7 @@ jobs:
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
-        if: ${{ !contains(matrix.target, 'aarch64') }}
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         uses: actions/upload-artifact@v4
         with:
           name: "native-lib-php-gpu-${{ matrix.target }}"
