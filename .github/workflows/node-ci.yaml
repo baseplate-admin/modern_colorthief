@@ -72,10 +72,10 @@ jobs:
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cargo-pgo --locked --version 0.3.0
+        run: cargo install cargo-pgo --version 0.3.0
       - name: Install cross (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cross --locked
+        run: cargo install cross
       - name: Npm install
         working-directory: crates/node-bindings
         run: npm install --legacy-peer-deps

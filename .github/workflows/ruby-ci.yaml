@@ -58,10 +58,14 @@ jobs:
           cargo-cache: false
           cache-version: v1-cpu-build
 
+      - name: Install LLVM 18 (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco upgrade llvm --version 18.1.8 --allow-downgrade -y
+
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
           rustup component add llvm-tools-preview
-          cargo install cargo-pgo --locked --version 0.3.0
+          cargo install cargo-pgo --version 0.3.0
 
       - name: Install nightly Rust (Windows)
         if: matrix.os == 'windows-latest'
@@ -160,10 +164,14 @@ jobs:
           cargo-cache: false
           cache-version: v1-gpu-build
 
+      - name: Install LLVM 18 (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco upgrade llvm --version 18.1.8 --allow-downgrade -y
+
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
           rustup component add llvm-tools-preview
-          cargo install cargo-pgo --locked --version 0.3.0
+          cargo install cargo-pgo --version 0.3.0
 
       - name: Install nightly Rust (Windows)
         if: matrix.os == 'windows-latest'

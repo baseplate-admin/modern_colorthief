@@ -81,10 +81,10 @@ jobs:
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cargo-pgo --locked --version 0.3.0
+        run: cargo install cargo-pgo --version 0.3.0
       - name: Install cross (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cross --locked
+        run: cargo install cross
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
@@ -96,7 +96,7 @@ jobs:
           brew install llvm
       - name: Install system dependencies (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        run: choco install llvm
+        run: choco upgrade llvm --version 18.1.8 --allow-downgrade -y
       - name: Install LLVM tools (PGO nightly)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: rustup component add llvm-tools-preview --toolchain nightly
@@ -275,10 +275,10 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Install cargo-pgo
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cargo-pgo --locked --version 0.3.0
+        run: cargo install cargo-pgo --version 0.3.0
       - name: Install cross (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cross --locked
+        run: cargo install cross
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
@@ -290,7 +290,7 @@ jobs:
           brew install llvm
       - name: Install system dependencies (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        run: choco install llvm
+        run: choco upgrade llvm --version 18.1.8 --allow-downgrade -y
       - name: Install LLVM tools (PGO nightly)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: rustup component add llvm-tools-preview --toolchain nightly

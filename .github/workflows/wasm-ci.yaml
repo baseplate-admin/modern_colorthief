@@ -47,7 +47,7 @@ jobs:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
-        run: cargo install cargo-pgo --locked --version 0.3.0
+        run: cargo install cargo-pgo --version 0.3.0
       - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
@@ -69,7 +69,7 @@ jobs:
         with:
           node-version: 22
       - name: Install cargo-pgo
-        run: cargo install cargo-pgo --locked --version 0.3.0
+        run: cargo install cargo-pgo --version 0.3.0
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: PGO profile generation
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu --target x86_64-unknown-linux-gnu
@@ -99,7 +99,7 @@ jobs:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
-        run: cargo install cargo-pgo --locked --version 0.3.0
+        run: cargo install cargo-pgo --version 0.3.0
       - name: Install Vulkan runtime
         run: |
           sudo apt-get update
@@ -123,7 +123,7 @@ jobs:
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
           install_lavapipe: true
-      - run: cargo install wasm-pack --locked
+      - run: cargo install wasm-pack
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -148,7 +148,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: cargo install wasm-pack --locked
+      - run: cargo install wasm-pack
       - uses: nanasess/setup-chromedriver@v3
       - name: Run Chrome tests
         working-directory: crates/wasm-bindings
@@ -163,7 +163,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: cargo install wasm-pack --locked
+      - run: cargo install wasm-pack
       - uses: browser-actions/setup-geckodriver@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -184,7 +184,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - run: cargo install wasm-pack --locked
+      - run: cargo install wasm-pack
       - name: Run Node tests
         working-directory: crates/wasm-bindings
         run: wasm-pack test --node --release

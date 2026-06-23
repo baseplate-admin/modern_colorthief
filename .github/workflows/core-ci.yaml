@@ -66,7 +66,7 @@ jobs:
           path: ~/.cargo/git
           key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
       - name: Install cargo-pgo
-        run: cargo install cargo-pgo --locked --version 0.3.0
+        run: cargo install cargo-pgo --version 0.3.0
       - name: PGO profile generation (run instrumented tests)
         run: cargo pgo test -- --target x86_64-unknown-linux-gnu -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build with PGO
