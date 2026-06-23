@@ -62,7 +62,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: ZhongRuoyu/setup-llvm@v1
         with:
-          llvm-version: 18
+          llvm-version: 22
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
@@ -172,7 +172,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: ZhongRuoyu/setup-llvm@v1
         with:
-          llvm-version: 18
+          llvm-version: 22
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
