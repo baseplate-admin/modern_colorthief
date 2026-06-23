@@ -60,9 +60,14 @@ jobs:
 
       - name: Install LLVM 18 (Windows)
         if: matrix.os == 'windows-latest'
-        uses: LLVM_SEANTRACE/install-llvm@v2
-        with:
-          version: '18'
+        shell: pwsh
+        run: |
+          $url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/LLVM-18.1.8-win64.exe"
+          $dest = "$env:RUNNER_TEMP/llvm-18.exe"
+          Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
+          Start-Process -FilePath $dest -ArgumentList "/S", "/D=$env:RUNNER_TEMP\llvm-18" -Wait -NoNewWindow
+          $env:PATH = "$env:RUNNER_TEMP\llvm-18\bin;$env:PATH"
+          echo "PATH=$env:PATH" >> $env:GITHUB_ENV
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
@@ -170,9 +175,14 @@ jobs:
 
       - name: Install LLVM 18 (Windows)
         if: matrix.os == 'windows-latest'
-        uses: LLVM_SEANTRACE/install-llvm@v2
-        with:
-          version: '18'
+        shell: pwsh
+        run: |
+          $url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/LLVM-18.1.8-win64.exe"
+          $dest = "$env:RUNNER_TEMP/llvm-18.exe"
+          Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
+          Start-Process -FilePath $dest -ArgumentList "/S", "/D=$env:RUNNER_TEMP\llvm-18" -Wait -NoNewWindow
+          $env:PATH = "$env:RUNNER_TEMP\llvm-18\bin;$env:PATH"
+          echo "PATH=$env:PATH" >> $env:GITHUB_ENV
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
