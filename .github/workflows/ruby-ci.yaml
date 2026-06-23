@@ -60,7 +60,9 @@ jobs:
 
       - name: Install LLVM 18 (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco upgrade llvm --version 18.1.8 --allow-downgrade -y
+        uses: LLVM-Embedded/install-llvm@v2
+        with:
+          version: '18'
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
@@ -78,6 +80,7 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
+          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Build native extension (PGO)
         shell: bash
@@ -94,6 +97,7 @@ jobs:
           fi
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
+          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
@@ -166,7 +170,9 @@ jobs:
 
       - name: Install LLVM 18 (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco upgrade llvm --version 18.1.8 --allow-downgrade -y
+        uses: LLVM-Embedded/install-llvm@v2
+        with:
+          version: '18'
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
@@ -230,6 +236,7 @@ jobs:
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
+          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Build native extension (PGO)
         shell: bash
@@ -246,6 +253,7 @@ jobs:
           fi
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
+          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
