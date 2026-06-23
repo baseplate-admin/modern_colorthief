@@ -96,7 +96,7 @@ jobs:
           brew install llvm
       - name: Install system dependencies (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: LLVM-Embedded/install-llvm@v2
+        uses: LLVM_SEANTRACE/install-llvm@v2
         with:
           version: '18'
       - name: Install LLVM tools (PGO nightly)
@@ -292,7 +292,7 @@ jobs:
           brew install llvm
       - name: Install system dependencies (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: LLVM-Embedded/install-llvm@v2
+        uses: LLVM_SEANTRACE/install-llvm@v2
         with:
           version: '18'
       - name: Install LLVM tools (PGO nightly)

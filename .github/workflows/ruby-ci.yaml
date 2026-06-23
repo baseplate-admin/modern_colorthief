@@ -60,7 +60,7 @@ jobs:
 
       - name: Install LLVM 18 (Windows)
         if: matrix.os == 'windows-latest'
-        uses: LLVM-Embedded/install-llvm@v2
+        uses: LLVM_SEANTRACE/install-llvm@v2
         with:
           version: '18'
 
@@ -170,7 +170,7 @@ jobs:
 
       - name: Install LLVM 18 (Windows)
         if: matrix.os == 'windows-latest'
-        uses: LLVM-Embedded/install-llvm@v2
+        uses: LLVM_SEANTRACE/install-llvm@v2
         with:
           version: '18'
 
