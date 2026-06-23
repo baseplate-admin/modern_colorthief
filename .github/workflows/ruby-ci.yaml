@@ -77,12 +77,14 @@ jobs:
           rustup default nightly
 
       - name: PGO profile generation
+        if: matrix.os != 'windows-latest'
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
           BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Build native extension (PGO)
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
@@ -95,6 +97,19 @@ jobs:
           else
             cp ../../target/release/libmodern_colorthief.* lib/
           fi
+        env:
+          RUBY_SYS_LLVM_PRECEDENCE: fallible
+          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
+
+      - name: Build native extension (no PGO)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cargo build --release -p modern_colorthief
+          ls -la target/release/ | grep -i modern
+          cd crates/ruby-bindings
+          bundle install
+          cp ../../target/release/modern_colorthief.dll lib/
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
           BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
@@ -199,6 +214,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Install Vulkan SDK + software renderers (macOS)
         if: startsWith(matrix.os, 'macos')
@@ -208,6 +224,7 @@ jobs:
           install_lavapipe: true
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Setup SwiftShader (Windows)
         if: matrix.os == 'windows-latest'
@@ -233,12 +250,14 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: PGO profile generation
+        if: matrix.os != 'windows-latest'
         run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
           BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Build native extension (PGO)
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
@@ -251,6 +270,19 @@ jobs:
           else
             cp ../../target/release/libmodern_colorthief_gpu.* lib/
           fi
+        env:
+          RUBY_SYS_LLVM_PRECEDENCE: fallible
+          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
+
+      - name: Build native extension (no PGO)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          cargo build --release -p modern_colorthief_gpu
+          ls -la target/release/ | grep -i modern
+          cd crates/ruby-bindings-gpu
+          bundle install
+          cp ../../target/release/modern_colorthief_gpu.dll lib/
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
           BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
@@ -305,6 +337,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Install Vulkan SDK + software renderers (macOS)
         if: startsWith(matrix.os, 'macos')
@@ -314,6 +347,7 @@ jobs:
           install_lavapipe: true
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Setup SwiftShader (Windows)
         if: matrix.os == 'windows-latest'

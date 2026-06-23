@@ -123,6 +123,7 @@ jobs:
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
           install_lavapipe: true
+          github_token: ${{ github.token }}
       - run: cargo install wasm-pack
       - uses: actions/setup-node@v6
         with:

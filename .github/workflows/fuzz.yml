@@ -35,6 +35,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Setup SwiftShader (Windows)
         if: matrix.os == 'windows-latest'
@@ -68,6 +69,7 @@ jobs:
           install_lavapipe: true
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Setup Vulkan environment (macOS)
         if: matrix.os == 'macos-latest'
@@ -108,6 +110,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Setup SwiftShader (Windows)
         if: matrix.os == 'windows-latest'
@@ -136,6 +139,7 @@ jobs:
           install_lavapipe: true
           install_swiftshader: true
           cache: true
+          github_token: ${{ github.token }}
 
       - name: Setup Vulkan environment (macOS)
         if: matrix.os == 'macos-latest'
