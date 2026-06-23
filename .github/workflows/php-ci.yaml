@@ -96,7 +96,7 @@ jobs:
           brew install llvm
       - name: Setup LLVM (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: ZhongRuoyu/setup-llvm@v1
+        uses: ZhongRuoyu/setup-llvm@v0.1.1
         with:
           llvm-version: 22
       - name: Install LLVM tools (PGO nightly)
@@ -292,7 +292,7 @@ jobs:
           brew install llvm
       - name: Setup LLVM (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: ZhongRuoyu/setup-llvm@v1
+        uses: ZhongRuoyu/setup-llvm@v0.1.1
         with:
           llvm-version: 22
       - name: Install LLVM tools (PGO nightly)

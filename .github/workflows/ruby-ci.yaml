@@ -60,7 +60,7 @@ jobs:
 
       - name: Setup LLVM (Windows)
         if: matrix.os == 'windows-latest'
-        uses: ZhongRuoyu/setup-llvm@v1
+        uses: ZhongRuoyu/setup-llvm@v0.1.1
         with:
           llvm-version: 22
 
@@ -170,7 +170,7 @@ jobs:
 
       - name: Setup LLVM (Windows)
         if: matrix.os == 'windows-latest'
-        uses: ZhongRuoyu/setup-llvm@v1
+        uses: ZhongRuoyu/setup-llvm@v0.1.1
         with:
           llvm-version: 22
 
