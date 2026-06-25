@@ -82,9 +82,21 @@ jobs:
       - name: Install cargo-pgo
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo install cargo-pgo --version 0.3.0
-      - name: Install cross (aarch64-linux)
+      - name: Install aarch64 cross-compile deps
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cross
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu libclang-dev wget
+          PHP_VER="8.2.0"
+          wget --tries=5 -q "https://www.php.net/distributions/php-${PHP_VER}.tar.xz" -O /tmp/php.tar.xz
+          tar xf /tmp/php.tar.xz -C /tmp
+          sudo mkdir -p /usr/include/php
+          sudo cp -r "/tmp/php-${PHP_VER}/main/"* /usr/include/php/
+          sudo cp -r "/tmp/php-${PHP_VER}/Zend/"* /usr/include/php/
+          sudo cp -r "/tmp/php-${PHP_VER}/TSRM/"* /usr/include/php/
+          sudo sh -c 'cd /usr/include/php && sed -e "s/#undef ZEND_SIGNALS/#define ZEND_SIGNALS 0/" -e "s/#undef PHP_EXPORT_SYMBOLC/#define PHP_EXPORT_SYMBOL 1/" -e "s/@ZEND_SIGNALS@/0/g" -e "s/@PHP_EXPORT_SYMBOL@/1/g" -e "s/@PHP_MAJOR_VERSION@/8/g" -e "s/@PHP_MINOR_VERSION@/2/g" -e "s/@PHP_RELEASE_VERSION@/0/g" -e "s/@PHP_EXTRA_VERSION@//g" -e "s/@PHP_VERSION@/8.2.0/g" -e "s/@PHP_VERSION_ID@/80200/g" -e "s|@[^@]*@||g" php_config.h.in > php_config.h'
+          rm -rf "/tmp/php-${PHP_VER}" /tmp/php.tar.xz
+          sudo sh -c 'printf "#!/bin/sh\nprefix=/usr\nexec_prefix=/usr\nbindir=/usr/bin\nincludedir=/usr/include/php\nextension_dir=/usr/lib/php/20170718\nphpbinary=/usr/bin/php\nversion=\"8.2.0\"\nphplibdir=/usr/lib\n\nfor arg in \"\$@\"; do\n  case \$arg in\n    --prefix) echo \"\$prefix\" ;;\n    --exec-prefix) echo \"\$exec_prefix\" ;;\n    --version) echo \"\$version\" ;;\n    --includes) echo \"-I\$includedir/main -I\$includedir\" ;;\n    --extension-dir) echo \"\$extension_dir\" ;;\n    --php-binary) echo \"\$phpbinary\" ;;\n    --libdir) echo \"\$phplibdir\" ;;\n    --bindir) echo \"\$bindir\" ;;\n    --ini-path) echo \"/etc/php/8.2/cli\" ;;\n    --ini-dir) echo \"/etc/php/8.2/cli\" ;;\n    *) echo \"php-config 8.2.0\" ;;\n  esac\ndone\n" > /usr/bin/php-config && chmod +x /usr/bin/php-config'
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
@@ -116,19 +128,9 @@ jobs:
           RUSTUP_TOOLCHAIN: nightly
           MACOSX_DEPLOYMENT_TARGET: 10.12
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
-      - name: Build cross image (aarch64-linux)
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: |
-          docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
-          cat > Cross.toml << 'EOF'
-          [target.aarch64-unknown-linux-gnu]
-          image = "php-cross-aarch64"
-          EOF
       - name: Build Rust core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: |
-          cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
-          rm -f Cross.toml
+        run: cargo build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust core tests
@@ -280,9 +282,21 @@ jobs:
       - name: Install cargo-pgo
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo install cargo-pgo --version 0.3.0
-      - name: Install cross (aarch64-linux)
+      - name: Install aarch64 cross-compile deps
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cargo install cross
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu libclang-dev wget
+          PHP_VER="8.2.0"
+          wget --tries=5 -q "https://www.php.net/distributions/php-${PHP_VER}.tar.xz" -O /tmp/php.tar.xz
+          tar xf /tmp/php.tar.xz -C /tmp
+          sudo mkdir -p /usr/include/php
+          sudo cp -r "/tmp/php-${PHP_VER}/main/"* /usr/include/php/
+          sudo cp -r "/tmp/php-${PHP_VER}/Zend/"* /usr/include/php/
+          sudo cp -r "/tmp/php-${PHP_VER}/TSRM/"* /usr/include/php/
+          sudo sh -c 'cd /usr/include/php && sed -e "s/#undef ZEND_SIGNALS/#define ZEND_SIGNALS 0/" -e "s/#undef PHP_EXPORT_SYMBOLC/#define PHP_EXPORT_SYMBOL 1/" -e "s/@ZEND_SIGNALS@/0/g" -e "s/@PHP_EXPORT_SYMBOL@/1/g" -e "s/@PHP_MAJOR_VERSION@/8/g" -e "s/@PHP_MINOR_VERSION@/2/g" -e "s/@PHP_RELEASE_VERSION@/0/g" -e "s/@PHP_EXTRA_VERSION@//g" -e "s/@PHP_VERSION@/8.2.0/g" -e "s/@PHP_VERSION_ID@/80200/g" -e "s|@[^@]*@||g" php_config.h.in > php_config.h'
+          rm -rf "/tmp/php-${PHP_VER}" /tmp/php.tar.xz
+          sudo sh -c 'printf "#!/bin/sh\nprefix=/usr\nexec_prefix=/usr\nbindir=/usr/bin\nincludedir=/usr/include/php\nextension_dir=/usr/lib/php/20170718\nphpbinary=/usr/bin/php\nversion=\"8.2.0\"\nphplibdir=/usr/lib\n\nfor arg in \"\$@\"; do\n  case \$arg in\n    --prefix) echo \"\$prefix\" ;;\n    --exec-prefix) echo \"\$exec_prefix\" ;;\n    --version) echo \"\$version\" ;;\n    --includes) echo \"-I\$includedir/main -I\$includedir\" ;;\n    --extension-dir) echo \"\$extension_dir\" ;;\n    --php-binary) echo \"\$phpbinary\" ;;\n    --libdir) echo \"\$phplibdir\" ;;\n    --bindir) echo \"\$bindir\" ;;\n    --ini-path) echo \"/etc/php/8.2/cli\" ;;\n    --ini-dir) echo \"/etc/php/8.2/cli\" ;;\n    *) echo \"php-config 8.2.0\" ;;\n  esac\ndone\n" > /usr/bin/php-config && chmod +x /usr/bin/php-config'
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: |
@@ -314,19 +328,9 @@ jobs:
           RUSTUP_TOOLCHAIN: nightly
           MACOSX_DEPLOYMENT_TARGET: 10.12
           RUSTFLAGS: ${{ contains(matrix.target, '-apple-darwin') && '-C link-arg=-undefined -C link-arg=dynamic_lookup' || '' }}
-      - name: Build cross image (aarch64-linux)
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: |
-          docker build -f Dockerfile.aarch64-unknown-linux-gnu -t php-cross-aarch64 .
-          cat > Cross.toml << 'EOF'
-          [target.aarch64-unknown-linux-gnu]
-          image = "php-cross-aarch64"
-          EOF
       - name: Build Rust GPU core (aarch64-linux)
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: |
-          cross build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
-          rm -f Cross.toml
+        run: cargo build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
       - name: Run Rust GPU tests
