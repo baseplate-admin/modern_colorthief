@@ -18,10 +18,13 @@ wget --tries=5 -q "${PHP_SOURCE_URL}" -O /tmp/php.tar.xz
 tar xf /tmp/php.tar.xz -C /tmp
 
 # 3. Install headers to a dedicated include dir
+#    zend_portability.h uses relative includes like #include "../TSRM/TSRM.h"
+#    so TSRM must be a sibling dir, not flattened into the php include dir
 sudo mkdir -p "${INCLUDE_DIR}"
+sudo mkdir -p "${PREFIX}/include/TSRM"
 sudo cp -r "/tmp/php-${PHP_VER}/main/"* "${INCLUDE_DIR}/"
 sudo cp -r "/tmp/php-${PHP_VER}/Zend/"* "${INCLUDE_DIR}/"
-sudo cp -r "/tmp/php-${PHP_VER}/TSRM/"* "${INCLUDE_DIR}/"
+sudo cp -r "/tmp/php-${PHP_VER}/TSRM/"* "${PREFIX}/include/TSRM/"
 
 # 4. Generate php_config.h from the .in template
 sudo sh -c "cd ${INCLUDE_DIR} && \
