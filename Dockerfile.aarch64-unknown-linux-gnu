@@ -1,24 +1,25 @@
 FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu
 
 RUN apt-get update && \
-    apt-get install -y libonig-dev libclang-dev wget php-cli php8.2 php8.2-dev && \
-    wget -q https://www.php.net/distributions/php-8.2.0.tar.xz -O /tmp/php.tar.xz && \
+    apt-get install -y libonig-dev libclang-dev wget php-cli php-dev && \
+    PHP_VER=$(php-config --version | cut -d. -f1-3) && \
+    wget --tries=5 -q "https://www.php.net/distributions/php-${PHP_VER}.tar.xz" -O /tmp/php.tar.xz && \
     tar xf /tmp/php.tar.xz -C /tmp && \
     mkdir -p /usr/include/php && \
-    cp -r /tmp/php-8.2.0/main/* /usr/include/php/ && \
-    cp -r /tmp/php-8.2.0/Zend/* /usr/include/php/ && \
-    cp -r /tmp/php-8.2.0/TSRM/* /usr/include/php/ && \
+    cp -r "/tmp/php-${PHP_VER}/main/"* /usr/include/php/ && \
+    cp -r "/tmp/php-${PHP_VER}/Zend/"* /usr/include/php/ && \
+    cp -r "/tmp/php-${PHP_VER}/TSRM/"* /usr/include/php/ && \
     cd /usr/include/php && \
     sed -e 's/#undef ZEND_SIGNALS/#define ZEND_SIGNALS 0/' \
         -e 's/#undef PHP_EXPORT_SYMBOLC/#define PHP_EXPORT_SYMBOL 1/' \
         -e 's/@ZEND_SIGNALS@/0/g' \
         -e 's/@PHP_EXPORT_SYMBOL@/1/g' \
-        -e 's/@PHP_MAJOR_VERSION@/8/g' \
-        -e 's/@PHP_MINOR_VERSION@/2/g' \
-        -e 's/@PHP_RELEASE_VERSION@/0/g' \
+        -e "s/@PHP_MAJOR_VERSION@/$(echo $PHP_VER | cut -d. -f1)/g" \
+        -e "s/@PHP_MINOR_VERSION@/$(echo $PHP_VER | cut -d. -f2)/g" \
+        -e "s/@PHP_RELEASE_VERSION@/$(echo $PHP_VER | cut -d. -f3)/g" \
         -e 's/@PHP_EXTRA_VERSION@//g' \
-        -e 's/@PHP_VERSION@/8.2.0/g' \
-        -e 's/@PHP_VERSION_ID@/80200/g' \
+        -e "s/@PHP_VERSION@/${PHP_VER}/g" \
+        -e "s/@PHP_VERSION_ID@/$(echo $PHP_VER | tr -d .)/g" \
         -e 's/@PHP_BUILD_DIR@//g' \
         -e 's/@PHP_PREFIX@//g' \
         -e 's/@PHP_BINDIR@//g' \
@@ -44,4 +45,4 @@ RUN apt-get update && \
         -e 's/@PHP_DEBUG@/0/g' \
         -e 's/@PHP_HAVE_BUNDLED_ZLIB@/0/g' \
         php_config.h.in > php_config.h && \
-    rm -rf /tmp/php-8.2.0 /tmp/php.tar.xz
+    rm -rf "/tmp/php-${PHP_VER}" /tmp/php.tar.xz
