@@ -57,5 +57,36 @@ RUN printf '#!/bin/sh\nprefix=/usr\nexec_prefix=/usr\nbindir=/usr/bin\nincludedi
 
 # Create a stub php binary — ext-php-rs needs a PHP executable to query version/build info.
 # This stub responds to the -r and --version flags used by the ext-php-rs build script.
-RUN printf '#!/bin/sh\nif [ "$1" = "--version" ] || [ "$1" = "-v" ]; then\n  echo "PHP 8.2.0 (cli) \\n (built: fake)\\nCopyright (c) The PHP Group\\nZend Engine v4.2.0, Copyright (c) Zend Technologies"\n  exit 0\nfi\nif [ "$1" = "-r" ]; then\n  eval "$2" > /dev/null 2>&1\n  case "$2" in\n    *PHP_VERSION*) echo "8.2.0" ;;\n    *PHP_MAJOR_VERSION*) echo "8" ;;\n    *PHP_MINOR_VERSION*) echo "2" ;;\n    *PHP_RELEASE_VERSION*) echo "0" ;;\n    *PHP_EXTRA_VERSION*) echo "" ;;\n    *PHP_VERSION_ID*) echo "80200" ;;\n    *PHP_OS*) echo "Linux" ;;\n    *PHP_DATADIR*) echo "/usr/share/php" ;;\n    *PHP_LIBDIR*) echo "lib" ;;\n    *PHP_EXTENSION_DIR*) echo "/usr/lib/php/20170718" ;;\n    *PHP_CONFIG_FILE_PATH*) echo "/etc/php/8.2/cli/php.ini" ;;\n    *PHP_CONFIG_FILE_SCAN_DIR*) echo "/etc/php/8.2/cli/conf.d" ;;\n    *PHP_SHLIB_SUFFIX*) echo "so" ;;\n    *PHP_ZTS*) echo "1" ;;\n    *PHP_DEBUG*) echo "0" ;;\n    *) echo "" ;;\n  esac\n  exit 0\nfi\necho "PHP 8.2.0"\nexit 0\n' > /usr/bin/php && \
-    chmod +x /usr/bin/php
+RUN cat > /usr/bin/php << 'PHPEOF'
+#!/bin/sh
+if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
+  echo "PHP 8.2.0 (cli) (built: fake)"
+  echo "Copyright (c) The PHP Group"
+  echo "Zend Engine v4.2.0, Copyright (c) Zend Technologies"
+  exit 0
+fi
+if [ "$1" = "-r" ]; then
+  case "$2" in
+    *PHP_MAJOR_VERSION*) echo "8" ;;
+    *PHP_MINOR_VERSION*) echo "2" ;;
+    *PHP_RELEASE_VERSION*) echo "0" ;;
+    *PHP_EXTRA_VERSION*) echo "" ;;
+    *PHP_VERSION*) echo "8.2.0" ;;
+    *PHP_VERSION_ID*) echo "80200" ;;
+    *PHP_OS*) echo "Linux" ;;
+    *PHP_DATADIR*) echo "/usr/share/php" ;;
+    *PHP_LIBDIR*) echo "lib" ;;
+    *PHP_EXTENSION_DIR*) echo "/usr/lib/php/20170718" ;;
+    *PHP_CONFIG_FILE_PATH*) echo "/etc/php/8.2/cli/php.ini" ;;
+    *PHP_CONFIG_FILE_SCAN_DIR*) echo "/etc/php/8.2/cli/conf.d" ;;
+    *PHP_SHLIB_SUFFIX*) echo "so" ;;
+    *PHP_ZTS*) echo "1" ;;
+    *PHP_DEBUG*) echo "0" ;;
+    *) echo "" ;;
+  esac
+  exit 0
+fi
+echo "PHP 8.2.0"
+exit 0
+PHPEOF
+chmod +x /usr/bin/php
