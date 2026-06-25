@@ -25,6 +25,8 @@ tar xf /tmp/php.tar.xz -C /tmp
 sudo cp -r "/tmp/php-${PHP_VER}/main" "${PREFIX}/include/"
 sudo cp -r "/tmp/php-${PHP_VER}/Zend" "${PREFIX}/include/"
 sudo cp -r "/tmp/php-${PHP_VER}/TSRM" "${PREFIX}/include/"
+# php.h does #include "zend.h" (bare), so Zend headers must also be flat
+sudo cp -r "/tmp/php-${PHP_VER}/Zend/"* "${PREFIX}/include/"
 
 # 4. Generate php_config.h from the .in template
 sudo sh -c "cd ${PREFIX}/include/main && \
