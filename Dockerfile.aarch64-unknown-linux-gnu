@@ -1,8 +1,11 @@
 FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu
 
+# The cross-rs image is Ubuntu Xenial (16.04) which only has PHP 7.0 in its repos.
+# We need PHP 8.x headers for the php-src crate, so we skip apt PHP entirely,
+# download the source tarball for headers, and create a php-config stub.
 RUN apt-get update && \
-    apt-get install -y libonig-dev libclang-dev wget php-cli php-dev && \
-    PHP_VER=$(php-config --version | cut -d. -f1-3) && \
+    apt-get install -y libonig-dev libclang-dev wget && \
+    PHP_VER="8.2.0" && \
     wget --tries=5 -q "https://www.php.net/distributions/php-${PHP_VER}.tar.xz" -O /tmp/php.tar.xz && \
     tar xf /tmp/php.tar.xz -C /tmp && \
     mkdir -p /usr/include/php && \
@@ -14,12 +17,12 @@ RUN apt-get update && \
         -e 's/#undef PHP_EXPORT_SYMBOLC/#define PHP_EXPORT_SYMBOL 1/' \
         -e 's/@ZEND_SIGNALS@/0/g' \
         -e 's/@PHP_EXPORT_SYMBOL@/1/g' \
-        -e "s/@PHP_MAJOR_VERSION@/$(echo $PHP_VER | cut -d. -f1)/g" \
-        -e "s/@PHP_MINOR_VERSION@/$(echo $PHP_VER | cut -d. -f2)/g" \
-        -e "s/@PHP_RELEASE_VERSION@/$(echo $PHP_VER | cut -d. -f3)/g" \
+        -e 's/@PHP_MAJOR_VERSION@/8/g' \
+        -e 's/@PHP_MINOR_VERSION@/2/g' \
+        -e 's/@PHP_RELEASE_VERSION@/0/g' \
         -e 's/@PHP_EXTRA_VERSION@//g' \
-        -e "s/@PHP_VERSION@/${PHP_VER}/g" \
-        -e "s/@PHP_VERSION_ID@/$(echo $PHP_VER | tr -d .)/g" \
+        -e 's/@PHP_VERSION@/8.2.0/g' \
+        -e 's/@PHP_VERSION_ID@/80200/g' \
         -e 's/@PHP_BUILD_DIR@//g' \
         -e 's/@PHP_PREFIX@//g' \
         -e 's/@PHP_BINDIR@//g' \
@@ -46,3 +49,7 @@ RUN apt-get update && \
         -e 's/@PHP_HAVE_BUNDLED_ZLIB@/0/g' \
         php_config.h.in > php_config.h && \
     rm -rf "/tmp/php-${PHP_VER}" /tmp/php.tar.xz
+
+# Create a php-config stub so the php-src build script can query PHP paths
+RUN printf '#!/bin/sh\nprefix=/usr\nexec_prefix=/usr\nbindir=/usr/bin\nincludedir=/usr/include/php\nextension_dir=/usr/lib/php/20170718\nphpbinary=/usr/bin/php\nversion="8.2.0"\nphplibdir=/usr/lib\n\nfor arg in "$@"; do\n  case $arg in\n    --prefix) echo "$prefix" ;;\n    --exec-prefix) echo "$exec_prefix" ;;\n    --version) echo "$version" ;;\n    --includes) echo "-I$includedir/main -I$includedir" ;;\n    --extension-dir) echo "$extension_dir" ;;\n    --php-binary) echo "$phpbinary" ;;\n    --libdir) echo "$phplibdir" ;;\n    --bindir) echo "$bindir" ;;\n    --ini-path) echo "/etc/php/8.2/cli" ;;\n    --ini-dir) echo "/etc/php/8.2/cli" ;;\n    *) echo "php-config 8.2.0" ;;\n  esac\ndone\n' > /usr/bin/php-config && \
+    chmod +x /usr/bin/php-config
