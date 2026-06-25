@@ -96,7 +96,7 @@ jobs:
           brew install llvm
       - name: Setup LLVM (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: KyleMayes/install-llvm-action@v2
+        uses: KyleMayes/install-llvm-action@v2.0.9
         with:
           version: 21
       - name: Install LLVM tools (PGO nightly)
@@ -294,7 +294,7 @@ jobs:
           brew install llvm
       - name: Setup LLVM (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: KyleMayes/install-llvm-action@v2
+        uses: KyleMayes/install-llvm-action@v2.0.9
         with:
           version: 21
       - name: Install LLVM tools (PGO nightly)
