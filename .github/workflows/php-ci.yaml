@@ -122,7 +122,6 @@ jobs:
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
           PHP_CONFIG: /usr/bin/php-config-aarch64
-          CFLAGS: "-DZEND_MM_ALIGNMENT=8 -DSIZEOF_SIZE_T=8"
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
@@ -312,7 +311,6 @@ jobs:
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
           PHP_CONFIG: /usr/bin/php-config-aarch64
-          CFLAGS: "-DZEND_MM_ALIGNMENT=8 -DSIZEOF_SIZE_T=8"
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
