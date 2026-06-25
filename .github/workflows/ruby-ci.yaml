@@ -60,7 +60,7 @@ jobs:
 
       - name: Setup LLVM (Windows)
         if: matrix.os == 'windows-latest'
-        uses: ZhongRuoyu/setup-llvm@v0.1.1
+        uses: rust-lang/setup-llvm@v1
         with:
           llvm-version: 22
 
@@ -105,6 +105,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
+          MSVC_INC="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/$(ls 'C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC' | head -1)/include"
+          WINSDK_INC=$(ls 'C:/Program Files (x86)/Windows Kits/10/Include' | sort -r | head -1)
+          export BINDGEN_EXTRA_CLANG_ARGS="-isystem $MSVC_INC -isystem 'C:/Program Files (x86)/Windows Kits/10/Include/$WINSDK_INC/ucrt' -Wno-unknown-warning-option"
           cargo build --release -p modern_colorthief
           ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings
@@ -112,7 +115,6 @@ jobs:
           cp ../../target/release/modern_colorthief.dll lib/
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
-          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
@@ -185,7 +187,7 @@ jobs:
 
       - name: Setup LLVM (Windows)
         if: matrix.os == 'windows-latest'
-        uses: ZhongRuoyu/setup-llvm@v0.1.1
+        uses: rust-lang/setup-llvm@v1
         with:
           llvm-version: 22
 
@@ -278,6 +280,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
+          MSVC_INC="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/$(ls 'C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC' | head -1)/include"
+          WINSDK_INC=$(ls 'C:/Program Files (x86)/Windows Kits/10/Include' | sort -r | head -1)
+          export BINDGEN_EXTRA_CLANG_ARGS="-isystem $MSVC_INC -isystem 'C:/Program Files (x86)/Windows Kits/10/Include/$WINSDK_INC/ucrt' -Wno-unknown-warning-option"
           cargo build --release -p modern_colorthief_gpu
           ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings-gpu
@@ -285,7 +290,6 @@ jobs:
           cp ../../target/release/modern_colorthief_gpu.dll lib/
         env:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
-          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
