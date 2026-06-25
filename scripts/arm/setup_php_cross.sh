@@ -25,6 +25,7 @@ sudo mkdir -p "${PREFIX}/include/TSRM"
 sudo cp -r "/tmp/php-${PHP_VER}/main/"* "${INCLUDE_DIR}/"
 sudo cp -r "/tmp/php-${PHP_VER}/Zend/"* "${INCLUDE_DIR}/"
 sudo cp -r "/tmp/php-${PHP_VER}/TSRM/"* "${PREFIX}/include/TSRM/"
+sudo ln -s "${INCLUDE_DIR}/main" "${PREFIX}/include/TSRM/main"
 
 # 4. Generate php_config.h from the .in template
 sudo sh -c "cd ${INCLUDE_DIR} && \
@@ -82,7 +83,7 @@ for arg in "$@"; do
     --prefix) printf '%s' "$prefix" ;;
     --exec-prefix) printf '%s' "$exec_prefix" ;;
     --version) printf '%s' "$version" ;;
-    --includes) printf '%s' "-I${includedir}/main -I${includedir}" ;;
+    --includes) printf '%s' "-I${includedir}/main -I${includedir} -I/usr/include/TSRM" ;;
     --extension-dir) printf '%s' "$extension_dir" ;;
     --php-binary) printf '%s' "$phpbinary" ;;
     --libdir) printf '%s' "$phplibdir" ;;
