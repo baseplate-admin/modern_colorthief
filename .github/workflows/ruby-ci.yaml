@@ -58,23 +58,13 @@ jobs:
           cargo-cache: false
           cache-version: v1-cpu-build
 
-      - name: Setup LLVM (Windows)
-        if: matrix.os == 'windows-latest'
-        uses: KyleMayes/install-llvm-action@v2.0.9
-        with:
-          version: "18"
+      - name: Install llvm-tools-preview (non-Windows)
+        if: matrix.os != 'windows-latest'
+        run: rustup component add llvm-tools-preview
 
-      - name: Install llvm-tools-preview + cargo-pgo
-        run: |
-          rustup component add llvm-tools-preview
-          cargo install cargo-pgo --version 0.3.0
-
-      - name: Install nightly Rust (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          rustup toolchain install nightly
-          rustup component add llvm-tools-preview --toolchain nightly
-          rustup default nightly
+      - name: Install cargo-pgo (non-Windows)
+        if: matrix.os != 'windows-latest'
+        run: cargo install cargo-pgo --version 0.3.0
 
       - name: PGO profile generation
         if: matrix.os != 'windows-latest'
@@ -101,7 +91,7 @@ jobs:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
           BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
-      - name: Build native extension (no PGO)
+      - name: Build native extension (Windows)
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
@@ -111,7 +101,7 @@ jobs:
           bundle install
           cp ../../target/release/modern_colorthief.dll lib/
         env:
-          RUBY_SYS_LLVM_PRECEDENCE: fallible
+          RUBY_SYS_LLVM_PRECEDENCE: never
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
@@ -182,23 +172,11 @@ jobs:
           cargo-cache: false
           cache-version: v1-gpu-build
 
-      - name: Setup LLVM (Windows)
-        if: matrix.os == 'windows-latest'
-        uses: KyleMayes/install-llvm-action@v2.0.9
-        with:
-          version: "18"
-
-      - name: Install llvm-tools-preview + cargo-pgo
+      - name: Install llvm-tools-preview + cargo-pgo (non-Windows)
+        if: matrix.os != 'windows-latest'
         run: |
           rustup component add llvm-tools-preview
           cargo install cargo-pgo --version 0.3.0
-
-      - name: Install nightly Rust (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          rustup toolchain install nightly
-          rustup component add llvm-tools-preview --toolchain nightly
-          rustup default nightly
 
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -273,7 +251,7 @@ jobs:
           RUBY_SYS_LLVM_PRECEDENCE: fallible
           BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
 
-      - name: Build native extension (no PGO)
+      - name: Build native extension (Windows)
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
@@ -283,7 +261,7 @@ jobs:
           bundle install
           cp ../../target/release/modern_colorthief_gpu.dll lib/
         env:
-          RUBY_SYS_LLVM_PRECEDENCE: fallible
+          RUBY_SYS_LLVM_PRECEDENCE: never
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4
