@@ -1,7 +1,7 @@
 FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu
 
 RUN apt-get update && \
-    apt-get install -y libonig-dev libclang-dev wget php-cli && \
+    apt-get install -y libonig-dev libclang-dev wget php-cli php8.2 php8.2-dev && \
     wget -q https://www.php.net/distributions/php-8.2.0.tar.xz -O /tmp/php.tar.xz && \
     tar xf /tmp/php.tar.xz -C /tmp && \
     mkdir -p /usr/include/php && \
