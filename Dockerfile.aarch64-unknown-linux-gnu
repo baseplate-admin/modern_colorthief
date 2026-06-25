@@ -51,5 +51,11 @@ RUN apt-get update && \
     rm -rf "/tmp/php-${PHP_VER}" /tmp/php.tar.xz
 
 # Create a php-config stub so the php-src build script can query PHP paths
+# Create a php-config stub so the build scripts can query PHP paths
 RUN printf '#!/bin/sh\nprefix=/usr\nexec_prefix=/usr\nbindir=/usr/bin\nincludedir=/usr/include/php\nextension_dir=/usr/lib/php/20170718\nphpbinary=/usr/bin/php\nversion="8.2.0"\nphplibdir=/usr/lib\n\nfor arg in "$@"; do\n  case $arg in\n    --prefix) echo "$prefix" ;;\n    --exec-prefix) echo "$exec_prefix" ;;\n    --version) echo "$version" ;;\n    --includes) echo "-I$includedir/main -I$includedir" ;;\n    --extension-dir) echo "$extension_dir" ;;\n    --php-binary) echo "$phpbinary" ;;\n    --libdir) echo "$phplibdir" ;;\n    --bindir) echo "$bindir" ;;\n    --ini-path) echo "/etc/php/8.2/cli" ;;\n    --ini-dir) echo "/etc/php/8.2/cli" ;;\n    *) echo "php-config 8.2.0" ;;\n  esac\ndone\n' > /usr/bin/php-config && \
     chmod +x /usr/bin/php-config
+
+# Create a stub php binary — ext-php-rs needs a PHP executable to query version/build info.
+# This stub responds to the -r and --version flags used by the ext-php-rs build script.
+RUN printf '#!/bin/sh\nif [ "$1" = "--version" ] || [ "$1" = "-v" ]; then\n  echo "PHP 8.2.0 (cli) \\n (built: fake)\\nCopyright (c) The PHP Group\\nZend Engine v4.2.0, Copyright (c) Zend Technologies"\n  exit 0\nfi\nif [ "$1" = "-r" ]; then\n  eval "$2" > /dev/null 2>&1\n  case "$2" in\n    *PHP_VERSION*) echo "8.2.0" ;;\n    *PHP_MAJOR_VERSION*) echo "8" ;;\n    *PHP_MINOR_VERSION*) echo "2" ;;\n    *PHP_RELEASE_VERSION*) echo "0" ;;\n    *PHP_EXTRA_VERSION*) echo "" ;;\n    *PHP_VERSION_ID*) echo "80200" ;;\n    *PHP_OS*) echo "Linux" ;;\n    *PHP_DATADIR*) echo "/usr/share/php" ;;\n    *PHP_LIBDIR*) echo "lib" ;;\n    *PHP_EXTENSION_DIR*) echo "/usr/lib/php/20170718" ;;\n    *PHP_CONFIG_FILE_PATH*) echo "/etc/php/8.2/cli/php.ini" ;;\n    *PHP_CONFIG_FILE_SCAN_DIR*) echo "/etc/php/8.2/cli/conf.d" ;;\n    *PHP_SHLIB_SUFFIX*) echo "so" ;;\n    *PHP_ZTS*) echo "1" ;;\n    *PHP_DEBUG*) echo "0" ;;\n    *) echo "" ;;\n  esac\n  exit 0\nfi\necho "PHP 8.2.0"\nexit 0\n' > /usr/bin/php && \
+    chmod +x /usr/bin/php
