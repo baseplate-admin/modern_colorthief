@@ -105,9 +105,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
-          MSVC_INC="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/$(ls 'C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC' | head -1)/include"
-          WINSDK_INC=$(ls 'C:/Program Files (x86)/Windows Kits/10/Include' | sort -r | head -1)
-          export BINDGEN_EXTRA_CLANG_ARGS="-isystem $MSVC_INC -isystem 'C:/Program Files (x86)/Windows Kits/10/Include/$WINSDK_INC/ucrt' -Wno-unknown-warning-option"
           cargo build --release -p modern_colorthief
           ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings
@@ -280,9 +277,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
-          MSVC_INC="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/$(ls 'C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC' | head -1)/include"
-          WINSDK_INC=$(ls 'C:/Program Files (x86)/Windows Kits/10/Include' | sort -r | head -1)
-          export BINDGEN_EXTRA_CLANG_ARGS="-isystem $MSVC_INC -isystem 'C:/Program Files (x86)/Windows Kits/10/Include/$WINSDK_INC/ucrt' -Wno-unknown-warning-option"
           cargo build --release -p modern_colorthief_gpu
           ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings-gpu
