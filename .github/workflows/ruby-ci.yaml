@@ -62,7 +62,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: KyleMayes/install-llvm-action@v2.0.9
         with:
-          version: "21"
+          version: "18"
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
@@ -186,7 +186,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: KyleMayes/install-llvm-action@v2.0.9
         with:
-          version: "21"
+          version: "18"
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
