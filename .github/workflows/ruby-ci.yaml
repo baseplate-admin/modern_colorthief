@@ -60,9 +60,9 @@ jobs:
 
       - name: Setup LLVM (Windows)
         if: matrix.os == 'windows-latest'
-        uses: rust-lang/setup-llvm@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
-          llvm-version: 22
+          version: "21"
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |
@@ -187,9 +187,9 @@ jobs:
 
       - name: Setup LLVM (Windows)
         if: matrix.os == 'windows-latest'
-        uses: rust-lang/setup-llvm@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
-          llvm-version: 22
+          version: "21"
 
       - name: Install llvm-tools-preview + cargo-pgo
         run: |

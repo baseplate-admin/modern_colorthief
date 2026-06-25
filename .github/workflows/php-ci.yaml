@@ -96,9 +96,9 @@ jobs:
           brew install llvm
       - name: Setup LLVM (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: rust-lang/setup-llvm@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
-          llvm-version: 22
+          version: 21
       - name: Install LLVM tools (PGO nightly)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: rustup component add llvm-tools-preview --toolchain nightly
@@ -294,9 +294,9 @@ jobs:
           brew install llvm
       - name: Setup LLVM (Windows)
         if: ${{ contains(matrix.target, '-windows-') }}
-        uses: rust-lang/setup-llvm@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
-          llvm-version: 22
+          version: 21
       - name: Install LLVM tools (PGO nightly)
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: rustup component add llvm-tools-preview --toolchain nightly
