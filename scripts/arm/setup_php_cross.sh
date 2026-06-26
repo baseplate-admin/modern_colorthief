@@ -32,6 +32,7 @@ sudo cp "/tmp/php-${PHP_VER}/TSRM/TSRM.h" "${PREFIX}/include/"
 # zend_virtual_cwd.h uses DIR without including dirent.h — prepend it
 sudo sed -i '1i#include <dirent.h>' "${PREFIX}/include/zend_virtual_cwd.h"
 # ext-php-rs needs ext/standard/ headers (info.h, php_var.h, etc.)
+sudo mkdir -p "${PREFIX}/include/ext"
 sudo cp -r "/tmp/php-${PHP_VER}/ext/standard" "${PREFIX}/include/ext/"
 
 # 4. Patch zend_alloc.h — prepend ZEND_MM_ALIGNMENT define at the top
