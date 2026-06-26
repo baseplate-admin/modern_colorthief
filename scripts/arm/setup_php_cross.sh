@@ -3,7 +3,7 @@
 # Uses ext-php-rs PHP_CONFIG ergonomics — no manual sed on php_config.h.in
 set -euo pipefail
 
-PHP_VER="${PHP_CROSS_VERSION:-8.2.0}"
+PHP_VER="${PHP_CROSS_VERSION:-8.4.10}"
 PHP_SOURCE_URL="https://www.php.net/distributions/php-${PHP_VER}.tar.xz"
 PREFIX="${PHP_CROSS_PREFIX:-/usr}"
 INCLUDE_DIR="${PHP_CROSS_INCLUDE_DIR:-${PREFIX}/include/php}"
@@ -88,9 +88,9 @@ prefix=/usr
 exec_prefix=/usr
 bindir=/usr/bin
 includedir=/usr/include
-extension_dir=/usr/lib/php/20170718
+extension_dir=/usr/lib/php/20240924
 phpbinary=/usr/bin/php
-version="8.2.0"
+version="8.4.10"
 phplibdir=/usr/lib
 
 for arg in "$@"; do
@@ -103,8 +103,8 @@ for arg in "$@"; do
     --php-binary) printf '%s' "$phpbinary" ;;
     --libdir) printf '%s' "$phplibdir" ;;
     --bindir) printf '%s' "$bindir" ;;
-    --ini-path) printf '%s' "/etc/php/8.2/cli" ;;
-    --ini-dir) printf '%s' "/etc/php/8.2/cli" ;;
+    --ini-path) printf '%s' "/etc/php/8.4/cli" ;;
+    --ini-dir) printf '%s' "/etc/php/8.4/cli" ;;
     --ldflags) printf '%s' "-L${phplibdir}" ;;
     --libs) printf '%s' "" ;;
     --cflags) printf '%s' "" ;;
