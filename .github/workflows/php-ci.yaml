@@ -143,16 +143,6 @@ jobs:
           cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - name: Check DLL MSVCRT version (Windows)
-        if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        shell: pwsh
-        run: |
-          $dll = "target/${{ matrix.target }}/release/${{ matrix.lib }}"
-          if (Test-Path $dll) {
-            $ver = Get-ItemProperty $dll
-            Write-Host "Product version: $($ver.VersionInfo.ProductVersion)"
-            dumpbin /dependents $dll 2>&1 | Select-String "msvcrt"
-          }
       - name: Upload native extension
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         uses: actions/upload-artifact@v4
