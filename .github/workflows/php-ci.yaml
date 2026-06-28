@@ -124,10 +124,10 @@ jobs:
           PHP_CONFIG: /usr/bin/php-config-aarch64
       - name: Install nightly for Windows (pinned for MSVCRT 14.44)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly-2026-06-14 --profile minimal
+        run: rustup toolchain install nightly-2026-05-22 --profile minimal
       - name: Build Rust core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: cargo +nightly-2026-06-14 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
+        run: cargo +nightly-2026-05-22 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
@@ -319,10 +319,10 @@ jobs:
           PHP_CONFIG: /usr/bin/php-config-aarch64
       - name: Install nightly for Windows (pinned for MSVCRT 14.44)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly-2026-06-14 --profile minimal
+        run: rustup toolchain install nightly-2026-05-22 --profile minimal
       - name: Build Rust GPU core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: cargo +nightly-2026-06-14 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
+        run: cargo +nightly-2026-05-22 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
