@@ -125,9 +125,26 @@ jobs:
       - name: Install nightly for Windows
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: rustup toolchain install nightly --profile minimal
-      - name: Build Rust core (Windows)
+      - name: Build Rust core (Windows with VS 2022)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
+        shell: pwsh
+        run: |
+          # Find VS 2022 installation
+          $vs2022 = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+            -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath -version '[17.0,17.18)'
+          if ($vs2022 -and (Test-Path "$vs2022\VC\Auxiliary\Build\vcvarsall.bat")) {
+            Write-Host "Found VS 2022 at: $vs2022"
+            # Activate VS 2022 env (changes persist in PowerShell session)
+            cmd /c "`"$vs2022\VC\Auxiliary\Build\vcvarsall.bat`" amd64 & set" | ForEach-Object {
+              if ($_ -match '^([^=]+)=(.*)$') {
+                $env:$matches[1] = $matches[2]
+              }
+            }
+          } else {
+            Write-Warning "VS 2022 not found, falling back to default"
+          }
+          cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
         env:
           CFLAGS_x86_64_pc_windows_msvc: "/MT"
           CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS: "-C target-feature=+crt-static"
@@ -323,9 +340,24 @@ jobs:
       - name: Install nightly for Windows
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: rustup toolchain install nightly --profile minimal
-      - name: Build Rust GPU core (Windows)
+      - name: Build Rust GPU core (Windows with VS 2022)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
+        shell: pwsh
+        run: |
+          $vs2022 = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+            -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath -version '[17.0,17.18)'
+          if ($vs2022 -and (Test-Path "$vs2022\VC\Auxiliary\Build\vcvarsall.bat")) {
+            Write-Host "Found VS 2022 at: $vs2022"
+            cmd /c "`"$vs2022\VC\Auxiliary\Build\vcvarsall.bat`" amd64 & set" | ForEach-Object {
+              if ($_ -match '^([^=]+)=(.*)$') {
+                $env:$matches[1] = $matches[2]
+              }
+            }
+          } else {
+            Write-Warning "VS 2022 not found, falling back to default"
+          }
+          cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
         env:
           CFLAGS_x86_64_pc_windows_msvc: "/MT"
           CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS: "-C target-feature=+crt-static"
