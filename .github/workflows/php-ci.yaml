@@ -122,12 +122,15 @@ jobs:
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
           PHP_CONFIG: /usr/bin/php-config-aarch64
-      - name: Install nightly for Windows (pinned for MSVCRT 14.44)
+      - name: Install nightly for Windows
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly-2026-04-25 --profile minimal
+        run: rustup toolchain install nightly --profile minimal
       - name: Build Rust core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: cargo +nightly-2026-04-25 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
+        run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
+        env:
+          CFLAGS_x86_64_pc_windows_msvc: "/MT"
+          CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS: "-C target-feature=+crt-static"
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
@@ -317,12 +320,15 @@ jobs:
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
           PHP_CONFIG: /usr/bin/php-config-aarch64
-      - name: Install nightly for Windows (pinned for MSVCRT 14.44)
+      - name: Install nightly for Windows
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly-2026-04-25 --profile minimal
+        run: rustup toolchain install nightly --profile minimal
       - name: Build Rust GPU core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: cargo +nightly-2026-04-25 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
+        run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
+        env:
+          CFLAGS_x86_64_pc_windows_msvc: "/MT"
+          CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS: "-C target-feature=+crt-static"
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
