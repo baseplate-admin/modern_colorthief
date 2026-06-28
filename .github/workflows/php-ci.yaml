@@ -122,32 +122,12 @@ jobs:
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
           PHP_CONFIG: /usr/bin/php-config-aarch64
-      - name: Install nightly for Windows
+      - name: Install nightly for Windows (pinned for MSVCRT 14.44)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly --profile minimal
-      - name: Build Rust core (Windows with VS 2022)
+        run: rustup toolchain install nightly-2026-01-15 --profile minimal
+      - name: Build Rust core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        shell: pwsh
-        run: |
-          # Find VS 2022 installation
-          $vs2022 = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
-            -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationPath -version '[17.0,17.18)'
-          if ($vs2022 -and (Test-Path "$vs2022\VC\Auxiliary\Build\vcvarsall.bat")) {
-            Write-Host "Found VS 2022 at: $vs2022"
-            # Activate VS 2022 env (changes persist in PowerShell session)
-            cmd /c "`"$vs2022\VC\Auxiliary\Build\vcvarsall.bat`" amd64 & set" | ForEach-Object {
-              if ($_ -match '^([^=]+)=(.*)$') {
-                $env:$matches[1] = $matches[2]
-              }
-            }
-          } else {
-            Write-Warning "VS 2022 not found, falling back to default"
-          }
-          cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
-        env:
-          CFLAGS_x86_64_pc_windows_msvc: "/MT"
-          CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS: "-C target-feature=+crt-static"
+        run: cargo +nightly-2026-01-15 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
@@ -337,30 +317,12 @@ jobs:
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
           PHP_CONFIG: /usr/bin/php-config-aarch64
-      - name: Install nightly for Windows
+      - name: Install nightly for Windows (pinned for MSVCRT 14.44)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly --profile minimal
-      - name: Build Rust GPU core (Windows with VS 2022)
+        run: rustup toolchain install nightly-2026-01-15 --profile minimal
+      - name: Build Rust GPU core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        shell: pwsh
-        run: |
-          $vs2022 = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
-            -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationPath -version '[17.0,17.18)'
-          if ($vs2022 -and (Test-Path "$vs2022\VC\Auxiliary\Build\vcvarsall.bat")) {
-            Write-Host "Found VS 2022 at: $vs2022"
-            cmd /c "`"$vs2022\VC\Auxiliary\Build\vcvarsall.bat`" amd64 & set" | ForEach-Object {
-              if ($_ -match '^([^=]+)=(.*)$') {
-                $env:$matches[1] = $matches[2]
-              }
-            }
-          } else {
-            Write-Warning "VS 2022 not found, falling back to default"
-          }
-          cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
-        env:
-          CFLAGS_x86_64_pc_windows_msvc: "/MT"
-          CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS: "-C target-feature=+crt-static"
+        run: cargo +nightly-2026-01-15 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
