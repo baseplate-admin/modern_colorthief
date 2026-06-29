@@ -4,10 +4,10 @@ require "rspec"
 
 # Load the native GPU extension with correct cross-platform naming.
 GPU_LIB_NAME = case RbConfig::CONFIG["host_os"]
-when /linux/ then "libmodern_colorthief_gpu.so"
-when /darwin|mac/ then "libmodern_colorthief_gpu.bundle"
+when /linux/ then "modern_colorthief_gpu.so"
+when /darwin|mac/ then "modern_colorthief_gpu.bundle"
 when /windows|mingw/ then "modern_colorthief_gpu.dll"
-else "libmodern_colorthief_gpu.so"
+else "modern_colorthief_gpu.so"
 end
 
 begin

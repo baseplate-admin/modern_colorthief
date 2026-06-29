@@ -80,12 +80,19 @@ jobs:
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
           cargo build --release -p modern_colorthief
           ls -la target/release/ | grep -i modern
+          # Rename to remove lib/ prefix so Ruby's Init symbol name matches
+          for f in target/release/libmodern_colorthief.*; do
+            if [ -f "$f" ]; then
+              base=$(basename "$f" libmodern_colorthief.)
+              cp "$f" "target/release/modern_colorthief.$base"
+            fi
+          done
           cd crates/ruby-bindings
           bundle install
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             cp ../../target/release/modern_colorthief.dll lib/
           else
-            cp ../../target/release/libmodern_colorthief.* lib/
+            cp ../../target/release/modern_colorthief.* lib/
           fi
         env:
           MODERN_COLORTHIEF_COMPILE: "true"
@@ -242,12 +249,19 @@ jobs:
           cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
           cargo build --release -p modern_colorthief_gpu
           ls -la target/release/ | grep -i modern
+          # Rename to remove lib/ prefix so Ruby's Init symbol name matches
+          for f in target/release/libmodern_colorthief_gpu.*; do
+            if [ -f "$f" ]; then
+              base=$(basename "$f" libmodern_colorthief_gpu.)
+              cp "$f" "target/release/modern_colorthief_gpu.$base"
+            fi
+          done
           cd crates/ruby-bindings-gpu
           bundle install
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             cp ../../target/release/modern_colorthief_gpu.dll lib/
           else
-            cp ../../target/release/libmodern_colorthief_gpu.* lib/
+            cp ../../target/release/modern_colorthief_gpu.* lib/
           fi
         env:
           MODERN_COLORTHIEF_COMPILE: "true"

@@ -78,7 +78,7 @@ codegen-units = 1
 opt-level = 3
 strip = true
 
-[profile.release.package.libmodern_colorthief]
+[profile.release.package.modern_colorthief]
 strip = false
 
 [profile.release.package.modern_colorthief_gpu]
