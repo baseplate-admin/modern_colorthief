@@ -78,9 +78,14 @@ codegen-units = 1
 opt-level = 3
 strip = true
 
+[profile.release.package.libmodern_colorthief]
+strip = false
+
+[profile.release.package.modern_colorthief_gpu]
+strip = false
+
 [profile.release]
 panic = "abort"
 codegen-units = 1
 lto = "fat"
-opt-level = 3
 strip = true
