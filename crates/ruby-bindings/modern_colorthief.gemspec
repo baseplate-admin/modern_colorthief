@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["lib/**/*", "ext/**/*", "*.gemspec", "Rakefile"]
   spec.require_paths = ["lib"]
 
-  spec.extensions = ["ext/extconf.rb"]
+  spec.extensions = ["ext/extconf.rb"] if ENV["MODERN_COLORTHIEF_COMPILE"]
 
   spec.add_dependency "rb_sys", "~> 0.9"
 

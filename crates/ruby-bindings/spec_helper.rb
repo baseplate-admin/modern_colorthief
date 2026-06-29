@@ -5,8 +5,8 @@ require "rspec"
 # Load the native CPU extension (handles cross-platform naming internally)
 begin
   require_relative "lib/colorthief_ruby"
-rescue LoadError
-  # Extension not yet compiled; tests will be skipped at runtime.
+rescue LoadError => e
+  warn "CPU extension not available: #{e.message}"
 end
 
 RSpec.configure do |config|
