@@ -174,7 +174,7 @@ jobs:
       - name: Install PHP dependencies
         working-directory: crates/php-bindings
         run: composer install --no-interaction --prefer-dist
-     - name: Run PHP tests
+      - name: Run PHP tests
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         working-directory: crates/php-bindings
@@ -417,7 +417,7 @@ jobs:
       - name: Install PHP dependencies
         working-directory: crates/php-bindings-gpu
         run: composer install --no-interaction --prefer-dist
-     - name: Run GPU PHP tests
+      - name: Run GPU PHP tests
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         working-directory: crates/php-bindings-gpu
