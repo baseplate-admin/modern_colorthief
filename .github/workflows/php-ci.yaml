@@ -124,23 +124,10 @@ jobs:
           PHP_CONFIG: /usr/bin/php-config-aarch64
       - name: Install nightly for Windows
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly --profile minimal
-      - name: Build Rust core (Windows with VS 2022 linker)
+        run: rustup toolchain install nightly-2025-11-15 --profile minimal
+      - name: Build Rust core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        shell: pwsh
-        run: |
-          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
-            -latest -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationPath -version '[17.0,17.18)'
-          if ($vs) {
-            $msvc = Get-ChildItem "$vs\VC\Tools\MSVC\" | Sort-Object Name | Select-Object -First 1
-            $linker = "$vs\VC\Tools\MSVC\$($msvc.Name)\bin\Hostx64\x64\link.exe"
-            $env:CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER = $linker
-            Write-Host "Using VS 2022 linker: $linker"
-          } else {
-            Write-Warning "VS 2022 not found"
-          }
-          cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
+        run: cargo +nightly-2025-11-15 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-php
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
@@ -190,18 +177,10 @@ jobs:
       - name: Install PHP dependencies
         working-directory: crates/php-bindings
         run: composer install --no-interaction --prefer-dist
-      - name: Run PHP tests
-        if: ${{ matrix.os != 'windows-latest' }}
+    - name: Run PHP tests
         shell: bash
         working-directory: crates/php-bindings
         run: php -d extension=../../target/release/${{ matrix.lib }} vendor/bin/pest
-      - name: Skip PHP tests on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: pwsh
-        run: |
-          Write-Host "PHP extension tests skipped on Windows."
-          Write-Host "Rust nightly ships VS 2025 std libs (MSVCRT 14.51), PHP 8.4 expects 14.44."
-          Write-Host "Rust code is tested on Linux/macOS; Windows build is verified by cargo build + cargo test."
 
   gpu-build:
     name: "gpu-build — ${{ matrix.target }}"
@@ -340,23 +319,10 @@ jobs:
           PHP_CONFIG: /usr/bin/php-config-aarch64
       - name: Install nightly for Windows
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        run: rustup toolchain install nightly --profile minimal
-      - name: Build Rust GPU core (Windows with VS 2022 linker)
+        run: rustup toolchain install nightly-2025-11-15 --profile minimal
+      - name: Build Rust GPU core (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
-        shell: pwsh
-        run: |
-          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
-            -latest -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-            -property installationPath -version '[17.0,17.18)'
-          if ($vs) {
-            $msvc = Get-ChildItem "$vs\VC\Tools\MSVC\" | Sort-Object Name | Select-Object -First 1
-            $linker = "$vs\VC\Tools\MSVC\$($msvc.Name)\bin\Hostx64\x64\link.exe"
-            $env:CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER = $linker
-            Write-Host "Using VS 2022 linker: $linker"
-          } else {
-            Write-Warning "VS 2022 not found"
-          }
-          cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
+        run: cargo +nightly-2025-11-15 build --release --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern-colorthief-php-gpu
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
@@ -450,17 +416,9 @@ jobs:
         working-directory: crates/php-bindings-gpu
         run: composer install --no-interaction --prefer-dist
       - name: Run GPU PHP tests
-        if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         working-directory: crates/php-bindings-gpu
         run: php -d extension=../../target/release/${{ matrix.lib }} vendor/bin/pest
-      - name: Skip GPU PHP tests on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: pwsh
-        run: |
-          Write-Host "GPU PHP extension tests skipped on Windows."
-          Write-Host "Rust nightly ships VS 2025 std libs (MSVCRT 14.51), PHP 8.4 expects 14.44."
-          Write-Host "Rust code is tested on Linux/macOS; Windows build is verified by cargo build + cargo test."
 
   publish-cpu:
     name: Publish CPU to Packagist
