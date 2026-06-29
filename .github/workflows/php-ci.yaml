@@ -177,7 +177,7 @@ jobs:
       - name: Install PHP dependencies
         working-directory: crates/php-bindings
         run: composer install --no-interaction --prefer-dist
-    - name: Run PHP tests
+      - name: Run PHP tests
         shell: bash
         working-directory: crates/php-bindings
         run: php -d extension=../../target/release/${{ matrix.lib }} vendor/bin/pest
