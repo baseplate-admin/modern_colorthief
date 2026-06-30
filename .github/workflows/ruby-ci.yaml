@@ -157,6 +157,8 @@ jobs:
         working-directory: crates/ruby-bindings
         run: |
           bundle install
+          ls -la lib/
+          nm -D lib/*.so lib/*.bundle 2>/dev/null | grep -i init || true
           bundle exec rspec -I. spec/
 
   gpu-build:
