@@ -137,7 +137,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
-          bundler-cache: true
+          bundler-cache: false
           cargo-cache: false
           cache-version: v1-cpu-test
 
@@ -146,6 +146,12 @@ jobs:
         with:
           name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings/lib/
+
+      - name: Verify extension present
+        working-directory: crates/ruby-bindings
+        run: |
+          ls -la lib/
+          nm -D lib/*.so lib/*.bundle 2>/dev/null | grep -i init || true
 
       - name: Run RSpec tests
         working-directory: crates/ruby-bindings
@@ -314,7 +320,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
-          bundler-cache: true
+          bundler-cache: false
           cargo-cache: false
           cache-version: v1-gpu-rust-test
 
