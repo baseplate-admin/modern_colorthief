@@ -133,15 +133,15 @@ RSpec.describe "ColorthiefGpu" do
 
   describe 'module' do
     it 'defines ColorthiefGpu' do
-      expect(colorthief_gpu).to be_a(Module)
+      with_gpu { expect(colorthief_gpu).to be_a(Module) }
     end
 
     it 'responds to get_palette' do
-      expect(colorthief_gpu).to respond_to(:get_palette)
+      with_gpu { expect(colorthief_gpu).to respond_to(:get_palette) }
     end
 
     it 'responds to get_color' do
-      expect(colorthief_gpu).to respond_to(:get_color)
+      with_gpu { expect(colorthief_gpu).to respond_to(:get_color) }
     end
   end
 

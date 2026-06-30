@@ -18,8 +18,10 @@ begin
   else
     require GPU_LIB_NAME
   end
-rescue LoadError
-  # Extension not yet compiled; tests will be skipped at runtime.
+  $gpu_available = true
+rescue Exception
+  # Extension not yet compiled or failed to initialize; tests will be skipped.
+  $gpu_available = false
 end
 
 RSpec.configure do |config|
