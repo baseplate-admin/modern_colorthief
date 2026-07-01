@@ -229,12 +229,26 @@ mod tests {
     #[test]
     fn test_two_color_red_blue() {
         let mut buffer = Vec::new();
-        for _ in 0..50 { buffer.extend_from_slice(&[255, 0, 0, 255]); }
-        for _ in 0..50 { buffer.extend_from_slice(&[0, 0, 255, 255]); }
+        for _ in 0..50 {
+            buffer.extend_from_slice(&[255, 0, 0, 255]);
+        }
+        for _ in 0..50 {
+            buffer.extend_from_slice(&[0, 0, 255, 255]);
+        }
         let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
         if let Ok(palette) = result {
-            assert!(palette.iter().any(|(r,g,b)| *r > 200 && *g < 55 && *b < 55), "should detect red");
-            assert!(palette.iter().any(|(r,g,b)| *r < 55 && *g < 55 && *b > 200), "should detect blue");
+            assert!(
+                palette
+                    .iter()
+                    .any(|(r, g, b)| *r > 200 && *g < 55 && *b < 55),
+                "should detect red"
+            );
+            assert!(
+                palette
+                    .iter()
+                    .any(|(r, g, b)| *r < 55 && *g < 55 && *b > 200),
+                "should detect blue"
+            );
         }
     }
 
@@ -270,7 +284,11 @@ mod tests {
         let mut buffer = Vec::new();
         for y in 0..10u8 {
             for x in 0..10u8 {
-                let (r, g, b) = if (x + y) % 2 == 0 { (200, 50, 50) } else { (50, 50, 200) };
+                let (r, g, b) = if (x + y) % 2 == 0 {
+                    (200, 50, 50)
+                } else {
+                    (50, 50, 200)
+                };
                 buffer.extend_from_slice(&[r, g, b, 255]);
             }
         }
@@ -288,7 +306,7 @@ mod tests {
         let r2 = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
         match (r1, r2) {
             (Ok(p1), Ok(p2)) => assert_eq!(p1, p2, "deterministic palette"),
-            (Err(_), Err(_)) => {}, // GPU unavailable is fine
+            (Err(_), Err(_)) => {} // GPU unavailable is fine
             _ => panic!("inconsistent GPU availability"),
         }
     }
@@ -319,13 +337,17 @@ mod tests {
     /// Test dominant color appears in palette.
     #[test]
     fn test_dominant_in_palette() {
-        let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(50)
+        let buffer: Vec<u8> = [255u8, 0, 0, 255]
+            .repeat(50)
             .into_iter()
             .chain(std::iter::repeat_n(0, 200)) // 50 blue pixels
             .collect();
         let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
         if let Ok(palette) = result {
-            assert!(palette.iter().any(|(r, _g, _b)| *r > 200), "dominant red should be in palette");
+            assert!(
+                palette.iter().any(|(r, _g, _b)| *r > 200),
+                "dominant red should be in palette"
+            );
         }
     }
 
@@ -338,7 +360,7 @@ mod tests {
         let r2 = extract_palette_from_buffer(&blue, 10, 10, 5, 1);
         match (r1, r2) {
             (Ok(p1), Ok(p2)) => assert_ne!(p1, p2, "red and blue should differ"),
-            (Err(_), Err(_)) => {}, // GPU unavailable
+            (Err(_), Err(_)) => {} // GPU unavailable
             _ => panic!("inconsistent GPU availability"),
         }
     }
