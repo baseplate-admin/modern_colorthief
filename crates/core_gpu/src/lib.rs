@@ -364,4 +364,105 @@ mod tests {
             _ => panic!("inconsistent GPU availability"),
         }
     }
+
+    /// Test extraction with solid white buffer.
+    #[test]
+    fn test_solid_white() {
+        let buffer: Vec<u8> = [255u8, 255, 255, 255].repeat(100);
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        match result {
+            Ok(palette) => {
+                assert!(!palette.is_empty());
+                assert!(
+                    palette
+                        .iter()
+                        .any(|(r, g, b)| *r > 200 && *g > 200 && *b > 200),
+                    "palette should contain a white-dominant color"
+                );
+            }
+            Err(_) => { /* GPU not available */ }
+        }
+    }
+
+    /// Test extraction with solid black buffer.
+    #[test]
+    fn test_solid_black() {
+        let buffer: Vec<u8> = [0u8, 0, 0, 255].repeat(100);
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        match result {
+            Ok(palette) => {
+                assert!(!palette.is_empty());
+                assert!(
+                    palette
+                        .iter()
+                        .any(|(r, g, b)| *r < 55 && *g < 55 && *b < 55),
+                    "palette should contain a black-dominant color"
+                );
+            }
+            Err(_) => { /* GPU not available */ }
+        }
+    }
+
+    /// Test buffer too small for requested dimensions.
+    #[test]
+    fn test_buffer_too_small() {
+        let buffer = [255u8, 0, 0, 255]; // only 1 pixel, but asking for 10x10
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        assert!(result.is_err(), "too-small buffer should return error");
+    }
+
+    /// Test deduplication — solid color yields exactly 1 color.
+    #[test]
+    fn test_dedup_solid_color_exactly_one() {
+        let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(100);
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        if let Ok(palette) = result {
+            assert_eq!(
+                palette.len(),
+                1,
+                "solid red with color_count=5 should return exactly 1 unique color"
+            );
+        }
+    }
+
+    /// Test two-color green/purple detection.
+    #[test]
+    fn test_two_color_green_purple() {
+        let mut buffer = Vec::new();
+        for _ in 0..50 {
+            buffer.extend_from_slice(&[0, 255, 0, 255]);
+        }
+        for _ in 0..50 {
+            buffer.extend_from_slice(&[128, 0, 128, 255]);
+        }
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        if let Ok(palette) = result {
+            assert!(
+                palette
+                    .iter()
+                    .any(|(r, g, b)| *r < 55 && *g > 200 && *b < 55),
+                "should detect green"
+            );
+        }
+    }
+
+    /// Test dominant color reflects majority (90/10 split).
+    #[test]
+    fn test_dominant_reflects_majority() {
+        let mut buffer = Vec::new();
+        for _ in 0..90 {
+            buffer.extend_from_slice(&[255, 0, 0, 255]);
+        }
+        for _ in 0..10 {
+            buffer.extend_from_slice(&[0, 0, 255, 255]);
+        }
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        if let Ok(palette) = result {
+            let dominant = &palette[0];
+            assert!(
+                dominant.0 > 200,
+                "dominant color should be red for 90/10 red/blue split"
+            );
+        }
+    }
 }

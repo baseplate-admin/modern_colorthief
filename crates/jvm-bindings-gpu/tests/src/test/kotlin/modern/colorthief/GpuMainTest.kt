@@ -366,6 +366,75 @@ class GpuMainTest {
             assertEquals(3, color.size)
         }
     }
+
+    // ---------------------------------------------------------------------------
+    // Solid white detection
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuSolidWhiteDominantColor() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 255.toByte(), 255.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 10, 10, 1)
+        assertNotNull(color)
+        assertEquals(255, color[0].toInt() and 0xFF)
+        assertEquals(255, color[1].toInt() and 0xFF)
+        assertEquals(255, color[2].toInt() and 0xFF)
+    }
+
+    // ---------------------------------------------------------------------------
+    // Dominant color reflects majority
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuDominantReflectsMajority() {
+        val pixels = createTwoColorPixels(90, 10,
+            255.toByte(), 0.toByte(), 0.toByte(),
+            0.toByte(), 0.toByte(), 255.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 10, 10, 1)
+        assertNotNull(color)
+        assertTrue(color[0].toInt() and 0xFF > 200, "dominant should be red for 90/10 split")
+    }
+
+    // ---------------------------------------------------------------------------
+    // Single pixel palette
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuSinglePixelPaletteReturnsThatColor() {
+        val pixels = byteArrayOf(42.toByte(), 100.toByte(), 200.toByte(), 255.toByte())
+        val palette = ColorthiefGpu.getPalette(pixels, 1, 1, 5, 1)
+        assertNotNull(palette)
+        assertTrue(palette.isNotEmpty())
+        assertEquals(1, palette.size, "single pixel should return exactly 1 palette entry")
+        assertEquals(42, palette[0][0].toInt() and 0xFF)
+        assertEquals(100, palette[0][1].toInt() and 0xFF)
+        assertEquals(200, palette[0][2].toInt() and 0xFF)
+    }
+
+    // ---------------------------------------------------------------------------
+    // Palette with quality maximum
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuPaletteQualityMaximumWorks() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        val palette = ColorthiefGpu.getPalette(pixels, 10, 10, 5, 10)
+        assertNotNull(palette)
+        assertTrue(palette.isNotEmpty())
+    }
+
+    // ---------------------------------------------------------------------------
+    // Multiple calls consistency (4 calls)
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuMultipleCallsConsistent() {
+        val pixels = createSolidColorPixels(10, 10, 170.toByte(), 85.toByte(), 220.toByte())
+        val palettes = List(4) { ColorthiefGpu.getPalette(pixels, 10, 10, 5, 1) }
+        for (i in 1 until palettes.size) {
+            assertEquals(palettes[0].size, palettes[i].size, "all calls should return same size")
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------

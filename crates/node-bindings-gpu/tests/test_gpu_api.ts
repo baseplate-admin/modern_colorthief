@@ -277,3 +277,105 @@ describe('GPU dominant color extraction', () => {
         }
     });
 });
+
+describe('GPU edge cases', () => {
+    // -- Solid white detection --
+
+    it.skipIf(!gpuAvailable)('solid white dominant color', () => {
+        const pixels = createPixels(100, 100, [255, 255, 255]);
+        const color = getColorGpu(pixels, 100, 100);
+        expect(color[0]).toBeGreaterThan(200);
+        expect(color[1]).toBeGreaterThan(200);
+        expect(color[2]).toBeGreaterThan(200);
+    });
+
+    // -- Solid black detection --
+
+    it.skipIf(!gpuAvailable)('solid black dominant color', () => {
+        const pixels = createPixels(100, 100, [0, 0, 0]);
+        const color = getColorGpu(pixels, 100, 100);
+        expect(color[0]).toBeLessThan(55);
+        expect(color[1]).toBeLessThan(55);
+        expect(color[2]).toBeLessThan(55);
+    });
+
+    // -- Dominant reflects majority --
+
+    it.skipIf(!gpuAvailable)('dominant reflects 90/10 majority', () => {
+        const pixels = createTwoColorPixels(90, 10, [255, 0, 0], [0, 0, 255]);
+        const color = getColorGpu(pixels, 10, 10, 1);
+        expect(color[0]).toBeGreaterThan(200);
+    });
+
+    // -- Color count bound --
+
+    it.skipIf(!gpuAvailable)('color count bound count=1', () => {
+        const pixels = createPixels(100, 100, [255, 0, 0]);
+        const palette = getPaletteGpu(pixels, 100, 100, 1, 1);
+        expect(palette.length).toBeLessThanOrEqual(1);
+    });
+
+    it.skipIf(!gpuAvailable)('color count bound count=5', () => {
+        const pixels = createPixels(100, 100, [255, 0, 0]);
+        const palette = getPaletteGpu(pixels, 100, 100, 5, 1);
+        expect(palette.length).toBeLessThanOrEqual(5);
+    });
+
+    // -- Deduplication --
+
+    it.skipIf(!gpuAvailable)('no duplicate colors with high color_count', () => {
+        const pixels = createPixels(100, 100, [255, 0, 0]);
+        const palette = getPaletteGpu(pixels, 100, 100, 255, 1);
+        const unique = new Set(palette.map(c => c.join(',')));
+        expect(palette.length).toBe(unique.size);
+    });
+
+    // -- Palette determinism --
+
+    it.skipIf(!gpuAvailable)('deterministic palette', () => {
+        const pixels = createPixels(100, 100, [255, 0, 0]);
+        const p1 = getPaletteGpu(pixels, 100, 100);
+        const p2 = getPaletteGpu(pixels, 100, 100);
+        expect(p1).toEqual(p2);
+    });
+
+    // -- Quality parameter for dominant color --
+
+    it.skipIf(!gpuAvailable)('quality=1 dominant color', () => {
+        const pixels = createPixels(100, 100, [255, 0, 0]);
+        const color = getColorGpu(pixels, 100, 100, 1);
+        expect(color.length).toBe(3);
+    });
+
+    it.skipIf(!gpuAvailable)('quality=10 dominant color', () => {
+        const pixels = createPixels(100, 100, [255, 0, 0]);
+        const color = getColorGpu(pixels, 100, 100, 10);
+        expect(color.length).toBe(3);
+    });
+
+    // -- Error handling --
+
+    it.skipIf(!gpuAvailable)('empty pixels throws', () => {
+        expect(() => getPaletteGpu(new Uint8Array(0), 0, 0, 5, 1)).toThrow();
+    });
+
+    it.skipIf(!gpuAvailable)('empty pixels throws for color', () => {
+        expect(() => getColorGpu(new Uint8Array(0), 0, 0, 1)).toThrow();
+    });
+
+    // -- Single row image --
+
+    it.skipIf(!gpuAvailable)('single row image', () => {
+        const pixels = createPixels(20, 1, [255, 0, 0]);
+        const color = getColorGpu(pixels, 20, 1, 1);
+        expect(color.length).toBe(3);
+    });
+
+    // -- Single column image --
+
+    it.skipIf(!gpuAvailable)('single column image', () => {
+        const pixels = createPixels(1, 20, [255, 0, 0]);
+        const color = getColorGpu(pixels, 1, 20, 1);
+        expect(color.length).toBe(3);
+    });
+});

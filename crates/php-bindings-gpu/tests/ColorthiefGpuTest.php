@@ -395,3 +395,60 @@ test('gpu gc stress mixed', function () {
         expect(count($color))->toBe(3);
     }
 });
+
+// -- Solid black detection --
+
+test('gpu solid black color detection', function () {
+    $black = [];
+    for ($i = 0; $i < 9; $i++) {
+        $black[] = 0; $black[] = 0; $black[] = 0; $black[] = 255;
+    }
+    $palette = get_palette($black, 3, 3, 5, 1);
+    expect($palette)->not->toBeEmpty();
+    $dominant = $palette[0];
+    expect($dominant[0])->toBeLessThan(55);
+    expect($dominant[1])->toBeLessThan(55);
+    expect($dominant[2])->toBeLessThan(55);
+});
+
+// -- Dominant reflects majority --
+
+test('gpu dominant reflects 90/10 majority', function () {
+    $pixels = [];
+    for ($i = 0; $i < 90; $i++) {
+        $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
+    }
+    for ($i = 0; $i < 10; $i++) {
+        $pixels[] = 0; $pixels[] = 0; $pixels[] = 255; $pixels[] = 255;
+    }
+    $color = get_color($pixels, 10, 10, 1);
+    expect($color[0])->toBeGreaterThan(200);
+});
+
+// -- Color count=0 edge case --
+
+test('gpu color_count zero returns empty', function () {
+    $palette = get_palette(redPixels(), 1, 1, 0, 1);
+    expect($palette)->toBeArray();
+    expect(count($palette))->toBe(0);
+});
+
+// -- Non-square wide/tall --
+
+test('gpu non-square wide image', function () {
+    $pixels = [];
+    for ($i = 0; $i < 200; $i++) {
+        $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
+    }
+    $palette = get_palette($pixels, 20, 10, 5, 1);
+    expect($palette)->not->toBeEmpty();
+});
+
+test('gpu non-square tall image', function () {
+    $pixels = [];
+    for ($i = 0; $i < 200; $i++) {
+        $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
+    }
+    $palette = get_palette($pixels, 10, 20, 5, 1);
+    expect($palette)->not->toBeEmpty();
+});

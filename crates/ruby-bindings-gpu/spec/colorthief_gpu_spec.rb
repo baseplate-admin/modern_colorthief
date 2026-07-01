@@ -199,6 +199,18 @@ RSpec.describe "ColorthiefGpu" do
           expect(palette).to include([0, 0, 255])
         end
       end
+
+      it 'finds both red and green' do
+        with_gpu do
+          pixels = []
+          50.times { pixels.push(255, 0, 0, 255) }
+          50.times { pixels.push(0, 255, 0, 255) }
+          red_green = pixels.pack('C*')
+          palette = colorthief_gpu.get_palette(red_green, 10, 10, 5, 1)
+          expect(palette).to include([255, 0, 0])
+          expect(palette).to include([0, 255, 0])
+        end
+      end
     end
 
     # --- Return value structure ---
@@ -231,6 +243,13 @@ RSpec.describe "ColorthiefGpu" do
     # --- Palette length respects color_count ---
 
     describe 'color_count bound' do
+      it 'returns at most color_count entries for count=1' do
+        with_gpu do
+          palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 1, 1)
+          expect(palette.length).to be <= 1
+        end
+      end
+
       it 'returns at most color_count entries for count=3' do
         with_gpu do
           palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 3, 1)
@@ -242,6 +261,20 @@ RSpec.describe "ColorthiefGpu" do
         with_gpu do
           palette = colorthief_gpu.get_palette(solid_red_pixels, 10, 10, 5, 1)
           expect(palette.length).to be <= 5
+        end
+      end
+
+      it 'returns at most color_count entries for count=50' do
+        with_gpu do
+          palette = colorthief_gpu.get_palette(gradient_pixels, 30, 30, 50, 1)
+          expect(palette.length).to be <= 50
+        end
+      end
+
+      it 'returns at most color_count entries for count=255' do
+        with_gpu do
+          palette = colorthief_gpu.get_palette(gradient_pixels, 30, 30, 255, 1)
+          expect(palette.length).to be <= 255
         end
       end
     end
@@ -543,6 +576,26 @@ RSpec.describe "ColorthiefGpu" do
       it 'handles non-square tall image' do
         with_gpu do
           color = colorthief_gpu.get_color(tall_pixels, 2, 10, 1)
+          expect(color.length).to eq(3)
+        end
+      end
+
+      it 'handles single row image' do
+        with_gpu do
+          pixels = []
+          20.times { |x| pixels.push((x * 13) % 256, 128, 64, 255) }
+          row = pixels.pack('C*')
+          color = colorthief_gpu.get_color(row, 20, 1, 1)
+          expect(color.length).to eq(3)
+        end
+      end
+
+      it 'handles single column image' do
+        with_gpu do
+          pixels = []
+          20.times { |y| pixels.push(200, (y * 13) % 256, 50, 255) }
+          col = pixels.pack('C*')
+          color = colorthief_gpu.get_color(col, 1, 20, 1)
           expect(color.length).to eq(3)
         end
       end

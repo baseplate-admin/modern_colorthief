@@ -279,3 +279,61 @@ class TestGpuColor:
         c1 = extract_dominant_color_from_buffer(solid_red_pixels, 100, 100)
         c2 = extract_dominant_color_from_buffer(solid_green_pixels, 100, 100)
         assert c1 != c2
+
+    # -- API surface tests --
+
+    def test_module_exports_palette(self):
+        import modern_colorthief_gpu as m
+        assert hasattr(m, "extract_palette_from_buffer")
+        assert callable(m.extract_palette_from_buffer)
+
+    def test_module_exports_color(self):
+        import modern_colorthief_gpu as m
+        assert hasattr(m, "extract_dominant_color_from_buffer")
+        assert callable(m.extract_dominant_color_from_buffer)
+
+    def test_version_format(self):
+        import modern_colorthief_gpu as m
+        assert hasattr(m, "__version__")
+        parts = m.__version__.split(".")
+        assert len(parts) >= 2
+        assert all(p.isdigit() for p in parts[:2])
+
+    # -- Solid white detection --
+
+    def test_solid_white_dominant(self):
+        pixels = bytes([255, 255, 255, 255] * 100)
+        palette = extract_palette_from_buffer(pixels, 10, 10)
+        r, g, b = palette[0]
+        assert r > 200
+        assert g > 200
+        assert b > 200
+
+    # -- Solid black detection --
+
+    def test_solid_black_dominant(self):
+        pixels = bytes([0, 0, 0, 255] * 100)
+        palette = extract_palette_from_buffer(pixels, 10, 10)
+        r, g, b = palette[0]
+        assert r < 55
+        assert g < 55
+        assert b < 55
+
+    # -- Dominant color reflects majority --
+
+    def test_dominant_reflects_majority(self):
+        pixels = bytes([255, 0, 0, 255] * 90 + [0, 0, 255, 255] * 10)
+        color = extract_dominant_color_from_buffer(pixels, 10, 10, quality=1)
+        assert color[0] > 200, "dominant should be red for 90/10 split"
+
+    # -- Palette with quality maximum --
+
+    def test_palette_quality_max(self, solid_red_pixels):
+        palette = extract_palette_from_buffer(solid_red_pixels, 100, 100, quality=10)
+        assert len(palette) > 0
+
+    # -- Color count=0 edge case --
+
+    def test_color_count_zero(self, solid_red_pixels):
+        palette = extract_palette_from_buffer(solid_red_pixels, 100, 100, size=0)
+        assert len(palette) == 0
