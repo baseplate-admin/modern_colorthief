@@ -1,0 +1,236 @@
+name: Node CI
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: ['*']
+    paths:
+      - 'crates/node-bindings/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/node-ci.yaml'
+      - 'Cargo.toml'
+  pull_request:
+    paths:
+      - 'crates/node-bindings/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/node-ci.yaml'
+      - 'Cargo.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: "build — ${{ matrix.target }}"
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - x86_64-pc-windows-msvc
+        include:
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-latest
+            lib: libmodern_colorthief_node.so
+            shell: bash
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-latest
+            lib: libmodern_colorthief_node.so
+            shell: bash
+          - target: x86_64-apple-darwin
+            runner: macos-15-intel
+            lib: libmodern_colorthief_node.dylib
+            shell: bash
+          - target: aarch64-apple-darwin
+            runner: macos-latest
+            lib: libmodern_colorthief_node.dylib
+            shell: bash
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+            lib: modern_colorthief_node.dll
+            shell: pwsh
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+          targets: ${{ matrix.target }}
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install cargo-pgo
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
+        run: cargo install cargo-pgo --version 0.3.0
+      - name: Install cross (aarch64-linux)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: cargo install cross
+      - name: Npm install
+        working-directory: crates/node-bindings
+        run: npm install --legacy-peer-deps
+      - name: PGO profile generation
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
+        run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - name: Build node bindings (PGO)
+        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
+        run: cargo pgo optimize -- --target ${{ matrix.target }} -p modern-colorthief-node
+      - name: Build node bindings (cross-compile)
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: cross build --release --target ${{ matrix.target }} -p modern-colorthief-node
+      - name: Prepare node artifact
+        shell: bash
+        run: |
+          mkdir -p crates/node-bindings/artifacts
+          cp target/${{ matrix.target }}/release/${{ matrix.lib }} crates/node-bindings/artifacts/modern_colorthief.node
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "node-native-${{ matrix.target }}"
+          path: crates/node-bindings/artifacts/*.node
+          retention-days: 7
+
+  node-test:
+    name: "node-test — ${{ matrix.os }}"
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        include:
+          - os: ubuntu-latest
+            artifact: node-native-x86_64-unknown-linux-gnu
+          - os: macos-15-intel
+            artifact: node-native-x86_64-apple-darwin
+          - os: windows-latest
+            artifact: node-native-x86_64-pc-windows-msvc
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: crates/node-bindings/artifacts
+      - working-directory: crates/node-bindings
+        run: npm install --legacy-peer-deps && npm run build && npx vitest run
+
+  deno-test:
+    name: "deno-test — ${{ matrix.os }}"
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact: node-native-x86_64-unknown-linux-gnu
+          - os: macos-latest
+            artifact: node-native-aarch64-apple-darwin
+    steps:
+      - uses: actions/checkout@v6
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: 2.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: crates/node-bindings/artifacts
+      - working-directory: crates/node-bindings
+        run: npm install --legacy-peer-deps && npm run build
+      - working-directory: crates/node-bindings
+        run: deno test --sloppy-imports --no-check --allow-read --allow-env --allow-net --allow-ffi "tests/test_*.ts"
+
+  bun-test:
+    name: "bun-test — ${{ matrix.os }}"
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact: node-native-x86_64-unknown-linux-gnu
+          - os: macos-latest
+            artifact: node-native-aarch64-apple-darwin
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: crates/node-bindings/artifacts
+      - working-directory: crates/node-bindings
+        run: npm install --legacy-peer-deps && npm run build
+      - working-directory: crates/node-bindings
+        run: bun test --timeout 30000 tests/
+
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    needs: [node-test, deno-test, bun-test, build]
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      - name: Download all native artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: node-native-*
+          path: crates/node-bindings/artifacts
+      - name: Rename artifacts by platform
+        run: |
+          mkdir -p crates/node-bindings/artifacts
+          # Linux x86_64
+          if [ -f crates/node-bindings/artifacts/node-native-x86_64-unknown-linux-gnu/modern_colorthief.node ]; then
+            mv crates/node-bindings/artifacts/node-native-x86_64-unknown-linux-gnu/modern_colorthief.node \
+               crates/node-bindings/artifacts/modern_colorthief.linux-x86_64-gnu.node
+          fi
+          # Linux aarch64
+          if [ -f crates/node-bindings/artifacts/node-native-aarch64-unknown-linux-gnu/modern_colorthief.node ]; then
+            mv crates/node-bindings/artifacts/node-native-aarch64-unknown-linux-gnu/modern_colorthief.node \
+               crates/node-bindings/artifacts/modern_colorthief.linux-arm64-gnu.node
+          fi
+          # macOS x86_64
+          if [ -f crates/node-bindings/artifacts/node-native-x86_64-apple-darwin/modern_colorthief.node ]; then
+            mv crates/node-bindings/artifacts/node-native-x86_64-apple-darwin/modern_colorthief.node \
+               crates/node-bindings/artifacts/modern_colorthief.darwin-x86_64.node
+          fi
+          # macOS aarch64
+          if [ -f crates/node-bindings/artifacts/node-native-aarch64-apple-darwin/modern_colorthief.node ]; then
+            mv crates/node-bindings/artifacts/node-native-aarch64-apple-darwin/modern_colorthief.node \
+               crates/node-bindings/artifacts/modern_colorthief.darwin-arm64.node
+          fi
+          # Windows x86_64
+          if [ -f crates/node-bindings/artifacts/node-native-x86_64-pc-windows-msvc/modern_colorthief.node ]; then
+            mv crates/node-bindings/artifacts/node-native-x86_64-pc-windows-msvc/modern_colorthief.node \
+               crates/node-bindings/artifacts/modern_colorthief.win32-x86_64-msvc.node
+          fi
+      - name: List artifacts
+        run: ls -la crates/node-bindings/artifacts/
+      - working-directory: crates/node-bindings
+        run: npm install --legacy-peer-deps
+      - working-directory: crates/node-bindings
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

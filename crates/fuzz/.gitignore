@@ -1,0 +1,4 @@
+# cargo-fuzz artifacts
+corpus/
+artifacts/
+seeds/

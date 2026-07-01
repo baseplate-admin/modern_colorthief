@@ -1,0 +1,215 @@
+name: WASM CI
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: ['*']
+    paths:
+      - 'crates/wasm-bindings/**'
+      - 'crates/wasm-bindings-webgpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/wasm-ci.yaml'
+      - 'Cargo.toml'
+  pull_request:
+    paths:
+      - 'crates/wasm-bindings/**'
+      - 'crates/wasm-bindings-webgpu/**'
+      - 'crates/core_cpu/**'
+      - 'crates/core_gpu/**'
+      - 'crates/core/**'
+      - '.github/workflows/wasm-ci.yaml'
+      - 'Cargo.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wasm-build:
+    name: WASM build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: llvm-tools-preview
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
+      - name: Run Rust core tests
+        run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
+      - name: Build WASM release
+        run: cargo build --release --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
+      - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
+
+  wasm-pack-build:
+    name: wasm-pack build + test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM release
+        run: cargo build --release -p modern-colorthief-wasm
+        working-directory: crates/wasm-bindings
+      - working-directory: crates/wasm-bindings
+        run: npm install && npm test
+
+  wasm-gpu-build:
+    name: WASM GPU build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: llvm-tools-preview
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Vulkan runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
+      - name: Build WASM GPU release
+        run: cargo build --release --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-webgpu
+
+  gpu-node-tests:
+    name: GPU Node.js tests
+    runs-on: ubuntu-latest
+    needs: [wasm-gpu-build]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Install Vulkan SDK + Lavapipe
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          install_lavapipe: true
+          github_token: ${{ github.token }}
+      - run: cargo install wasm-pack
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Install node-webgpu (Dawn) + deps
+        working-directory: crates/wasm-bindings-webgpu
+        run: npm ci
+      - name: Verify webgpu module loads
+        working-directory: crates/wasm-bindings-webgpu
+        run: node test-webgpu-setup.cjs && echo "WebGPU OK"
+      - name: Run GPU Node.js tests
+        working-directory: crates/wasm-bindings-webgpu
+        run: wasm-pack test --node --release
+        env:
+          NODE_OPTIONS: "--require ${{ github.workspace }}/crates/wasm-bindings-webgpu/test-webgpu-setup.cjs"
+
+  cpu-chrome-tests:
+    name: CPU Chrome tests
+    runs-on: ubuntu-latest
+    needs: [wasm-build]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - run: cargo install wasm-pack
+      - uses: nanasess/setup-chromedriver@v3
+      - name: Run Chrome tests
+        working-directory: crates/wasm-bindings
+        run: wasm-pack test --headless --chrome --release -- --features browser-tests
+
+  cpu-firefox-tests:
+    name: CPU Firefox tests
+    runs-on: ubuntu-latest
+    needs: [wasm-build]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - run: cargo install wasm-pack
+      - uses: browser-actions/setup-geckodriver@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: geckodriver --version
+      - name: Run Firefox tests
+        working-directory: crates/wasm-bindings
+        run: wasm-pack test --headless --firefox --release -- --features browser-tests
+
+  cpu-node-tests:
+    name: CPU Node.js tests
+    runs-on: ubuntu-latest
+    needs: [wasm-build]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: cargo install wasm-pack
+      - name: Run Node tests
+        working-directory: crates/wasm-bindings
+        run: wasm-pack test --node --release
+
+  publish-wasm:
+    name: Publish WASM to npm
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [cpu-chrome-tests, cpu-firefox-tests, cpu-node-tests]
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM package
+        working-directory: crates/wasm-bindings
+        run: npm run build
+      - name: Publish @modern_colorthief/wasm to npm
+        working-directory: crates/wasm-bindings
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-wasm-gpu:
+    name: Publish WASM GPU to npm
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [gpu-node-tests]
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM GPU package
+        working-directory: crates/wasm-bindings-webgpu
+        run: npm run build
+      - name: Publish @modern_colorthief/wasm-gpu to npm
+        working-directory: crates/wasm-bindings-webgpu
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

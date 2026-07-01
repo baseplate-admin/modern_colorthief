@@ -1,0 +1,14 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "modern_colorthief_gpu"
+version = "0.3.0"
+requires-python = ">=3.9"
+dependencies = ["Pillow>=10.0"]
+[tool.maturin]
+manifest-path = "Cargo.toml"
+module-name = "modern_colorthief_gpu"
+python-source = "python"
+pgo-command = "pip install Pillow && python pgo_profile.py"

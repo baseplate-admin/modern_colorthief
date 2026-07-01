@@ -24,6 +24,7 @@
       <img src="https://img.shields.io/pypi/l/modern_colorthief.svg?color=6366f1&style=flat-square" alt="License"/>
       <img src="https://img.shields.io/crates/v/modern_colorthief.svg?color=4f46e5&label=cargo&style=flat-square" alt="Crates.io"/>
       <img src="https://img.shields.io/badge/implemented%20in-Rust-dca280?style=flat-square" alt="Rust"/>
+      <img src="https://img.shields.io/badge/WASM-7B2CBF?style=flat-square" alt="WebAssembly"/>
    </div>
 
    </div>
@@ -97,6 +98,12 @@ delivers near-C++ performance with the simplicity of a pure Python API.
          <div class="card-desc">Deep dive into the Median Cut Color Quantization algorithm.</div>
       </a>
 
+      <a class="card-item" href="webassembly.html">
+         <span class="card-icon">&#x1F7E2;</span>
+         <div class="card-title">WebAssembly</div>
+         <div class="card-desc">Run in the browser via npm with near-native WASM performance.</div>
+      </a>
+
       </div>
       <div style="clear:both;"></div>
 
@@ -105,6 +112,7 @@ delivers near-C++ performance with the simplicity of a pure Python API.
 - **Blazing Fast** -- Rust-powered core delivers ~100x speedup over pure Python
 - **Zero Dependencies** -- No Pillow, no NumPy required at runtime
 - **Cross-Platform** -- Prebuilt wheels for Linux, macOS, Windows, and more
+- **WebAssembly** -- Run in the browser via npm with near-native performance
 - **Simple API** -- Two functions, one CLI, that just work
 - **Battle-Tested** -- Used in production by developers worldwide
 
@@ -121,6 +129,7 @@ delivers near-C++ performance with the simplicity of a pure Python API.
    differences
    api_differences
    mmcq
+   webassembly
    roadmaps
    license
 

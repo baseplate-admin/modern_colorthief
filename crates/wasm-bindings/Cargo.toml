@@ -1,0 +1,23 @@
+[package]
+name = "modern-colorthief-wasm"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+modern-colorthief-core-cpu.workspace = true
+wasm-bindgen.workspace = true
+js-sys.workspace = true
+web-sys.workspace = true
+
+[features]
+browser-tests = []
+
+[dev-dependencies]
+wasm-bindgen-test = { workspace = true }
+wasm-bindgen-futures = { workspace = true }
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false

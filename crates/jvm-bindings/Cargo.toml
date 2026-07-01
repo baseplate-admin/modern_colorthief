@@ -1,0 +1,13 @@
+[package]
+name = "modern-colorthief-jvm"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+name = "modern_colorthief"
+
+[dependencies]
+modern-colorthief-core-cpu.workspace = true
+jni.workspace = true
+rayon.workspace = true

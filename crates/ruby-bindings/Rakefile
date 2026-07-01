@@ -1,0 +1,17 @@
+# See: https://oxidize-rb.org/docs/deployment#cross-compilation-with-rb-sys-dock
+# frozen_string_literal: true
+
+require "rb_sys/extensiontask"
+
+GEMSPEC = Gem::Specification.load("modern_colorthief.gemspec")
+
+RbSys::ExtensionTask.new("modern_colorthief", GEMSPEC) do |ext|
+  ext.cross_compile = true
+  ext.cross_platform = [
+    "x86_64-linux",
+    "aarch64-linux",
+    "x86_64-darwin",
+    "arm64-darwin",
+    "x64-mingw-ucrt",
+  ]
+end

@@ -1,0 +1,12 @@
+[package]
+name = "modern-colorthief-python"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+modern-colorthief-core-cpu.workspace = true
+pyo3.workspace = true
+rayon.workspace = true
