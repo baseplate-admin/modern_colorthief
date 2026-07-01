@@ -62,12 +62,8 @@ jobs:
         if: matrix.os != 'windows-latest'
         shell: bash
         run: |
-          cargo build --release -p modern_colorthief
-          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings
           bundle install
-          cp ../../target/release/modern_colorthief.so lib/ 2>/dev/null || true
-          cp ../../target/release/modern_colorthief.bundle lib/ 2>/dev/null || true
           ls -la lib/
         env:
           MODERN_COLORTHIEF_COMPILE: "true"
@@ -78,11 +74,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
-          cargo build --release -p modern_colorthief
-          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings
           bundle install
-          cp ../../target/release/modern_colorthief.dll lib/
+          ls -la lib/
         env:
           MODERN_COLORTHIEF_COMPILE: "true"
           RUBY_SYS_LLVM_PRECEDENCE: never
@@ -216,12 +210,8 @@ jobs:
         if: matrix.os != 'windows-latest'
         shell: bash
         run: |
-          cargo build --release -p modern_colorthief_gpu
-          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings-gpu
           bundle install
-          cp ../../target/release/modern_colorthief_gpu.so lib/ 2>/dev/null || true
-          cp ../../target/release/modern_colorthief_gpu.bundle lib/ 2>/dev/null || true
           ls -la lib/
         env:
           MODERN_COLORTHIEF_COMPILE: "true"
@@ -232,11 +222,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
-          cargo build --release -p modern_colorthief_gpu
-          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings-gpu
           bundle install
-          cp ../../target/release/modern_colorthief_gpu.dll lib/
           ls -la lib/
         env:
           MODERN_COLORTHIEF_COMPILE: "true"
