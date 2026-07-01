@@ -119,12 +119,14 @@ jobs:
           path: crates/ruby-bindings/lib/
 
       - name: Verify extension present
+        shell: bash
         working-directory: crates/ruby-bindings
         run: |
           ls -la lib/
           nm -D lib/*.so lib/*.bundle 2>/dev/null | grep -i init || true
 
       - name: Run RSpec tests
+        shell: bash
         working-directory: crates/ruby-bindings
         run: |
           bundle install
