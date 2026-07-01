@@ -58,35 +58,14 @@ jobs:
           cargo-cache: false
           cache-version: v1-cpu-build
 
-      - name: Install llvm-tools-preview (non-Windows)
-        if: matrix.os != 'windows-latest'
-        run: rustup component add llvm-tools-preview
-
-      - name: Install cargo-pgo (non-Windows)
-        if: matrix.os != 'windows-latest'
-        run: cargo install cargo-pgo --version 0.3.0
-
-      - name: PGO profile generation
-        if: matrix.os != 'windows-latest'
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
-        env:
-          RUBY_SYS_LLVM_PRECEDENCE: fallible
-          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
-
-      - name: Build native extension (PGO)
+      - name: Build native extension (non-Windows)
         if: matrix.os != 'windows-latest'
         shell: bash
         run: |
-          cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern_colorthief
+          cargo build --release -p modern_colorthief
+          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings
           bundle install
-          # Rename AFTER bundle install so rb-sys rebuild doesn't overwrite
-          for f in ../../target/release/libmodern_colorthief.*; do
-            if [ -f "$f" ]; then
-              base=$(basename "$f" libmodern_colorthief.)
-              cp "$f" "../../target/release/modern_colorthief.$base"
-            fi
-          done
           cp ../../target/release/modern_colorthief.so lib/ 2>/dev/null || true
           cp ../../target/release/modern_colorthief.bundle lib/ 2>/dev/null || true
           ls -la lib/
@@ -185,12 +164,6 @@ jobs:
           cargo-cache: false
           cache-version: v1-gpu-build
 
-      - name: Install llvm-tools-preview + cargo-pgo (non-Windows)
-        if: matrix.os != 'windows-latest'
-        run: |
-          rustup component add llvm-tools-preview
-          cargo install cargo-pgo --version 0.3.0
-
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -239,27 +212,14 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
 
-      - name: PGO profile generation
-        if: matrix.os != 'windows-latest'
-        run: cargo pgo test -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
-        env:
-          RUBY_SYS_LLVM_PRECEDENCE: fallible
-          BINDGEN_EXTRA_CLANG_ARGS: "-Wno-unknown-warning-option"
-
-      - name: Build native extension (PGO)
+      - name: Build native extension (non-Windows)
         if: matrix.os != 'windows-latest'
         shell: bash
         run: |
-          cargo pgo optimize -- -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu -p modern_colorthief_gpu
+          cargo build --release -p modern_colorthief_gpu
+          ls -la target/release/ | grep -i modern
           cd crates/ruby-bindings-gpu
           bundle install
-          # Rename AFTER bundle install so rb-sys rebuild doesn't overwrite
-          for f in ../../target/release/libmodern_colorthief_gpu.*; do
-            if [ -f "$f" ]; then
-              base=$(basename "$f" libmodern_colorthief_gpu.)
-              cp "$f" "../../target/release/modern_colorthief_gpu.$base"
-            fi
-          done
           cp ../../target/release/modern_colorthief_gpu.so lib/ 2>/dev/null || true
           cp ../../target/release/modern_colorthief_gpu.bundle lib/ 2>/dev/null || true
           ls -la lib/
