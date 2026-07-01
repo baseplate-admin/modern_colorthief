@@ -299,8 +299,9 @@ mod tests {
         let buffer: Vec<u8> = [100u8, 200, 150, 255].repeat(100);
         let result = extract_palette_from_buffer(&buffer, 10, 10, 255, 1);
         if let Ok(palette) = result {
+            let len = palette.len();
             let unique: std::collections::HashSet<_> = palette.into_iter().collect();
-            assert_eq!(palette.len(), unique.len(), "no duplicate colors");
+            assert_eq!(len, unique.len(), "no duplicate colors");
         }
     }
 
@@ -324,7 +325,7 @@ mod tests {
             .collect();
         let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
         if let Ok(palette) = result {
-            assert!(palette.iter().any(|(r,g,b)| *r > 200), "dominant red should be in palette");
+            assert!(palette.iter().any(|(r, _g, _b)| *r > 200), "dominant red should be in palette");
         }
     }
 
