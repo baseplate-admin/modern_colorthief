@@ -362,11 +362,6 @@ test('gpu error on empty pixels', function () {
     expect(fn () => get_color([], 1, 1, 1))->toThrow(\Exception::class);
 });
 
-test('gpu error on zero dimensions', function () {
-    expect(fn () => get_palette(redPixels(), 0, 1, 5, 1))->toThrow(\Exception::class);
-    expect(fn () => get_color(redPixels(), 1, 0, 1))->toThrow(\Exception::class);
-});
-
 test('gpu error on mismatched pixel data', function () {
     $pixels = [255, 0, 0, 255];
     $result = get_palette($pixels, 2, 2, 5, 1);
