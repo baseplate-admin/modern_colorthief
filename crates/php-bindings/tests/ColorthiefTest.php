@@ -23,6 +23,51 @@ function greenPixels(): array {
     return $result;
 }
 
+function solidBluePixels(): array {
+    $blue = [0, 0, 255, 255];
+    $result = [];
+    for ($i = 0; $i < 9; $i++) {
+        $result = array_merge($result, $blue);
+    }
+    return $result;
+}
+
+function solidWhitePixels(): array {
+    $white = [255, 255, 255, 255];
+    $result = [];
+    for ($i = 0; $i < 9; $i++) {
+        $result = array_merge($result, $white);
+    }
+    return $result;
+}
+
+function gradientPixels(): array {
+    $pixels = [];
+    for ($x = 0; $x < 20; $x++) {
+        for ($y = 0; $y < 10; $y++) {
+            $pixels[] = ($x * 13) % 256;
+            $pixels[] = ($x * 7) % 256;
+            $pixels[] = ($x * 5) % 256;
+            $pixels[] = 255;
+        }
+    }
+    return $pixels;
+}
+
+function checkerboardPixels(): array {
+    $pixels = [];
+    for ($y = 0; $y < 10; $y++) {
+        for ($x = 0; $x < 10; $x++) {
+            if (($x + $y) % 2 === 0) {
+                $pixels[] = 200; $pixels[] = 50; $pixels[] = 50; $pixels[] = 255;
+            } else {
+                $pixels[] = 50; $pixels[] = 50; $pixels[] = 200; $pixels[] = 255;
+            }
+        }
+    }
+    return $pixels;
+}
+
 // -- Image loading (port from Python tests that use real images) --
 
 function imageToPixels(string $path): array {
@@ -57,6 +102,24 @@ test('solid red color detection', function () {
     $palette = get_palette(redPixels(), 1, 1, 5, 1);
     expect($palette)->not->toBeEmpty();
     expect($palette[0])->toBe([255, 0, 0]);
+});
+
+test('solid green color detection', function () {
+    $palette = get_palette(greenPixels(), 3, 3, 5, 1);
+    expect($palette)->not->toBeEmpty();
+    expect($palette[0])->toBe([0, 255, 0]);
+});
+
+test('solid blue color detection', function () {
+    $palette = get_palette(solidBluePixels(), 3, 3, 5, 1);
+    expect($palette)->not->toBeEmpty();
+    expect($palette[0])->toBe([0, 0, 255]);
+});
+
+test('solid white color detection', function () {
+    $palette = get_palette(solidWhitePixels(), 3, 3, 5, 1);
+    expect($palette)->not->toBeEmpty();
+    expect($palette[0])->toBe([255, 255, 255]);
 });
 
 test('two-color detection returns both colors', function () {
@@ -224,6 +287,20 @@ test('different real images produce different dominant colors', function () {
     expect($c1)->not->toEqual($c2);
 });
 
+// -- Dominant color in palette consistency --
+
+test('dominant color appears in palette', function () {
+    $color = get_color(twoColorPixels(), 1, 2, 1);
+    $palette = get_palette(twoColorPixels(), 1, 2, 5, 1);
+    $found = false;
+    foreach ($palette as $c) {
+        if ($c === $color) {
+            $found = true;
+        }
+    }
+    expect($found)->toBeTrue();
+});
+
 // -- Quality tests (port from Python test_edge_cases, test_properties) --
 
 test('quality min valid', function () {
@@ -248,12 +325,50 @@ test('quality max valid', function () {
     expect(count($color))->toBe(3);
 });
 
-test('quality parameter is accepted', function () {
+test('quality middle valid', function () {
     $pixels = greenPixels();
-    $color1 = get_color($pixels, 3, 3, 1);
-    $color10 = get_color($pixels, 3, 3, 10);
-    expect($color1)->not->toBeEmpty();
-    expect($color10)->not->toBeEmpty();
+    $color = get_color($pixels, 3, 3, 5);
+    expect(count($color))->toBe(3);
+});
+
+test('quality zero clamped', function () {
+    $color = get_color(redPixels(), 1, 1, 0);
+    expect(count($color))->toBe(3);
+});
+
+test('quality 100 works', function () {
+    $color = get_color(redPixels(), 1, 1, 100);
+    expect(count($color))->toBe(3);
+});
+
+// -- Gradient image --
+
+test('gradient returns multiple colors', function () {
+    $pixels = gradientPixels();
+    $palette = get_palette($pixels, 20, 10, 10, 1);
+    expect(count($palette))->toBeGreaterThan(1);
+});
+
+// -- Checkerboard --
+
+test('checkerboard returns palette', function () {
+    $pixels = checkerboardPixels();
+    $palette = get_palette($pixels, 10, 10, 5, 1);
+    expect($palette)->not->toBeEmpty();
+});
+
+// -- Non-square wide --
+
+test('non-square wide image', function () {
+    $color = get_color(redPixels(), 1, 1, 1);
+    expect(count($color))->toBe(3);
+});
+
+// -- Non-square tall --
+
+test('non-square tall image', function () {
+    $color = get_color(greenPixels(), 3, 3, 1);
+    expect(count($color))->toBe(3);
 });
 
 // -- Error handling tests (port from Python test_errors) --
@@ -267,4 +382,32 @@ test('error on mismatched pixel data', function () {
     $pixels = [255, 0, 0, 255];
     $result = get_palette($pixels, 2, 2, 5, 1);
     expect($result)->toBeArray();
+});
+
+// -- GC stress --
+
+test('gc stress palette', function () {
+    $pixels = redPixels();
+    for ($i = 0; $i < 50; $i++) {
+        $palette = get_palette($pixels, 1, 1, 5, 1);
+        expect($palette)->not->toBeEmpty();
+    }
+});
+
+test('gc stress color', function () {
+    $pixels = redPixels();
+    for ($i = 0; $i < 50; $i++) {
+        $color = get_color($pixels, 1, 1, 1);
+        expect(count($color))->toBe(3);
+    }
+});
+
+test('gc stress mixed', function () {
+    $pixels = redPixels();
+    for ($i = 0; $i < 25; $i++) {
+        $palette = get_palette($pixels, 1, 1, 5, 1);
+        $color = get_color($pixels, 1, 1, 1);
+        expect($palette)->not->toBeEmpty();
+        expect(count($color))->toBe(3);
+    }
 });

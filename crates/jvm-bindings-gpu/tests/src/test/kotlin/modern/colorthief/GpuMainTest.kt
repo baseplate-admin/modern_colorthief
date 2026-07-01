@@ -2,6 +2,7 @@ package modern.colorthief
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -187,6 +188,48 @@ class GpuMainTest {
     }
 
     // ---------------------------------------------------------------------------
+    // Non-square images
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuWideImage() {
+        val pixels = createSolidColorPixels(20, 5, 255.toByte(), 0.toByte(), 0.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 20, 5, 1)
+        assertNotNull(color)
+        assertEquals(3, color.size)
+    }
+
+    @Test
+    fun gpuTallImage() {
+        val pixels = createSolidColorPixels(5, 20, 255.toByte(), 0.toByte(), 0.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 5, 20, 1)
+        assertNotNull(color)
+        assertEquals(3, color.size)
+    }
+
+    // ---------------------------------------------------------------------------
+    // Gradient image
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuGradientReturnsMultipleColors() {
+        val pixels = createGradientPixels(20, 10)
+        val palette = ColorthiefGpu.getPalette(pixels, 20, 10, 10, 1)
+        assertTrue(palette.size > 1, "Gradient should produce >1 color")
+    }
+
+    // ---------------------------------------------------------------------------
+    // Checkerboard
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuCheckerboard() {
+        val pixels = createCheckerboardPixels(10, 10)
+        val palette = ColorthiefGpu.getPalette(pixels, 10, 10, 5, 1)
+        assertTrue(palette.isNotEmpty())
+    }
+
+    // ---------------------------------------------------------------------------
     // Quality values
     // ---------------------------------------------------------------------------
 
@@ -199,16 +242,142 @@ class GpuMainTest {
     }
 
     @Test
+    fun gpuQualityMiddleWorks() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 10, 10, 5)
+        assertNotNull(color)
+        assertEquals(3, color.size)
+    }
+
+    @Test
     fun gpuQualityMaximumWorks() {
         val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
         val color = ColorthiefGpu.getColor(pixels, 10, 10, 10)
         assertNotNull(color)
         assertEquals(3, color.size)
     }
+
+    @Test
+    fun gpuQualityZeroClamped() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 10, 10, 0)
+        assertNotNull(color)
+        assertEquals(3, color.size)
+    }
+
+    @Test
+    fun gpuQuality100Works() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 10, 10, 100)
+        assertNotNull(color)
+        assertEquals(3, color.size)
+    }
+
+    // ---------------------------------------------------------------------------
+    // Different images produce different results
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuDifferentImagesDifferentPalette() {
+        val red = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        val blue = createSolidColorPixels(10, 10, 0.toByte(), 0.toByte(), 255.toByte())
+        val p1 = ColorthiefGpu.getPalette(red, 10, 10, 5, 1)
+        val p2 = ColorthiefGpu.getPalette(blue, 10, 10, 5, 1)
+        assertTrue(p1.size != p2.size || p1[0].contentHashCode() != p2[0].contentHashCode(), "Red and blue palettes should differ")
+    }
+
+    @Test
+    fun gpuDifferentImagesDifferentColor() {
+        val red = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        val green = createSolidColorPixels(10, 10, 0.toByte(), 255.toByte(), 0.toByte())
+        val c1 = ColorthiefGpu.getColor(red, 10, 10, 1)
+        val c2 = ColorthiefGpu.getColor(green, 10, 10, 1)
+        assertTrue(c1.contentHashCode() != c2.contentHashCode(), "Red and green colors should differ")
+    }
+
+    // ---------------------------------------------------------------------------
+    // Dominant color in palette
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuDominantInPalette() {
+        val pixels = createTwoColorPixels(50, 50,
+            255.toByte(), 0.toByte(), 0.toByte(),
+            0.toByte(), 0.toByte(), 255.toByte())
+        val color = ColorthiefGpu.getColor(pixels, 10, 10, 1)
+        val palette = ColorthiefGpu.getPalette(pixels, 10, 10, 5, 1)
+        assertTrue(palette.any { it.contentEquals(color) }, "Dominant color should be in palette")
+    }
+
+    // ---------------------------------------------------------------------------
+    // Error handling
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuEmptyPixelsThrowsForPalette() {
+        assertFailsWith<RuntimeException> {
+            ColorthiefGpu.getPalette(ByteArray(0), 0, 0, 5, 1)
+        }
+    }
+
+    @Test
+    fun gpuEmptyPixelsThrowsForColor() {
+        assertFailsWith<RuntimeException> {
+            ColorthiefGpu.getColor(ByteArray(0), 0, 0, 1)
+        }
+    }
+
+    @Test
+    fun gpuZeroDimensionsThrowsForPalette() {
+        assertFailsWith<RuntimeException> {
+            ColorthiefGpu.getPalette(ByteArray(0), 0, 0, 5, 1)
+        }
+    }
+
+    @Test
+    fun gpuMismatchedPixelLengthThrows() {
+        val shortPixels = ByteArray(100)
+        assertFailsWith<RuntimeException> {
+            ColorthiefGpu.getPalette(shortPixels, 10, 10, 5, 1)
+        }
+    }
+
+    // ---------------------------------------------------------------------------
+    // GC stress
+    // ---------------------------------------------------------------------------
+
+    @Test
+    fun gpuGcStressPalette() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        repeat(50) {
+            val palette = ColorthiefGpu.getPalette(pixels, 10, 10, 5, 1)
+            assertTrue(palette.isNotEmpty())
+        }
+    }
+
+    @Test
+    fun gpuGcStressColor() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        repeat(50) {
+            val color = ColorthiefGpu.getColor(pixels, 10, 10, 1)
+            assertEquals(3, color.size)
+        }
+    }
+
+    @Test
+    fun gpuGcStressMixed() {
+        val pixels = createSolidColorPixels(10, 10, 255.toByte(), 0.toByte(), 0.toByte())
+        repeat(25) {
+            val palette = ColorthiefGpu.getPalette(pixels, 10, 10, 5, 1)
+            val color = ColorthiefGpu.getColor(pixels, 10, 10, 1)
+            assertTrue(palette.isNotEmpty())
+            assertEquals(3, color.size)
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
-// Helpers (shared with CPU tests in same package)
+// Helpers
 // ---------------------------------------------------------------------------
 
 fun createSolidColorPixels(width: Int, height: Int, r: Byte, g: Byte, b: Byte): ByteArray {
@@ -252,4 +421,38 @@ fun paletteContains(palette: Array<ByteArray>, r: Int, g: Int, b: Int): Boolean 
         }
     }
     return false
+}
+
+fun createGradientPixels(width: Int, height: Int): ByteArray {
+    val pixels = ByteArray(width * height * 4)
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            val idx = (y * width + x) * 4
+            pixels[idx] = (x * 13).toByte()
+            pixels[idx + 1] = (x * 7).toByte()
+            pixels[idx + 2] = (x * 5).toByte()
+            pixels[idx + 3] = 255.toByte()
+        }
+    }
+    return pixels
+}
+
+fun createCheckerboardPixels(width: Int, height: Int): ByteArray {
+    val pixels = ByteArray(width * height * 4)
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            val idx = (y * width + x) * 4
+            if ((x + y) % 2 == 0) {
+                pixels[idx] = 200.toByte()
+                pixels[idx + 1] = 50.toByte()
+                pixels[idx + 2] = 50.toByte()
+            } else {
+                pixels[idx] = 50.toByte()
+                pixels[idx + 1] = 50.toByte()
+                pixels[idx + 2] = 200.toByte()
+            }
+            pixels[idx + 3] = 255.toByte()
+        }
+    }
+    return pixels
 }

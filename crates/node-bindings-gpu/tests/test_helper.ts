@@ -24,6 +24,33 @@ export function createPixels(
 }
 
 /**
+ * Create a two-color image (firstCount pixels of color1, secondCount pixels of color2).
+ */
+export function createTwoColorPixels(
+    firstCount: number,
+    secondCount: number,
+    color1: [number, number, number],
+    color2: [number, number, number],
+): Uint8Array {
+    const data = new Uint8Array((firstCount + secondCount) * 4);
+    for (let i = 0; i < firstCount; i++) {
+        const idx = i * 4;
+        data[idx] = color1[0];
+        data[idx + 1] = color1[1];
+        data[idx + 2] = color1[2];
+        data[idx + 3] = 255;
+    }
+    for (let i = 0; i < secondCount; i++) {
+        const idx = (firstCount + i) * 4;
+        data[idx] = color2[0];
+        data[idx + 1] = color2[1];
+        data[idx + 2] = color2[2];
+        data[idx + 3] = 255;
+    }
+    return data;
+}
+
+/**
  * Create a two-color gradient image (left half color1, right half color2).
  */
 export function createGradientPixels(
@@ -38,6 +65,29 @@ export function createGradientPixels(
         for (let x = 0; x < width; x++) {
             const idx = (y * width + x) * 4;
             const [r, g, b] = x < mid ? color1 : color2;
+            data[idx + 0] = r;
+            data[idx + 1] = g;
+            data[idx + 2] = b;
+            data[idx + 3] = 255;
+        }
+    }
+    return data;
+}
+
+/**
+ * Create a checkerboard pattern.
+ */
+export function createCheckerboardPixels(
+    width: number,
+    height: number,
+    color1: [number, number, number],
+    color2: [number, number, number],
+): Uint8Array {
+    const data = new Uint8Array(width * height * 4);
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = (y * width + x) * 4;
+            const [r, g, b] = (x + y) % 2 === 0 ? color1 : color2;
             data[idx + 0] = r;
             data[idx + 1] = g;
             data[idx + 2] = b;

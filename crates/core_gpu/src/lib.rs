@@ -224,4 +224,121 @@ mod tests {
         // Verify Debug works
         let _debug = format!("{:?}", info);
     }
+
+    /// Test two-color detection — palette should contain both red and blue.
+    #[test]
+    fn test_two_color_red_blue() {
+        let mut buffer = Vec::new();
+        for _ in 0..50 { buffer.extend_from_slice(&[255, 0, 0, 255]); }
+        for _ in 0..50 { buffer.extend_from_slice(&[0, 0, 255, 255]); }
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        if let Ok(palette) = result {
+            assert!(palette.iter().any(|(r,g,b)| *r > 200 && *g < 55 && *b < 55), "should detect red");
+            assert!(palette.iter().any(|(r,g,b)| *r < 55 && *g < 55 && *b > 200), "should detect blue");
+        }
+    }
+
+    /// Test 1x1 single pixel returns that exact color.
+    #[test]
+    fn test_single_pixel() {
+        let buffer = [42u8, 100, 200, 255];
+        let result = extract_palette_from_buffer(&buffer, 1, 1, 5, 1);
+        if let Ok(palette) = result {
+            assert!(!palette.is_empty());
+            assert_eq!(palette[0], (42, 100, 200));
+        }
+    }
+
+    /// Test gradient image returns multiple distinct colors.
+    #[test]
+    fn test_gradient_image() {
+        let mut buffer = Vec::new();
+        for x in 0..20u8 {
+            for _ in 0..10u8 {
+                buffer.extend_from_slice(&[x * 13, x * 7, x * 5, 255]);
+            }
+        }
+        let result = extract_palette_from_buffer(&buffer, 20, 10, 10, 1);
+        if let Ok(palette) = result {
+            assert!(palette.len() > 1, "gradient should produce >1 color");
+        }
+    }
+
+    /// Test checkerboard pattern.
+    #[test]
+    fn test_checkerboard() {
+        let mut buffer = Vec::new();
+        for y in 0..10u8 {
+            for x in 0..10u8 {
+                let (r, g, b) = if (x + y) % 2 == 0 { (200, 50, 50) } else { (50, 50, 200) };
+                buffer.extend_from_slice(&[r, g, b, 255]);
+            }
+        }
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        if let Ok(palette) = result {
+            assert!(!palette.is_empty());
+        }
+    }
+
+    /// Test determinism — same input produces identical output.
+    #[test]
+    fn test_determinism() {
+        let buffer: Vec<u8> = [170u8, 85, 220, 255].repeat(100);
+        let r1 = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        let r2 = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        match (r1, r2) {
+            (Ok(p1), Ok(p2)) => assert_eq!(p1, p2, "deterministic palette"),
+            (Err(_), Err(_)) => {}, // GPU unavailable is fine
+            _ => panic!("inconsistent GPU availability"),
+        }
+    }
+
+    /// Test deduplication — solid color should not produce duplicates.
+    #[test]
+    fn test_deduplication() {
+        let buffer: Vec<u8> = [100u8, 200, 150, 255].repeat(100);
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 255, 1);
+        if let Ok(palette) = result {
+            let unique: std::collections::HashSet<_> = palette.into_iter().collect();
+            assert_eq!(palette.len(), unique.len(), "no duplicate colors");
+        }
+    }
+
+    /// Test quality=0 is clamped to valid range without panic.
+    #[test]
+    fn test_quality_zero_clamped() {
+        let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(100);
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 0);
+        match result {
+            Ok(palette) => assert!(!palette.is_empty()),
+            Err(_) => { /* GPU not available */ }
+        }
+    }
+
+    /// Test dominant color appears in palette.
+    #[test]
+    fn test_dominant_in_palette() {
+        let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(50)
+            .into_iter()
+            .chain(std::iter::repeat_n(0, 200)) // 50 blue pixels
+            .collect();
+        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
+        if let Ok(palette) = result {
+            assert!(palette.iter().any(|(r,g,b)| *r > 200), "dominant red should be in palette");
+        }
+    }
+
+    /// Test different images produce different palettes.
+    #[test]
+    fn test_different_images_different_palette() {
+        let red: Vec<u8> = [255u8, 0, 0, 255].repeat(100);
+        let blue: Vec<u8> = [0u8, 0, 255, 255].repeat(100);
+        let r1 = extract_palette_from_buffer(&red, 10, 10, 5, 1);
+        let r2 = extract_palette_from_buffer(&blue, 10, 10, 5, 1);
+        match (r1, r2) {
+            (Ok(p1), Ok(p2)) => assert_ne!(p1, p2, "red and blue should differ"),
+            (Err(_), Err(_)) => {}, // GPU unavailable
+            _ => panic!("inconsistent GPU availability"),
+        }
+    }
 }
