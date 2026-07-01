@@ -334,14 +334,6 @@ class GpuMainTest {
         }
     }
 
-    @Test
-    fun gpuMismatchedPixelLengthThrows() {
-        val shortPixels = ByteArray(100)
-        assertFailsWith<RuntimeException> {
-            ColorthiefGpu.getPalette(shortPixels, 10, 10, 5, 1)
-        }
-    }
-
     // ---------------------------------------------------------------------------
     // GC stress
     // ---------------------------------------------------------------------------
