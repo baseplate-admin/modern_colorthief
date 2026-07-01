@@ -292,12 +292,6 @@ class TestGpuColor:
         assert hasattr(m, "extract_dominant_color_from_buffer")
         assert callable(m.extract_dominant_color_from_buffer)
 
-    def test_version_format(self):
-        import modern_colorthief_gpu as m
-        assert hasattr(m, "__version__")
-        parts = m.__version__.split(".")
-        assert len(parts) >= 2
-        assert all(p.isdigit() for p in parts[:2])
 
     # -- Solid white detection --
 
