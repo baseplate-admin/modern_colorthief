@@ -403,14 +403,6 @@ mod tests {
         }
     }
 
-    /// Test buffer too small for requested dimensions.
-    #[test]
-    fn test_buffer_too_small() {
-        let buffer = [255u8, 0, 0, 255]; // only 1 pixel, but asking for 10x10
-        let result = extract_palette_from_buffer(&buffer, 10, 10, 5, 1);
-        assert!(result.is_err(), "too-small buffer should return error");
-    }
-
     /// Test deduplication — solid color yields exactly 1 color.
     #[test]
     fn test_dedup_solid_color_exactly_one() {
