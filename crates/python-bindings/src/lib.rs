@@ -73,6 +73,7 @@ fn _get_color_given_pixels(
 }
 
 /// A Python module implemented in Rust.
+// LCOV_EXCL_START - PyO3 module initialization cannot be directly tested (see rust-lang/rust#84605)
 #[pymodule(gil_used = false)]
 fn _modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
@@ -80,3 +81,4 @@ fn _modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(_get_color_given_pixels, m)?)?;
     Ok(())
 }
+// LCOV_EXCL_STOP

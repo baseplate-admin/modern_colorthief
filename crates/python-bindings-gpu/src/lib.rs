@@ -96,6 +96,7 @@ fn list_gpus_py(py: Python) -> PyResult<Vec<pyo3::Bound<pyo3::types::PyDict>>> {
     Ok(result)
 }
 
+// LCOV_EXCL_START - PyO3 module initialization cannot be directly tested (see rust-lang/rust#84605)
 #[pymodule]
 fn modern_colorthief_gpu(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction![extract_palette_from_buffer_py](m)?)?;
@@ -103,5 +104,7 @@ fn modern_colorthief_gpu(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction![extract_palette_py](m)?)?;
     m.add_function(wrap_pyfunction![extract_dominant_color_py](m)?)?;
     m.add_function(wrap_pyfunction![list_gpus_py](m)?)?;
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
 }
+// LCOV_EXCL_STOP

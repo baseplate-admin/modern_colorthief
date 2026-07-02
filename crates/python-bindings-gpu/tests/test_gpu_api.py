@@ -1,4 +1,6 @@
 """GPU-accelerated palette extraction tests."""
+from pathlib import Path
+
 import pytest
 
 # Try importing the GPU module; skip all tests if unavailable
@@ -6,6 +8,9 @@ try:
     from modern_colorthief_gpu import (
         extract_palette_from_buffer,
         extract_dominant_color_from_buffer,
+        extract_palette,
+        extract_dominant_color,
+        list_gpus,
     )
     gpu_available = True
 except ImportError:
@@ -331,3 +336,99 @@ class TestGpuColor:
     def test_color_count_zero(self, solid_red_pixels):
         palette = extract_palette_from_buffer(solid_red_pixels, 100, 100, size=0)
         assert len(palette) == 0
+
+    # -- __version__ attribute --
+
+    def test_version_exists(self):
+        import modern_colorthief_gpu as m
+        assert hasattr(m, "__version__")
+
+    def test_version_is_string(self):
+        import modern_colorthief_gpu as m
+        assert isinstance(m.__version__, str)
+
+    def test_version_not_empty(self):
+        import modern_colorthief_gpu as m
+        assert len(m.__version__) > 0
+
+    def test_version_format_semver_like(self):
+        import modern_colorthief_gpu as m
+        parts = m.__version__.split(".")
+        assert len(parts) >= 2
+        assert all(p.isdigit() for p in parts[:2])
+
+    def test_version_no_whitespace(self):
+        import modern_colorthief_gpu as m
+        assert m.__version__.strip() == m.__version__
+
+
+# ---------------------------------------------------------------------------
+# File path API tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.skipif(not gpu_available, reason="GPU module not available")
+class TestGpuFilePath:
+    """Tests for GPU file-path extraction functions."""
+
+    def test_extract_palette_from_file(self):
+        palette = extract_palette(str(Path(__file__).parent / "test.jpg"))
+        assert len(palette) > 0
+        for r, g, b in palette:
+            assert 0 <= r <= 255
+            assert 0 <= g <= 255
+            assert 0 <= b <= 255
+
+    def test_extract_dominant_color_from_file(self):
+        color = extract_dominant_color(str(Path(__file__).parent / "test.jpg"))
+        assert len(color) == 3
+        assert 0 <= color[0] <= 255
+        assert 0 <= color[1] <= 255
+        assert 0 <= color[2] <= 255
+
+    def test_extract_palette_different_images(self):
+        p1 = extract_palette(str(Path(__file__).parent / "test.jpg"))
+        p2 = extract_palette(str(Path(__file__).parent / "kaiju_no_8.jpg"))
+        assert p1 != p2
+
+    def test_extract_dominant_color_different_images(self):
+        c1 = extract_dominant_color(str(Path(__file__).parent / "test.jpg"))
+        c2 = extract_dominant_color(str(Path(__file__).parent / "kaiju_no_8.jpg"))
+        assert c1 != c2
+
+    def test_extract_palette_quality(self):
+        for q in (1, 5, 10):
+            palette = extract_palette(str(Path(__file__).parent / "test.jpg"), quality=q)
+            assert len(palette) > 0
+
+    def test_extract_palette_color_count(self):
+        palette = extract_palette(str(Path(__file__).parent / "test.jpg"), color_count=3)
+        assert len(palette) <= 3
+
+    def test_nonexistent_file_palette(self):
+        with pytest.raises(ValueError):
+            extract_palette("does_not_exist.jpg")
+
+    def test_nonexistent_file_color(self):
+        with pytest.raises(ValueError):
+            extract_dominant_color("does_not_exist.jpg")
+
+
+# ---------------------------------------------------------------------------
+# list_gpus tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.skipif(not gpu_available, reason="GPU module not available")
+class TestGpuList:
+    """Tests for list_gpus function."""
+
+    def test_list_gpus_returns_list(self):
+        gpus = list_gpus()
+        assert isinstance(gpus, list)
+
+    def test_list_gpus_gpu_entries(self):
+        gpus = list_gpus()
+        for gpu in gpus:
+            assert "index" in gpu
+            assert "name" in gpu
+            assert "device_type" in gpu
+            assert "vendor_name" in gpu
