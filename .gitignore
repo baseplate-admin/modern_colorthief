@@ -29,3 +29,6 @@ NPM_TOKEN
 
 # Ruby bundler lock files — let CI regenerate per ruby version
 **/Gemfile.lock
+
+# Python
+__pycache__/

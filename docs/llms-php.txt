@@ -1,0 +1,33 @@
+# modern_colorthief — PHP Binding API
+
+Package: `modern_colorthief`
+Module: `modern_colorthief`
+Install: `Build and install as a PHP extension`
+Version: 0.3.0
+
+## Functions
+
+### `get_palette(pixels: array<int>, width: int, height: int, color_count?: int, quality?: int)` → `array<int>`
+
+  Parameters:
+  - `pixels` (array<int>)
+  - `width` (int)
+  - `height` (int)
+  - `color_count` (int) (optional)
+  - `quality` (int) (optional)
+
+### `get_color(pixels: array<int>, width: int, height: int, quality?: int)` → `array<int>`
+
+  Parameters:
+  - `pixels` (array<int>)
+  - `width` (int)
+  - `height` (int)
+  - `quality` (int) (optional)
+
+## Usage Example
+
+```php
+<?php
+$palette = get_palette($pixels, $width, $height, 5, 1);
+$color   = get_color($pixels, $width, $height, 1);
+```

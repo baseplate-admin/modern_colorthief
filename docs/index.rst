@@ -138,6 +138,7 @@ all backed by the same optimized Median Cut core.
    mmcq
    webassembly
    api_multilang
+   llm
    roadmaps
    license
 

@@ -1,0 +1,82 @@
+# modern_colorthief — WASM Binding API
+
+Package: `colorthief-wasm`
+Module: `colorthief-wasm`
+Install: `npm install colorthief-wasm`
+Version: 0.3.0
+
+## Functions
+
+### `getPalettePromise(image: any, color_count: number, quality: number)` → `Promise`
+
+  Extract a palette of dominant colors from an image.
+  
+  Accepts a string URL, `Uint8Array`, or `ArrayBuffer` of raw image bytes.
+  Uses the browser's Canvas API to decode, then runs Median Cut in Rust.
+  
+
+  Parameters:
+  - `image` (any)
+  - `color_count` (number)
+  - `quality` (number)
+
+### `getColorPromise(image: any, quality: number)` → `Promise`
+
+  Extract the dominant color from an image.
+  
+  Accepts a string URL, `Uint8Array`, or `ArrayBuffer` of raw image bytes.
+  Internally extracts a small palette and returns the top color.
+  
+
+  Parameters:
+  - `image` (any)
+  - `quality` (number)
+
+### `decodeImagePromise(image: any)` → `Promise`
+
+  Decode an image via the browser Canvas API.
+  
+  Returns a Promise resolving to `{ pixels: Uint8Array, width: number, height: number }`.
+  Useful when you need the raw pixel data for custom processing.
+  
+
+  Parameters:
+  - `image` (any)
+
+### `getPaletteFromPixels(pixels: Uint8Array, width: number, height: number, color_count: number, quality: number)` → `Promise`
+
+  Extract a palette from raw RGBA pixel data (no image decoding).
+  
+  Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).
+  
+  # Example
+
+  Parameters:
+  - `pixels` (Uint8Array)
+  - `width` (number)
+  - `height` (number)
+  - `color_count` (number)
+  - `quality` (number)
+
+### `getColorFromPixels(pixels: Uint8Array, width: number, height: number, quality: number)` → `Promise`
+
+  Extract the dominant color from raw RGBA pixel data (no image decoding).
+  
+  Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).
+  
+  # Example
+
+  Parameters:
+  - `pixels` (Uint8Array)
+  - `width` (number)
+  - `height` (number)
+  - `quality` (number)
+
+## Usage Example
+
+```javascript
+import { getPalette, getColor } from 'colorthief-wasm';
+
+const palette = await getPalette(pixels, width, height, 5, 1);
+const color   = await getColor(pixels, width, height, 1);
+```
