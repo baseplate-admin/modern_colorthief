@@ -7,6 +7,11 @@ WebAssembly
 Modern Colorthief runs in the browser via WebAssembly, delivering native-speed
 color extraction with zero server-side dependencies.
 
+.. seealso::
+
+   :doc:`api_multilang` -- Multi-language API reference with examples for
+   Python, Ruby, Node.js, Java, PHP, and WebAssembly.
+
 .. rubric:: Installation
 
 Via npm:
@@ -126,7 +131,7 @@ The WASM API accepts three input formats:
 React
 ===========================================
 
-.. code-block:: javascript
+.. code-block:: jsx
 
    import { useState, useEffect } from 'react';
    import { getColor } from 'colorthief-wasm';

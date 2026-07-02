@@ -99,9 +99,90 @@ You can also work with NumPy arrays by converting through Pillow:
    dependency. These are only needed when you want to pre-process images
    before passing them to the library.
 
+.. rubric:: Raw Pixel Usage (Multi-Language)
+
+All language bindings accept raw RGBA pixel data.  Here's how to pass a
+10×10 solid red image in each language:
+
+.. tabs::
+
+   .. code-tab:: py Python
+
+      .. code-block:: python
+
+         from modern_colorthief import get_color, get_palette
+
+         # File path (easiest)
+         color = get_color("photo.jpg")
+         palette = get_palette("photo.jpg", color_count=5)
+
+   .. code-tab:: rb Ruby
+
+      .. code-block:: ruby
+
+         require "colorthief_ruby"
+
+         # 10x10 solid red: 100 pixels × 4 bytes (RGBA)
+         pixels = ("\xFF\x00\x00\xFF" * 100).b
+         color   = Colorthief.get_color(pixels, 10, 10, 1)
+         palette = Colorthief.get_palette(pixels, 10, 10, 5, 1)
+
+   .. code-tab:: js Node.js
+
+      .. code-block:: javascript
+
+         const { getColor, getPalette } = require("modern-colorthief");
+
+         // 10x10 solid red: 100 pixels × 4 bytes (RGBA)
+         const pixels = new Uint8Array(400);
+         for (let i = 0; i < 100; i++) {
+           pixels[i * 4]     = 255; // R
+           pixels[i * 4 + 1] = 0;   // G
+           pixels[i * 4 + 2] = 0;   // B
+           pixels[i * 4 + 3] = 255; // A
+         }
+         const color   = getColor(pixels, 10, 10, 1);
+         const palette = getPalette(pixels, 10, 10, 5, 1);
+
+   .. code-tab:: java Java
+
+      .. code-block:: java
+
+         import io.baseplate_admin.modern_colorthief.Colorthief;
+         import java.util.Arrays;
+
+         // 10x10 solid red (Java byte is signed, 255 → -1)
+         byte[] pixels = new byte[400];
+         for (int i = 0; i < 100; i++) {
+             pixels[i * 4]     = (byte) 255; // R
+             pixels[i * 4 + 1] = 0;          // G
+             pixels[i * 4 + 2] = 0;          // B
+             pixels[i * 4 + 3] = (byte) 255; // A
+         }
+         byte[] color   = Colorthief.getColor(pixels, 10, 10, 1);
+         byte[][] palette = Colorthief.getPalette(pixels, 10, 10, 5, 1);
+
+   .. code-tab:: php PHP
+
+      .. code-block:: php
+
+         <?php
+         // 10x10 solid red: 100 pixels × 4 bytes (RGBA)
+         $pixels = [];
+         for ($i = 0; $i < 100; $i++) {
+             $pixels[] = 255; // R
+             $pixels[] = 0;   // G
+             $pixels[] = 0;   // B
+             $pixels[] = 255; // A
+         }
+         $color   = get_color($pixels, 10, 10, 1);
+         $palette = get_palette($pixels, 10, 10, 5, 1);
+
 .. seealso::
 
    :doc:`differences` -- If the colors returned differ from other
    libraries, see the parity notes.
 
    :doc:`api` -- Full API reference with parameter details.
+
+   :doc:`api_multilang` -- Multi-language API reference and examples.

@@ -32,9 +32,10 @@
 
 .. rubric:: Overview
 
-Modern Colorthief is a high-performance Python library for extracting dominant
-colors and color palettes from images. Built with `Rust`_ and `PyO3`_, it
-delivers near-C++ performance with the simplicity of a pure Python API.
+Modern Colorthief is a high-performance library for extracting dominant
+colors and color palettes from images. Built with `Rust`_, it provides
+native bindings for Python, Ruby, Node.js, Java, PHP, and WebAssembly —
+all backed by the same optimized Median Cut core.
 
 .. note::
 
@@ -104,6 +105,12 @@ delivers near-C++ performance with the simplicity of a pure Python API.
          <div class="card-desc">Run in the browser via npm with near-native WASM performance.</div>
       </a>
 
+      <a class="card-item" href="api_multilang.html">
+         <span class="card-icon">&#x1F5FD&#xFE0F;</span>
+         <div class="card-title">Multi-Language API</div>
+         <div class="card-desc">Python, Ruby, Node.js, Java, PHP, and WASM binding examples.</div>
+      </a>
+
       </div>
       <div style="clear:both;"></div>
 
@@ -112,7 +119,7 @@ delivers near-C++ performance with the simplicity of a pure Python API.
 - **Blazing Fast** -- Rust-powered core delivers ~100x speedup over pure Python
 - **Zero Dependencies** -- No Pillow, no NumPy required at runtime
 - **Cross-Platform** -- Prebuilt wheels for Linux, macOS, Windows, and more
-- **WebAssembly** -- Run in the browser via npm with near-native performance
+- **Multi-Language** -- Native bindings for Python, Ruby, Node.js, Java, PHP, and WebAssembly
 - **Simple API** -- Two functions, one CLI, that just work
 - **Battle-Tested** -- Used in production by developers worldwide
 
@@ -130,6 +137,7 @@ delivers near-C++ performance with the simplicity of a pure Python API.
    api_differences
    mmcq
    webassembly
+   api_multilang
    roadmaps
    license
 
