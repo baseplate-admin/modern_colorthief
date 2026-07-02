@@ -320,8 +320,8 @@ jobs:
           export CARGO_INCREMENTAL=1
           cargo llvm-cov clean --workspace
           cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-          uv run -- maturin develop --uv
-          uv run -- python -m pytest tests/ -v --cov=modern_colorthief --cov-report xml
+          .venv/bin/python -m maturin develop
+          .venv/bin/python -m pytest tests/ -v --cov=modern_colorthief --cov-report xml
           cargo llvm-cov report --lcov --output-path coverage.lcov
 
       - name: Upload coverage reports
@@ -329,7 +329,7 @@ jobs:
         with:
           name: cpu-coverage-reports
           path: |
-            coverage.lcov
+            crates/python-bindings/coverage.lcov
             crates/python-bindings/coverage.xml
           retention-days: 7
 
@@ -644,8 +644,8 @@ jobs:
           export CARGO_INCREMENTAL=1
           cargo llvm-cov clean --workspace
           cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
-          uv run -- maturin develop --uv
-          uv run -- python -m pytest tests/ -v --cov=modern_colorthief_gpu --cov-report xml
+          .venv/bin/python -m maturin develop
+          .venv/bin/python -m pytest tests/ -v --cov=modern_colorthief_gpu --cov-report xml
           cargo llvm-cov report --lcov --output-path coverage.lcov
 
       - name: Upload coverage reports
@@ -653,7 +653,7 @@ jobs:
         with:
           name: gpu-coverage-reports
           path: |
-            coverage.lcov
+            crates/python-bindings-gpu/coverage.lcov
             crates/python-bindings-gpu/coverage.xml
           retention-days: 7
 
