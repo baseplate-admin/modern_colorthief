@@ -4,6 +4,8 @@ from typing import List, Tuple, Union
 
 from . import modern_colorthief_gpu as _lib
 
+__version__ = _lib.__version__
+
 
 def extract_palette(
     image: Union[str, bytes], size: int = 5, quality: int = 10

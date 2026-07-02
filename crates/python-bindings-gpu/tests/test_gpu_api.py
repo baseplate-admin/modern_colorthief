@@ -401,7 +401,7 @@ class TestGpuFilePath:
             assert len(palette) > 0
 
     def test_extract_palette_color_count(self):
-        palette = extract_palette(str(Path(__file__).parent / "test.jpg"), color_count=3)
+        palette = extract_palette(str(Path(__file__).parent / "test.jpg"), size=3)
         assert len(palette) <= 3
 
     def test_nonexistent_file_palette(self):
