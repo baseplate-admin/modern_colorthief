@@ -4,7 +4,6 @@ members = [
     "crates/core_cpu",
     "crates/core_gpu",
     "crates/core_webgpu",
-    "crates/fuzz",
     "crates/python-bindings",
     "crates/wasm-bindings",
     "crates/wasm-bindings-webgpu",

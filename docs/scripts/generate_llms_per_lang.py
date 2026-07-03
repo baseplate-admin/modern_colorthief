@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-DOCS = ROOT / "docs"
+DOCS = ROOT / "docs" / "llms"
 
 # ---------------------------------------------------------------------------
 # Data types

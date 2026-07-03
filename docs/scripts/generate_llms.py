@@ -5,7 +5,7 @@ Mirrors the DaisyUI approach: read structured API specs from Rust source files,
 concatenate them in a defined order, and emit plain-text documentation for LLMs.
 
 Usage:
-    python scripts/generate_llms.py          # writes to docs/
+    python scripts/generate_llms.py          # writes to docs/llms/
     python scripts/generate_llms.py --check  # exits 1 if output would differ
 """
 
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-DOCS = ROOT / "docs"
+DOCS = ROOT / "docs" / "llms"
 
 # ---------------------------------------------------------------------------
 # Binding definitions -- mirrors workspace.members for binding crates

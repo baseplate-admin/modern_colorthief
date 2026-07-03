@@ -35,7 +35,7 @@ Per-Language API
    ``llms-ruby.txt``   — Ruby (rb-sys/magnus) binding API
    ``llms-php.txt``    — PHP (ext-php-rs) binding API
 
-All files live under ``docs/`` in the repository root.
+All files live under ``docs/llms/`` in the repository root.
 
 How they're generated
 ~~~~~~~~~~~~~~~~~~~~
@@ -60,9 +60,9 @@ Point Claude at the relevant file for focused, accurate answers:
 
 .. code-block:: text
 
-   Read docs/llms-python.txt and answer how to call get_palette from Python.
+   Read docs/llms/llms-python.txt and answer how to call get_palette from Python.
 
-For a full multi-language overview, use ``docs/llms-full.txt``.
+For a full multi-language overview, use ``docs/llms/llms-full.txt``.
 
 Using with other LLMs
 ~~~~~~~~~~~~~~~~~~~~~

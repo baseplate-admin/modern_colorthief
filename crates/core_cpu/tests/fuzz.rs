@@ -1,3 +1,9 @@
+//! Fuzz / property-based tests for palette extraction.
+//!
+//! Generates random images and verifies:
+//! 1. CPU and GPU backends produce the same palette for the same input.
+//! 2. Our CPU backend produces comparable results to `color_thief` (RazrFalcon reference).
+
 use color_thief::{ColorFormat, get_palette};
 use modern_colorthief_core_cpu::extract_palette_from_buffer as cpu_extract;
 use modern_colorthief_core_gpu::extract_palette_from_buffer as gpu_extract;
