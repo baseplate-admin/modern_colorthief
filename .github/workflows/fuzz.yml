@@ -14,7 +14,7 @@ env:
 
 jobs:
   # ============================================================
-  # Property-based fuzz tests (cargo test -p modern-colorthief-fuzz)
+  # Property-based fuzz tests (cargo test -p modern-colorthief-core-cpu fuzz::)
   # ============================================================
   fuzz-test:
     name: "fuzz property tests — ${{ matrix.os }}"
@@ -85,7 +85,7 @@ jobs:
             ${{ matrix.os }}-fuzz-cargo-registry-
 
       - name: Run fuzz property tests
-        run: cargo test -p modern-colorthief-fuzz -- --test-threads=1
+        run: cargo test -p modern-colorthief-core-cpu fuzz:: -- --test-threads=1
 
   # ============================================================
   # LibFuzzer build check (cargo fuzz check)
