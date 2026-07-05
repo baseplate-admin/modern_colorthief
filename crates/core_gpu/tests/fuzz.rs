@@ -35,7 +35,14 @@ fn gradient_buffer(width: u32, height: u32, r_start: u8, r_end: u8, g: u8, b: u8
 }
 
 /// Assert the GPU either succeeds with valid output or returns an error (GPU unavailable).
-fn assert_gpu_valid(buf: &[u8], width: u32, height: u32, color_count: u8, quality: u8, label: &str) {
+fn assert_gpu_valid(
+    buf: &[u8],
+    width: u32,
+    height: u32,
+    color_count: u8,
+    quality: u8,
+    label: &str,
+) {
     let result = extract_palette_from_buffer(buf, width, height, color_count, quality);
     match result {
         Ok(palette) => {
@@ -73,7 +80,14 @@ fn fuzz_gpu_solid_red() {
 
 #[test]
 fn fuzz_gpu_solid_green() {
-    assert_gpu_valid(&solid_buffer(0, 255, 0, 50, 50), 50, 50, 5, 1, "solid_green");
+    assert_gpu_valid(
+        &solid_buffer(0, 255, 0, 50, 50),
+        50,
+        50,
+        5,
+        1,
+        "solid_green",
+    );
 }
 
 #[test]
@@ -83,7 +97,14 @@ fn fuzz_gpu_solid_blue() {
 
 #[test]
 fn fuzz_gpu_solid_white() {
-    assert_gpu_valid(&solid_buffer(240, 240, 240, 50, 50), 50, 50, 5, 1, "solid_white");
+    assert_gpu_valid(
+        &solid_buffer(240, 240, 240, 50, 50),
+        50,
+        50,
+        5,
+        1,
+        "solid_white",
+    );
 }
 
 #[test]
@@ -93,22 +114,50 @@ fn fuzz_gpu_solid_black() {
 
 #[test]
 fn fuzz_gpu_solid_purple() {
-    assert_gpu_valid(&solid_buffer(128, 0, 128, 50, 50), 50, 50, 5, 1, "solid_purple");
+    assert_gpu_valid(
+        &solid_buffer(128, 0, 128, 50, 50),
+        50,
+        50,
+        5,
+        1,
+        "solid_purple",
+    );
 }
 
 #[test]
 fn fuzz_gpu_solid_yellow() {
-    assert_gpu_valid(&solid_buffer(255, 255, 0, 50, 50), 50, 50, 5, 1, "solid_yellow");
+    assert_gpu_valid(
+        &solid_buffer(255, 255, 0, 50, 50),
+        50,
+        50,
+        5,
+        1,
+        "solid_yellow",
+    );
 }
 
 #[test]
 fn fuzz_gpu_solid_cyan() {
-    assert_gpu_valid(&solid_buffer(0, 255, 255, 50, 50), 50, 50, 5, 1, "solid_cyan");
+    assert_gpu_valid(
+        &solid_buffer(0, 255, 255, 50, 50),
+        50,
+        50,
+        5,
+        1,
+        "solid_cyan",
+    );
 }
 
 #[test]
 fn fuzz_gpu_solid_mid_gray() {
-    assert_gpu_valid(&solid_buffer(128, 128, 128, 50, 50), 50, 50, 5, 1, "solid_mid_gray");
+    assert_gpu_valid(
+        &solid_buffer(128, 128, 128, 50, 50),
+        50,
+        50,
+        5,
+        1,
+        "solid_mid_gray",
+    );
 }
 
 // ============================================================
@@ -117,12 +166,26 @@ fn fuzz_gpu_solid_mid_gray() {
 
 #[test]
 fn fuzz_gpu_horizontal_gradient() {
-    assert_gpu_valid(&gradient_buffer(60, 60, 0, 255, 128, 64), 60, 60, 5, 1, "gradient");
+    assert_gpu_valid(
+        &gradient_buffer(60, 60, 0, 255, 128, 64),
+        60,
+        60,
+        5,
+        1,
+        "gradient",
+    );
 }
 
 #[test]
 fn fuzz_gpu_gradient_wide() {
-    assert_gpu_valid(&gradient_buffer(100, 50, 50, 200, 100, 150), 100, 50, 5, 2, "wide_gradient");
+    assert_gpu_valid(
+        &gradient_buffer(100, 50, 50, 200, 100, 150),
+        100,
+        50,
+        5,
+        2,
+        "wide_gradient",
+    );
 }
 
 // ============================================================
@@ -150,13 +213,27 @@ fn fuzz_gpu_random_seed_999() {
 #[test]
 fn fuzz_gpu_random_seed_42069() {
     let mut rng = StdRng::seed_from_u64(42069);
-    assert_gpu_valid(&random_buffer(48, 48, &mut rng), 48, 48, 5, 1, "random_42069");
+    assert_gpu_valid(
+        &random_buffer(48, 48, &mut rng),
+        48,
+        48,
+        5,
+        1,
+        "random_42069",
+    );
 }
 
 #[test]
 fn fuzz_gpu_random_seed_1337() {
     let mut rng = StdRng::seed_from_u64(1337);
-    assert_gpu_valid(&random_buffer(100, 100, &mut rng), 100, 100, 5, 2, "random_1337");
+    assert_gpu_valid(
+        &random_buffer(100, 100, &mut rng),
+        100,
+        100,
+        5,
+        2,
+        "random_1337",
+    );
 }
 
 #[test]
@@ -165,7 +242,10 @@ fn fuzz_gpu_random_varied_dimensions() {
     for &(w, h) in &[(32, 32), (50, 30), (30, 50), (100, 50), (50, 100)] {
         assert_gpu_valid(
             &random_buffer(w, h, &mut rng),
-            w, h, 5, 1,
+            w,
+            h,
+            5,
+            1,
             &format!("random_{}x{}", w, h),
         );
     }
@@ -177,17 +257,38 @@ fn fuzz_gpu_random_varied_dimensions() {
 
 #[test]
 fn fuzz_gpu_quality_1() {
-    assert_gpu_valid(&solid_buffer(170, 85, 220, 100, 100), 100, 100, 5, 1, "quality_1");
+    assert_gpu_valid(
+        &solid_buffer(170, 85, 220, 100, 100),
+        100,
+        100,
+        5,
+        1,
+        "quality_1",
+    );
 }
 
 #[test]
 fn fuzz_gpu_quality_5() {
-    assert_gpu_valid(&solid_buffer(170, 85, 220, 100, 100), 100, 100, 5, 5, "quality_5");
+    assert_gpu_valid(
+        &solid_buffer(170, 85, 220, 100, 100),
+        100,
+        100,
+        5,
+        5,
+        "quality_5",
+    );
 }
 
 #[test]
 fn fuzz_gpu_quality_10() {
-    assert_gpu_valid(&solid_buffer(170, 85, 220, 200, 200), 200, 200, 5, 10, "quality_10");
+    assert_gpu_valid(
+        &solid_buffer(170, 85, 220, 200, 200),
+        200,
+        200,
+        5,
+        10,
+        "quality_10",
+    );
 }
 
 // ============================================================
@@ -196,17 +297,38 @@ fn fuzz_gpu_quality_10() {
 
 #[test]
 fn fuzz_gpu_color_count_1() {
-    assert_gpu_valid(&solid_buffer(100, 150, 200, 50, 50), 50, 50, 1, 1, "count_1");
+    assert_gpu_valid(
+        &solid_buffer(100, 150, 200, 50, 50),
+        50,
+        50,
+        1,
+        1,
+        "count_1",
+    );
 }
 
 #[test]
 fn fuzz_gpu_color_count_3() {
-    assert_gpu_valid(&solid_buffer(100, 150, 200, 50, 50), 50, 50, 3, 1, "count_3");
+    assert_gpu_valid(
+        &solid_buffer(100, 150, 200, 50, 50),
+        50,
+        50,
+        3,
+        1,
+        "count_3",
+    );
 }
 
 #[test]
 fn fuzz_gpu_color_count_10() {
-    assert_gpu_valid(&gradient_buffer(100, 100, 0, 255, 128, 64), 100, 100, 10, 1, "count_10");
+    assert_gpu_valid(
+        &gradient_buffer(100, 100, 0, 255, 128, 64),
+        100,
+        100,
+        10,
+        1,
+        "count_10",
+    );
 }
 
 // ============================================================
