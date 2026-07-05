@@ -230,7 +230,14 @@ fn fuzz_gpu_tall_image() {
 
 #[test]
 fn fuzz_gpu_large_solid() {
-    assert_gpu_valid(&solid_buffer(170, 85, 220, 500, 500), 500, 500, 5, 5, "large_solid");
+    assert_gpu_valid(
+        &solid_buffer(170, 85, 220, 500, 500),
+        500,
+        500,
+        5,
+        5,
+        "large_solid",
+    );
 }
 
 #[test]
@@ -283,15 +290,36 @@ fn fuzz_gpu_color_count_limits_size() {
 #[test]
 fn fuzz_gpu_stress_large_random() {
     let mut rng = StdRng::seed_from_u64(31415);
-    assert_gpu_valid(&random_buffer(200, 200, &mut rng), 200, 200, 10, 2, "stress_large");
+    assert_gpu_valid(
+        &random_buffer(200, 200, &mut rng),
+        200,
+        200,
+        10,
+        2,
+        "stress_large",
+    );
 }
 
 #[test]
 fn fuzz_gpu_stress_wide() {
-    assert_gpu_valid(&gradient_buffer(400, 50, 0, 255, 100, 150), 400, 50, 5, 2, "stress_wide");
+    assert_gpu_valid(
+        &gradient_buffer(400, 50, 0, 255, 100, 150),
+        400,
+        50,
+        5,
+        2,
+        "stress_wide",
+    );
 }
 
 #[test]
 fn fuzz_gpu_stress_tall() {
-    assert_gpu_valid(&solid_buffer(200, 100, 50, 50, 400), 50, 400, 5, 3, "stress_tall");
+    assert_gpu_valid(
+        &solid_buffer(200, 100, 50, 50, 400),
+        50,
+        400,
+        5,
+        3,
+        "stress_tall",
+    );
 }
