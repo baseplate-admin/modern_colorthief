@@ -57,16 +57,16 @@ jobs:
             lib: modern_colorthief_node.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
           targets: ${{ matrix.target }}
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -95,7 +95,7 @@ jobs:
           cp target/${{ matrix.target }}/release/${{ matrix.lib }} crates/node-bindings/artifacts/modern_colorthief.node
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: "node-native-${{ matrix.target }}"
           path: crates/node-bindings/artifacts/*.node
@@ -117,11 +117,11 @@ jobs:
           - os: windows-latest
             artifact: node-native-x86_64-pc-windows-msvc
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
-      - uses: actions/download-artifact@v4
+          node-version: 24
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.artifact }}
           path: crates/node-bindings/artifacts
@@ -142,11 +142,11 @@ jobs:
           - os: macos-latest
             artifact: node-native-aarch64-apple-darwin
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
         with:
           deno-version: 2.x
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.artifact }}
           path: crates/node-bindings/artifacts
@@ -169,9 +169,9 @@ jobs:
           - os: macos-latest
             artifact: node-native-aarch64-apple-darwin
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.artifact }}
           path: crates/node-bindings/artifacts
@@ -188,13 +188,13 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
       - name: Download all native artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: node-native-*
           path: crates/node-bindings/artifacts

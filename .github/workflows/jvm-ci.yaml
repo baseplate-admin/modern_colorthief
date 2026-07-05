@@ -64,7 +64,7 @@ jobs:
             lib: modern_colorthief.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -73,7 +73,7 @@ jobs:
         with:
           targets: ${{ matrix.target }}
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -91,7 +91,7 @@ jobs:
       - name: Run Rust core unit tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native library
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "native-lib-cpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
@@ -119,13 +119,13 @@ jobs:
             lib: modern_colorthief.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '26'
       - name: Download native library
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: native-lib-cpu-${{ matrix.target }}
           path: crates/jvm-bindings/tests/native
@@ -166,7 +166,7 @@ jobs:
             lib: modern_colorthief_gpu.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install Vulkan runtime (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
@@ -218,7 +218,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -228,7 +228,7 @@ jobs:
         shell: bash
         run: test -f target/${{ matrix.target }}/release/${{ matrix.lib }}
       - name: Upload GPU native library
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "native-lib-gpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
@@ -253,11 +253,11 @@ jobs:
           - target: x86_64-pc-windows-msvc
             runner: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -335,7 +335,7 @@ jobs:
             lib: modern_colorthief_gpu.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -390,7 +390,7 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Download GPU native library
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: native-lib-gpu-${{ matrix.target }}
           path: crates/jvm-bindings-gpu/tests/native
@@ -412,7 +412,7 @@ jobs:
     name: Android check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
@@ -432,13 +432,13 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '26'
       - name: Download all CPU native libraries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: native-lib-cpu-*
           path: crates/jvm-bindings/tests/native
@@ -476,13 +476,13 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '26'
       - name: Download all GPU native libraries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: native-lib-gpu-*
           path: crates/jvm-bindings-gpu/tests/native

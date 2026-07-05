@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "@webgpu/types": "^0.1.70",
-    "typescript": "^5.8.0",
+    "typescript": "^6.0.0",
     "webgpu": "^0.1.64"
   }
 }

@@ -64,7 +64,7 @@ jobs:
             lib: modern_colorthief.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -77,7 +77,7 @@ jobs:
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: rustup toolchain install nightly
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -117,7 +117,7 @@ jobs:
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "native-lib-php-cpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
@@ -145,14 +145,14 @@ jobs:
             lib: modern_colorthief.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           ini-file: development
           extensions: gd
       - name: Download native extension
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: native-lib-php-cpu-${{ matrix.target }}
           path: target/release
@@ -209,7 +209,7 @@ jobs:
             lib: modern_colorthief_gpu.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -222,7 +222,7 @@ jobs:
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: rustup toolchain install nightly
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -305,7 +305,7 @@ jobs:
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "native-lib-php-gpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
@@ -333,7 +333,7 @@ jobs:
             lib: modern_colorthief_gpu.dll
             shell: pwsh
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -383,7 +383,7 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Download GPU native extension
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: native-lib-php-gpu-${{ matrix.target }}
           path: target/release
@@ -415,9 +415,9 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Download all CPU native libraries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: native-lib-php-cpu-*
           path: crates/php-bindings/native
@@ -427,7 +427,7 @@ jobs:
           find crates/php-bindings/native -mindepth 1 -type d -delete
           ls -la crates/php-bindings/native/
       - name: Create GitHub release with CPU binaries
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: crates/php-bindings/native/*
           tag_name: ${{ github.ref_name }}
@@ -449,9 +449,9 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Download all GPU native libraries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: native-lib-php-gpu-*
           path: crates/php-bindings-gpu/native
@@ -461,7 +461,7 @@ jobs:
           find crates/php-bindings-gpu/native -mindepth 1 -type d -delete
           ls -la crates/php-bindings-gpu/native/
       - name: Upload GPU binaries to GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: crates/php-bindings-gpu/native/*
           tag_name: ${{ github.ref_name }}

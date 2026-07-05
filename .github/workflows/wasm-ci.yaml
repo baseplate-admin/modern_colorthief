@@ -31,13 +31,13 @@ jobs:
     name: WASM build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
           components: llvm-tools-preview
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -52,13 +52,13 @@ jobs:
     name: wasm-pack build + test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM release
         run: cargo build --release -p modern-colorthief-wasm
@@ -70,13 +70,13 @@ jobs:
     name: WASM GPU build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
           components: llvm-tools-preview
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [wasm-gpu-build]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -105,7 +105,7 @@ jobs:
       - run: cargo install wasm-pack
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install node-webgpu (Dawn) + deps
         working-directory: crates/wasm-bindings-webgpu
         run: npm ci
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [wasm-build]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -138,7 +138,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [wasm-build]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -156,13 +156,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [wasm-build]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - run: cargo install wasm-pack
       - name: Run Node tests
         working-directory: crates/wasm-bindings
@@ -176,10 +176,10 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM package
@@ -199,10 +199,10 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM GPU package
