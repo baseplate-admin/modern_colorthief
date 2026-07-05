@@ -1,0 +1,12 @@
+[package]
+name = "modern-colorthief-php-gpu"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+name = "modern_colorthief_gpu"
+
+[dependencies]
+modern-colorthief-core-gpu.workspace = true
+ext-php-rs.workspace = true

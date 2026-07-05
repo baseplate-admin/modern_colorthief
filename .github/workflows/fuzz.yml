@@ -1,0 +1,154 @@
+name: Fuzz
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  VULKAN_VERSION: 1.4.304.1
+
+jobs:
+  # ============================================================
+  # Property-based fuzz tests (CPU + GPU)
+  # ============================================================
+  fuzz-test:
+    name: "fuzz property tests — ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+          github_token: ${{ github.token }}
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          } else {
+            $fallbackIcd = "$env:VULKAN_SDK\Bin\vk_swiftshader_icd.json"
+            if (Test-Path $fallbackIcd) {
+              Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$fallbackIcd"
+            }
+          }
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + software renderers (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+          github_token: ${{ github.token }}
+
+      - name: Setup Vulkan environment (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.os }}-fuzz-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.os }}-fuzz-cargo-registry-
+
+      - name: Run CPU fuzz property tests
+        run: cargo test -p modern-colorthief-core-cpu fuzz:: -- --test-threads=1
+
+      - name: Run GPU fuzz property tests
+        run: cargo test -p modern-colorthief-core-gpu -- --test-threads=1
+
+  # ============================================================
+  # LibFuzzer build check (cargo fuzz check)
+  # Mirrors wasmtime's `cargo fuzz check --dev` pattern
+  # ============================================================
+  fuzz-check:
+    name: "fuzz check — ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install Vulkan SDK + SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_swiftshader: true
+          cache: true
+          github_token: ${{ github.token }}
+
+      - name: Setup SwiftShader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $sdkBin = "$env:VULKAN_SDK\Bin"
+          if (Test-Path $sdkBin) {
+            Add-Content -Path $env:GITHUB_PATH -Value $sdkBin
+          }
+          $icdJson = "C:\SwiftShader\vk_swiftshader_icd.json"
+          if (Test-Path $icdJson) {
+            Add-Content -Path $env:GITHUB_ENV -Value "VK_ICD_FILENAMES=$icdJson"
+          }
+
+      - name: Install Vulkan runtime (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Install Vulkan SDK + software renderers (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_lavapipe: true
+          install_swiftshader: true
+          cache: true
+          github_token: ${{ github.token }}
+
+      - name: Setup Vulkan environment (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: bash .github/scripts/setup_vulkan_macos.sh
+
+      - name: Check all fuzz targets compile
+        run: cargo check --bins
+        working-directory: fuzz

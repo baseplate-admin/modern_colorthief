@@ -1,0 +1,4 @@
+[package]
+name = "modern-colorthief-core"
+version.workspace = true
+edition.workspace = true

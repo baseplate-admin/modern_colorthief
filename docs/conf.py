@@ -14,6 +14,10 @@ author = "baseplate-admin"
 copyright = f"2024-{datetime.date.today().year}, {author}"
 release = modern_colorthief.__version__
 
+# -- sphinx-tabs compatible builders -----------------------------------------
+# https://sphinx-tabs.readthedocs.io/
+sphinx_tabs_valid_builders = ["linkcheck"]
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
@@ -23,6 +27,7 @@ extensions = [
     "sphinx.ext.viewcode",
      "sphinx.ext.todo",
     "sphinx_copybutton",
+    "sphinx_tabs.tabs",
 ]
 
 # Render todo items as visible checklists

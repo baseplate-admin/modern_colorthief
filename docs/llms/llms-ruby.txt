@@ -1,0 +1,34 @@
+# modern_colorthief — RUBY Binding API
+
+Package: `modern_colorthief`
+Module: `Colorthief`
+Install: `gem install modern_colorthief`
+Version: 0.3.0
+
+## Functions
+
+### `get_palette(pixels: String, width: Integer, height: Integer, color_count: Integer, quality: Integer)` → `Array<Integer>`
+
+  Parameters:
+  - `pixels` (String)
+  - `width` (Integer)
+  - `height` (Integer)
+  - `color_count` (Integer)
+  - `quality` (Integer)
+
+### `get_color(pixels: String, width: Integer, height: Integer, quality: Integer)` → `Array<Integer>`
+
+  Parameters:
+  - `pixels` (String)
+  - `width` (Integer)
+  - `height` (Integer)
+  - `quality` (Integer)
+
+## Usage Example
+
+```ruby
+require "Colorthief"
+
+palette = Colorthief.get_palette(pixels, width, height, 5, 1)
+color   = Colorthief.get_color(pixels, width, height, 1)
+```

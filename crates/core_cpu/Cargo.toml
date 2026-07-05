@@ -1,0 +1,13 @@
+[package]
+name = "modern-colorthief-core-cpu"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+modern-colorthief-core = { path = "../core" }
+rayon.workspace = true
+
+[dev-dependencies]
+color-thief = "0.2"
+modern-colorthief-core-gpu = { path = "../core_gpu" }
+rand = "0.8"

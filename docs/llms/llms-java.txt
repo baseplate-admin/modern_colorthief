@@ -1,0 +1,38 @@
+# modern_colorthief — JAVA Binding API
+
+Package: `modern_colorthief`
+Module: `modern_colorthief.Colorthief`
+Install: `Download JAR from GitHub Releases`
+Version: 0.3.0
+
+## Functions
+
+### `getPalette(pixels: byte[], width: int, height: int, color_count: int, quality: int)` → `Object`
+
+  Extract a palette of dominant colors from raw RGBA pixel data.
+
+  Parameters:
+  - `pixels` (byte[])
+  - `width` (int)
+  - `height` (int)
+  - `color_count` (int)
+  - `quality` (int)
+
+### `getColor(pixels: byte[], width: int, height: int, quality: int)` → `Object`
+
+  Extract the dominant color from raw RGBA pixel data.
+
+  Parameters:
+  - `pixels` (byte[])
+  - `width` (int)
+  - `height` (int)
+  - `quality` (int)
+
+## Usage Example
+
+```java
+import modern_colorthief.Colorthief;
+
+byte[][] palette = Colorthief.getPalette(pixels, width, height, 5, 1);
+byte[]   color  = Colorthief.getColor(pixels, width, height, 1);
+```

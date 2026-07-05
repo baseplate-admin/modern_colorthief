@@ -10,6 +10,11 @@ Modern Colorthief provides two main functions for color extraction,
 both backed by a Rust implementation of the Median Cut Color
 Quantization algorithm.
 
+.. note::
+
+   Looking for bindings in another language?  See the
+   :doc:`api_multilang` page for Ruby, Node.js, Java, PHP, and WebAssembly examples.
+
 .. rubric:: Functions
 
 .. autofunction:: modern_colorthief.get_palette

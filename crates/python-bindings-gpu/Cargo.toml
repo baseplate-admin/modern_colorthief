@@ -1,0 +1,12 @@
+[package]
+name = "modern-colorthief-python-gpu"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+modern-colorthief-core-gpu.workspace = true
+pyo3.workspace = true
+image = "0.25"

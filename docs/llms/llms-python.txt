@@ -1,0 +1,46 @@
+# modern_colorthief — PYTHON Binding API
+
+Package: `modern_colorthief`
+Module: `modern_colorthief`
+Install: `pip install modern_colorthief`
+Version: 0.3.0
+
+## Functions
+
+### `get_palette(pixels: bytes, width: int, height: int, color_count?: int, quality?: int)` → `list[tuple[int, int, int]]`
+
+  Extract a color palette from raw RGBA pixel bytes.
+  
+  Args:
+  pixels (bytes): Raw RGBA pixel data (4 bytes per pixel).
+  width (int): Image width in pixels.
+
+  Parameters:
+  - `pixels` (bytes)
+  - `width` (int)
+  - `height` (int)
+  - `color_count` (int) (optional)
+  - `quality` (int) (optional)
+
+### `get_color(pixels: bytes, width: int, height: int, quality?: int)` → `list[tuple[int, int, int]]`
+
+  Extract the dominant color from raw RGBA pixel bytes.
+  
+  Args:
+  pixels (bytes): Raw RGBA pixel data (4 bytes per pixel).
+  width (int): Image width in pixels.
+
+  Parameters:
+  - `pixels` (bytes)
+  - `width` (int)
+  - `height` (int)
+  - `quality` (int) (optional)
+
+## Usage Example
+
+```python
+from modern_colorthief import get_palette, get_color
+
+palette = get_palette(pixels, width, height, color_count=5, quality=1)
+color = get_color(pixels, width, height, quality=1)
+```

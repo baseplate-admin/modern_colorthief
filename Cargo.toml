@@ -1,29 +1,90 @@
-[package]
-name = "modern_colorthief"
+[workspace]
+members = [
+    "crates/core",
+    "crates/core_cpu",
+    "crates/core_gpu",
+    "crates/core_webgpu",
+    "crates/python-bindings",
+    "crates/wasm-bindings",
+    "crates/wasm-bindings-webgpu",
+    "crates/node-bindings",
+    "crates/node-bindings-gpu",
+    "crates/node-bindings-wasm",
+    "crates/jvm-bindings",
+    "crates/jvm-bindings-gpu",
+    "crates/php-bindings",
+    "crates/php-bindings-gpu",
+    "crates/python-bindings-gpu",
+    "crates/ruby-bindings/ext",
+    "crates/ruby-bindings-gpu/ext",
+]
+resolver = "2"
+
+[workspace.package]
 version = "0.3.0"
 edition = "2024"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[lib]
-name = "_modern_colorthief"
-crate-type = ["cdylib"]
-path = "src/rust/lib.rs"
+[workspace.dependencies]
+# Internal crates
+modern-colorthief-core = { path = "crates/core" }
+modern-colorthief-core-cpu = { path = "crates/core_cpu" }
+modern-colorthief-core-gpu = { path = "crates/core_gpu" }
+modern-colorthief-core-webgpu = { path = "crates/core_webgpu" }
 
-[dependencies]
-pyo3 = "0.29.0"
-color-thief = "0.2"
-image = "0.25.9"
-itertools = "0.15.0"
+# Parallelism
 rayon = "1.10"
+
+# Python bindings
+pyo3 = { version = "0.29", features = ["abi3-py39"] }
+
+# Node.js bindings
+napi = { version = "3.1", features = ["full"] }
+napi-derive = "3"
+napi-build = "2"
+
+# WASM bindings
+wasm-bindgen = "0.2"
+wasm-bindgen-test = "0.3"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = [
+    "Window",
+    "Document",
+    "HtmlImageElement",
+    "HtmlCanvasElement",
+    "CanvasRenderingContext2d",
+    "ImageData",
+    "Blob",
+    "Url",
+    "console",
+] }
+
+# JVM bindings
+jni = "0.21"
+
+# Ruby bindings
+magnus = "0.8"
+rb-sys = { version = "0.9", features = ["global-allocator"] }
+
+# PHP bindings
+ext-php-rs = "0.15"
+
+# GPU
+ash = "0.38"
 
 [profile.release.package."*"]
 codegen-units = 1
 opt-level = 3
 strip = true
 
+[profile.release.package.modern_colorthief]
+strip = false
+
+[profile.release.package.modern_colorthief_gpu]
+strip = false
+
 [profile.release]
 panic = "abort"
 codegen-units = 1
 lto = "fat"
-opt-level = 3
 strip = true

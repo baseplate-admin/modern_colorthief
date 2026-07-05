@@ -1,0 +1,23 @@
+{
+    "name": "@modern_colorthief/native-gpu",
+    "version": "0.3.0",
+    "description": "GPU-accelerated Node.js bindings for modern_colorthief",
+    "type": "module",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "napi": {
+        "binaryName": "modern_colorthief_gpu",
+        "triples": {}
+    },
+    "dependencies": {
+        "@napi-rs/cli": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.1",
+        "typescript": "^6.0.3",
+        "vitest": "^4.0.14"
+    },
+    "peerDependencies": {
+        "sharp": ">=0.33.0"
+    }
+}

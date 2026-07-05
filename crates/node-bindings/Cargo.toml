@@ -1,0 +1,19 @@
+[package]
+name = "modern-colorthief-node"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+modern-colorthief-core-cpu.workspace = true
+napi.workspace = true
+napi-derive.workspace = true
+rayon.workspace = true
+
+[build-dependencies]
+napi-build.workspace = true
+
+[package.metadata.napi]
+binaryName = "modern_colorthief"

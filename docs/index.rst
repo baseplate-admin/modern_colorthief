@@ -24,6 +24,7 @@
       <img src="https://img.shields.io/pypi/l/modern_colorthief.svg?color=6366f1&style=flat-square" alt="License"/>
       <img src="https://img.shields.io/crates/v/modern_colorthief.svg?color=4f46e5&label=cargo&style=flat-square" alt="Crates.io"/>
       <img src="https://img.shields.io/badge/implemented%20in-Rust-dca280?style=flat-square" alt="Rust"/>
+      <img src="https://img.shields.io/badge/WASM-7B2CBF?style=flat-square" alt="WebAssembly"/>
    </div>
 
    </div>
@@ -31,9 +32,10 @@
 
 .. rubric:: Overview
 
-Modern Colorthief is a high-performance Python library for extracting dominant
-colors and color palettes from images. Built with `Rust`_ and `PyO3`_, it
-delivers near-C++ performance with the simplicity of a pure Python API.
+Modern Colorthief is a high-performance library for extracting dominant
+colors and color palettes from images. Built with `Rust`_, it provides
+native bindings for Python, Ruby, Node.js, Java, PHP, and WebAssembly —
+all backed by the same optimized Median Cut core.
 
 .. note::
 
@@ -97,6 +99,18 @@ delivers near-C++ performance with the simplicity of a pure Python API.
          <div class="card-desc">Deep dive into the Median Cut Color Quantization algorithm.</div>
       </a>
 
+      <a class="card-item" href="webassembly.html">
+         <span class="card-icon">&#x1F7E2;</span>
+         <div class="card-title">WebAssembly</div>
+         <div class="card-desc">Run in the browser via npm with near-native WASM performance.</div>
+      </a>
+
+      <a class="card-item" href="api_multilang.html">
+         <span class="card-icon">&#x1F5FD&#xFE0F;</span>
+         <div class="card-title">Multi-Language API</div>
+         <div class="card-desc">Python, Ruby, Node.js, Java, PHP, and WASM binding examples.</div>
+      </a>
+
       </div>
       <div style="clear:both;"></div>
 
@@ -105,6 +119,7 @@ delivers near-C++ performance with the simplicity of a pure Python API.
 - **Blazing Fast** -- Rust-powered core delivers ~100x speedup over pure Python
 - **Zero Dependencies** -- No Pillow, no NumPy required at runtime
 - **Cross-Platform** -- Prebuilt wheels for Linux, macOS, Windows, and more
+- **Multi-Language** -- Native bindings for Python, Ruby, Node.js, Java, PHP, and WebAssembly
 - **Simple API** -- Two functions, one CLI, that just work
 - **Battle-Tested** -- Used in production by developers worldwide
 
@@ -121,6 +136,9 @@ delivers near-C++ performance with the simplicity of a pure Python API.
    differences
    api_differences
    mmcq
+   webassembly
+   api_multilang
+   llms/llm
    roadmaps
    license
 

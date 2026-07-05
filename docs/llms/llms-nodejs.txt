@@ -1,0 +1,46 @@
+# modern_colorthief — NODEJS Binding API
+
+Package: `modern-colorthief`
+Module: `modern-colorthief`
+Install: `npm install modern-colorthief`
+Version: 0.3.0
+
+## Functions
+
+### `getPalette(pixels: Uint8Array, width: number, height: number, color_count?: number, quality?: number)` → `number[]`
+
+  Extract a palette of dominant colors from raw RGBA pixel data.
+  
+  @param pixels - Raw RGBA pixel buffer (4 bytes per pixel)
+  @param width - Image width in pixels
+  @param height - Image height in pixels
+
+  Parameters:
+  - `pixels` (Uint8Array)
+  - `width` (number)
+  - `height` (number)
+  - `color_count` (number) (optional)
+  - `quality` (number) (optional)
+
+### `getColor(pixels: Uint8Array, width: number, height: number, quality?: number)` → `number[]`
+
+  Extract the dominant color from raw RGBA pixel data.
+  
+  @param pixels - Raw RGBA pixel buffer (4 bytes per pixel)
+  @param width - Image width in pixels
+  @param height - Image height in pixels
+
+  Parameters:
+  - `pixels` (Uint8Array)
+  - `width` (number)
+  - `height` (number)
+  - `quality` (number) (optional)
+
+## Usage Example
+
+```javascript
+import { getPalette, getColor } from 'modern-colorthief';
+
+const palette = await getPalette(pixels, width, height, 5, 1);
+const color = await getColor(pixels, width, height, 1);
+```
