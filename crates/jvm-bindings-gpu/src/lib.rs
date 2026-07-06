@@ -31,11 +31,8 @@ pub extern "system" fn Java_modern_colorthief_ColorthiefGpu_getPalette<'a>(
         )
         .map_err(|_| Error::JavaException)?;
 
-        let result_array = env.new_object_array(
-            colors.len() as i32,
-            jni::jni_str!("[B"),
-            JObject::null(),
-        )?;
+        let result_array =
+            env.new_object_array(colors.len() as i32, jni::jni_str!("[B"), JObject::null())?;
 
         for (i, (r, g, b)) in colors.into_iter().enumerate() {
             let color_array = env.byte_array_from_slice(&[r, g, b])?;
