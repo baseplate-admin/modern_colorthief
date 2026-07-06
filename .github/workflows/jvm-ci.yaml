@@ -91,7 +91,7 @@ jobs:
       - name: Run Rust core unit tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native library
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "native-lib-cpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
@@ -125,7 +125,7 @@ jobs:
           distribution: temurin
           java-version: '26'
       - name: Download native library
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: native-lib-cpu-${{ matrix.target }}
           path: crates/jvm-bindings/tests/native
@@ -228,7 +228,7 @@ jobs:
         shell: bash
         run: test -f target/${{ matrix.target }}/release/${{ matrix.lib }}
       - name: Upload GPU native library
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "native-lib-gpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
@@ -390,7 +390,7 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Download GPU native library
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: native-lib-gpu-${{ matrix.target }}
           path: crates/jvm-bindings-gpu/tests/native
@@ -438,7 +438,7 @@ jobs:
           distribution: temurin
           java-version: '26'
       - name: Download all CPU native libraries
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           pattern: native-lib-cpu-*
           path: crates/jvm-bindings/tests/native
@@ -482,7 +482,7 @@ jobs:
           distribution: temurin
           java-version: '26'
       - name: Download all GPU native libraries
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           pattern: native-lib-gpu-*
           path: crates/jvm-bindings-gpu/tests/native

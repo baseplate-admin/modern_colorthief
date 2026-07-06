@@ -61,7 +61,7 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           manylinux: auto
       - name: Upload wheels
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-linux-${{ matrix.target }}"
           path: dist
@@ -89,7 +89,7 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           manylinux: musllinux_1_2
       - name: Upload wheels
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-musllinux-${{ matrix.target }}"
           path: dist
@@ -134,7 +134,7 @@ jobs:
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-windows-${{ matrix.platform.target }}"
           path: dist
@@ -165,7 +165,7 @@ jobs:
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-macos-${{ matrix.platform.target }}"
           path: dist
@@ -189,7 +189,7 @@ jobs:
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-android-${{ matrix.target }}"
           path: dist
@@ -208,7 +208,7 @@ jobs:
           command: sdist
           args: --manifest-path crates/python-bindings/Cargo.toml --out dist
       - name: Upload sdist
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-cpu-sdist
           path: dist
@@ -239,28 +239,28 @@ jobs:
           python-version: "3.14"
 
       - name: Download built wheel
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-linux-x86_64
           path: crates/python-bindings/dist
         if: matrix.os == 'ubuntu-latest'
 
       - name: Download built wheel (macos-15-intel)
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-macos-x86_64
           path: crates/python-bindings/dist
         if: matrix.os == 'macos-15-intel'
 
       - name: Download built wheel (macos-latest)
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-macos-aarch64
           path: crates/python-bindings/dist
         if: matrix.os == 'macos-latest'
 
       - name: Download built wheel (windows-latest)
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-windows-x64
           path: crates/python-bindings/dist
@@ -325,7 +325,7 @@ jobs:
           cargo llvm-cov report --lcov --output-path coverage.lcov
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: cpu-coverage-reports
           path: |
@@ -414,7 +414,7 @@ jobs:
           uv run maturin build --release --out dist
 
       - name: Upload GPU wheel
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: "wheel-gpu-${{ matrix.os }}"
           path: crates/python-bindings-gpu/dist
@@ -564,7 +564,7 @@ jobs:
           python-version: "3.14"
 
       - name: Download GPU wheel
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: "wheel-gpu-${{ matrix.os }}"
           path: crates/python-bindings-gpu/dist
@@ -649,7 +649,7 @@ jobs:
           cargo llvm-cov report --lcov --output-path coverage.lcov
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: gpu-coverage-reports
           path: |
@@ -668,7 +668,7 @@ jobs:
       attestations: write
     steps:
       - name: Download CPU wheels
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           pattern: wheels-cpu-*
           merge-mappings: true
@@ -699,7 +699,7 @@ jobs:
       contents: write
     steps:
       - name: Download GPU wheels
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           pattern: wheel-gpu-*
           merge-mappings: true
