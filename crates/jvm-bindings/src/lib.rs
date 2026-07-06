@@ -43,7 +43,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getPalette<'a>(
 
         for (i, (r, g, b)) in colors.into_iter().enumerate() {
             let color_array = env.byte_array_from_slice(&[r, g, b])?;
-            env.set_object_array_element(&result_array, i as jsize, color_array)?;
+            env.set_object_array_element(&result_array, i as jsize, &color_array)?;
         }
 
         Ok(result_array.into())
