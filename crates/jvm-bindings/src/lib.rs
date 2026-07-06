@@ -38,7 +38,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getPalette<'a>(
         .map_err(|_| Error::JavaException)?;
 
         let result_array = env.new_object_array(
-            colors.len(),
+            colors.len() as jni::sys::jsize,
             jni::jni_str!("[B"),
             JObject::null(),
         )?;
@@ -86,10 +86,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getColor<'a>(
         )
         .map_err(|_| Error::JavaException)?;
 
-        let (r, g, b) = colors
-            .first()
-            .copied()
-            .ok_or(Error::JavaException)?;
+        let (r, g, b) = colors.first().copied().ok_or(Error::JavaException)?;
 
         let result = env.byte_array_from_slice(&[r, g, b])?;
         Ok(result.into())
