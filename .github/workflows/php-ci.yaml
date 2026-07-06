@@ -31,7 +31,7 @@ env:
 
 jobs:
   cpu-build:
-    name: "cpu-build — ${{ matrix.target }}"
+    name: "cpu-build — ${{ matrix.target }} — PHP ${{ matrix.php-version }}"
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -42,6 +42,7 @@ jobs:
           - x86_64-apple-darwin
           - aarch64-apple-darwin
           - x86_64-pc-windows-msvc
+        php-version: ['8.1', '8.2', '8.3', '8.4']
         include:
           - target: x86_64-unknown-linux-gnu
             runner: ubuntu-latest
@@ -63,11 +64,38 @@ jobs:
             runner: windows-latest
             lib: modern_colorthief.dll
             shell: pwsh
+        exclude:
+          # Only build all PHP versions for Linux x86_64 (the test platform)
+          # Other platforms build PHP 8.4 only (Rust ABI compatibility verified on Linux)
+          - target: aarch64-unknown-linux-gnu
+            php-version: '8.1'
+          - target: aarch64-unknown-linux-gnu
+            php-version: '8.2'
+          - target: aarch64-unknown-linux-gnu
+            php-version: '8.3'
+          - target: x86_64-apple-darwin
+            php-version: '8.1'
+          - target: x86_64-apple-darwin
+            php-version: '8.2'
+          - target: x86_64-apple-darwin
+            php-version: '8.3'
+          - target: aarch64-apple-darwin
+            php-version: '8.1'
+          - target: aarch64-apple-darwin
+            php-version: '8.2'
+          - target: aarch64-apple-darwin
+            php-version: '8.3'
+          - target: x86_64-pc-windows-msvc
+            php-version: '8.1'
+          - target: x86_64-pc-windows-msvc
+            php-version: '8.2'
+          - target: x86_64-pc-windows-msvc
+            php-version: '8.3'
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '${{ matrix.php-version }}'
           ini-file: development
           extensions: gd
       - uses: dtolnay/rust-toolchain@stable
@@ -80,7 +108,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}-php${{ matrix.php-version }}
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
@@ -105,11 +133,12 @@ jobs:
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-php
       - name: Run Rust core tests
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' && matrix.php-version == '8.4' }}
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
         uses: actions/upload-artifact@v7
         with:
-          name: "native-lib-php-cpu-${{ matrix.target }}"
+          name: "native-lib-php-cpu-${{ matrix.target }}-php${{ matrix.php-version }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
           retention-days: 7
 
@@ -135,6 +164,20 @@ jobs:
             target: x86_64-pc-windows-msvc
             lib: modern_colorthief.dll
             shell: pwsh
+        exclude:
+          # macOS/Windows only have PHP 8.4 builds; Linux tests all versions
+          - os: macos-15-intel
+            php-version: '8.1'
+          - os: macos-15-intel
+            php-version: '8.2'
+          - os: macos-15-intel
+            php-version: '8.3'
+          - os: windows-latest
+            php-version: '8.1'
+          - os: windows-latest
+            php-version: '8.2'
+          - os: windows-latest
+            php-version: '8.3'
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
@@ -145,7 +188,7 @@ jobs:
       - name: Download native extension
         uses: actions/download-artifact@v7
         with:
-          name: native-lib-php-cpu-${{ matrix.target }}
+          name: native-lib-php-cpu-${{ matrix.target }}-php${{ matrix.php-version }}
           path: target/release
       - name: Verify extension
         shell: bash
@@ -167,7 +210,7 @@ jobs:
           Write-Host "This is a Rust toolchain issue, not a code issue. Rust code is tested on Linux/macOS."
 
   gpu-build:
-    name: "gpu-build — ${{ matrix.target }}"
+    name: "gpu-build — ${{ matrix.target }} — PHP ${{ matrix.php-version }}"
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -178,6 +221,7 @@ jobs:
           - x86_64-apple-darwin
           - aarch64-apple-darwin
           - x86_64-pc-windows-msvc
+        php-version: ['8.1', '8.2', '8.3', '8.4']
         include:
           - target: x86_64-unknown-linux-gnu
             runner: ubuntu-latest
@@ -199,11 +243,38 @@ jobs:
             runner: windows-latest
             lib: modern_colorthief_gpu.dll
             shell: pwsh
+        exclude:
+          # Only build all PHP versions for Linux x86_64 (the test platform)
+          # Other platforms build PHP 8.4 only
+          - target: aarch64-unknown-linux-gnu
+            php-version: '8.1'
+          - target: aarch64-unknown-linux-gnu
+            php-version: '8.2'
+          - target: aarch64-unknown-linux-gnu
+            php-version: '8.3'
+          - target: x86_64-apple-darwin
+            php-version: '8.1'
+          - target: x86_64-apple-darwin
+            php-version: '8.2'
+          - target: x86_64-apple-darwin
+            php-version: '8.3'
+          - target: aarch64-apple-darwin
+            php-version: '8.1'
+          - target: aarch64-apple-darwin
+            php-version: '8.2'
+          - target: aarch64-apple-darwin
+            php-version: '8.3'
+          - target: x86_64-pc-windows-msvc
+            php-version: '8.1'
+          - target: x86_64-pc-windows-msvc
+            php-version: '8.2'
+          - target: x86_64-pc-windows-msvc
+            php-version: '8.3'
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '${{ matrix.php-version }}'
           ini-file: development
           extensions: gd
       - uses: dtolnay/rust-toolchain@stable
@@ -216,7 +287,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}-php${{ matrix.php-version }}
       - name: Install Vulkan runtime (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
@@ -284,11 +355,12 @@ jobs:
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-php-gpu
       - name: Run Rust GPU tests
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' && matrix.php-version == '8.4' }}
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
         uses: actions/upload-artifact@v7
         with:
-          name: "native-lib-php-gpu-${{ matrix.target }}"
+          name: "native-lib-php-gpu-${{ matrix.target }}-php${{ matrix.php-version }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
           retention-days: 7
 
@@ -314,6 +386,20 @@ jobs:
             target: x86_64-pc-windows-msvc
             lib: modern_colorthief_gpu.dll
             shell: pwsh
+        exclude:
+          # macOS/Windows only have PHP 8.4 builds; Linux tests all versions
+          - os: macos-15-intel
+            php-version: '8.1'
+          - os: macos-15-intel
+            php-version: '8.2'
+          - os: macos-15-intel
+            php-version: '8.3'
+          - os: windows-latest
+            php-version: '8.1'
+          - os: windows-latest
+            php-version: '8.2'
+          - os: windows-latest
+            php-version: '8.3'
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
@@ -367,7 +453,7 @@ jobs:
       - name: Download GPU native extension
         uses: actions/download-artifact@v7
         with:
-          name: native-lib-php-gpu-${{ matrix.target }}
+          name: native-lib-php-gpu-${{ matrix.target }}-php${{ matrix.php-version }}
           path: target/release
       - name: Verify GPU extension
         shell: bash

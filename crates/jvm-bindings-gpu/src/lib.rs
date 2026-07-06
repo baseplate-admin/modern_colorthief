@@ -1,6 +1,6 @@
 use jni::EnvUnowned;
 use jni::errors::{Error, ThrowRuntimeExAndDefault};
-use jni::objects::{JByteArray, JObject, JObjectRef};
+use jni::objects::{JByteArray, JObject};
 use jni::sys::{jint, jsize};
 
 /// Extract a palette using GPU compute.
@@ -38,8 +38,8 @@ pub extern "system" fn Java_modern_colorthief_ColorthiefGpu_getPalette<'a>(
         )?;
 
         for (i, (r, g, b)) in colors.into_iter().enumerate() {
-            let color_array = env.byte_array_from_slice(&[r, g, b])?;
-            env.set_object_array_element(&result_array, i as jsize, color_array.as_jobject())?;
+            let color_array: JObject = env.byte_array_from_slice(&[r, g, b])?.into();
+            env.set_object_array_element(&result_array, i as jsize, color_array)?;
         }
 
         Ok(result_array.into())
