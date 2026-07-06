@@ -91,7 +91,7 @@ jobs:
       - name: Run Rust core unit tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native library
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v8
         with:
           name: "native-lib-cpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}
@@ -228,7 +228,7 @@ jobs:
         shell: bash
         run: test -f target/${{ matrix.target }}/release/${{ matrix.lib }}
       - name: Upload GPU native library
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v8
         with:
           name: "native-lib-gpu-${{ matrix.target }}"
           path: target/${{ matrix.target }}/release/${{ matrix.lib }}

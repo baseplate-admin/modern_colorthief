@@ -95,7 +95,7 @@ jobs:
           cp target/${{ matrix.target }}/release/${{ matrix.lib }} crates/node-bindings/artifacts/modern_colorthief.node
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v8
         with:
           name: "node-native-${{ matrix.target }}"
           path: crates/node-bindings/artifacts/*.node

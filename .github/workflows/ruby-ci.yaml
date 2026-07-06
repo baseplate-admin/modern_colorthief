@@ -84,7 +84,7 @@ jobs:
           RUBY_SYS_LLVM_PRECEDENCE: never
 
       - name: Upload built extension
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v8
         with:
           name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings/lib/
@@ -236,7 +236,7 @@ jobs:
           RUBY_SYS_LLVM_PRECEDENCE: never
 
       - name: Upload built extension
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v8
         with:
           name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings-gpu/lib/
@@ -360,7 +360,7 @@ jobs:
           MODERN_COLORTHIEF_COMPILE: "true"
 
       - name: Upload CPU gems
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v8
         with:
           name: ruby-bindings-gems
           path: crates/ruby-bindings/pkg/*.gem
@@ -394,7 +394,7 @@ jobs:
           MODERN_COLORTHIEF_COMPILE: "true"
 
       - name: Upload GPU gems
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v8
         with:
           name: ruby-bindings-gpu-gems
           path: crates/ruby-bindings-gpu/pkg/*.gem
