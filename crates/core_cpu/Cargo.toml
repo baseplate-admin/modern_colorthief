@@ -10,4 +10,4 @@ rayon.workspace = true
 [dev-dependencies]
 color-thief = "0.2"
 modern-colorthief-core-gpu = { path = "../core_gpu" }
-rand = "0.8"
+rand = "0.10"
