@@ -85,7 +85,7 @@ jobs:
             ${{ matrix.os }}-fuzz-cargo-registry-
 
       - name: Run CPU fuzz property tests
-        run: cargo test -p modern-colorthief-core-cpu fuzz:: -- --test-threads=1
+        run: "cargo test -p modern-colorthief-core-cpu fuzz:: -- --test-threads=1"
 
       - name: Run GPU fuzz property tests
         run: cargo test -p modern-colorthief-core-gpu -- --test-threads=1

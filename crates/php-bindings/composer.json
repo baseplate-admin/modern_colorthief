@@ -10,8 +10,7 @@
         "php": ">=8.2"
     },
     "require-dev": {
-        "pestphp/pest": "^4.0",
-        "phpunit/phpunit": "^13.0"
+        "pestphp/pest": "^4.0"
     },
     "config": {
         "allow-plugins": {
