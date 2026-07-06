@@ -310,7 +310,7 @@ jobs:
             shell: bash
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            lib: libmodern_colorthief_gpu.dll
+            lib: modern_colorthief_gpu.dll
             shell: pwsh
     steps:
       - uses: actions/checkout@v7
