@@ -114,13 +114,14 @@ jobs:
           retention-days: 7
 
   cpu-test:
-    name: "cpu-test — ${{ matrix.os }}"
+    name: "cpu-test — ${{ matrix.os }} — PHP ${{ matrix.php-version }}"
     needs: [cpu-build]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, windows-latest]
+        php-version: ['8.1', '8.2', '8.3', '8.4']
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -138,7 +139,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '${{ matrix.php-version }}'
           ini-file: development
           extensions: gd
       - name: Download native extension
@@ -162,7 +163,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "PHP extension tests skipped on Windows."
-          Write-Host "Rust nightly stdlibs are linked with a different MSVCRT version than PHP 8.4 expects."
+          Write-Host "Rust nightly stdlibs are linked with a different MSVCRT version than PHP expects."
           Write-Host "This is a Rust toolchain issue, not a code issue. Rust code is tested on Linux/macOS."
 
   gpu-build:
@@ -292,13 +293,14 @@ jobs:
           retention-days: 7
 
   gpu-test:
-    name: "gpu-test — ${{ matrix.os }}"
+    name: "gpu-test — ${{ matrix.os }} — PHP ${{ matrix.php-version }}"
     needs: [gpu-build]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, windows-latest]
+        php-version: ['8.1', '8.2', '8.3', '8.4']
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -316,7 +318,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '${{ matrix.php-version }}'
           ini-file: development
           extensions: gd
       - name: Install Vulkan runtime (Linux)
@@ -383,7 +385,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "GPU PHP extension tests skipped on Windows."
-          Write-Host "Rust nightly stdlibs are linked with a different MSVCRT version than PHP 8.4 expects."
+          Write-Host "Rust nightly stdlibs are linked with a different MSVCRT version than PHP expects."
           Write-Host "This is a Rust toolchain issue, not a code issue. Rust code is tested on Linux/macOS."
 
   publish-cpu:
