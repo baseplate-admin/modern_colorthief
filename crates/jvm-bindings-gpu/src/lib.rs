@@ -1,5 +1,5 @@
 use jni::EnvUnowned;
-use jni::errors::{Error, ThrowRuntimeExAndDefault};
+use jni::errors::ThrowRuntimeExAndDefault;
 use jni::objects::{JByteArray, JObject};
 use jni::sys::{jint, jsize};
 
@@ -29,9 +29,16 @@ pub extern "system" fn Java_modern_colorthief_ColorthiefGpu_getPalette<'a>(
             color_count as u8,
             quality as u8,
         )
-        .map_err(|e| Error::Msg(e.to_string()))?;
+        .map_err(|e| {
+            env.throw_new(jni::jni_str!("java/lang/RuntimeException"), e.to_string());
+            jni::errors::Error::JavaException
+        })?;
 
-        let result_array = env.new_object_array(colors.len() as jsize, jni::jni_str!("[B"), JObject::null())?;
+        let result_array = env.new_object_array(
+            colors.len() as jsize,
+            jni::jni_str!("[B"),
+            JObject::null(),
+        )?;
 
         for (i, (r, g, b)) in colors.into_iter().enumerate() {
             let color_array = env.byte_array_from_slice(&[r, g, b])?;
@@ -68,12 +75,18 @@ pub extern "system" fn Java_modern_colorthief_ColorthiefGpu_getColor<'a>(
             5,
             quality as u8,
         )
-        .map_err(|e| Error::Msg(e.to_string()))?;
+        .map_err(|e| {
+            env.throw_new(jni::jni_str!("java/lang/RuntimeException"), e.to_string());
+            jni::errors::Error::JavaException
+        })?;
 
-        let (r, g, b) = colors
-            .first()
-            .copied()
-            .ok_or_else(|| Error::Msg("Image contains no colors".into()))?;
+        let (r, g, b) = colors.first().copied().ok_or_else(|| {
+            env.throw_new(
+                jni::jni_str!("java/lang/RuntimeException"),
+                "Image contains no colors",
+            );
+            jni::errors::Error::JavaException
+        })?;
 
         let result = env.byte_array_from_slice(&[r, g, b])?;
         Ok(result.into())
