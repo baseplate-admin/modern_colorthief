@@ -10,15 +10,14 @@
         "php": ">=8.2"
     },
     "require-dev": {
-        "pestphp/pest": "^3.0",
-        "phpunit/phpunit": "^11.0"
+        "pestphp/pest": "^4.0"
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
         },
         "platform": {
-            "php": "8.2"
+            "php": "8.3"
         }
     },
     "archive": {

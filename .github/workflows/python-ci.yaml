@@ -31,7 +31,7 @@ env:
 
 jobs:
   cpu-linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         target: [x86_64, x86, aarch64, armv7, s390x, ppc64le]
@@ -39,7 +39,7 @@ jobs:
       run:
         working-directory: crates/python-bindings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: 3.14
@@ -61,14 +61,14 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           manylinux: auto
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-linux-${{ matrix.target }}"
           path: dist
           retention-days: 7
 
   cpu-musllinux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         target: [x86_64, x86, aarch64, armv7]
@@ -76,7 +76,7 @@ jobs:
       run:
         working-directory: crates/python-bindings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: 3.14
@@ -89,7 +89,7 @@ jobs:
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
           manylinux: musllinux_1_2
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-musllinux-${{ matrix.target }}"
           path: dist
@@ -113,7 +113,7 @@ jobs:
       run:
         working-directory: crates/python-bindings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: 3.14
@@ -134,7 +134,7 @@ jobs:
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-windows-${{ matrix.platform.target }}"
           path: dist
@@ -153,7 +153,7 @@ jobs:
       run:
         working-directory: crates/python-bindings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: 3.14
@@ -165,7 +165,7 @@ jobs:
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-macos-${{ matrix.platform.target }}"
           path: dist
@@ -180,7 +180,7 @@ jobs:
       run:
         working-directory: crates/python-bindings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -189,7 +189,7 @@ jobs:
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "wheels-cpu-android-${{ matrix.target }}"
           path: dist
@@ -201,14 +201,14 @@ jobs:
       run:
         working-directory: crates/python-bindings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
           command: sdist
           args: --manifest-path crates/python-bindings/Cargo.toml --out dist
       - name: Upload sdist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-cpu-sdist
           path: dist
@@ -227,7 +227,7 @@ jobs:
         working-directory: crates/python-bindings
         shell: bash
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install uv
         uses: astral-sh/setup-uv@v8.2.0
@@ -239,28 +239,28 @@ jobs:
           python-version: "3.14"
 
       - name: Download built wheel
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-linux-x86_64
           path: crates/python-bindings/dist
         if: matrix.os == 'ubuntu-latest'
 
       - name: Download built wheel (macos-15-intel)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-macos-x86_64
           path: crates/python-bindings/dist
         if: matrix.os == 'macos-15-intel'
 
       - name: Download built wheel (macos-latest)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-macos-aarch64
           path: crates/python-bindings/dist
         if: matrix.os == 'macos-latest'
 
       - name: Download built wheel (windows-latest)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: wheels-cpu-windows-x64
           path: crates/python-bindings/dist
@@ -282,7 +282,7 @@ jobs:
         working-directory: crates/python-bindings
         shell: bash
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -292,7 +292,7 @@ jobs:
         uses: taiki-e/install-action@cargo-llvm-cov
 
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ubuntu-latest-cargo-registry-python-cpu-coverage-${{ hashFiles('**/Cargo.lock') }}
@@ -325,7 +325,7 @@ jobs:
           cargo llvm-cov report --lcov --output-path coverage.lcov
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cpu-coverage-reports
           path: |
@@ -344,7 +344,7 @@ jobs:
       run:
         working-directory: crates/python-bindings-gpu
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -397,7 +397,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-python-gpu-${{ hashFiles('**/Cargo.lock') }}
@@ -414,7 +414,7 @@ jobs:
           uv run maturin build --release --out dist
 
       - name: Upload GPU wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "wheel-gpu-${{ matrix.os }}"
           path: crates/python-bindings-gpu/dist
@@ -429,11 +429,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-15-intel, windows-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-python-gpu-${{ hashFiles('**/Cargo.lock') }}
@@ -503,7 +503,7 @@ jobs:
         working-directory: crates/python-bindings-gpu
         shell: bash
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install Vulkan runtime (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -564,7 +564,7 @@ jobs:
           python-version: "3.14"
 
       - name: Download GPU wheel
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: "wheel-gpu-${{ matrix.os }}"
           path: crates/python-bindings-gpu/dist
@@ -587,7 +587,7 @@ jobs:
         working-directory: crates/python-bindings-gpu
         shell: bash
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install Vulkan runtime
         run: |
@@ -616,7 +616,7 @@ jobs:
         uses: taiki-e/install-action@cargo-llvm-cov
 
       - name: Cache cargo registry
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cargo/registry
           key: ubuntu-latest-cargo-registry-python-gpu-coverage-${{ hashFiles('**/Cargo.lock') }}
@@ -649,7 +649,7 @@ jobs:
           cargo llvm-cov report --lcov --output-path coverage.lcov
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: gpu-coverage-reports
           path: |
@@ -668,7 +668,7 @@ jobs:
       attestations: write
     steps:
       - name: Download CPU wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: wheels-cpu-*
           merge-mappings: true
@@ -699,7 +699,7 @@ jobs:
       contents: write
     steps:
       - name: Download GPU wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: wheel-gpu-*
           merge-mappings: true
