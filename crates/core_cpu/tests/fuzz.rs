@@ -52,7 +52,7 @@ fn palettes_approximately_equal(a: &[(u8, u8, u8)], b: &[(u8, u8, u8)], toleranc
 /// Generate a random RGBA buffer with the given dimensions.
 fn random_buffer(width: u32, height: u32, rng: &mut impl Rng) -> Vec<u8> {
     let size = (width * height) as usize * 4;
-    (0..size).map(|_| rng.random_range(0..=255)).collect()
+    (0..size).map(|_| rng.gen_range(0..=255)).collect()
 }
 
 /// Generate a solid-color buffer.
