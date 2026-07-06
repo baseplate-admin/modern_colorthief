@@ -48,7 +48,7 @@ jobs:
             lib: libmodern_colorthief.so
             shell: bash
           - target: aarch64-unknown-linux-gnu
-            runner: ubuntu-latest
+            runner: ubuntu-24.04-arm
             lib: libmodern_colorthief.so
             shell: bash
           - target: x86_64-apple-darwin
@@ -81,11 +81,8 @@ jobs:
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install aarch64 cross-compile deps
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: bash scripts/arm/setup_php_cross.sh
       - name: Install system dependencies (Linux)
-        if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
+        if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev
@@ -99,7 +96,7 @@ jobs:
         with:
           version: 21
       - name: Build PHP extension
-        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' && !contains(matrix.target, '-pc-windows-msvc') }}
+        if: ${{ !contains(matrix.target, '-pc-windows-msvc') }}
         run: cargo build --release --target ${{ matrix.target }} -p modern-colorthief-php
         env:
           MACOSX_DEPLOYMENT_TARGET: 10.12
@@ -107,16 +104,9 @@ jobs:
       - name: Build PHP extension (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-php
-      - name: Build PHP extension (aarch64-linux)
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cargo build --release --target ${{ matrix.target }} -p modern-colorthief-php
-        env:
-          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
-          PHP_CONFIG: /usr/bin/php-config-aarch64
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Upload native extension
-        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         uses: actions/upload-artifact@v7
         with:
           name: "native-lib-php-cpu-${{ matrix.target }}"
@@ -193,7 +183,7 @@ jobs:
             lib: libmodern_colorthief_gpu.so
             shell: bash
           - target: aarch64-unknown-linux-gnu
-            runner: ubuntu-latest
+            runner: ubuntu-24.04-arm
             lib: libmodern_colorthief_gpu.so
             shell: bash
           - target: x86_64-apple-darwin
@@ -269,11 +259,8 @@ jobs:
         if: ${{ contains(matrix.target, '-apple-darwin') }}
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
-      - name: Install aarch64 cross-compile deps
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: bash scripts/arm/setup_php_cross.sh
       - name: Install system dependencies (Linux)
-        if: ${{ contains(matrix.target, '-linux-gnu') && matrix.target != 'aarch64-unknown-linux-gnu' }}
+        if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev
@@ -287,7 +274,7 @@ jobs:
         with:
           version: 21
       - name: Build GPU PHP extension
-        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' && !contains(matrix.target, '-pc-windows-msvc') }}
+        if: ${{ !contains(matrix.target, '-pc-windows-msvc') }}
         run: cargo build --release --target ${{ matrix.target }} -p modern-colorthief-php-gpu
         env:
           MACOSX_DEPLOYMENT_TARGET: 10.12
@@ -295,16 +282,9 @@ jobs:
       - name: Build GPU PHP extension (Windows)
         if: ${{ contains(matrix.target, '-pc-windows-msvc') }}
         run: cargo +nightly build --release --target ${{ matrix.target }} -p modern-colorthief-php-gpu
-      - name: Build GPU PHP extension (aarch64-linux)
-        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
-        run: cargo build --release --target ${{ matrix.target }} -p modern-colorthief-php-gpu
-        env:
-          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
-          PHP_CONFIG: /usr/bin/php-config-aarch64
       - name: Run Rust GPU tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
       - name: Upload GPU native extension
-        if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         uses: actions/upload-artifact@v7
         with:
           name: "native-lib-php-gpu-${{ matrix.target }}"
@@ -330,7 +310,7 @@ jobs:
             shell: bash
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            lib: modern_colorthief_gpu.dll
+            lib: libmodern_colorthief_gpu.dll
             shell: pwsh
     steps:
       - uses: actions/checkout@v7
