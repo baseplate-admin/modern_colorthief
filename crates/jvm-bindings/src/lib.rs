@@ -15,7 +15,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getPalette<'a>(
     quality: jint,
 ) -> JObject<'a> {
     env.with_env(|env| -> jni::errors::Result<JObject<'a>> {
-        let len = pixels.len(&env)? as i32;
+        let len = pixels.len(env)? as i32;
         let len = len.max(0) as usize;
         let expected = (width as usize)
             .saturating_mul(height as usize)
@@ -24,7 +24,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getPalette<'a>(
             return Err(Error::JavaException);
         }
         let mut pixel_data = vec![0i8; len];
-        pixels.get_region(&env, 0, &mut pixel_data)?;
+        pixels.get_region(env, 0, &mut pixel_data)?;
 
         let u8_data: Vec<u8> = pixel_data.iter().copied().map(|b| b as u8).collect();
 
@@ -45,7 +45,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getPalette<'a>(
 
         for (i, (r, g, b)) in colors.into_iter().enumerate() {
             let color_array = env.byte_array_from_slice(&[r, g, b])?;
-            result_array.set_element(&env, i, color_array)?;
+            result_array.set_element(env, i, color_array)?;
         }
 
         Ok(result_array.into())
@@ -64,7 +64,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getColor<'a>(
     quality: jint,
 ) -> JObject<'a> {
     env.with_env(|env| -> jni::errors::Result<JObject<'a>> {
-        let len = pixels.len(&env)? as i32;
+        let len = pixels.len(env)? as i32;
         let len = len.max(0) as usize;
         let expected = (width as usize)
             .saturating_mul(height as usize)
@@ -73,7 +73,7 @@ pub extern "system" fn Java_modern_colorthief_Colorthief_getColor<'a>(
             return Err(Error::JavaException);
         }
         let mut pixel_data = vec![0i8; len];
-        pixels.get_region(&env, 0, &mut pixel_data)?;
+        pixels.get_region(env, 0, &mut pixel_data)?;
 
         let u8_data: Vec<u8> = pixel_data.iter().copied().map(|b| b as u8).collect();
 
