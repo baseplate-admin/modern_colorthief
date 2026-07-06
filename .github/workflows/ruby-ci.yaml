@@ -113,7 +113,7 @@ jobs:
           cache-version: v1-cpu-test
 
       - name: Download built extension
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: "lib-cpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings/lib/
@@ -321,7 +321,7 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Download built extension
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: "lib-gpu-${{ matrix.os }}-ruby${{ matrix.ruby }}"
           path: crates/ruby-bindings-gpu/lib/
@@ -410,7 +410,7 @@ jobs:
       id-token: write
     steps:
       - name: Download gem artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ruby-bindings-gems
           path: gems/
@@ -434,7 +434,7 @@ jobs:
       id-token: write
     steps:
       - name: Download gem artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ruby-bindings-gpu-gems
           path: gems/

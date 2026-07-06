@@ -142,7 +142,7 @@ jobs:
           ini-file: development
           extensions: gd
       - name: Download native extension
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: native-lib-php-cpu-${{ matrix.target }}
           path: target/release
@@ -363,7 +363,7 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Download GPU native extension
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: native-lib-php-gpu-${{ matrix.target }}
           path: target/release
@@ -397,7 +397,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Download all CPU native libraries
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: native-lib-php-cpu-*
           path: crates/php-bindings/native
@@ -431,7 +431,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Download all GPU native libraries
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: native-lib-php-gpu-*
           path: crates/php-bindings-gpu/native
