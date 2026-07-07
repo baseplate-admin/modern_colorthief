@@ -239,28 +239,28 @@ jobs:
           python-version: "3.14"
 
       - name: Download built wheel
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: wheels-cpu-linux-x86_64
           path: crates/python-bindings/dist
         if: matrix.os == 'ubuntu-latest'
 
       - name: Download built wheel (macos-15-intel)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: wheels-cpu-macos-x86_64
           path: crates/python-bindings/dist
         if: matrix.os == 'macos-15-intel'
 
       - name: Download built wheel (macos-latest)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: wheels-cpu-macos-aarch64
           path: crates/python-bindings/dist
         if: matrix.os == 'macos-latest'
 
       - name: Download built wheel (windows-latest)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: wheels-cpu-windows-x64
           path: crates/python-bindings/dist
@@ -564,7 +564,7 @@ jobs:
           python-version: "3.14"
 
       - name: Download GPU wheel
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: "wheel-gpu-${{ matrix.os }}"
           path: crates/python-bindings-gpu/dist
@@ -668,7 +668,7 @@ jobs:
       attestations: write
     steps:
       - name: Download CPU wheels
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: wheels-cpu-*
           merge-mappings: true
@@ -699,7 +699,7 @@ jobs:
       contents: write
     steps:
       - name: Download GPU wheels
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: wheel-gpu-*
           merge-mappings: true

@@ -121,7 +121,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.artifact }}
           path: crates/node-bindings/artifacts
@@ -146,7 +146,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: 2.x
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.artifact }}
           path: crates/node-bindings/artifacts
@@ -171,7 +171,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.artifact }}
           path: crates/node-bindings/artifacts
@@ -194,7 +194,7 @@ jobs:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
       - name: Download all native artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: node-native-*
           path: crates/node-bindings/artifacts
