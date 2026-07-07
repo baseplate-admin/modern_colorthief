@@ -42,7 +42,7 @@ jobs:
           - x86_64-apple-darwin
           - aarch64-apple-darwin
           - x86_64-pc-windows-msvc
-        php-version: ['8.1', '8.2', '8.3', '8.4']
+        php-version: ['8.2', '8.3', '8.4']
         include:
           - target: x86_64-unknown-linux-gnu
             runner: ubuntu-latest
@@ -68,25 +68,17 @@ jobs:
           # Only build all PHP versions for Linux x86_64 (the test platform)
           # Other platforms build PHP 8.4 only (Rust ABI compatibility verified on Linux)
           - target: aarch64-unknown-linux-gnu
-            php-version: '8.1'
-          - target: aarch64-unknown-linux-gnu
             php-version: '8.2'
           - target: aarch64-unknown-linux-gnu
             php-version: '8.3'
           - target: x86_64-apple-darwin
-            php-version: '8.1'
-          - target: x86_64-apple-darwin
             php-version: '8.2'
           - target: x86_64-apple-darwin
             php-version: '8.3'
           - target: aarch64-apple-darwin
-            php-version: '8.1'
-          - target: aarch64-apple-darwin
             php-version: '8.2'
           - target: aarch64-apple-darwin
             php-version: '8.3'
-          - target: x86_64-pc-windows-msvc
-            php-version: '8.1'
           - target: x86_64-pc-windows-msvc
             php-version: '8.2'
           - target: x86_64-pc-windows-msvc
@@ -150,7 +142,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, windows-latest]
-        php-version: ['8.1', '8.2', '8.3', '8.4']
+        php-version: ['8.2', '8.3', '8.4']
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -167,13 +159,9 @@ jobs:
         exclude:
           # macOS/Windows only have PHP 8.4 builds; Linux tests all versions
           - os: macos-15-intel
-            php-version: '8.1'
-          - os: macos-15-intel
             php-version: '8.2'
           - os: macos-15-intel
             php-version: '8.3'
-          - os: windows-latest
-            php-version: '8.1'
           - os: windows-latest
             php-version: '8.2'
           - os: windows-latest
@@ -221,7 +209,7 @@ jobs:
           - x86_64-apple-darwin
           - aarch64-apple-darwin
           - x86_64-pc-windows-msvc
-        php-version: ['8.1', '8.2', '8.3', '8.4']
+        php-version: ['8.2', '8.3', '8.4']
         include:
           - target: x86_64-unknown-linux-gnu
             runner: ubuntu-latest
@@ -247,25 +235,17 @@ jobs:
           # Only build all PHP versions for Linux x86_64 (the test platform)
           # Other platforms build PHP 8.4 only
           - target: aarch64-unknown-linux-gnu
-            php-version: '8.1'
-          - target: aarch64-unknown-linux-gnu
             php-version: '8.2'
           - target: aarch64-unknown-linux-gnu
             php-version: '8.3'
           - target: x86_64-apple-darwin
-            php-version: '8.1'
-          - target: x86_64-apple-darwin
             php-version: '8.2'
           - target: x86_64-apple-darwin
             php-version: '8.3'
           - target: aarch64-apple-darwin
-            php-version: '8.1'
-          - target: aarch64-apple-darwin
             php-version: '8.2'
           - target: aarch64-apple-darwin
             php-version: '8.3'
-          - target: x86_64-pc-windows-msvc
-            php-version: '8.1'
           - target: x86_64-pc-windows-msvc
             php-version: '8.2'
           - target: x86_64-pc-windows-msvc
@@ -372,7 +352,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15-intel, windows-latest]
-        php-version: ['8.1', '8.2', '8.3', '8.4']
+        php-version: ['8.2', '8.3', '8.4']
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -389,13 +369,9 @@ jobs:
         exclude:
           # macOS/Windows only have PHP 8.4 builds; Linux tests all versions
           - os: macos-15-intel
-            php-version: '8.1'
-          - os: macos-15-intel
             php-version: '8.2'
           - os: macos-15-intel
             php-version: '8.3'
-          - os: windows-latest
-            php-version: '8.1'
           - os: windows-latest
             php-version: '8.2'
           - os: windows-latest
