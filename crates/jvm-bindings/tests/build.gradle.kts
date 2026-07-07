@@ -11,7 +11,6 @@ version = "0.3.0"
 
 repositories {
     mavenCentral()
-    gradlePluginPortal()
 }
 
 sourceSets {
@@ -42,14 +41,6 @@ kotlin {
 
 kotlin.compilerOptions {
     freeCompilerArgs.add("-XXLanguage:+UnnamedLocalVariables")
-}
-
-javaToolchains {
-    launcherMetadata {
-        repositories {
-            exclusiveResource(adoptium("Temurin"))
-        }
-    }
 }
 
 tasks.named<Test>("test") {
