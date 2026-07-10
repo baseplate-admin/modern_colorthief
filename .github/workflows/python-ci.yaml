@@ -230,7 +230,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.3.1
+        uses: astral-sh/setup-uv@v8.3.2
         with:
           enable-cache: true
 
@@ -300,7 +300,7 @@ jobs:
             ubuntu-latest-cargo-registry-python-cpu-
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.3.1
+        uses: astral-sh/setup-uv@v8.3.2
         with:
           enable-cache: true
 
@@ -403,7 +403,7 @@ jobs:
           key: ${{ runner.os }}-cargo-registry-python-gpu-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.3.1
+        uses: astral-sh/setup-uv@v8.3.2
         with:
           enable-cache: true
 
@@ -555,7 +555,7 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.3.1
+        uses: astral-sh/setup-uv@v8.3.2
         with:
           enable-cache: true
 
@@ -624,7 +624,7 @@ jobs:
             ubuntu-latest-cargo-registry-python-gpu-
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.3.1
+        uses: astral-sh/setup-uv@v8.3.2
         with:
           enable-cache: true
 
@@ -681,7 +681,7 @@ jobs:
 
       - name: Install uv
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        uses: astral-sh/setup-uv@v8.3.1
+        uses: astral-sh/setup-uv@v8.3.2
 
       - name: Publish CPU to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -707,7 +707,7 @@ jobs:
 
       - name: Install uv
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        uses: astral-sh/setup-uv@v8.3.1
+        uses: astral-sh/setup-uv@v8.3.2
 
       - name: Publish GPU to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
