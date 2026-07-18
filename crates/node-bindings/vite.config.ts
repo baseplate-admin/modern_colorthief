@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
+import { dts } from 'rolldown-plugin-dts';
 import { resolve } from 'node:path';
 
 export default defineConfig({
-    plugins: [],
+    plugins: dts({ generator: 'tsgo' }).map((plugin) =>
+        plugin.name.endsWith('fake-js') ? { ...plugin, enforce: 'pre' } : plugin,
+    ),
     build: {
         lib: {
             entry: [
@@ -13,7 +16,7 @@ export default defineConfig({
             fileName: (format, entryName) => `${entryName}.js`,
         },
         outDir: 'dist',
-        rollupOptions: {
+        rolldownOptions: {
             external: ['sharp', /^node:/],
             output: {
                 entryFileNames: '[name].js',

@@ -10,7 +10,7 @@
         "artifacts"
     ],
     "scripts": {
-        "build": "tsc --emitDeclarationOnly --outDir dist && vite build",
+        "build": "vite build",
         "prepublishOnly": "npm run build"
     },
     "napi": {
@@ -22,6 +22,8 @@
     },
     "devDependencies": {
         "@types/node": "^24.10.1",
+        "@typescript/native-preview": "^7.0.0-dev.20260707.2",
+        "rolldown-plugin-dts": "^0.27.11",
         "sharp": ">=0.33.0",
         "typescript": "^7.0.0",
         "vite": "^8.0.0",
