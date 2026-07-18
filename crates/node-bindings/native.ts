@@ -61,5 +61,5 @@ const native = require(resolveNativePath()) as {
     ) => number[];
 };
 
-export const getPalette = native.getPalette;
-export const getColor = native.getColor;
+export const getPalette: typeof native.getPalette = native.getPalette;
+export const getColor: typeof native.getColor = native.getColor;
