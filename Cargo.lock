@@ -3435,9 +3435,9 @@ dependencies = [
 
 [[package]]
 name = "swc_ecma_minifier"
-version = "58.0.0"
+version = "58.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6cf5f02669754d34110f03d7a5d8457b5d8eb16d55f47992c3e0bb7018244d1a"
+checksum = "583efb93d5175e30baeb50517c032aae9ee35fc135fe1bda9081e442a581f55e"
 dependencies = [
  "arrayvec",
  "bitflags",
@@ -3491,9 +3491,9 @@ dependencies = [
 
 [[package]]
 name = "swc_ecma_transforms_base"
-version = "46.0.0"
+version = "46.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91705fd6574ad31a3d2c0b5842d6536f3ba7a7cd2c7dfe17104c733454c3821e"
+checksum = "f4cc9e8222fa61c9b6fe753f7014c4cf767005b7c3aba51b11b087e1705a6a2a"
 dependencies = [
  "better_scoped_tls",
  "indexmap",
@@ -3704,7 +3704,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.3",
+ "getrandom 0.3.4",
  "once_cell",
  "rustix",
  "windows-sys",
