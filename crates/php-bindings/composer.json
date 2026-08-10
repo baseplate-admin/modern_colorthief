@@ -10,14 +10,11 @@
         "php": ">=8.3"
     },
     "require-dev": {
-        "pestphp/pest": "^4.0"
+        "pestphp/pest": "^4.0 || ^5.0"
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
-        },
-        "platform": {
-            "php": "8.3"
         }
     },
     "archive": {
