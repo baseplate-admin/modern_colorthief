@@ -2000,9 +2000,9 @@ dependencies = [
 
 [[package]]
 name = "naga"
-version = "30.0.0"
+version = "30.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23bf0a141a9ab6f07dbb492db53245e464bc9db42f407772d9ae03d83a2c1033"
+checksum = "a616d2fb8c89516ac2723a581f69d6c18576046bed761bd6b305e5618e6ae130"
 dependencies = [
  "arrayvec",
  "bit-set",
@@ -2037,9 +2037,9 @@ dependencies = [
 
 [[package]]
 name = "napi"
-version = "3.12.1"
+version = "3.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "459197f1592f4c3dbbf9c1b13f5a4599a343e4ef66b96bc340e2a518b36a6662"
+checksum = "58c5f4d5375213fdb7be2655e152386e82f026f9a5ba36a75556e11359aafe09"
 dependencies = [
  "bitflags",
  "chrono",
@@ -2845,18 +2845,18 @@ dependencies = [
 
 [[package]]
 name = "rb-sys"
-version = "0.9.128"
+version = "0.9.130"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45ca28513560e56cfb79a62b1fce363c73af170a182024ce880c77ee9429920a"
+checksum = "02faf625bb10ba893e3ae620f19c9fb1b5f8fcae0fe4eb86bb3f2230fad75edb"
 dependencies = [
  "rb-sys-build",
 ]
 
 [[package]]
 name = "rb-sys-build"
-version = "0.9.128"
+version = "0.9.130"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce04b2c55eff3a21aaa623fcc655d94373238e72cac6b3e1a3641ff31649f99a"
+checksum = "05be6f9c86fe5482808162826f6c047d093b3670582296c770de1d94f8066694"
 dependencies = [
  "bindgen",
  "lazy_static",
