@@ -135,7 +135,7 @@ jobs:
         run: test -f crates/jvm-bindings/tests/native/${{ matrix.lib }}
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.5.1'
+          gradle-version: '9.7.1'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings/tests
         run: gradle wrapper
@@ -402,7 +402,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.5.1'
+          gradle-version: '9.7.1'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings-gpu/tests
         run: gradle wrapper
@@ -455,7 +455,7 @@ jobs:
         shell: bash
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.5.1'
+          gradle-version: '9.7.1'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings/tests
         run: gradle wrapper
@@ -499,7 +499,7 @@ jobs:
         shell: bash
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.5.1'
+          gradle-version: '9.7.1'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings-gpu/tests
         run: gradle wrapper
