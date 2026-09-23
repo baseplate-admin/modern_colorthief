@@ -63,7 +63,7 @@ web-sys = { version = "0.3", features = [
 jni = "0.22"
 
 # Ruby bindings
-magnus = "0.8"
+magnus = "0.9"
 rb-sys = { version = "0.9", features = ["global-allocator"] }
 
 # PHP bindings
