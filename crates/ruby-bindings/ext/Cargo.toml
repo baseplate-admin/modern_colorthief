@@ -8,7 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 modern-colorthief-core-cpu = { path = "../../core_cpu" }
-magnus = "0.8"
+magnus = "0.9"
 rb-sys.workspace = true
 
 # rb-sys-env is required by build.rs to set up Ruby build environment
