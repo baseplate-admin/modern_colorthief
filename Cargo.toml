@@ -35,7 +35,7 @@ modern-colorthief-core-webgpu = { path = "crates/core_webgpu" }
 rayon = "1.10"
 
 # Python bindings
-pyo3 = { version = "0.29", features = ["abi3-py39"] }
+pyo3 = { version = "0.30", features = ["abi3-py39"] }
 
 # Node.js bindings
 napi = { version = "3.1", features = ["full"] }
@@ -67,7 +67,7 @@ magnus = "0.9"
 rb-sys = { version = "0.9", features = ["global-allocator"] }
 
 # PHP bindings
-ext-php-rs = "0.15"
+ext-php-rs = "0.16"
 
 # GPU
 ash = "0.38"
