@@ -30,6 +30,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
+      - name: Setup LLVM
+        uses: KyleMayes/install-llvm-action@v2.0.9
+        with:
+          version: 21
+      - name: Configure Clang
+        shell: bash
+        run: |
+          echo "LIBCLANG_PATH=/usr/local/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=/usr/local/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -80,6 +89,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
+      - name: Setup LLVM
+        uses: KyleMayes/install-llvm-action@v2.0.9
+        with:
+          version: 21
+      - name: Configure Clang
+        shell: bash
+        run: |
+          echo "LIBCLANG_PATH=/usr/local/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=/usr/local/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -103,6 +121,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
+      - name: Setup LLVM
+        uses: KyleMayes/install-llvm-action@v2.0.9
+        with:
+          version: 21
+      - name: Configure Clang
+        shell: bash
+        run: |
+          echo "LIBCLANG_PATH=/usr/local/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=/usr/local/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies
         run: |
           sudo apt-get update
