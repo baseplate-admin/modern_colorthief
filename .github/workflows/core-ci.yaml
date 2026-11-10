@@ -42,7 +42,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libclang-dev php-dev
+          sudo apt-get install -y php-dev
       - name: Cache cargo registry
         uses: actions/cache@v6
         with:
@@ -101,7 +101,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libclang-dev php-dev
+          sudo apt-get install -y php-dev
       - name: Cache cargo registry
         uses: actions/cache@v6
         with:
@@ -133,7 +133,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libclang-dev php-dev
+          sudo apt-get install -y php-dev
       - name: Cache cargo registry
         uses: actions/cache@v6
         with:
