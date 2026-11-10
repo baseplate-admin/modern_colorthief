@@ -102,8 +102,8 @@ jobs:
         if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
         shell: bash
         run: |
-          echo "LIBCLANG_PATH=/usr/local/lib" >> $GITHUB_ENV
-          echo "LLVM_CONFIG_PATH=/usr/local/bin/llvm-config" >> $GITHUB_ENV
+          echo "LIBCLANG_PATH=${{ github.workspace }}/llvm/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=${{ github.workspace }}/llvm/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
@@ -311,8 +311,8 @@ jobs:
         if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
         shell: bash
         run: |
-          echo "LIBCLANG_PATH=/usr/local/lib" >> $GITHUB_ENV
-          echo "LLVM_CONFIG_PATH=/usr/local/bin/llvm-config" >> $GITHUB_ENV
+          echo "LIBCLANG_PATH=${{ github.workspace }}/llvm/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=${{ github.workspace }}/llvm/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
