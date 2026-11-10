@@ -93,6 +93,17 @@ jobs:
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}-php${{ matrix.php-version }}
+      - name: Setup LLVM (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        uses: KyleMayes/install-llvm-action@v2.0.9
+        with:
+          version: 21
+      - name: Configure Clang (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        shell: bash
+        run: |
+          echo "LIBCLANG_PATH=/usr/local/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=/usr/local/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
@@ -291,6 +302,17 @@ jobs:
         if: ${{ contains(matrix.target, '-apple-darwin') }}
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
+      - name: Setup LLVM (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        uses: KyleMayes/install-llvm-action@v2.0.9
+        with:
+          version: 21
+      - name: Configure Clang (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        shell: bash
+        run: |
+          echo "LIBCLANG_PATH=/usr/local/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=/usr/local/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
