@@ -353,25 +353,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        # macos-15-intel excluded: no Vulkan driver on Intel Mac runners
+        os: [ubuntu-latest, windows-latest]
         php-version: ['8.3', '8.4']
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             lib: libmodern_colorthief_gpu.so
             shell: bash
-          - os: macos-15-intel
-            target: x86_64-apple-darwin
-            lib: libmodern_colorthief_gpu.dylib
-            shell: bash
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             lib: modern_colorthief_gpu.dll
             shell: pwsh
         exclude:
-          # macOS/Windows only have PHP 8.4 builds; Linux tests all versions
-          - os: macos-15-intel
-            php-version: '8.3'
+          # Windows only has PHP 8.4 build available; Linux tests all versions
           - os: windows-latest
             php-version: '8.3'
     steps:
