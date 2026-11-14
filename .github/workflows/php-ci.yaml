@@ -93,6 +93,17 @@ jobs:
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}-php${{ matrix.php-version }}
+      - name: Setup LLVM (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        uses: KyleMayes/install-llvm-action@v2.0.9
+        with:
+          version: 21
+      - name: Configure Clang (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        shell: bash
+        run: |
+          echo "LIBCLANG_PATH=${{ github.workspace }}/llvm/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=${{ github.workspace }}/llvm/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
@@ -291,6 +302,17 @@ jobs:
         if: ${{ contains(matrix.target, '-apple-darwin') }}
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
+      - name: Setup LLVM (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        uses: KyleMayes/install-llvm-action@v2.0.9
+        with:
+          version: 21
+      - name: Configure Clang (Linux x86_64)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
+        shell: bash
+        run: |
+          echo "LIBCLANG_PATH=${{ github.workspace }}/llvm/lib" >> $GITHUB_ENV
+          echo "LLVM_CONFIG_PATH=${{ github.workspace }}/llvm/bin/llvm-config" >> $GITHUB_ENV
       - name: Install system dependencies (Linux)
         if: ${{ contains(matrix.target, '-linux-gnu') }}
         run: |
@@ -331,25 +353,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15-intel, windows-latest]
+        # macos-15-intel excluded: no Vulkan driver on Intel Mac runners
+        os: [ubuntu-latest, windows-latest]
         php-version: ['8.3', '8.4']
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             lib: libmodern_colorthief_gpu.so
             shell: bash
-          - os: macos-15-intel
-            target: x86_64-apple-darwin
-            lib: libmodern_colorthief_gpu.dylib
-            shell: bash
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             lib: modern_colorthief_gpu.dll
             shell: pwsh
         exclude:
-          # macOS/Windows only have PHP 8.4 builds; Linux tests all versions
-          - os: macos-15-intel
-            php-version: '8.3'
+          # Windows only has PHP 8.4 build available; Linux tests all versions
           - os: windows-latest
             php-version: '8.3'
     steps:

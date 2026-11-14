@@ -67,7 +67,7 @@ magnus = "0.9"
 rb-sys = { version = "0.9", features = ["global-allocator"] }
 
 # PHP bindings
-ext-php-rs = "0.15"
+ext-php-rs = "0.16"
 
 # GPU
 ash = "0.38"
