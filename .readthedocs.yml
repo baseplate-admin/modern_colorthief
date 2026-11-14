@@ -18,10 +18,11 @@ build:
             - python -m pip install uv
             - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --group docs
 
-python:
-    install:
-        - method: pip
-          path: .
+# The root pyproject.toml is a uv workspace wrapper (not a buildable package),
+# so do NOT `pip install .` here -- that falls back to setuptools, which sees
+# bench/, crates/, fuzz/ and fails with "Multiple top-level packages discovered
+# in a flat-layout". The docs deps are already installed by `uv sync --group docs`
+# in the post_install job above.
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
