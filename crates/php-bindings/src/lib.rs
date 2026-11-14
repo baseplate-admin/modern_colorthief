@@ -8,7 +8,7 @@ fn pixels_to_bytes(pixels: Vec<i64>) -> PhpResult<Vec<u8>> {
             if (0..=255).contains(&b) {
                 Ok(b as u8)
             } else {
-                Err(PhpException::default(format!(
+                Err(PhpException::from_message(format!(
                     "Pixel byte value {} out of range [0, 255]",
                     b
                 )))
@@ -37,7 +37,7 @@ fn get_palette(
         quality,
     )
     .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-    .map_err(|e| PhpException::default(e.to_string()))
+    .map_err(|e| PhpException::from_message(e.to_string()))
 }
 
 #[php_function]
@@ -47,13 +47,13 @@ fn get_color(pixels: Vec<i64>, width: u32, height: u32, quality: Option<u8>) -> 
 
     let palette =
         modern_colorthief_core_cpu::extract_palette_from_buffer(&bytes, width, height, 5, quality)
-            .map_err(|e| PhpException::default(e.to_string()))?;
+            .map_err(|e| PhpException::from_message(e.to_string()))?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| PhpException::default("Image contains no colors".into()))
+        .ok_or_else(|| PhpException::from_message("Image contains no colors".into()))
 }
 
 #[php_module]
