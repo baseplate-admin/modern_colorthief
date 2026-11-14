@@ -13,12 +13,12 @@ web-sys = { workspace = true, features = ["console"] }
 [build-dependencies]
 naga = { version = "30", default-features = false, features = ["wgsl-in"] }
 serde_json = "1"
-swc_common = "26.0.0"
-swc_ecma_codegen = "32.0.0"
-swc_ecma_minifier = "61.0"
-swc_ecma_parser = "45.0.0"
-swc_ecma_transforms_typescript = "55.0.0"
-swc_ecma_utils = "35.0.0"
-swc_ecma_visit = "29.0.0"
+swc_common = "27.0.0"
+swc_ecma_codegen = "33.0.0"
+swc_ecma_minifier = "64.0"
+swc_ecma_parser = "47.0.0"
+swc_ecma_transforms_typescript = "57.0.0"
+swc_ecma_utils = "36.0.0"
+swc_ecma_visit = "30.0.0"
 
 [features]
