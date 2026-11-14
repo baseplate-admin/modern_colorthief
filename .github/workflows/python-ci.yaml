@@ -34,7 +34,9 @@ jobs:
     runs-on: ubuntu-26.04
     strategy:
       matrix:
-        target: [x86_64, x86, aarch64, armv7, s390x, ppc64le]
+        # x86 (32-bit) dropped: manylinux i686 images (CentOS-7, AlmaLinux-8)
+        # cannot resolve their package repos from GitHub Actions runners.
+        target: [x86_64, aarch64, armv7, s390x, ppc64le]
     defaults:
       run:
         working-directory: crates/python-bindings
