@@ -51,7 +51,7 @@ jobs:
           target: ${{ matrix.target }}
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
-          manylinux: auto
+          manylinux: "2_28"
       - name: Build wheels (cross-compile)
         if: matrix.target != 'x86_64'
         uses: PyO3/maturin-action@v1
@@ -59,7 +59,9 @@ jobs:
           target: ${{ matrix.target }}
           args: --manifest-path crates/python-bindings/Cargo.toml --release --out dist --find-interpreter
           sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
-          manylinux: auto
+          # manylinux2014_i686 (CentOS-7) is EOL — its yum repo is dead.
+          # Pin 2_28 to use the live manylinux_2_28_i686 image.
+          manylinux: "2_28"
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
