@@ -1,0 +1,53 @@
+---
+title: 'Differences vs. colorthief'
+description: 'How Modern Colorthief compares to the original colorthief, fast_colorthief, and color-thief-py.'
+---
+
+Modern Colorthief reimplements the same median-cut algorithm but in Rust, with a different FFI strategy and a wider language matrix.
+
+## vs. `colorthief` (pure Python)
+
+| | `colorthief` | `modern_colorthief` |
+| --- | --- | --- |
+| Speed | Baseline | ~100× faster |
+| Pillow dependency | Hard | Soft (only for decoding convenience) |
+| Language support | Python only | Python, Ruby, Node.js, JVM, PHP, WASM |
+| Python compatibility | Older | Modern Python 3.10+ |
+
+## vs. `fast_colorthief` (C++)
+
+| | `fast_colorthief` | `modern_colorthief` |
+| --- | --- | --- |
+| FFI | pybind11 | PyO3 |
+| NumPy dependency | Hard | Soft |
+| Language support | Python only | Python, Ruby, Node.js, JVM, PHP, WASM |
+| Build tooling | Manual | Maturin + GitHub Actions |
+| Package size | ~52–60 KB | ~500–700 KB |
+
+## vs. `color-thief-py`
+
+`color-thief-py` is a thin wrapper around the original `colorthief`. `modern_colorthief` is a full reimplementation in Rust with its own algorithm, not a wrapper.
+
+## Achieving parity with `colorthief` (Python)
+
+If you need output that matches the original `colorthief` library exactly:
+
+1. Load the image with Pillow.
+2. Save the loaded image to a `BytesIO` object (PNG format).
+3. Pass the `BytesIO` object to `modern_colorthief`.
+
+```python
+import io
+from PIL import Image
+import modern_colorthief
+
+img = Image.open("photo.jpg")
+buf = io.BytesIO()
+img.save(buf, format="PNG")
+buf.seek(0)
+
+color   = modern_colorthief.get_color(buf)
+palette = modern_colorthief.get_palette(buf)
+```
+
+The parity trick works because Pillow normalizes pixel data across image formats, ensuring consistent input to the quantization algorithm regardless of the source format.

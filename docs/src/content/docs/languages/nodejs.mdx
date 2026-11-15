@@ -1,0 +1,53 @@
+---
+title: 'Node.js'
+description: 'Use Modern Colorthief from Node.js, Deno, or Bun.'
+---
+
+:::info
+Package: `modern-colorthief` · Install: `npm install modern-colorthief`
+:::
+
+Node.js bindings use [napi-rs](https://napi.rs/). Sharp handles image decoding; the Rust core receives raw RGBA bytes. Works on Node.js, Deno, and Bun.
+
+## Functions
+
+- **`getColor(image, width?, height?, quality?)`** → `[r, g, b]`
+- **`getPalette(image, width?, height?, colorCount?, quality?)`** → `[[r, g, b], ...]`
+
+`image` accepts a file path, a `Buffer`, a `Uint8Array` of raw RGBA bytes, or a Sharp input source.
+
+## File path
+
+```js
+import { getColor, getPalette } from "modern-colorthief";
+
+const color   = getColor("photo.jpg");
+const palette = getPalette("photo.jpg", { colorCount: 10, quality: 10 });
+```
+
+## Raw RGBA pixels
+
+```js
+import { getColor, getPalette } from "modern-colorthief";
+
+// 10×10 solid red: 100 pixels × 4 bytes
+const pixels = new Uint8Array(400);
+for (let i = 0; i < 100; i++) {
+  pixels[i * 4]     = 255; // R
+  pixels[i * 4 + 1] = 0;   // G
+  pixels[i * 4 + 2] = 0;   // B
+  pixels[i * 4 + 3] = 255; // A
+}
+const color   = getColor(pixels, 10, 10, 1);
+const palette = getPalette(pixels, 10, 10, 5, 1);
+```
+
+## With Sharp
+
+```js
+import sharp from "sharp";
+import { getPalette } from "modern-colorthief";
+
+const { data, info } = await sharp("photo.jpg").raw().ensureAlpha().toBuffer({ resolveWithObject: true });
+const palette = getPalette(new Uint8Array(data), info.width, info.height, 10, 10);
+```

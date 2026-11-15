@@ -1,0 +1,43 @@
+---
+title: 'Ruby'
+description: 'Use Modern Colorthief from Ruby with the colorthief_ruby gem.'
+---
+
+:::info
+Package: `modern_colorthief` · Install: `gem install modern_colorthief`
+:::
+
+Ruby bindings use the [magnus](https://crates.io/crates/magnus) crate. The `image_processing` gem handles image decoding if you want file-path convenience; otherwise pass raw RGBA bytes directly.
+
+## Functions
+
+- **`Colorthief.get_color(pixels, width, height, quality=10)`** → `[r, g, b]`
+- **`Colorthief.get_palette(pixels, width, height, color_count=10, quality=10)`** → `[[r, g, b], ...]`
+
+`pixels` is a `String` of raw RGBA bytes (4 bytes per pixel, row-major).
+
+## Raw RGBA pixels
+
+```ruby
+require "colorthief_ruby"
+
+# 10×10 solid red: 100 pixels × 4 bytes
+pixels = ("\xFF\x00\x00\xFF" * 100).b
+color   = Colorthief.get_color(pixels, 10, 10, 1)
+palette = Colorthief.get_palette(pixels, 10, 10, 5, 1)
+
+puts color.inspect   # => [255, 0, 0]
+```
+
+## With the image_processing gem
+
+```ruby
+require "colorthief_ruby"
+require "image_processing/mini_magick"
+
+img = ImageProcessing::MiniMagick.source("photo.jpg").convert("RGBA").read
+width, height = ImageProcessing::MiniMagick.source("photo.jpg").size
+
+color   = Colorthief.get_color(img, width, height, 10)
+palette = Colorthief.get_palette(img, width, height, 10, 10)
+```

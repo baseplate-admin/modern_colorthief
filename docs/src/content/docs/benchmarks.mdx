@@ -1,0 +1,67 @@
+---
+title: 'Benchmarks'
+description: 'Performance comparison of modern_colorthief vs. colorthief and fast_colorthief.'
+---
+
+This page compares the execution time of `modern_colorthief` (Rust) against the original `colorthief` (pure Python) and `fast_colorthief` (C++).
+
+## Reproducible script
+
+```python
+import os
+import timeit
+from pathlib import Path
+
+from colorthief import ColorThief
+from fast_colorthief import get_dominant_color, get_palette as f_get_palette
+from modern_colorthief import get_color, get_palette
+
+BASE_DIR = Path(__file__).resolve().parent
+path = os.path.join(BASE_DIR, "test.jpg")
+
+# --- Extracting Color ---
+start = timeit.default_timer()
+ColorThief(path).get_color()
+py_color = timeit.default_timer() - start
+
+start = timeit.default_timer()
+get_dominant_color(path, 10)
+cpp_color = timeit.default_timer() - start
+
+start = timeit.default_timer()
+get_color(path)
+rust_color = timeit.default_timer() - start
+
+# --- Extracting Palette ---
+start = timeit.default_timer()
+ColorThief(path).get_palette()
+py_palette = timeit.default_timer() - start
+
+start = timeit.default_timer()
+f_get_palette(path)
+cpp_palette = timeit.default_timer() - start
+
+start = timeit.default_timer()
+get_palette(path)
+rust_palette = timeit.default_timer() - start
+
+print(f"Python color:   {py_color:.6f}s")
+print(f"C++ color:      {cpp_color:.6f}s")
+print(f"Rust color:     {rust_color:.6f}s")
+print(f"Python palette: {py_palette:.6f}s")
+print(f"C++ palette:    {cpp_palette:.6f}s")
+print(f"Rust palette:   {rust_palette:.6f}s")
+```
+
+## Results
+
+On a sample image:
+
+| Task | Python (`colorthief`) | C++ (`fast_colorthief`) | Rust (`modern_colorthief`) |
+| --- | --- | --- | --- |
+| Extracting color | 0.219895 s | 0.021180 s | **0.019645 s** |
+| Extracting palette | 0.202956 s | 0.023626 s | **0.018661 s** |
+
+:::caution
+Benchmark results vary with image size, color complexity, and hardware. Run the script above on your own workloads for numbers that reflect your environment.
+:::

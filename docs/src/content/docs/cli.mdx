@@ -1,0 +1,54 @@
+---
+title: 'Command Line'
+description: 'Use the modern-colorthief CLI to extract colors from the terminal.'
+---
+
+The Python binding ships a `modern-colorthief` command line interface.
+
+## Usage
+
+```bash
+modern-colorthief [OPTIONS] FILE
+```
+
+## Arguments
+
+- **`FILE`** — Path to the image file to analyze.
+
+## Options
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--palette` | off | Output a palette of colors instead of a single color |
+| `--quality` | `10` | Quality setting (1–100). Lower = more accurate, slower. |
+| `--count` | `5` | Number of colors in the palette. Only used with `--palette`. |
+
+## Examples
+
+**Dominant color:**
+
+```bash
+$ modern-colorthief photo.png
+# f0e68c
+```
+
+**Palette:**
+
+```bash
+$ modern-colorthief photo.png --palette
+# f0e68c
+# 556b2f
+# 2f4f4f
+# 8b0000
+# fffaf0
+```
+
+**Custom quality and count:**
+
+```bash
+$ modern-colorthief photo.jpg --palette --quality 5 --count 8
+```
+
+:::tip
+Use `--quality 1` for the most accurate results when color precision matters.
+:::

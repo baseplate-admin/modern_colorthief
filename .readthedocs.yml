@@ -2,33 +2,24 @@
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
-# Required
 version: 2
 
-# Set the OS, Python version and other tools you might need
 build:
     os: ubuntu-lts-latest
     tools:
-        python: 'latest'
-        rust: 'latest'
-        # You can also specify other tool versions:
-    jobs:
-        post_install:
-            # Install with docs extras
-            - python -m pip install uv
-            - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --group docs
-
-# The root pyproject.toml is a uv workspace wrapper (not a buildable package),
-# so do NOT `pip install .` here -- that falls back to setuptools, which sees
-# bench/, crates/, fuzz/ and fails with "Multiple top-level packages discovered
-# in a flat-layout". The docs deps are already installed by `uv sync --group docs`
-# in the post_install job above.
-
-# Build documentation in the "docs/" directory with Sphinx
-sphinx:
-    configuration: docs/conf.py
-# Optionally build your docs in additional formats such as PDF and ePub
-formats:
-    - pdf
-#    - epub
-
+        nodejs: "latest"
+    commands:
+        # 1. Rust toolchain + wasm-pack (needed to build the WASM demo widget)
+        - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        - source "$HOME/.cargo/env"
+        - rustup target add wasm32-unknown-unknown
+        - cargo install wasm-pack
+        # 2. Build the WASM package (the docs' PaletteDemo widget links it via file:)
+        - cd crates/wasm-bindings && wasm-pack build --release --target web
+        - cd ../..
+        # 3. Build the Astro / Starlight docs site
+        - cd docs && npm ci
+        - npm run build
+        # 4. Move the built site to Read the Docs' output location
+        - mkdir -p "$READTHEDOCS_OUTPUT/html"
+        - mv dist "$READTHEDOCS_OUTPUT/html"

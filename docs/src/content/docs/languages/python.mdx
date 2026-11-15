@@ -1,0 +1,101 @@
+---
+title: 'Python'
+description: 'Use Modern Colorthief from Python: file paths, bytes, BytesIO, and Pillow images.'
+---
+
+:::info
+Package: `modern_colorthief` · Install: `pip install modern_colorthief`
+:::
+
+Python is the reference binding. Pillow handles image decoding transparently at the Python layer — Rust always receives raw RGBA bytes.
+
+## Functions
+
+- **`get_color(image, quality=10)`** → `tuple[int, int, int]` — the dominant color
+- **`get_palette(image, color_count=10, quality=10)`** → `list[tuple[int, int, int]]` — the palette
+
+`image` accepts a file path (`str`), raw bytes (`bytes`), an `io.BytesIO`, or a `PIL.Image`.
+
+## File path
+
+```python
+import modern_colorthief
+
+color   = modern_colorthief.get_color("photo.jpg")
+palette = modern_colorthief.get_palette("photo.jpg", color_count=10)
+```
+
+## Bytes / BytesIO
+
+:::since 0.4.0
+Support for `bytes` and `io.BytesIO` input.
+:::
+
+```python
+import io
+import modern_colorthief
+
+image_bytes = io.BytesIO(b"\x89PNG\r\n...")
+
+color   = modern_colorthief.get_color(image_bytes)
+palette = modern_colorthief.get_palette(image_bytes)
+```
+
+## Pillow image
+
+```python
+import io
+from PIL import Image
+import modern_colorthief
+
+img = Image.open("photo.jpg").convert("RGB")
+buf = io.BytesIO()
+img.save(buf, format="PNG")
+buf.seek(0)
+
+color   = modern_colorthief.get_color(buf)
+palette = modern_colorthief.get_palette(buf)
+```
+
+## NumPy array
+
+```python
+import io
+import numpy as np
+from PIL import Image
+import modern_colorthief
+
+arr = np.random.randint(0, 256, (480, 640, 3), dtype=np.uint8)  # (H, W, 3)
+img = Image.fromarray(arr)
+buf = io.BytesIO()
+img.save(buf, format="PNG")
+buf.seek(0)
+
+color   = modern_colorthief.get_color(buf)
+palette = modern_colorthief.get_palette(buf)
+```
+
+:::note
+`modern_colorthief` has no hard dependency on Pillow or NumPy. They're only needed when you want to pre-process an image before handing it to the library.
+:::
+
+## Raw RGBA pixels
+
+```python
+import modern_colorthief
+
+# 10×10 solid red: 100 pixels × 4 bytes
+pixels = b"\xff\x00\x00\xff" * 100
+color   = modern_colorthief.get_color(pixels, 10, 10, quality=1)
+palette = modern_colorthief.get_palette(pixels, 10, 10, color_count=5, quality=1)
+```
+
+## CLI
+
+Python also ships a command line:
+
+```bash
+modern-colorthief photo.jpg --palette --quality 5 --count 8
+```
+
+See [Command Line](/cli/) for details.

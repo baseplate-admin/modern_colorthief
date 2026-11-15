@@ -1,0 +1,74 @@
+---
+title: 'Installation'
+description: 'Install Modern Colorthief for Python, Ruby, Node.js, Java, PHP, or WebAssembly.'
+---
+
+Modern Colorthief ships a binding for six languages. Each one installs through the host language's normal package manager.
+
+## Requirements
+
+- **Python** — 3.10 or newer
+- **Operating System** — Linux, macOS, Windows (prebuilt wheels available for Python)
+
+## Python
+
+:::tip
+`uv` resolves and installs dependencies up to 10× faster than pip.
+:::
+
+```bash
+pip install modern_colorthief
+```
+
+or, with Poetry or uv:
+
+```bash
+poetry add modern_colorthief
+# — or —
+uv pip install modern_colorthief
+```
+
+Verify:
+
+```python
+import modern_colorthief
+print(modern_colorthief.__version__)
+```
+
+## Ruby
+
+```bash
+gem install modern_colorthief
+```
+
+## Node.js
+
+```bash
+npm install modern-colorthief
+```
+
+The Node binding bundles its native library via `@napi-rs/cli`, so no build step is needed.
+
+## Java / Kotlin
+
+Download the JAR from the [GitHub Releases](https://github.com/baseplate-admin/modern_colorthief/releases) and add it to your classpath, or declare it as a Maven / Gradle dependency. Targets Java 26 and is Android-compatible.
+
+## PHP
+
+Build and install as a PHP extension, then enable it in `php.ini`:
+
+```ini
+extension=modern_colorthief.so
+```
+
+## WebAssembly
+
+```bash
+npm install colorthief-wasm
+```
+
+The WASM binding runs entirely in the browser or on a WASM runtime — no native toolchain required.
+
+:::note
+If you hit platform-specific build errors when installing from source, make sure you have a C compiler and the latest Rust toolchain installed. Prebuilt wheels and binaries cover most common platforms.
+:::
