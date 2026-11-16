@@ -11,8 +11,16 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^7.1.9",
     "@astrojs/starlight": "^0.43.1",
     "astro": "^7.4.12",
-    "modern-colorthief-wasm": "file:../crates/wasm-bindings/pkg"
+    "modern-colorthief-wasm": "file:../crates/wasm-bindings/pkg",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0"
   }
 }

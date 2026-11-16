@@ -8,22 +8,22 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 **Modern Colorthief** extracts dominant color palettes from images at high speed. The core is a hand-rolled median-cut algorithm in Rust with rayon parallelism, and the same API is exposed across six language bindings.
 
 <CardGrid stagger>
-	<Card title="Python" icon="python" href="/languages/python/">
+	<Card title="Python" icon="python" href="languages/python/">
 		`pip install modern_colorthief`
 	</Card>
-	<Card title="Node.js" icon="nodejs" href="/languages/nodejs/">
+	<Card title="Node.js" icon="nodejs" href="languages/nodejs/">
 		`npm install modern-colorthief`
 	</Card>
-	<Card title="WebAssembly" icon="wasm" href="/languages/wasm/">
+	<Card title="WebAssembly" icon="wasm" href="languages/wasm/">
 		Runs entirely in the browser.
 	</Card>
-	<Card title="Java / Kotlin" icon="java" href="/languages/java/">
+	<Card title="Java / Kotlin" icon="java" href="languages/java/">
 		JNI bindings, Android-compatible.
 	</Card>
-	<Card title="Ruby" icon="ruby" href="/languages/ruby/">
+	<Card title="Ruby" icon="ruby" href="languages/ruby/">
 		`gem install modern_colorthief`
 	</Card>
-	<Card title="PHP" icon="php" href="/languages/php/">
+	<Card title="PHP" icon="php" href="languages/php/">
 		PHP extension via FFI.
 	</Card>
 </CardGrid>
@@ -39,12 +39,12 @@ Image decoding is handled by the host language (Pillow, Sharp, Canvas, AWT, `ima
 
 ## Why Rust
 
-A median-cut quantizer sounds simple, but the hot loop is pure arithmetic over every pixel. In Rust, with rayon splitting the work across cores and release LTO inlining the inner loop, `modern_colorthief` is roughly **100× faster** than the original pure-Python `colorthief` and on par with or faster than the C++ `fast_colorthief` — see the [benchmarks](/benchmarks/) for reproducible numbers.
+A median-cut quantizer sounds simple, but the hot loop is pure arithmetic over every pixel. In Rust, with rayon splitting the work across cores and release LTO inlining the inner loop, `modern_colorthief` is roughly **100× faster** than the original pure-Python `colorthief` and on par with or faster than the C++ `fast_colorthief` — see the [benchmarks](benchmarks/) for reproducible numbers.
 
 ## Try it
 
 The WebAssembly binding runs entirely in the browser. Drop an image and get a palette without a server, a build step, or a native binary:
 
-[**Open the live demo →**](/demo/)
+[**Open the live demo →**](demo/)
 
 The demo loads the WASM bundle directly in your browser — no Node, no Python, no native binary required.

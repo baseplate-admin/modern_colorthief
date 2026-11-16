@@ -1,0 +1,18 @@
+.embed {
+    margin: 1.5rem 0;
+}
+
+.embed object {
+    display: block;
+    width: 100%;
+    min-height: 480px;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 0.5rem;
+    background: var(--sl-color-bg-nav);
+}
+
+.embed figcaption {
+    margin-top: 0.5rem;
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+}

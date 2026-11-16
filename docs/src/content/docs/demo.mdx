@@ -1,0 +1,12 @@
+---
+title: Live Demo
+description: Extract a dominant color palette from any image in your browser — no server, no install.
+---
+
+import PaletteDemo from '../../components/PaletteDemo.tsx';
+
+Drop an image below, or paste an image URL. The WebAssembly binding decodes the
+image and runs the same median-cut core as the native bindings — entirely in
+your browser, with nothing uploaded anywhere.
+
+<PaletteDemo client:load />

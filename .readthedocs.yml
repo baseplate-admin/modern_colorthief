@@ -23,8 +23,11 @@ build:
             cd crates/wasm-bindings
             wasm-pack build --release --target web
         # 2. Build the Astro / Starlight docs site
+        #    RTD publishes at /<language>/<version>/ (e.g. /en/latest/), so the
+        #    base path is baked into asset and link URLs at build time.
         - |
             set -e
+            export DOCS_BASE_PATH="/${READTHEDOCS_LANGUAGE}/${READTHEDOCS_VERSION}/"
             cd docs
             npm ci
             npm run build

@@ -3,6 +3,8 @@ title: 'Median Cut (MMCQ)'
 description: 'How the median-cut color quantization algorithm works in Modern Colorthief.'
 ---
 
+import PdfEmbed from '../../components/PdfEmbed.tsx';
+
 Median Cut Color Quantization (MMCQ) reduces the number of colors in an image while preserving visual similarity. It is the industry-standard algorithm for palette extraction and is what Modern Colorthief implements in Rust.
 
 ## How it works
@@ -35,3 +37,12 @@ The `quality` parameter controls `n` by sampling every `quality`-th pixel, tradi
 - **Simple and efficient** — O(n log k), no iterative refinement.
 - **Visually good palettes** — Produces colors that well represent the image's dominant hues.
 - **Widely used** — Industry-standard algorithm for color quantization.
+
+## Reference
+
+The implementation follows [Dan S. Bloomberg, *Color quantization using modified median cut* (Leptonica)](../pdfs/mediancut.pdf) (PDF).
+
+<PdfEmbed
+    src="pdfs/mediancut.pdf"
+    title="Color quantization using modified median cut — Dan S. Bloomberg (Leptonica)"
+/>
