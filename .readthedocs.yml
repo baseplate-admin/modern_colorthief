@@ -7,19 +7,29 @@ version: 2
 build:
     os: ubuntu-lts-latest
     tools:
+        # Read the Docs installs these itself (asdf/managed toolchains) and puts
+        # them on PATH for every build command -- no rustup bootstrap needed.
         nodejs: "latest"
+        rust: "latest"
     commands:
-        # 1. Rust toolchain + wasm-pack (needed to build the WASM demo widget)
-        - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        - source "$HOME/.cargo/env"
-        - rustup target add wasm32-unknown-unknown
-        - cargo install wasm-pack
-        # 2. Build the WASM package (the docs' PaletteDemo widget links it via file:)
-        - cd crates/wasm-bindings && wasm-pack build --release --target web
-        - cd ../..
-        # 3. Build the Astro / Starlight docs site
-        - cd docs && npm ci
-        - npm run build
-        # 4. Move the built site to Read the Docs' output location
-        - mkdir -p "$READTHEDOCS_OUTPUT/html"
-        - mv dist "$READTHEDOCS_OUTPUT/html"
+        # NOTE: each command below runs in its own clean shell and starts at the
+        # repo root, so multi-step work must be chained with `&&` or a block.
+        # 1. WASM package that the docs' `file:` dependency points at
+        - |
+            set -e
+            rustup target add wasm32-unknown-unknown
+            curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+            export PATH="$HOME/.cargo/bin:$PATH"
+            cd crates/wasm-bindings
+            wasm-pack build --release --target web
+        # 2. Build the Astro / Starlight docs site
+        - |
+            set -e
+            cd docs
+            npm ci
+            npm run build
+        # 3. Move the built site to Read the Docs' output location
+        - |
+            set -e
+            mkdir -p "$READTHEDOCS_OUTPUT/html"
+            cp -a docs/dist/. "$READTHEDOCS_OUTPUT/html/"
