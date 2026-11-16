@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Modern Colorthief — Live Demo</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --fg: #e8e8ec;
+    --accent: #7c6ef0;
+    --border: #2e2e44;
+    --card: #22223a;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f8f8fc;
+      --fg: #1a1a2e;
+      --accent: #5b4fd4;
+      --border: #d4d4e4;
+      --card: #ffffff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .back {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--accent);
+    opacity: 0.8;
+  }
+  h1 {
+    font-size: 1.4rem;
+    margin: 0 0 1.5rem;
+    font-weight: 600;
+  }
+  .container {
+    width: 100%;
+    max-width: 560px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+  }
+  .drop {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: 0.5rem;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .drop.over {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .drop input[type=file] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .drop-label { font-size: 0.95rem; opacity: 0.85; }
+  .drop-label strong { color: var(--accent); }
+  .urlrow {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .urlrow input[type=text] {
+    flex: 1;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .urlrow button {
+    padding: 0.55rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .status {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    min-height: 1.25rem;
+    opacity: 0.9;
+  }
+  .status.err { color: #ff6b6b; }
+  .swatches {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+  .sw {
+    flex: 1 1 120px;
+    min-width: 90px;
+    height: 72px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: flex-end;
+    padding: 0.5rem;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);
+  }
+  .sw span {
+    font-family: ui-monospace, monospace;
+    font-size: 0.78rem;
+    background: rgb(0 0 0 / 50%);
+    color: #fff;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    width: fit-content;
+  }
+</style>
+</head>
+<body>
+<a class="back" href="/">← Back to docs</a>
+<h1>Modern Colorthief — Live Demo</h1>
+<div class="container">
+  <div class="drop" id="drop">
+    <input type="file" id="file" accept="image/*" />
+    <span class="drop-label">Drop an image here, or <strong>browse</strong></span>
+  </div>
+  <div class="urlrow">
+    <input type="text" id="url" placeholder="…or paste an image URL" />
+    <button id="url-btn">Extract</button>
+  </div>
+  <div class="status" id="status">Loading WASM…</div>
+  <div class="swatches" id="swatches"></div>
+</div>
+
+<script type="module">
+  const $ = id => document.getElementById(id);
+  const drop = $('drop'), file = $('file'), urlIn = $('url'),
+        urlBtn = $('url-btn'), status = $('status'), swatches = $('swatches');
+
+  // Load the wasm bundle — fully self-contained, no bundler needed.
+  let getPalette;
+  try {
+    const ct = await import('/wasm/modern_colorthief_wasm.js');
+    if (ct.default) await ct.default();
+    getPalette = ct.getPalette;
+    status.textContent = 'Ready — drop an image or paste a URL.';
+  } catch (e) {
+    status.textContent = 'Failed to load WASM: ' + e;
+    status.className = 'status err';
+    throw e;
+  }
+
+  function render(colors) {
+    swatches.innerHTML = '';
+    for (const [r, g, b] of colors) {
+      const hex = '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+      const el = document.createElement('div');
+      el.className = 'sw';
+      el.style.background = `rgb(${r}, ${g}, ${b})`;
+      el.title = `rgb(${r}, ${g}, ${b})`;
+      el.innerHTML = `<span>${hex}</span>`;
+      el.addEventListener('click', () => {
+        navigator.clipboard?.writeText(hex).then(() => {
+          const s = el.querySelector('span');
+          const prev = s.textContent;
+          s.textContent = 'copied!';
+          setTimeout(() => s.textContent = prev, 800);
+        });
+      });
+      swatches.appendChild(el);
+    }
+  }
+
+  // getPalette accepts: string URL, Uint8Array, or ArrayBuffer (not File/Blob).
+  // Convert File/Blob to ArrayBuffer; pass URLs through as-is.
+  async function toInput(arg) {
+    if (typeof arg === 'string') return arg;
+    if (arg instanceof ArrayBuffer) return arg;
+    if (arg instanceof Uint8Array) return arg;
+    if (arg instanceof Blob) return arg.arrayBuffer();
+    if (arg instanceof File) return arg.arrayBuffer();
+    // fallback: try reading as blob
+    return new Blob([arg]).arrayBuffer();
+  }
+
+  async function run(arg) {
+    status.textContent = 'Extracting palette…';
+    status.className = 'status';
+    try {
+      const input = await toInput(arg);
+      const colors = await getPalette(input, 10, 10);
+      render(colors);
+      status.textContent = `${colors.length} colors — click a swatch to copy its hex.`;
+    } catch (e) {
+      status.textContent = 'Failed: ' + e;
+      status.className = 'status err';
+      swatches.innerHTML = '';
+    }
+  }
+
+  file.addEventListener('change', () => {
+    const f = file.files?.[0];
+    if (f) run(f);
+  });
+
+  ['dragover', 'dragleave', 'drop'].forEach(evt => {
+    drop.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (evt === 'dragover') drop.classList.add('over');
+      else drop.classList.remove('over');
+      if (evt === 'drop') {
+        const f = e.dataTransfer?.files?.[0];
+        if (f && f.type.startsWith('image/')) run(f);
+      }
+    });
+  });
+
+  urlBtn.addEventListener('click', () => {
+    const u = urlIn.value.trim();
+    if (u) run(u);
+  });
+  urlIn.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && urlIn.value.trim()) run(urlIn.value.trim());
+  });
+</script>
+</body>
+</html>

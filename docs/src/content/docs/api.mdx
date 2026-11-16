@@ -1,0 +1,51 @@
+---
+title: 'API Reference'
+description: 'Complete parameter reference for get_color / get_palette across all bindings.'
+---
+
+Every binding exposes the same two core functions. Names and parameter order vary slightly by language convention; semantics are identical.
+
+## `get_color` / `getColor`
+
+Extracts the single dominant color from an image.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `image` | path \| bytes \| `Uint8Array` \| `PIL.Image` \| `Buffer` \| `String` | — | The image, or raw RGBA pixel data |
+| `width` | `int` | — | Required when passing raw pixels |
+| `height` | `int` | — | Required when passing raw pixels |
+| `quality` | `int` | `10` | Sampling rate — 1 (every pixel, slowest) to 100 (every 100th, fastest) |
+
+**Returns:** `[r, g, b]` — a 3-element array/tuple/list of 8-bit integers (0–255).
+
+## `get_palette` / `getPalette`
+
+Extracts a palette of dominant colors from an image.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `image` | path \| bytes \| `Uint8Array` \| `PIL.Image` \| `Buffer` \| `String` | — | The image, or raw RGBA pixel data |
+| `width` | `int` | — | Required when passing raw pixels |
+| `height` | `int` | — | Required when passing raw pixels |
+| `color_count` / `colorCount` | `int` | `10` | Number of colors in the palette (1–255) |
+| `quality` | `int` | `10` | Sampling rate — 1 (every pixel) to 100 (every 100th) |
+
+**Returns:** a list/array of `[r, g, b]` tuples, one per palette color.
+
+## Quality parameter
+
+The `quality` value controls the sampling stride:
+
+| Quality | Pixels analyzed | Speed | Accuracy |
+| --- | --- | --- | --- |
+| `1` | Every pixel | Slowest | Highest |
+| `10` | Every 10th pixel | Balanced | Good (default) |
+| `100` | Every 100th pixel | Fastest | Lower |
+
+Lower quality = more pixels analyzed = more accurate but slower.
+
+## Return value details
+
+- Each color is a 3-element sequence of unsigned 8-bit integers (0–255) in RGB order.
+- In languages with signed bytes (Java, C), values above 127 are represented as negative — mask with `& 0xFF` when reading.
+- The palette order is not guaranteed to be sorted by frequency; it follows the median-cut split order.

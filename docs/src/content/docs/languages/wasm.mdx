@@ -1,0 +1,66 @@
+---
+title: 'WebAssembly'
+description: 'Use Modern Colorthief in the browser or any WASM runtime.'
+---
+
+:::info
+Package: `colorthief-wasm` · Install: `npm install colorthief-wasm`
+:::
+
+The WASM binding is compiled with `wasm-bindgen` and runs anywhere WebAssembly runs — browsers, Deno, Bun, or Node.js. The Canvas API (or `createImageBitmap`) handles image decoding; the Rust core receives raw RGBA bytes.
+
+## Functions
+
+All functions return a `Promise` (WASM init is async):
+
+- **`getColor(image, quality)`** → `Promise<[r, g, b]>`
+- **`getPalette(image, colorCount, quality)`** → `Promise<[r, g, b][]>`
+- **`decodeImage(image)`** → `Promise<{pixels: Uint8Array, width, height}>` — fetches a URL or decodes an `Image`/`Blob`/`File` to pixels
+- **`getColorFromPixels(pixels, width, height, quality)`** → synchronous, takes raw `Uint8Array`
+- **`getPaletteFromPixels(pixels, width, height, colorCount, quality)`** → synchronous, takes raw `Uint8Array`
+
+## From a URL or file
+
+```js
+import { getPalette } from "colorthief-wasm";
+
+// URL
+const palette = await getPalette("https://example.com/photo.jpg", 10, 10);
+
+// File input
+const file = document.querySelector("input[type=file]").files[0];
+const palette2 = await getPalette(file, 10, 10);
+```
+
+## From raw pixels
+
+```js
+import { getPaletteFromPixels, decodeImage } from "colorthief-wasm";
+
+const { pixels, width, height } = await decodeImage("photo.jpg");
+const palette = getPaletteFromPixels(pixels, width, height, 10, 10);
+const color   = getColorFromPixels(pixels, width, height, 10);
+```
+
+## 10×10 solid red
+
+```js
+import { getPaletteFromPixels } from "colorthief-wasm";
+
+const pixels = new Uint8Array(400);
+for (let i = 0; i < 100; i++) {
+  pixels[i * 4]     = 255;
+  pixels[i * 4 + 1] = 0;
+  pixels[i * 4 + 2] = 0;
+  pixels[i * 4 + 3] = 255;
+}
+const palette = getPaletteFromPixels(pixels, 10, 10, 5, 1);
+```
+
+## Try it live
+
+The [live demo](/demo/) runs this exact binding in your browser. Drop an image or paste a URL and the palette is computed with no server round-trip.
+
+:::note
+WebGPU acceleration is planned to offload the median-cut split to the GPU for large images. The current build uses the CPU core compiled to WASM.
+:::

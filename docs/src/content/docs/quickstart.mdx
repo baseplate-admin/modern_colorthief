@@ -1,0 +1,56 @@
+---
+title: 'Quick Start'
+description: 'Extract a dominant color or a full palette from an image in under a minute.'
+---
+
+Every binding exposes the same two functions with the same parameter names and return shape:
+
+- **`getPalette(image, colorCount?, quality?)`** → array of `[R, G, B]`
+- **`getColor(image, quality?)`** → single `[R, G, B]`
+
+The only thing that differs between languages is how you hand the image to the function.
+
+## Python
+
+```python
+import modern_colorthief
+
+color   = modern_colorthief.get_color("photo.jpg")
+palette = modern_colorthief.get_palette("photo.jpg")
+```
+
+## Node.js
+
+```js
+import { getColor, getPalette } from "modern-colorthief";
+
+const color   = getColor("photo.jpg");
+const palette = getPalette("photo.jpg", { colorCount: 5, quality: 10 });
+```
+
+## WebAssembly
+
+```js
+import { getPalette } from "colorthief-wasm";
+
+const palette = await getPalette("photo.jpg", { colorCount: 5, quality: 10 });
+```
+
+## Raw RGBA pixels (all languages)
+
+All bindings also accept raw RGBA pixel data — 4 bytes per pixel, row-major:
+
+```js
+// 10×10 solid red: 100 pixels × 4 bytes
+const pixels = new Uint8Array(400);
+for (let i = 0; i < 100; i++) {
+  pixels[i * 4]     = 255; // R
+  pixels[i * 4 + 1] = 0;   // G
+  pixels[i * 4 + 2] = 0;   // B
+  pixels[i * 4 + 3] = 255; // A
+}
+const color   = getColor(pixels, 10, 10, 1);
+const palette = getPalette(pixels, 10, 10, 5, 1);
+```
+
+See the per-language guides for the exact API surface in each language, and the [API reference](/api/) for parameter details.
