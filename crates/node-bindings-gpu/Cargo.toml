@@ -7,6 +7,7 @@ edition.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
+modern-colorthief-core.workspace = true
 modern-colorthief-core-gpu.workspace = true
 napi.workspace = true
 napi-derive.workspace = true

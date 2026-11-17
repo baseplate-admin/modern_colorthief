@@ -59,11 +59,12 @@ fn assert_gpu_valid(
         }
         Err(e) => {
             // GPU unavailable is acceptable — error should mention Vulkan or similar
+            let msg = e.to_string();
             assert!(
-                e.contains("Vulkan") || e.contains("not found") || e.contains("Empty"),
+                msg.contains("Vulkan") || msg.contains("not found") || msg.contains("Empty"),
                 "{}: unexpected GPU error: {}",
                 label,
-                e
+                msg
             );
         }
     }

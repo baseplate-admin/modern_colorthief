@@ -313,9 +313,9 @@ BINDINGS: list[Binding] = [
     Binding(
         lang="wasm",
         crate_path="wasm-bindings",
-        install_cmd="npm install colorthief-wasm",
-        package_name="colorthief-wasm",
-        module_name="colorthief-wasm",
+        install_cmd="npm install @modern_colorthief/wasm",
+        package_name="@modern_colorthief/wasm",
+        module_name="@modern_colorthief/wasm",
     ),
 ]
 

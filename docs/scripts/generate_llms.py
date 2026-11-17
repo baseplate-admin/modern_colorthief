@@ -68,9 +68,9 @@ BINDINGS = [
         "name": "WebAssembly",
         "lang": "js",
         "crate": "wasm-bindings",
-        "install": "npm install colorthief-wasm",
+        "install": "npm install @modern_colorthief/wasm",
         "gpu_crate": "wasm-bindings-webgpu",
-        "gpu_install": "npm install colorthief-wasm-webgpu",
+        "gpu_install": "npm install @modern_colorthief/wasm-gpu",
     },
 ]
 

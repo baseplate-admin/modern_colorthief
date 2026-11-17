@@ -55,6 +55,12 @@ export default defineConfig({
                     ],
                 },
                 {
+                    label: 'GPU',
+                    items: [
+                        { label: 'WebGPU', slug: 'webgpu' },
+                    ],
+                },
+                {
                     label: 'Reference',
                     items: [
                         { label: 'API', slug: 'api' },

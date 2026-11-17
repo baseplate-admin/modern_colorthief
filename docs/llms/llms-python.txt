@@ -36,6 +36,35 @@ Version: 0.3.0
   - `height` (int)
   - `quality` (int) (optional)
 
+### `get_palette_async_given_pixels(pixels: bytes, width: int, height: int, color_count?: int, quality?: int)` → `list[tuple[int, int, int]]`
+
+  Async: extract a color palette from raw RGBA pixel bytes.
+  
+  Runs the median cut on a tokio blocking thread, releasing the GIL for the
+  entire computation. The Python event loop stays responsive.
+  
+
+  Parameters:
+  - `pixels` (bytes)
+  - `width` (int)
+  - `height` (int)
+  - `color_count` (int) (optional)
+  - `quality` (int) (optional)
+
+### `get_color_async_given_pixels(pixels: bytes, width: int, height: int, quality?: int)` → `list[tuple[int, int, int]]`
+
+  Async: extract the dominant color from raw RGBA pixel bytes.
+  
+  Runs the median cut on a tokio blocking thread, releasing the GIL for the
+  entire computation.
+  
+
+  Parameters:
+  - `pixels` (bytes)
+  - `width` (int)
+  - `height` (int)
+  - `quality` (int) (optional)
+
 ## Usage Example
 
 ```python

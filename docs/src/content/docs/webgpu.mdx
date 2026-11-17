@@ -1,0 +1,81 @@
+---
+title: WebGPU
+description: GPU-accelerated color extraction using WebGPU compute shaders.
+---
+
+The `@modern_colorthief/wasm-gpu` package uses **WebGPU compute shaders** to perform
+palette extraction on the GPU. The WGSL shader (`crates/core_webgpu/src/shader.wgsl`)
+computes per-chunk color means on the GPU; median-cut clustering and deduplication
+still run on the CPU.
+
+## Browser support
+
+WebGPU is available in:
+
+- Chrome / Edge 113+
+- Firefox 141+ (behind a flag in earlier versions)
+- Safari 26+ (macOS 26 / iOS 26)
+
+Use the CPU package (`@modern_colorthief/wasm`) as a fallback when `navigator.gpu`
+is undefined.
+
+```js
+if (navigator.gpu) {
+  const { getPalette } = await import('@modern_colorthief/wasm-gpu');
+} else {
+  const { getPalette } = await import('@modern_colorthief/wasm');
+}
+```
+
+## API
+
+```js
+import { getPaletteGpu, getColorGpu } from '@modern_colorthief/wasm-gpu';
+
+// pixels: Uint8Array (raw RGBA, 4 bytes per pixel)
+const palette = await getPaletteGpu(pixels, width, height, 5, 1);
+// → [[255, 0, 0], [0, 0, 255], …]
+
+const dominant = await getColorGpu(pixels, width, height, 1);
+// → [255, 0, 0]
+```
+
+Both functions are **async** — they return a `Promise`. The compute dispatch runs
+on the GPU's compute queue and does not block the main thread.
+
+## Feature detection
+
+```js
+async function detectWebGPU() {
+  if (!navigator.gpu) return null;
+  try {
+    const adapter = await navigator.gpu.requestAdapter();
+    return adapter ? adapter.info?.description ?? 'WebGPU adapter' : null;
+  } catch {
+    return null;
+  }
+}
+```
+
+## Limitations
+
+- The shader computes **chunk means**, not a full median-cut on the GPU. Median-cut
+  and dedup still run on the CPU thread after the GPU pass.
+- WebGPU is not available in Node.js without the `@webgpu` / `node-webgpu` (Dawn)
+  polyfill.
+- The package exposes `getPaletteGpu` / `getColorGpu` (async) and `getVersion()`
+  (sync). The CPU package uses `getPalette` / `getColor` (also async) and
+  `__version__`. The naming differs between the two packages.
+
+## Build
+
+```bash
+cd crates/wasm-bindings-webgpu
+wasm-pack build --release --target web
+```
+
+The output lands in `pkg/`. To sync the bundle into the docs site:
+
+```bash
+cd docs && npm run wasm:sync
+```

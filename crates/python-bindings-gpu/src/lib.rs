@@ -21,7 +21,7 @@ fn extract_palette_from_buffer_py(
     }
     py.detach(move || {
         extract_palette_from_buffer(buffer, width, height, color_count, quality)
-            .map_err(pyo3::exceptions::PyRuntimeError::new_err)
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
     })
 }
 
@@ -41,7 +41,7 @@ fn extract_dominant_color_from_buffer_py(
     }
     py.detach(move || {
         extract_palette_from_buffer(buffer, width, height, 1, quality)
-            .map_err(pyo3::exceptions::PyRuntimeError::new_err)?
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?
             .into_iter()
             .next()
             .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("No color extracted"))
@@ -83,7 +83,9 @@ fn extract_dominant_color_py(py: Python, path: String, quality: u8) -> PyResult<
 #[pyfunction]
 fn list_gpus_py(py: Python) -> PyResult<Vec<pyo3::Bound<pyo3::types::PyDict>>> {
     use pyo3::types::PyDict;
-    let gpus = list_gpus().map_err(pyo3::exceptions::PyRuntimeError::new_err)?;
+    let gpus = py.detach(move || {
+        list_gpus().map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
+    })?;
     let mut result = Vec::new();
     for gpu in gpus {
         let d = PyDict::new(py);
@@ -97,7 +99,7 @@ fn list_gpus_py(py: Python) -> PyResult<Vec<pyo3::Bound<pyo3::types::PyDict>>> {
 }
 
 // LCOV_EXCL_START - PyO3 module initialization cannot be directly tested (see rust-lang/rust#84605)
-#[pymodule]
+#[pymodule(gil_used = false)]
 fn modern_colorthief_gpu(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction![extract_palette_from_buffer_py](m)?)?;
     m.add_function(wrap_pyfunction![extract_dominant_color_from_buffer_py](m)?)?;

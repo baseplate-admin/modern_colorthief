@@ -7,6 +7,14 @@ Version: 0.3.0
 
 ## Functions
 
+### `make_runtime_err(msg: String)` → `error`
+
+  Build a magnus runtime error. Returns a placeholder if the Ruby runtime
+  is unavailable (only possible during interpreter shutdown).
+
+  Parameters:
+  - `msg` (String)
+
 ### `get_palette(pixels: String, width: Integer, height: Integer, color_count: Integer, quality: Integer)` → `Array<Integer>`
 
   Parameters:
@@ -22,6 +30,17 @@ Version: 0.3.0
   - `pixels` (String)
   - `width` (Integer)
   - `height` (Integer)
+  - `quality` (Integer)
+
+### `compute_palette(pixel_data: String, width: Integer, height: Integer, color_count: Integer, quality: Integer)` → `Array<Integer>`
+
+  Pure compute function — no Ruby references, safe to call without the GVL.
+
+  Parameters:
+  - `pixel_data` (String)
+  - `width` (Integer)
+  - `height` (Integer)
+  - `color_count` (Integer)
   - `quality` (Integer)
 
 ## Usage Example

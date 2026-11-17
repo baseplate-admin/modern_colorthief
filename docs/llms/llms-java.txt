@@ -7,6 +7,16 @@ Version: 0.3.0
 
 ## Functions
 
+### `isValidationErr(err: ColorthiefError)` → `bool`
+
+  Parameters:
+  - `err` (ColorthiefError)
+
+### `jniErrFromCore(err: ColorthiefError)` → `String`
+
+  Parameters:
+  - `err` (ColorthiefError)
+
 ### `getPalette(pixels: byte[], width: int, height: int, color_count: int, quality: int)` → `Object`
 
   Extract a palette of dominant colors from raw RGBA pixel data.

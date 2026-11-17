@@ -1,5 +1,21 @@
 use magnus::{error, function, Object, RString, Ruby};
 
+/// Build a magnus runtime error. Returns a placeholder if the Ruby runtime
+/// is unavailable (only possible during interpreter shutdown).
+fn make_runtime_err(msg: String) -> error::Error {
+    match Ruby::get() {
+        Some(ruby) => error::Error::new(ruby.exception_runtime_error(), msg),
+        None => {
+            // The Ruby VM is shutting down; there is no exception class to
+            // raise. Return an error that will be dropped without a message.
+            error::Error::new(
+                magnus::RString::from("no runtime"),
+                "modern_colorthief: internal error (Ruby runtime unavailable)".to_string(),
+            )
+        }
+    }
+}
+
 fn get_palette(
     pixels: RString,
     width: u32,
@@ -7,21 +23,18 @@ fn get_palette(
     color_count: u8,
     quality: u8,
 ) -> Result<Vec<Vec<u8>>, error::Error> {
-    let pixels = unsafe { pixels.as_slice() };
-    modern_colorthief_core_cpu::extract_palette_from_buffer(
-        pixels,
-        width,
-        height,
-        color_count,
-        quality,
-    )
-    .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-    .map_err(|e| {
-        error::Error::new(
-            Ruby::get().unwrap().exception_runtime_error(),
-            e.to_string(),
-        )
-    })
+    // Copy pixel bytes out of the RString before releasing the GVL so that
+    // the underlying Ruby string storage can be GC'd safely.
+    let pixel_data = unsafe { pixels.as_slice() }.to_vec();
+
+    // Release the GVL while running the (potentially heavy) median-cut
+    // computation so other Ruby threads can run.
+    let result =
+        unsafe { rb_sys::rb_thread_call_without_gvl(move || compute_palette(&pixel_data, width, height, color_count, quality), std::ptr::null_mut()) };
+
+    result
+        .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
+        .map_err(|e| make_runtime_err(e.to_string()))
 }
 
 fn get_color(
@@ -30,26 +43,32 @@ fn get_color(
     height: u32,
     quality: u8,
 ) -> Result<Vec<u8>, error::Error> {
-    let pixels = unsafe { pixels.as_slice() };
-    let palette =
-        modern_colorthief_core_cpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
-            .map_err(|e| {
-                error::Error::new(
-                    Ruby::get().unwrap().exception_runtime_error(),
-                    e.to_string(),
-                )
-            })?;
+    let pixel_data = unsafe { pixels.as_slice() }.to_vec();
+
+    let palette = unsafe {
+        rb_sys::rb_thread_call_without_gvl(
+            move || modern_colorthief_core_cpu::extract_palette_from_buffer(&pixel_data, width, height, 5, quality),
+            std::ptr::null_mut(),
+        )
+    }
+    .map_err(|e| make_runtime_err(e.to_string()))?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| {
-            error::Error::new(
-                Ruby::get().unwrap().exception_runtime_error(),
-                "Image contains no colors",
-            )
-        })
+        .ok_or_else(|| make_runtime_err("Image contains no colors".to_string()))
+}
+
+/// Pure compute function — no Ruby references, safe to call without the GVL.
+fn compute_palette(
+    pixel_data: &[u8],
+    width: u32,
+    height: u32,
+    color_count: u8,
+    quality: u8,
+) -> Result<Vec<(u8, u8, u8)>, modern_colorthief_core::ColorthiefError> {
+    modern_colorthief_core_cpu::extract_palette_from_buffer(pixel_data, width, height, color_count, quality)
 }
 
 #[magnus::init]

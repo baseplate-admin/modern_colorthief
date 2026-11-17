@@ -1,10 +1,29 @@
 export function getPalette(
-    image: string | Buffer,
+    pixels: Buffer,
+    width: number,
+    height: number,
     colorCount?: number,
     quality?: number,
 ): Promise<number[][]>;
 
 export function getColor(
-    image: string | Buffer,
+    pixels: Buffer,
+    width: number,
+    height: number,
     quality?: number,
 ): Promise<number[]>;
+
+export function getPaletteSync(
+    pixels: Buffer,
+    width: number,
+    height: number,
+    colorCount?: number,
+    quality?: number,
+): number[][];
+
+export function getColorSync(
+    pixels: Buffer,
+    width: number,
+    height: number,
+    quality?: number,
+): number[];

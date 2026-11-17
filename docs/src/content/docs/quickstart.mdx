@@ -22,18 +22,18 @@ palette = modern_colorthief.get_palette("photo.jpg")
 ## Node.js
 
 ```js
-import { getColor, getPalette } from "modern-colorthief";
+import { getColor, getPalette } from "@modern_colorthief/node";
 
-const color   = getColor("photo.jpg");
-const palette = getPalette("photo.jpg", { colorCount: 5, quality: 10 });
+const color   = await getColor("photo.jpg");
+const palette = await getPalette("photo.jpg", 5, 10);
 ```
 
 ## WebAssembly
 
 ```js
-import { getPalette } from "colorthief-wasm";
+import { getPalette } from "@modern_colorthief/wasm";
 
-const palette = await getPalette("photo.jpg", { colorCount: 5, quality: 10 });
+const palette = await getPalette("photo.jpg", 5, 10);
 ```
 
 ## Raw RGBA pixels (all languages)

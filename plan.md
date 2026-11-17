@@ -29,6 +29,64 @@ thread.
 
 ### Done
 
+**Core (F2–F7)**
+- F2 `extract_color` centralized in `core::PaletteExtractor` — the `.pop()` bug is gone from both WASM surfaces.
+- F3 real `ColorthiefError` enum (`EmptyBuffer`, `NoPixels`, `InvalidDimensions`, `Backend`) replaces bare `String` errors.
+- F4 validation in core: `buffer.len() >= w*h*4` enforced once in `extract_palette_from_buffer`.
+- F5 duplicate `GpuInfo` in `core` deleted (kept in `core_gpu`).
+- F6 `panic = "unwind"` in cdylib profiles; FFI boundaries no longer abort the host.
+- F7 `core::bindings` shared helpers (`colors_to_rows_u8`, `dominant_color`).
+
+**A — WASM**
+- `decode_image_sync` + busy-wait deleted; `load_image` built on `JsFuture`/`Promise`.
+- `getPalette`/`getColor`/`decodeImage`/`getPaletteFromPixels`/`getColorFromPixels` are genuine async (real Promises).
+- `wasm-bindgen-futures` promoted to `[dependencies]`; `Error` objects (not `JsValue::from_str`).
+- `getColor` returns `dominant_color` (first entry), not `.pop()`.
+
+**B — Node.js**
+- `getPalette`/`getColor` are `pub async fn` via napi 3.x — compute runs on the tokio/libuv pool.
+- `getPaletteSync`/`getColorSync` added for the blocking path.
+- `crates/node-bindings-wasm` deleted (untestable, never published).
+- `node-bindings-gpu` gets real `native.ts` + `index.d.ts` + build/test scripts.
+- `native.ts` arm64 arch resolution fixed.
+- Error fidelity: `Status::InvalidArg` for bad input, `GenericFailure` for core failures.
+
+**C — Python**
+- `get_palette_async`/`get_color_async` via `pyo3-async-runtimes` + `tokio::task::spawn_blocking`.
+- `gil_used = false` on `#[pymodule]`; `py.detach` around all compute.
+- GPU binding: `gil_used = false`, `list_gpus_py` detached.
+
+**D — JVM**
+- JNI symbol names corrected: `Java_io_baseplate_admin_modern_colorthief_Colorthief_*` (was `Java_modern_colorthief_*`).
+- Error text preserved: `env.throw_new` with core `Display` string before `Err(JavaException)`.
+- `ColorthiefAsync.java` — `CompletableFuture` wrappers using virtual threads (Java 21+) or cached pool.
+- `ColorthiefSuspend.kt` — `kotlinx.coroutines` wrappers bridging to `ColorthiefAsync`.
+- `kotlinx-coroutines-core` + `coroutines-test` added to `build.gradle.kts`.
+
+**E — Ruby / PHP**
+- Ruby: GVL released around compute via `rb_sys::rb_thread_call_without_gvl`; input copied before release; `Ruby::get().unwrap()` panics replaced with `make_runtime_err`.
+- PHP: pixel input changed from `Vec<i64>` to `Binary<u8>` (1 byte per pixel); compat shims `get_palette_compat`/`get_color_compat` kept for the old array interface.
+- PHP GPU: same `Binary<u8>` change.
+
+**G — Docs**
+- G1 `webgpu.mdx` page + sidebar entry (GPU group).
+- G2 `docs/scripts/sync-wasm.mjs` — builds both WASM bundles; `--check` mode for CI.
+- G3 `docs/package.json` dep on `modern-colorthief-wasm` removed; `.readthedocs.yml` uses `npm run wasm:sync`.
+- G5 package-name drift fixed across all doc pages (`colorthief-wasm` → `@modern_colorthief/wasm`, `modern-colorthief` → `@modern_colorthief/native`); `getPalette(file, …)` examples corrected to actual API; object-syntax drift fixed.
+- G5 llms: all 8 `docs/llms/*.txt` regenerated; package names in generators fixed; `--check` passes.
+- G6 `404.mdx` conflict resolved (Starlight handles 404 natively; custom file removed).
+
+**H — CI**
+- H1 `docs-ci.yaml` created: `astro check`, `npm run build`, `generate_llms.py --check`, `generate_llms_per_lang.py --check`.
+- H2 `crates/core_webgpu/**` added to `paths:` filters in wasm, ruby, jvm, php, python, and node workflows.
+- H3 `fuzz.yml`: `fuzz-check` job now builds and runs bounded fuzz sessions (`-runs=2000`) for `color_extract` and `palette_extract`.
+- H4 Ruby publish tag unified: `refs/tags/v` → `refs/tags/` (matches all other workflows).
+- H5 metadata: all published crates have `license`, `repository`, `description`, `rust-version` via `.workspace = true`.
+
+**Cleanup**
+- `crates/node-bindings-wasm` deleted (B4).
+- Test images (`test.jpg`) copied to Ruby CPU and GPU spec dirs.
+
 **Docs site (commit `18e0fa1`)**
 - RTD sub-path handling: base derived from `READTHEDOCS_LANGUAGE`/`READTHEDOCS_VERSION` in
   `docs/astro.config.ts`; `site` points at the RTD domain. This is what fixed the blank site.
@@ -52,19 +110,19 @@ thread.
 ### Partial
 - WebGPU compute: shader does per-chunk means; median cut and dedup still run on the CPU.
 - GPU CI: emulated adapters only, no real Intel/AMD/NVIDIA validation.
-- Test images: JVM uses `tests/src/test/resources/`; Ruby has none.
 - Test porting: only `node-bindings` has `test_concurrent.ts` / `test_deduplication.ts`; no
   multithread/path/cli equivalents outside Python.
-- llms files: generated but stale (old package name, no `/demo/`, no `--check` in CI).
+- H6 lint gates (prettier/eslint, ruff, ktlint, rubocop, PHP CS) not yet wired into CI.
+- Workstream I (100% coverage gate) not yet enforced in CI.
 
 ### Not started
-- Vulkan Compute: no `create_compute_pipeline` / `create_shader_module` / `cmd_dispatch` anywhere in
-  `crates/core_gpu` — `gpu_extract` averages chunks on the CPU (`vulkan.rs:312`).
-- `docs/package.json:16` still pins `modern-colorthief-wasm: file:../crates/wasm-bindings/pkg`, so
-  `.readthedocs.yml` still installs rustup + wasm-pack and compiles wasm on every docs build.
-- `docs/public/wasm/` is still a hand-copied bundle with no regeneration script.
-- No docs CI (`astro check`, link check, llms `--check`).
-- All Rust workstreams A–F and the coverage gate (I).
+- **F1 (Vulkan Compute dispatch)**: no `create_compute_pipeline` / `create_shader_module` /
+  `cmd_dispatch` in `crates/core_gpu` — `gpu_extract` averages chunks on the CPU. Port the WGSL
+  shader from `crates/core_webgpu/src/shader.wgsl` to SPIR-V (via naga) and dispatch, mirroring
+  `core_webgpu/src/helper.ts`. Until then all `-gpu` packages are documented as CPU fallback.
+- H6 lint gates: prettier/eslint for `docs/` and node packages, `ruff`, `ktlint`, `rubocop`, PHP CS.
+- I (coverage to 100%): tiering, `#[coverage(off)]` on FFI glue, `cargo-llvm-cov --fail-under-lines 100`
+  for Tier 1/2, dead-code deletion (`core_gpu` unused `image`, unused `rayon` in jvm/node bindings).
 
 ---
 
@@ -316,6 +374,19 @@ Thresholds live in the repo (`codecov.yml`, `vitest.config.ts`, `build.gradle.kt
 5. D (JVM symbols/errors/async wrapper), E (Ruby GVL, PHP input type).
 6. F1 (`core_gpu` Vulkan dispatch) — largest item; `-gpu` packages stay labelled CPU fallback.
 7. G1/G4/G5 (WebGPU page, async docs, content) → H (CI) → final 100% enforcement.
+
+## CI Verification (required before "done")
+
+Per `ci-verification.md`: the following changes are **not verified** and must pass in CI before
+reporting work complete:
+
+- Ruby GVL change (`rb_sys::rb_thread_call_without_gvl`) — cannot compile locally (no Ruby)
+- PHP `Binary<u8>` change — cannot compile locally (no PHP)
+- JVM `ColorthiefAsync.java` / `ColorthiefSuspend.kt` — cannot compile locally (no JVM/Gradle)
+- All workflow YAML changes (docs-ci, fuzz.yml, paths filters, tag unification) — must trigger and pass
+- `cargo check --all-targets` with `php-dev` / LLVM on CI (core-ci clippy job)
+
+For each CI run: inspect **every** job log, confirm expected test suites ran, name platform coverage.
 
 ## Risks
 

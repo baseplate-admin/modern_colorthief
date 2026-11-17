@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { platform } from 'node:os';
+import { platform, arch } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,8 +10,9 @@ const NAME = 'modern_colorthief';
 
 function getSuffix(): string {
     const p = platform();
-    if (p === 'linux') return 'linux-x64-gnu';
-    if (p === 'darwin') return 'darwin-x64';
+    const a = arch();
+    if (p === 'linux') return a === 'arm64' ? 'linux-arm64-gnu' : 'linux-x64-gnu';
+    if (p === 'darwin') return a === 'arm64' ? 'darwin-arm64' : 'darwin-x64';
     if (p === 'win32') return 'win32-x64-msvc';
     return '';
 }
@@ -50,16 +51,31 @@ const native = require(resolveNativePath()) as {
         pixels: Buffer,
         width: number,
         height: number,
-        colorCount: number,
-        quality: number,
-    ) => number[][];
+        colorCount?: number,
+        quality?: number,
+    ) => Promise<number[][]>;
     getColor: (
         pixels: Buffer,
         width: number,
         height: number,
-        quality: number,
+        quality?: number,
+    ) => Promise<number[]>;
+    getPaletteSync: (
+        pixels: Buffer,
+        width: number,
+        height: number,
+        colorCount?: number,
+        quality?: number,
+    ) => number[][];
+    getColorSync: (
+        pixels: Buffer,
+        width: number,
+        height: number,
+        quality?: number,
     ) => number[];
 };
 
 export const getPalette: typeof native.getPalette = native.getPalette;
 export const getColor: typeof native.getColor = native.getColor;
+export const getPaletteSync: typeof native.getPaletteSync = native.getPaletteSync;
+export const getColorSync: typeof native.getColorSync = native.getColorSync;

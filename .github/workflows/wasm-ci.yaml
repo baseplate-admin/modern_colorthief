@@ -7,6 +7,7 @@ on:
     paths:
       - 'crates/wasm-bindings/**'
       - 'crates/wasm-bindings-webgpu/**'
+      - 'crates/core_webgpu/**'
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
@@ -16,6 +17,7 @@ on:
     paths:
       - 'crates/wasm-bindings/**'
       - 'crates/wasm-bindings-webgpu/**'
+      - 'crates/core_webgpu/**'
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
@@ -41,11 +43,11 @@ jobs:
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
+      - run: cargo check --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu
       - name: Run Rust core tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu
       - name: Build WASM release
-        run: cargo build --release --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu -p modern-colorthief-node-wasm
+        run: cargo build --release --target wasm32-unknown-unknown -p modern-colorthief-core-webgpu -p modern-colorthief-wasm -p modern-colorthief-webgpu
       - run: ls -lh target/wasm32-unknown-unknown/release/*.wasm
 
   wasm-pack-build:

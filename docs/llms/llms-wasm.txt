@@ -1,11 +1,33 @@
 # modern_colorthief — WASM Binding API
 
-Package: `colorthief-wasm`
-Module: `colorthief-wasm`
-Install: `npm install colorthief-wasm`
+Package: `@modern_colorthief/wasm`
+Module: `@modern_colorthief/wasm`
+Install: `npm install @modern_colorthief/wasm`
 Version: 0.3.0
 
 ## Functions
+
+### `rejectStr(p: js_sys::Function, msg: str)` → `void`
+
+  Parameters:
+  - `p` (js_sys::Function)
+  - `msg` (str)
+
+### `paletteToJsArray(palette: [(u8, u8, u8)])` → `Promise`
+
+  Build a JS array of `number[][]` from an `Rgb` palette.
+
+  Parameters:
+  - `palette` ([(u8, u8, u8)])
+
+### `colorToJsArray(r: number, g: number, b: number)` → `Promise`
+
+  Build a JS array of `number[]` — `[R, G, B]` — from a single color.
+
+  Parameters:
+  - `r` (number)
+  - `g` (number)
+  - `b` (number)
 
 ### `getPalettePromise(image: any, color_count: number, quality: number)` → `Promise`
 
@@ -24,9 +46,9 @@ Version: 0.3.0
 
   Extract the dominant color from an image.
   
-  Accepts a string URL, `Uint8Array`, or `ArrayBuffer` of raw image bytes.
-  Internally extracts a small palette and returns the top color.
+  The dominant color is the **first** entry of a 5-color palette.
   
+  # Returns
 
   Parameters:
   - `image` (any)
@@ -36,9 +58,8 @@ Version: 0.3.0
 
   Decode an image via the browser Canvas API.
   
-  Returns a Promise resolving to `{ pixels: Uint8Array, width: number, height: number }`.
-  Useful when you need the raw pixel data for custom processing.
-  
+  # Returns
+  Promise resolving to `{ pixels: Uint8Array, width: number, height: number }`.
 
   Parameters:
   - `image` (any)
@@ -46,10 +67,6 @@ Version: 0.3.0
 ### `getPaletteFromPixels(pixels: Uint8Array, width: number, height: number, color_count: number, quality: number)` → `Promise`
 
   Extract a palette from raw RGBA pixel data (no image decoding).
-  
-  Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).
-  
-  # Example
 
   Parameters:
   - `pixels` (Uint8Array)
@@ -61,10 +78,6 @@ Version: 0.3.0
 ### `getColorFromPixels(pixels: Uint8Array, width: number, height: number, quality: number)` → `Promise`
 
   Extract the dominant color from raw RGBA pixel data (no image decoding).
-  
-  Accepts a `Uint8Array` of pixel data (RGBA format, row-major, top-to-bottom).
-  
-  # Example
 
   Parameters:
   - `pixels` (Uint8Array)
@@ -72,10 +85,19 @@ Version: 0.3.0
   - `height` (number)
   - `quality` (number)
 
+### `decodeImageAsync(image: any)` → `Result`
+
+  Decode an image via the browser Canvas API (async).
+  
+  Returns a future resolving to `(Uint8Array, width, height)`.
+
+  Parameters:
+  - `image` (any)
+
 ## Usage Example
 
 ```javascript
-import { getPalette, getColor } from 'colorthief-wasm';
+import { getPalette, getColor } from '@modern_colorthief/wasm';
 
 const palette = await getPalette(pixels, width, height, 5, 1);
 const color   = await getColor(pixels, width, height, 1);

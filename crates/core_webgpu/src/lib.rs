@@ -1,13 +1,13 @@
 mod webgpu;
 
-use modern_colorthief_core::PaletteExtractor;
+use modern_colorthief_core::{ColorthiefError, PaletteExtractor, Rgb};
 
 /// WebGPU compute backend that implements the shared PaletteExtractor trait.
 #[derive(Default)]
 pub struct WebGpuExtractor;
 
 /// Deduplicate colors preserving first-seen order, capped at `max` entries.
-fn dedup_colors(colors: Vec<(u8, u8, u8)>, max: usize) -> Vec<(u8, u8, u8)> {
+fn dedup_colors(colors: Vec<Rgb>, max: usize) -> Vec<Rgb> {
     let mut seen = std::collections::HashSet::with_capacity(colors.len());
     let mut out = Vec::with_capacity(colors.len());
     for c in colors {
@@ -26,13 +26,18 @@ impl PaletteExtractor for WebGpuExtractor {
         height: u32,
         color_count: u8,
         quality: u8,
-    ) -> Result<Vec<(u8, u8, u8)>, String> {
-        // WebGPU is async-only — use extract_palette_async / extract_palette_from_buffer_webgpu
-        // from the wasm bindings instead. This sync path is a placeholder for trait
-        // compatibility; calling it will return an error.
+    ) -> Result<Vec<Rgb>, ColorthiefError> {
+        // WebGPU is async-only — use extract_palette_from_buffer_webgpu from the wasm bindings.
+        // This sync path is a placeholder for trait compatibility.
         let _ = (buffer, width, height, color_count, quality);
-        Err("WebGPU requires async — use extract_palette_from_buffer_webgpu() instead".to_string())
+        Err(ColorthiefError::Backend(
+            "WebGPU requires async — use extract_palette_from_buffer_webgpu() instead".to_string(),
+        ))
     }
+}
+
+fn string_err_to_colorthief_err(msg: String) -> ColorthiefError {
+    ColorthiefError::Backend(msg)
 }
 
 /// Extract palette using WebGPU compute shaders.
@@ -42,7 +47,7 @@ pub fn extract_palette_from_buffer_webgpu(
     height: u32,
     color_count: u8,
     quality: u8,
-) -> impl std::future::Future<Output = Result<Vec<(u8, u8, u8)>, String>> {
+) -> impl std::future::Future<Output = Result<Vec<Rgb>, ColorthiefError>> {
     extract_palette_async(buffer, width, height, color_count, quality)
 }
 
@@ -52,7 +57,7 @@ pub fn extract_color_from_buffer_webgpu(
     width: u32,
     height: u32,
     quality: u8,
-) -> impl std::future::Future<Output = Result<(u8, u8, u8), String>> {
+) -> impl std::future::Future<Output = Result<Rgb, ColorthiefError>> {
     extract_color_async(buffer, width, height, quality)
 }
 
@@ -62,12 +67,14 @@ async fn extract_palette_async(
     height: u32,
     color_count: u8,
     quality: u8,
-) -> Result<Vec<(u8, u8, u8)>, String> {
+) -> Result<Vec<Rgb>, ColorthiefError> {
     if buffer.is_empty() {
-        return Err("Empty pixel buffer".to_string());
+        return Err(ColorthiefError::EmptyBuffer);
     }
 
-    let raw = webgpu::extract_palette_webgpu(buffer, width, height, color_count, quality).await?;
+    let raw = webgpu::extract_palette_webgpu(buffer, width, height, color_count, quality)
+        .await
+        .map_err(string_err_to_colorthief_err)?;
 
     let mut colors = Vec::with_capacity(raw.len() / 3);
     let mut i = 0;
@@ -83,10 +90,7 @@ async fn extract_color_async(
     width: u32,
     height: u32,
     quality: u8,
-) -> Result<(u8, u8, u8), String> {
+) -> Result<Rgb, ColorthiefError> {
     let palette = extract_palette_async(buffer, width, height, 5, quality).await?;
-    palette
-        .into_iter()
-        .next()
-        .ok_or("No colors extracted".to_string())
+    modern_colorthief_core::bindings::dominant_color(&palette)
 }

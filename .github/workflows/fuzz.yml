@@ -149,6 +149,14 @@ jobs:
         shell: bash
         run: bash .github/scripts/setup_vulkan_macos.sh
 
-      - name: Check all fuzz targets compile
-        run: cargo check --bins
+      - name: Build fuzz targets
+        run: cargo build --bins
         working-directory: fuzz
+
+      - name: Run bounded fuzz session (color_extract)
+        working-directory: fuzz
+        run: target/debug/color_extract -runs=2000
+
+      - name: Run bounded fuzz session (palette_extract)
+        working-directory: fuzz
+        run: target/debug/palette_extract -runs=2000

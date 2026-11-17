@@ -4,30 +4,35 @@ description: 'Use Modern Colorthief in the browser or any WASM runtime.'
 ---
 
 :::info
-Package: `colorthief-wasm` · Install: `npm install colorthief-wasm`
+Package: `@modern_colorthief/wasm` · Install: `npm install @modern_colorthief/wasm`
 :::
 
-The WASM binding is compiled with `wasm-bindgen` and runs anywhere WebAssembly runs — browsers, Deno, Bun, or Node.js. The Canvas API (or `createImageBitmap`) handles image decoding; the Rust core receives raw RGBA bytes.
+The WASM binding is compiled with `wasm-bindgen` and runs anywhere WebAssembly runs — browsers, Deno, Bun, or Node.js. Image decoding is handled by the browser (Canvas API, `createImageBitmap`); the Rust core receives raw RGBA bytes.
 
 ## Functions
 
-All functions return a `Promise` (WASM init is async):
+All functions return a `Promise`:
 
-- **`getColor(image, quality)`** → `Promise<[r, g, b]>`
-- **`getPalette(image, colorCount, quality)`** → `Promise<[r, g, b][]>`
-- **`decodeImage(image)`** → `Promise<{pixels: Uint8Array, width, height}>` — fetches a URL or decodes an `Image`/`Blob`/`File` to pixels
-- **`getColorFromPixels(pixels, width, height, quality)`** → synchronous, takes raw `Uint8Array`
-- **`getPaletteFromPixels(pixels, width, height, colorCount, quality)`** → synchronous, takes raw `Uint8Array`
+| Function | Signature |
+|---|---|
+| `getPalette(image, colorCount?, quality?)` | `Promise<[number, number, number][]>` |
+| `getColor(image, quality?)` | `Promise<[number, number, number]>` |
+| `decodeImage(image)` | `Promise<{ pixels: Uint8Array, width: number, height: number }>` |
+| `getPaletteFromPixels(pixels, width, height, colorCount?, quality?)` | `Promise<[number, number, number][]>` |
+| `getColorFromPixels(pixels, width, height, quality?)` | `Promise<[number, number, number]>` |
+| `__version__()` | `string` (sync) |
+
+`image` accepts a URL string, an `Image` element, a `Blob`, or a `File`. `pixels` is a raw RGBA `Uint8Array` (4 bytes per pixel).
 
 ## From a URL or file
 
 ```js
-import { getPalette } from "colorthief-wasm";
+import { getPalette } from "@modern_colorthief/wasm";
 
 // URL
 const palette = await getPalette("https://example.com/photo.jpg", 10, 10);
 
-// File input
+// <input type="file"> File object
 const file = document.querySelector("input[type=file]").files[0];
 const palette2 = await getPalette(file, 10, 10);
 ```
@@ -35,17 +40,17 @@ const palette2 = await getPalette(file, 10, 10);
 ## From raw pixels
 
 ```js
-import { getPaletteFromPixels, decodeImage } from "colorthief-wasm";
+import { getPaletteFromPixels, decodeImage } from "@modern_colorthief/wasm";
 
 const { pixels, width, height } = await decodeImage("photo.jpg");
-const palette = getPaletteFromPixels(pixels, width, height, 10, 10);
-const color   = getColorFromPixels(pixels, width, height, 10);
+const palette = await getPaletteFromPixels(pixels, width, height, 10, 10);
+const color   = await getColorFromPixels(pixels, width, height, 10);
 ```
 
 ## 10×10 solid red
 
 ```js
-import { getPaletteFromPixels } from "colorthief-wasm";
+import { getPaletteFromPixels } from "@modern_colorthief/wasm";
 
 const pixels = new Uint8Array(400);
 for (let i = 0; i < 100; i++) {
@@ -54,13 +59,13 @@ for (let i = 0; i < 100; i++) {
   pixels[i * 4 + 2] = 0;
   pixels[i * 4 + 3] = 255;
 }
-const palette = getPaletteFromPixels(pixels, 10, 10, 5, 1);
+const palette = await getPaletteFromPixels(pixels, 10, 10, 5, 1);
 ```
 
 ## Try it live
 
-The [live demo](../../demo/) runs this exact binding in your browser. Drop an image or paste a URL and the palette is computed with no server round-trip.
+The [live demo](../demo/) runs this exact binding in your browser. Drop an image or paste a URL and the palette is computed with no server round-trip.
 
-:::note
-WebGPU acceleration is planned to offload the median-cut split to the GPU for large images. The current build uses the CPU core compiled to WASM.
-:::
+## GPU-accelerated version
+
+[`@modern_colorthief/wasm-gpu`](../webgpu/) offloads chunk-mean computation to a WebGPU compute shader. Median-cut clustering and deduplication still run on the CPU thread.

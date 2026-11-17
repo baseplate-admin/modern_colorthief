@@ -7,6 +7,9 @@ edition.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
+modern-colorthief-core.workspace = true
 modern-colorthief-core-cpu.workspace = true
 pyo3.workspace = true
+pyo3-async-runtimes.workspace = true
+tokio.workspace = true
 rayon.workspace = true

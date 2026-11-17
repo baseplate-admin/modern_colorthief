@@ -14,14 +14,15 @@ build:
     commands:
         # NOTE: each command below runs in its own clean shell and starts at the
         # repo root, so multi-step work must be chained with `&&` or a block.
-        # 1. WASM package that the docs' `file:` dependency points at
+        # 1. Install wasm-pack and build both WASM bundles into docs/public/
         - |
             set -e
             rustup target add wasm32-unknown-unknown
             curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
             export PATH="$HOME/.cargo/bin:$PATH"
-            cd crates/wasm-bindings
-            wasm-pack build --release --target web
+            cd docs
+            npm ci
+            npm run wasm:sync
         # 2. Build the Astro / Starlight docs site
         #    RTD publishes at /<language>/<version>/ (e.g. /en/latest/), so the
         #    base path is baked into asset and link URLs at build time.
@@ -29,7 +30,6 @@ build:
             set -e
             export DOCS_BASE_PATH="/${READTHEDOCS_LANGUAGE}/${READTHEDOCS_VERSION}/"
             cd docs
-            npm ci
             npm run build
         # 3. Move the built site to Read the Docs' output location
         - |

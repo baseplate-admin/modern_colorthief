@@ -1,23 +1,9 @@
 //! GPU-accelerated palette extraction.
 //! Uses Vulkan compute backend. Returns error if no GPU available.
 
-/// Info about a discovered GPU.
-#[derive(Clone, Debug)]
-pub struct GpuInfo {
-    pub index: usize,
-    pub name: String,
-    pub device_type: GpuDevice,
-    pub vendor_name: String,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GpuDevice {
-    Discrete,
-    Integrated,
-    Virtual,
-    CPU,
-    Other,
-}
+//! Single source for the shared types is `modern-colorthief-core`;
+//! this crate re-exports them for backwards compatibility.
+pub use modern_colorthief_core::{ColorthiefError, GpuDevice, GpuInfo, Rgb};
 
 mod vulkan;
 
@@ -34,7 +20,7 @@ pub fn extract_palette_from_buffer(
     height: u32,
     color_count: u8,
     quality: u8,
-) -> Result<Palette, String> {
+) -> Result<Palette, ColorthiefError> {
     vulkan::gpu_extract(buffer, width, height, color_count, quality)
 }
 
@@ -46,6 +32,39 @@ mod tests {
     fn test_empty_buffer() {
         let result = extract_palette_from_buffer(&[], 0, 0, 5, 10);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_truncated_buffer_rejected() {
+        // 2 pixels present but 10x1 declared — must fail validation before
+        // any GPU work, on every platform (not just when a GPU is present).
+        let buffer: Vec<u8> = [255u8, 0, 0, 255].repeat(2);
+        let result = extract_palette_from_buffer(&buffer, 10, 1, 5, 1);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(
+            matches!(err, ColorthiefError::InvalidDimensions),
+            "expected InvalidDimensions error, got: {err:?}"
+        );
+    }
+
+    #[test]
+    fn test_validate_buffer_shared_rule() {
+        // core_gpu uses the exact same validation as core_cpu — no drift.
+        use modern_colorthief_core::validate_buffer;
+        assert_eq!(
+            validate_buffer(&[], 10, 10).unwrap_err(),
+            ColorthiefError::EmptyBuffer
+        );
+        assert_eq!(
+            validate_buffer(&[1, 2, 3], 0, 0).unwrap_err(),
+            ColorthiefError::NoPixels
+        );
+        assert_eq!(
+            validate_buffer(&[1, 2, 3, 4], 10, 10).unwrap_err(),
+            ColorthiefError::InvalidDimensions
+        );
+        assert!(validate_buffer(&[1, 2, 3, 4], 1, 1).is_ok());
     }
 
     /// Test that the Vulkan loader can be found (or not) without crashing.
@@ -83,7 +102,8 @@ mod tests {
             }
             Err(e) => {
                 // GPU may not be available — that's acceptable
-                assert!(e.contains("Vulkan") || e.contains("Empty") || e.contains("not found"));
+                let msg = e.to_string();
+                assert!(msg.contains("Vulkan") || msg.contains("Empty") || msg.contains("not found"));
             }
         }
     }

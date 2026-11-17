@@ -8,5 +8,6 @@ crate-type = ["cdylib"]
 name = "modern_colorthief_gpu"
 
 [dependencies]
+modern-colorthief-core.workspace = true
 modern-colorthief-core-gpu.workspace = true
 jni.workspace = true

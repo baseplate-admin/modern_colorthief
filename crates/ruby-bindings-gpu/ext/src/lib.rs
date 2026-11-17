@@ -1,5 +1,15 @@
 use magnus::{error, function, Object, RString, Ruby};
 
+fn make_runtime_err(msg: String) -> error::Error {
+    match Ruby::get() {
+        Some(ruby) => error::Error::new(ruby.exception_runtime_error(), msg),
+        None => error::Error::new(
+            magnus::RString::from("no runtime"),
+            "modern_colorthief_gpu: internal error (Ruby runtime unavailable)".to_string(),
+        ),
+    }
+}
+
 fn get_palette(
     pixels: RString,
     width: u32,
@@ -7,21 +17,20 @@ fn get_palette(
     color_count: u8,
     quality: u8,
 ) -> Result<Vec<Vec<u8>>, error::Error> {
-    let pixels = unsafe { pixels.as_slice() };
-    modern_colorthief_core_gpu::extract_palette_from_buffer(
-        pixels,
-        width,
-        height,
-        color_count,
-        quality,
-    )
-    .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-    .map_err(|e| {
-        error::Error::new(
-            Ruby::get().unwrap().exception_runtime_error(),
-            e.to_string(),
+    let pixel_data = unsafe { pixels.as_slice() }.to_vec();
+    let result = unsafe {
+        rb_sys::rb_thread_call_without_gvl(
+            move || {
+                modern_colorthief_core_gpu::extract_palette_from_buffer(
+                    &pixel_data, width, height, color_count, quality,
+                )
+            },
+            std::ptr::null_mut(),
         )
-    })
+    };
+    result
+        .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
+        .map_err(|e| make_runtime_err(e.to_string()))
 }
 
 fn get_color(
@@ -30,26 +39,20 @@ fn get_color(
     height: u32,
     quality: u8,
 ) -> Result<Vec<u8>, error::Error> {
-    let pixels = unsafe { pixels.as_slice() };
-    let palette =
-        modern_colorthief_core_gpu::extract_palette_from_buffer(pixels, width, height, 5, quality)
-            .map_err(|e| {
-                error::Error::new(
-                    Ruby::get().unwrap().exception_runtime_error(),
-                    e.to_string(),
-                )
-            })?;
+    let pixel_data = unsafe { pixels.as_slice() }.to_vec();
+    let palette = unsafe {
+        rb_sys::rb_thread_call_without_gvl(
+            move || modern_colorthief_core_gpu::extract_palette_from_buffer(&pixel_data, width, height, 5, quality),
+            std::ptr::null_mut(),
+        )
+    }
+    .map_err(|e| make_runtime_err(e.to_string()))?;
 
     palette
         .first()
         .copied()
         .map(|(r, g, b)| vec![r, g, b])
-        .ok_or_else(|| {
-            error::Error::new(
-                Ruby::get().unwrap().exception_runtime_error(),
-                "No color extracted",
-            )
-        })
+        .ok_or_else(|| make_runtime_err("No color extracted".to_string()))
 }
 
 #[magnus::init]

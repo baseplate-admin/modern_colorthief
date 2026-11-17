@@ -1,3 +1,4 @@
+use modern_colorthief_core::bindings::dominant_color;
 use modern_colorthief_core_cpu::extract_palette_from_buffer;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -35,7 +36,7 @@ fn _get_palette_given_pixels(
             quality.unwrap_or(10),
         )
     })
-    .map_err(PyValueError::new_err)
+    .map_err(|e| PyValueError::new_err(e.to_string()))
 }
 
 /// Extract the dominant color from raw RGBA pixel bytes.
@@ -64,12 +65,92 @@ fn _get_color_given_pixels(
         .detach(move || {
             extract_palette_from_buffer(pixels, width, height, 5, quality.unwrap_or(10))
         })
-        .map_err(PyValueError::new_err)?;
+        .map_err(|e| PyValueError::new_err(e.to_string()))?;
 
-    palette
-        .first()
-        .copied()
-        .ok_or_else(|| PyValueError::new_err("Image contains no colors"))
+    dominant_color(&palette).map_err(|e| PyValueError::new_err(e.to_string()))
+}
+
+/// Async: extract a color palette from raw RGBA pixel bytes.
+///
+/// Runs the median cut on a tokio blocking thread, releasing the GIL for the
+/// entire computation. The Python event loop stays responsive.
+///
+/// Args:
+///     pixels (bytes): Raw RGBA pixel data (4 bytes per pixel).
+///     width (int): Image width in pixels.
+///     height (int): Image height in pixels.
+///     color_count (int, optional): Number of colors to extract. Defaults to 10.
+///     quality (int, optional): Downsample factor. Higher is faster but less accurate. Defaults to 10.
+///
+/// Returns:
+///     Awaitable that resolves to list[tuple[int, int, int]].
+///
+/// Raises:
+///     ValueError: If the pixel data is invalid or the algorithm fails.
+#[pyfunction]
+#[pyo3(signature = (pixels, width, height, color_count=None, quality=None))]
+fn _get_palette_async_given_pixels(
+    py: Python<'_>,
+    pixels: &[u8],
+    width: u32,
+    height: u32,
+    color_count: Option<u8>,
+    quality: Option<u8>,
+) -> PyResult<Py<PyAny>> {
+    let pixels = pixels.to_vec();
+    let color_count = color_count.unwrap_or(10);
+    let quality = quality.unwrap_or(10);
+
+    let fut = pyo3_async_runtimes::tokio::future_into_py(py, async move {
+        let palette = tokio::task::spawn_blocking(move || {
+            extract_palette_from_buffer(&pixels, width, height, color_count, quality)
+        })
+        .await
+        .map_err(|e| PyValueError::new_err(format!("Task panicked: {e}")))?
+        .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        Ok(palette)
+    })?;
+    Ok(fut.unbind())
+}
+
+/// Async: extract the dominant color from raw RGBA pixel bytes.
+///
+/// Runs the median cut on a tokio blocking thread, releasing the GIL for the
+/// entire computation.
+///
+/// Args:
+///     pixels (bytes): Raw RGBA pixel data (4 bytes per pixel).
+///     width (int): Image width in pixels.
+///     height (int): Image height in pixels.
+///     quality (int, optional): Downsample factor. Higher is faster but less accurate. Defaults to 10.
+///
+/// Returns:
+///     Awaitable that resolves to tuple[int, int, int].
+///
+/// Raises:
+///     ValueError: If the pixel data is invalid, the algorithm fails, or the image contains no colors.
+#[pyfunction]
+#[pyo3(signature = (pixels, width, height, quality=None))]
+fn _get_color_async_given_pixels(
+    py: Python<'_>,
+    pixels: &[u8],
+    width: u32,
+    height: u32,
+    quality: Option<u8>,
+) -> PyResult<Py<PyAny>> {
+    let pixels = pixels.to_vec();
+    let quality = quality.unwrap_or(10);
+
+    let fut = pyo3_async_runtimes::tokio::future_into_py(py, async move {
+        let palette = tokio::task::spawn_blocking(move || {
+            extract_palette_from_buffer(&pixels, width, height, 5, quality)
+        })
+        .await
+        .map_err(|e| PyValueError::new_err(format!("Task panicked: {e}")))?
+        .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        dominant_color(&palette).map_err(|e| PyValueError::new_err(e.to_string()))
+    })?;
+    Ok(fut.unbind())
 }
 
 /// A Python module implemented in Rust.
@@ -79,6 +160,8 @@ fn _modern_colorthief(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     m.add_function(wrap_pyfunction!(_get_palette_given_pixels, m)?)?;
     m.add_function(wrap_pyfunction!(_get_color_given_pixels, m)?)?;
+    m.add_function(wrap_pyfunction!(_get_palette_async_given_pixels, m)?)?;
+    m.add_function(wrap_pyfunction!(_get_color_async_given_pixels, m)?)?;
     Ok(())
 }
 // LCOV_EXCL_STOP

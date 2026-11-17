@@ -8,13 +8,13 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "wasm:sync": "node scripts/sync-wasm.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.9",
     "@astrojs/starlight": "^0.43.1",
     "astro": "^7.4.12",
-    "modern-colorthief-wasm": "file:../crates/wasm-bindings/pkg",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

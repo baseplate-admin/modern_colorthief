@@ -7,6 +7,7 @@ on:
     paths:
       - 'crates/python-bindings/**'
       - 'crates/python-bindings-gpu/**'
+      - 'crates/core_webgpu/**'
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'
@@ -16,6 +17,7 @@ on:
     paths:
       - 'crates/python-bindings/**'
       - 'crates/python-bindings-gpu/**'
+      - 'crates/core_webgpu/**'
       - 'crates/core_cpu/**'
       - 'crates/core_gpu/**'
       - 'crates/core/**'

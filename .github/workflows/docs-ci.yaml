@@ -1,0 +1,49 @@
+name: Docs
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs-ci.yaml'
+      - '.readthedocs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs-ci.yaml'
+      - '.readthedocs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs-check:
+    name: Docs build + checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
+
+      - name: Type-check (astro check)
+        working-directory: docs
+        run: npx astro check
+
+      - name: Build site
+        working-directory: docs
+        run: npm run build
+
+      - name: Regenerate llms (dry-run check)
+        run: python docs/scripts/generate_llms.py --check
+
+      - name: Regenerate per-language llms (dry-run check)
+        run: python docs/scripts/generate_llms_per_lang.py --check

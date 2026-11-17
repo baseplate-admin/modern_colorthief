@@ -2,16 +2,17 @@ use ash::vk;
 
 use crate::{GpuDevice, GpuInfo};
 
-impl From<vk::PhysicalDeviceType> for GpuDevice {
-    fn from(dt: vk::PhysicalDeviceType) -> Self {
-        match dt {
-            vk::PhysicalDeviceType::DISCRETE_GPU => GpuDevice::Discrete,
-            vk::PhysicalDeviceType::INTEGRATED_GPU => GpuDevice::Integrated,
-            vk::PhysicalDeviceType::VIRTUAL_GPU => GpuDevice::Virtual,
-            vk::PhysicalDeviceType::CPU => GpuDevice::CPU,
-            vk::PhysicalDeviceType::OTHER => GpuDevice::Other,
-            _ => GpuDevice::Other,
-        }
+/// Map a Vulkan physical-device type to the shared `GpuDevice` enum.
+/// (Free function rather than `impl From<...>` because `GpuDevice` is
+/// defined in `modern-colorthief-core`.)
+fn device_type_from_vk(dt: vk::PhysicalDeviceType) -> GpuDevice {
+    match dt {
+        vk::PhysicalDeviceType::DISCRETE_GPU => GpuDevice::Discrete,
+        vk::PhysicalDeviceType::INTEGRATED_GPU => GpuDevice::Integrated,
+        vk::PhysicalDeviceType::VIRTUAL_GPU => GpuDevice::Virtual,
+        vk::PhysicalDeviceType::CPU => GpuDevice::CPU,
+        vk::PhysicalDeviceType::OTHER => GpuDevice::Other,
+        _ => GpuDevice::Other,
     }
 }
 
@@ -34,8 +35,13 @@ impl VulkanBackend {
         VulkanBackend
     }
 
+    /// Platform-specific error when Vulkan is not found.
+    fn vulkan_not_found_error() -> modern_colorthief_core::ColorthiefError {
+        modern_colorthief_core::ColorthiefError::Backend(Self::vulkan_not_found_msg())
+    }
+
     /// Platform-specific error message when Vulkan is not found.
-    fn vulkan_not_found_error() -> String {
+    fn vulkan_not_found_msg() -> String {
         #[cfg(target_os = "windows")]
         return "Vulkan not found. modern_colorthief GPU mode requires Vulkan ICD loader.\n\
                 \n\
@@ -193,13 +199,13 @@ impl VulkanBackend {
     /// the Instance is in use — the Instance resolves function pointers through
     /// the Entry. Using the Instance after Entry drops is UB (segfaults on
     /// Windows SwiftShader CI).
-    fn create_instance_pair(&self) -> Result<(ash::Entry, ash::Instance), String> {
+    fn create_instance_pair(&self) -> Result<(ash::Entry, ash::Instance), modern_colorthief_core::ColorthiefError> {
         let loader_path = Self::find_vulkan_loader().ok_or_else(Self::vulkan_not_found_error)?;
 
         // Use explicit path loading to avoid DLL search path issues on Windows.
         // This is critical for SwiftShader on CI where vulkan-1.dll is not in PATH.
         let entry = unsafe { ash::Entry::load_from(&loader_path) }
-            .map_err(|e| format!("Vulkan entry load failed from {:?}: {}", loader_path, e))?;
+            .map_err(|e| modern_colorthief_core::ColorthiefError::Backend(e.to_string()))?;
 
         let app_name = c"modern_colorthief";
         let app_info = vk::ApplicationInfo {
@@ -222,7 +228,7 @@ impl VulkanBackend {
         };
 
         let instance = unsafe { entry.create_instance(&create_info, None) }
-            .map_err(|e| format!("Vulkan instance creation failed: {:?}", e))?;
+            .map_err(|e| modern_colorthief_core::ColorthiefError::Backend(e.to_string()))?;
 
         Ok((entry, instance))
     }
@@ -253,13 +259,13 @@ fn has_compute_queue(queues: &[vk::QueueFamilyProperties]) -> bool {
     })
 }
 
-pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
+pub fn list_gpus() -> Result<Vec<crate::GpuInfo>, modern_colorthief_core::ColorthiefError> {
     // Keep Entry alive while Instance is used — Entry must NOT be dropped
     // before Instance operations complete (UB per ash docs).
     let (entry, instance) = VulkanBackend::new().create_instance_pair()?;
 
     let physical_devices = unsafe { instance.enumerate_physical_devices() }
-        .map_err(|e| format!("Vulkan enumerate devices failed: {:?}", e))?;
+        .map_err(|e| modern_colorthief_core::ColorthiefError::Backend(e.to_string()))?;
 
     let mut gpus = Vec::new();
     for (i, pd) in physical_devices.into_iter().enumerate() {
@@ -279,7 +285,7 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, String> {
                 ))
                 .to_string()
             };
-            let device_type = props.device_type.into();
+            let device_type = device_type_from_vk(props.device_type);
             let vendor = vendor_name(props.vendor_id);
 
             // Warn if the only available device is CPU-type
@@ -311,18 +317,18 @@ pub fn select_gpu(indices: Option<Vec<usize>>) {
 
 pub fn gpu_extract(
     buffer: &[u8],
-    _width: u32,
-    _height: u32,
+    width: u32,
+    height: u32,
     color_count: u8,
     quality: u8,
-) -> Result<Vec<(u8, u8, u8)>, String> {
-    if buffer.is_empty() {
-        return Err("Empty pixel buffer".to_string());
-    }
+) -> Result<Vec<crate::Rgb>, modern_colorthief_core::ColorthiefError> {
+    modern_colorthief_core::validate_buffer(buffer, width, height)?;
 
     let gpus = list_gpus()?;
     if gpus.is_empty() {
-        return Err("No Vulkan GPU with compute support found".to_string());
+        return Err(modern_colorthief_core::ColorthiefError::Backend(
+            "No Vulkan GPU with compute support found".to_string(),
+        ));
     }
 
     // Check if all selected GPUs are CPU-type and warn
@@ -339,7 +345,7 @@ pub fn gpu_extract(
         .unwrap_or_else(|| (0..gpus.len()).collect());
 
     if gpu_indices.is_empty() {
-        return Err("No GPUs selected".to_string());
+        return Err(modern_colorthief_core::ColorthiefError::Backend("No GPUs selected".to_string()));
     }
 
     let gpu_count = gpu_indices.len();
@@ -386,7 +392,7 @@ pub fn gpu_extract(
     let all_colors: Vec<(u8, u8, u8)> = chunk_colors.into_iter().flatten().collect();
 
     if all_colors.is_empty() {
-        return Err("No colors extracted".to_string());
+        return Err(modern_colorthief_core::ColorthiefError::Backend("No colors extracted".to_string()));
     }
 
     let unique: Vec<(u8, u8, u8)> = all_colors.into_iter().fold(Vec::new(), |mut acc, c| {
@@ -493,7 +499,7 @@ mod tests {
     #[test]
     fn test_gpu_device_discrete() {
         assert_eq!(
-            GpuDevice::from(vk::PhysicalDeviceType::DISCRETE_GPU),
+            device_type_from_vk(vk::PhysicalDeviceType::DISCRETE_GPU),
             GpuDevice::Discrete
         );
     }
@@ -501,7 +507,7 @@ mod tests {
     #[test]
     fn test_gpu_device_integrated() {
         assert_eq!(
-            GpuDevice::from(vk::PhysicalDeviceType::INTEGRATED_GPU),
+            device_type_from_vk(vk::PhysicalDeviceType::INTEGRATED_GPU),
             GpuDevice::Integrated
         );
     }
@@ -509,20 +515,23 @@ mod tests {
     #[test]
     fn test_gpu_device_virtual() {
         assert_eq!(
-            GpuDevice::from(vk::PhysicalDeviceType::VIRTUAL_GPU),
+            device_type_from_vk(vk::PhysicalDeviceType::VIRTUAL_GPU),
             GpuDevice::Virtual
         );
     }
 
     #[test]
     fn test_gpu_device_cpu() {
-        assert_eq!(GpuDevice::from(vk::PhysicalDeviceType::CPU), GpuDevice::CPU);
+        assert_eq!(
+            device_type_from_vk(vk::PhysicalDeviceType::CPU),
+            GpuDevice::CPU
+        );
     }
 
     #[test]
     fn test_gpu_device_other() {
         assert_eq!(
-            GpuDevice::from(vk::PhysicalDeviceType::OTHER),
+            device_type_from_vk(vk::PhysicalDeviceType::OTHER),
             GpuDevice::Other
         );
     }
@@ -533,7 +542,7 @@ mod tests {
     fn test_extract_empty_buffer() {
         let result = gpu_extract(&[], 0, 0, 5, 1);
         assert!(result.is_err());
-        assert!(result.unwrap_err().contains("Empty"));
+        assert!(result.unwrap_err().to_string().contains("Empty"));
     }
 
     #[test]

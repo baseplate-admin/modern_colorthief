@@ -1,4 +1,8 @@
 [package]
 name = "modern-colorthief-core"
+description = "Shared types, error type, validation, and binding helpers for modern_colorthief."
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true

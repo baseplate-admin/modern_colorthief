@@ -9,7 +9,6 @@ members = [
     "crates/wasm-bindings-webgpu",
     "crates/node-bindings",
     "crates/node-bindings-gpu",
-    "crates/node-bindings-wasm",
     "crates/jvm-bindings",
     "crates/jvm-bindings-gpu",
     "crates/php-bindings",
@@ -23,6 +22,10 @@ resolver = "2"
 [workspace.package]
 version = "0.3.0"
 edition = "2024"
+license = "MIT"
+rust-version = "1.86"
+repository = "https://github.com/baseplate-admin/modern_colorthief"
+description = "High-performance color palette extraction from images (median cut, rayon)."
 
 [workspace.dependencies]
 # Internal crates
@@ -36,6 +39,8 @@ rayon = "1.10"
 
 # Python bindings
 pyo3 = { version = "0.30", features = ["abi3-py39"] }
+pyo3-async-runtimes = { version = "0.30", features = ["tokio-runtime"] }
+tokio = { version = "1", features = ["rt-multi-thread"] }
 
 # Node.js bindings
 napi = { version = "3.1", features = ["full"] }
@@ -84,7 +89,7 @@ strip = false
 strip = false
 
 [profile.release]
-panic = "abort"
+panic = "unwind"
 codegen-units = 1
 lto = "fat"
 strip = true

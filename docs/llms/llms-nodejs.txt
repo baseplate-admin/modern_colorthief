@@ -7,13 +7,22 @@ Version: 0.3.0
 
 ## Functions
 
+### `invalidInputOrCoreError(err: ColorthiefError)` → `Error`
+
+  Map a core error to the right `napi::Status`: invalid input
+  (buffer/shape problems) is `InvalidArg`; everything else is a core
+  failure.
+
+  Parameters:
+  - `err` (ColorthiefError)
+
 ### `getPalette(pixels: Uint8Array, width: number, height: number, color_count?: number, quality?: number)` → `number[]`
 
   Extract a palette of dominant colors from raw RGBA pixel data.
   
-  @param pixels - Raw RGBA pixel buffer (4 bytes per pixel)
-  @param width - Image width in pixels
-  @param height - Image height in pixels
+  The heavy work runs off the JS event loop (on the tokio blocking pool,
+  via napi's `tokio_rt` runtime) — this returns a `Promise` that resolves
+  to `number[][]` (each inner array is `[R, G, B]`).
 
   Parameters:
   - `pixels` (Uint8Array)
@@ -26,9 +35,32 @@ Version: 0.3.0
 
   Extract the dominant color from raw RGBA pixel data.
   
-  @param pixels - Raw RGBA pixel buffer (4 bytes per pixel)
-  @param width - Image width in pixels
-  @param height - Image height in pixels
+  The dominant color is the **first** entry of a 5-color palette — the
+  single canonical rule for all bindings (the old `.pop()`-based "last
+  color" behavior in the WASM surfaces was a bug).
+
+  Parameters:
+  - `pixels` (Uint8Array)
+  - `width` (number)
+  - `height` (number)
+  - `quality` (number) (optional)
+
+### `getPaletteSync(pixels: Uint8Array, width: number, height: number, color_count?: number, quality?: number)` → `number[]`
+
+  Synchronous variants for callers that don't want a Promise (e.g.
+  `node:worker_threads`, REPL, or environments without an event loop).
+  
+  These block the calling thread — prefer `get_palette`/`get_color` on the
+  main thread.
+
+  Parameters:
+  - `pixels` (Uint8Array)
+  - `width` (number)
+  - `height` (number)
+  - `color_count` (number) (optional)
+  - `quality` (number) (optional)
+
+### `getColorSync(pixels: Uint8Array, width: number, height: number, quality?: number)` → `number[]`
 
   Parameters:
   - `pixels` (Uint8Array)

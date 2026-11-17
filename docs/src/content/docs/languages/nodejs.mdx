@@ -4,31 +4,41 @@ description: 'Use Modern Colorthief from Node.js, Deno, or Bun.'
 ---
 
 :::info
-Package: `modern-colorthief` · Install: `npm install modern-colorthief`
+Package: `@modern_colorthief/native` · Install: `npm install @modern_colorthief/native`
 :::
 
-Node.js bindings use [napi-rs](https://napi.rs/). Sharp handles image decoding; the Rust core receives raw RGBA bytes. Works on Node.js, Deno, and Bun.
+Node.js bindings use [napi-rs](https://napi.rs/). The binding accepts raw RGBA pixel buffers — use [Sharp](https://sharp.pixelplumbing.com/) (or any other decoder) to read the image first. Works on Node.js, Deno, and Bun.
 
 ## Functions
 
-- **`getColor(image, width?, height?, quality?)`** → `[r, g, b]`
-- **`getPalette(image, width?, height?, colorCount?, quality?)`** → `[[r, g, b], ...]`
+All async functions return a `Promise` (compute runs off the main thread via the libuv/tokio thread pool):
 
-`image` accepts a file path, a `Buffer`, a `Uint8Array` of raw RGBA bytes, or a Sharp input source.
+| Function | Signature |
+|---|---|
+| `getPalette(pixels, width, height, colorCount?, quality?)` | `Promise<number[][]>` |
+| `getColor(pixels, width, height, quality?)` | `Promise<number[]>` |
+| `getPaletteSync(pixels, width, height, colorCount?, quality?)` | `number[][]` (blocks the calling thread) |
+| `getColorSync(pixels, width, height, quality?)` | `number[]` (blocks the calling thread) |
 
-## File path
+`pixels` is a `Buffer` or `Uint8Array` of raw RGBA bytes — 4 bytes per pixel, row-major. `colorCount` defaults to 5; `quality` defaults to 1.
+
+## Basic usage with Sharp
 
 ```js
-import { getColor, getPalette } from "modern-colorthief";
+import sharp from "sharp";
+import { getPalette, getColor } from "@modern_colorthief/native";
 
-const color   = getColor("photo.jpg");
-const palette = getPalette("photo.jpg", { colorCount: 10, quality: 10 });
+const { data, info } = await sharp("photo.jpg").raw().ensureAlpha().toBuffer({ resolveWithObject: true });
+const pixels = new Uint8Array(data);
+
+const palette = await getPalette(pixels, info.width, info.height, 10, 10);
+const color   = await getColor(pixels, info.width, info.height, 10);
 ```
 
 ## Raw RGBA pixels
 
 ```js
-import { getColor, getPalette } from "modern-colorthief";
+import { getPalette } from "@modern_colorthief/native";
 
 // 10×10 solid red: 100 pixels × 4 bytes
 const pixels = new Uint8Array(400);
@@ -38,16 +48,17 @@ for (let i = 0; i < 100; i++) {
   pixels[i * 4 + 2] = 0;   // B
   pixels[i * 4 + 3] = 255; // A
 }
-const color   = getColor(pixels, 10, 10, 1);
-const palette = getPalette(pixels, 10, 10, 5, 1);
+const palette = await getPalette(pixels, 10, 10, 5, 1);
+// → [[255, 0, 0], …]
 ```
 
-## With Sharp
+## Synchronous variant (blocking)
 
 ```js
-import sharp from "sharp";
-import { getPalette } from "modern-colorthief";
+import { getPaletteSync } from "@modern_colorthief/native";
 
-const { data, info } = await sharp("photo.jpg").raw().ensureAlpha().toBuffer({ resolveWithObject: true });
-const palette = getPalette(new Uint8Array(data), info.width, info.height, 10, 10);
+const palette = getPaletteSync(pixels, 10, 10, 5, 1);
 ```
+
+> ⚠️ The sync variants block the calling thread. Use the async versions in
+> server code to avoid stalling the event loop.

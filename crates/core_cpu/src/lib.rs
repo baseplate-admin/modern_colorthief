@@ -1,4 +1,4 @@
-use modern_colorthief_core::PaletteExtractor;
+use modern_colorthief_core::{validate_buffer, ColorthiefError, PaletteExtractor, Rgb};
 use rayon::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -6,6 +6,12 @@ struct Color {
     r: u8,
     g: u8,
     b: u8,
+}
+
+impl From<Color> for Rgb {
+    fn from(c: Color) -> Self {
+        (c.r, c.g, c.b)
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -138,44 +144,54 @@ fn median_cut(buckets: &mut Vec<Bucket>, count: usize) {
     }
 }
 
+fn dedup(colors: Vec<Rgb>) -> Vec<Rgb> {
+    colors
+        .into_iter()
+        .fold(Vec::new(), |mut acc, c| {
+            if !acc.contains(&c) {
+                acc.push(c);
+            }
+            acc
+        })
+}
+
 /// Extract a deduplicated color palette from raw RGBA pixel data.
 ///
-/// Expects a flat RGBA buffer (4 bytes per pixel, `width * height * 4`).
+/// Expects a flat RGBA buffer (4 bytes per pixel, at least `width * height * 4`).
 pub fn extract_palette_from_buffer(
     buffer: &[u8],
-    _width: u32,
-    _height: u32,
+    width: u32,
+    height: u32,
     color_count: u8,
     quality: u8,
-) -> Result<Vec<(u8, u8, u8)>, String> {
-    if buffer.is_empty() {
-        return Err("Empty pixel buffer".to_string());
-    }
+) -> Result<Vec<Rgb>, ColorthiefError> {
+    validate_buffer(buffer, width, height)?;
 
     let pixels = sample_pixels(buffer, quality);
     if pixels.is_empty() {
-        return Err("No pixels to process".to_string());
+        return Err(ColorthiefError::NoPixels);
     }
 
     let mut buckets = vec![Bucket { pixels }];
     median_cut(&mut buckets, color_count as usize);
 
-    let colors: Vec<(u8, u8, u8)> = buckets
-        .iter()
-        .map(|b| {
-            let avg = b.avg();
-            (avg.r, avg.g, avg.b)
-        })
-        .collect();
+    let colors: Vec<Rgb> = buckets.iter().map(|b| b.avg().into()).collect();
 
-    let unique: Vec<(u8, u8, u8)> = colors.into_iter().fold(Vec::new(), |mut acc, c| {
-        if !acc.contains(&c) {
-            acc.push(c);
-        }
-        acc
-    });
+    Ok(dedup(colors))
+}
 
-    Ok(unique)
+/// Extract the dominant color from raw RGBA pixel data.
+pub fn extract_color_from_buffer(
+    buffer: &[u8],
+    width: u32,
+    height: u32,
+    quality: u8,
+) -> Result<Rgb, ColorthiefError> {
+    let palette = extract_palette_from_buffer(buffer, width, height, 5, quality)?;
+    palette
+        .into_iter()
+        .next()
+        .ok_or_else(|| ColorthiefError::Backend("No colors found".to_string()))
 }
 
 /// CPU backend that implements the shared PaletteExtractor trait.
@@ -189,7 +205,7 @@ impl PaletteExtractor for CpuExtractor {
         height: u32,
         color_count: u8,
         quality: u8,
-    ) -> Result<Vec<(u8, u8, u8)>, String> {
+    ) -> Result<Vec<Rgb>, ColorthiefError> {
         extract_palette_from_buffer(buffer, width, height, color_count, quality)
     }
 }
@@ -284,22 +300,62 @@ mod tests {
         assert!(result.contains(&(128, 0, 128)));
     }
 
-    // --- Empty / error ---
+    // --- Empty / error / validation ---
 
     #[test]
     fn test_empty_buffer() {
         let result = extract_palette_from_buffer(&[], 0, 0, 5, 10);
-        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), ColorthiefError::EmptyBuffer);
     }
 
     #[test]
-    fn test_buffer_too_small() {
+    fn test_buffer_too_small_for_one_pixel() {
         // 3 bytes — not enough for one RGBA pixel
-        let result = extract_palette_from_buffer(&[255, 0, 0], 1, 1, 5, 1);
-        // Should either succeed with 0 colors or error
-        if let Ok(palette) = result {
-            assert!(palette.is_empty())
-        }
+        let result = extract_palette_from_buffer(&[255, 0, 0], 0, 0, 5, 1);
+        assert_eq!(result.unwrap_err(), ColorthiefError::NoPixels);
+    }
+
+    #[test]
+    fn test_buffer_shorter_than_declared_dimensions() {
+        // 10 pixels declared, only 2 present
+        let buffer = solid_buffer(255, 0, 0, 2);
+        let result = extract_palette_from_buffer(&buffer, 10, 1, 5, 1);
+        assert_eq!(result.unwrap_err(), ColorthiefError::InvalidDimensions);
+    }
+
+    #[test]
+    fn test_validate_buffer_accepts_exact_size() {
+        let buffer = solid_buffer(1, 2, 3, 4); // 16 bytes = 2x2
+        assert!(validate_buffer(&buffer, 2, 2).is_ok());
+    }
+
+    #[test]
+    fn test_validate_buffer_accepts_trailing_padding() {
+        let buffer = solid_buffer(1, 2, 3, 8); // 32 bytes >= 2x2
+        assert!(validate_buffer(&buffer, 2, 2).is_ok());
+    }
+
+    #[test]
+    fn test_validate_buffer_rejects_truncated() {
+        let buffer = solid_buffer(1, 2, 3, 1); // 4 bytes < 2x2
+        assert_eq!(
+            validate_buffer(&buffer, 2, 2).unwrap_err(),
+            ColorthiefError::InvalidDimensions
+        );
+    }
+
+    #[test]
+    fn test_validate_buffer_zero_dimensions_skips_length_check() {
+        // width/height 0 means "unknown" — only empty/too-short is rejected
+        assert_eq!(
+            validate_buffer(&[], 0, 0).unwrap_err(),
+            ColorthiefError::EmptyBuffer
+        );
+        assert_eq!(
+            validate_buffer(&[1, 2, 3], 0, 0).unwrap_err(),
+            ColorthiefError::NoPixels
+        );
+        assert!(validate_buffer(&[1, 2, 3, 4], 0, 0).is_ok());
     }
 
     // --- color_count limits ---
@@ -434,6 +490,33 @@ mod tests {
         assert_eq!(result[0], (170, 85, 220));
     }
 
+    // --- extract_color (dominant = first entry) ---
+
+    #[test]
+    fn test_extract_color_returns_dominant() {
+        let buffer = two_color_buffer(255, 0, 0, 0, 0, 255, 50);
+        let color = extract_color_from_buffer(&buffer, 10, 10, 1).unwrap();
+        // The dominant (first) entry must be one of the two source colors.
+        assert!(color == (255, 0, 0) || color == (0, 0, 255));
+    }
+
+    #[test]
+    fn test_extract_color_solid() {
+        let buffer = solid_buffer(42, 84, 126, 100);
+        assert_eq!(
+            extract_color_from_buffer(&buffer, 10, 10, 1).unwrap(),
+            (42, 84, 126)
+        );
+    }
+
+    #[test]
+    fn test_extract_color_empty_buffer_errors() {
+        assert_eq!(
+            extract_color_from_buffer(&[], 0, 0, 1).unwrap_err(),
+            ColorthiefError::EmptyBuffer
+        );
+    }
+
     // --- CpuExtractor trait ---
 
     #[test]
@@ -443,6 +526,16 @@ mod tests {
         let result = extractor.extract_palette(&buffer, 10, 10, 5, 1).unwrap();
         assert!(!result.is_empty());
         assert_eq!(result[0], (255, 0, 0));
+    }
+
+    #[test]
+    fn test_cpu_extractor_trait_color() {
+        let extractor = CpuExtractor;
+        let buffer = solid_buffer(10, 20, 30, 100);
+        assert_eq!(
+            extractor.extract_color(&buffer, 10, 10, 1).unwrap(),
+            (10, 20, 30)
+        );
     }
 
     // --- Bucket / median_cut internals ---

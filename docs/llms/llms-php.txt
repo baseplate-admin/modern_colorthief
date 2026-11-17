@@ -7,7 +7,34 @@ Version: 0.3.0
 
 ## Functions
 
-### `get_palette(pixels: array<int>, width: int, height: int, color_count?: int, quality?: int)` → `array<int>`
+### `pixels_to_bytes_compat(pixels: array<int>)` → `array<int>`
+
+  Legacy compatibility shim: convert a PHP array of integers to a byte vec.
+  Kept so existing callers passing `array` continue to work.
+
+  Parameters:
+  - `pixels` (array<int>)
+
+### `get_palette(pixels: Binary, width: int, height: int, color_count?: int, quality?: int)` → `array<int>`
+
+  Parameters:
+  - `pixels` (Binary)
+  - `width` (int)
+  - `height` (int)
+  - `color_count` (int) (optional)
+  - `quality` (int) (optional)
+
+### `get_color(pixels: Binary, width: int, height: int, quality?: int)` → `array<int>`
+
+  Parameters:
+  - `pixels` (Binary)
+  - `width` (int)
+  - `height` (int)
+  - `quality` (int) (optional)
+
+### `get_palette_compat(pixels: array<int>, width: int, height: int, color_count?: int, quality?: int)` → `array<int>`
+
+  Legacy compatibility function accepting a PHP array of integers.
 
   Parameters:
   - `pixels` (array<int>)
@@ -16,7 +43,9 @@ Version: 0.3.0
   - `color_count` (int) (optional)
   - `quality` (int) (optional)
 
-### `get_color(pixels: array<int>, width: int, height: int, quality?: int)` → `array<int>`
+### `get_color_compat(pixels: array<int>, width: int, height: int, quality?: int)` → `array<int>`
+
+  Legacy compatibility function accepting a PHP array of integers.
 
   Parameters:
   - `pixels` (array<int>)

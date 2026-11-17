@@ -3,8 +3,12 @@
     "version": "0.3.0",
     "description": "GPU-accelerated Node.js bindings for modern_colorthief",
     "type": "module",
-    "main": "index.js",
+    "main": "native.ts",
     "types": "index.d.ts",
+    "scripts": {
+        "build": "napi build --platform --release",
+        "test": "vitest run"
+    },
     "napi": {
         "binaryName": "modern_colorthief_gpu",
         "triples": {}
