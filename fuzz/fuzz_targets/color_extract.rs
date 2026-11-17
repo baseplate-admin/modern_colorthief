@@ -17,18 +17,12 @@ libfuzzer_sys::fuzz_target!(|data: &[u8]| {
 
     let pixels: Vec<u8> = if data.len() >= expected + 3 {
         data[3..3 + expected].to_vec()
-    } else if data.len() > 3 {
-        let mut buf = Vec::with_capacity(expected);
-        let slice = &data[3..];
-        let mut i = 0;
-        while buf.len() < expected {
-            let end = (i + slice.len()).min(expected);
-            buf.extend_from_slice(&slice[i..end]);
-            i = (i + 1).min(slice.len());
-        }
-        buf
     } else {
-        return;
+        // Pad with the available bytes (or zeros) up to the expected size.
+        let available = data.len().saturating_sub(3);
+        let mut buf = vec![0u8; expected];
+        buf[..available.min(expected)].copy_from_slice(&data[3..3 + available.min(expected)]);
+        buf
     };
 
     let cpu_result =

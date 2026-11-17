@@ -10,6 +10,58 @@ fn make_runtime_err(msg: String) -> error::Error {
     }
 }
 
+/// Heap-allocated context passed to the C callback that runs without the GVL.
+struct ComputeCtx {
+    pixels: Vec<u8>,
+    width: u32,
+    height: u32,
+    color_count: u8,
+    quality: u8,
+    result: Option<Result<Vec<(u8, u8, u8)>, String>>,
+}
+
+/// C ABI function pointer — runs with the GVL released.
+unsafe extern "C" fn compute_callback(data: *mut std::ffi::c_void) -> *mut std::ffi::c_void {
+    let ctx = &mut *(data as *mut ComputeCtx);
+    let result = modern_colorthief_core_gpu::extract_palette_from_buffer(
+        &ctx.pixels, ctx.width, ctx.height, ctx.color_count, ctx.quality,
+    );
+    ctx.result = Some(match result {
+        Ok(colors) => Ok(colors),
+        Err(e) => Err(e.to_string()),
+    });
+    std::ptr::null_mut()
+}
+
+fn release_gvl_and_compute(
+    pixel_data: Vec<u8>,
+    width: u32,
+    height: u32,
+    color_count: u8,
+    quality: u8,
+) -> Result<Vec<(u8, u8, u8)>, error::Error> {
+    let mut ctx = Box::new(ComputeCtx {
+        pixels: pixel_data,
+        width,
+        height,
+        color_count,
+        quality,
+        result: None,
+    });
+    unsafe {
+        rb_sys::rb_thread_call_without_gvl(
+            Some(compute_callback),
+            &mut *ctx as *mut ComputeCtx as *mut std::ffi::c_void,
+            None,
+            std::ptr::null_mut(),
+        );
+    }
+    let result = ctx.result.ok_or_else(|| {
+        make_runtime_err("rb_thread_call_without_gvl returned without a result".to_string())
+    })?;
+    result.map_err(|msg| make_runtime_err(msg))
+}
+
 fn get_palette(
     pixels: RString,
     width: u32,
@@ -18,19 +70,8 @@ fn get_palette(
     quality: u8,
 ) -> Result<Vec<Vec<u8>>, error::Error> {
     let pixel_data = unsafe { pixels.as_slice() }.to_vec();
-    let result = unsafe {
-        rb_sys::rb_thread_call_without_gvl(
-            move || {
-                modern_colorthief_core_gpu::extract_palette_from_buffer(
-                    &pixel_data, width, height, color_count, quality,
-                )
-            },
-            std::ptr::null_mut(),
-        )
-    };
-    result
-        .map(|colors| colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
-        .map_err(|e| make_runtime_err(e.to_string()))
+    let colors = release_gvl_and_compute(pixel_data, width, height, color_count, quality)?;
+    Ok(colors.into_iter().map(|(r, g, b)| vec![r, g, b]).collect())
 }
 
 fn get_color(
@@ -40,13 +81,7 @@ fn get_color(
     quality: u8,
 ) -> Result<Vec<u8>, error::Error> {
     let pixel_data = unsafe { pixels.as_slice() }.to_vec();
-    let palette = unsafe {
-        rb_sys::rb_thread_call_without_gvl(
-            move || modern_colorthief_core_gpu::extract_palette_from_buffer(&pixel_data, width, height, 5, quality),
-            std::ptr::null_mut(),
-        )
-    }
-    .map_err(|e| make_runtime_err(e.to_string()))?;
+    let palette = release_gvl_and_compute(pixel_data, width, height, 5, quality)?;
 
     palette
         .first()
