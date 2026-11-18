@@ -369,9 +369,10 @@ test('gpu error on empty pixels', function () {
 });
 
 test('gpu error on mismatched pixel data', function () {
+    // 4 bytes is 1 pixel, but we declare 2x2 (4 pixels = 16 bytes).
+    // Core validation (F4) rejects this dimension mismatch.
     $pixels = packBytes([255, 0, 0, 255]);
-    $result = get_palette($pixels, 2, 2, 5, 1);
-    expect($result)->toBeArray();
+    expect(fn () => get_palette($pixels, 2, 2, 5, 1))->toThrow(\Exception::class);
 });
 
 // -- GC stress --
