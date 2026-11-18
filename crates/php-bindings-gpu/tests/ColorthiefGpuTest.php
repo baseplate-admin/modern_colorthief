@@ -2,46 +2,52 @@
 
 // ext-php-rs exposes get_palette() and get_color() as global functions
 // from the "modern_colorthief_gpu" extension module.
-// Pixels are passed as arrays of integers (byte values 0-255).
+// Pixels are passed as binary strings (one byte per channel, RGBA).
+
+function packBytes(array $bytes): string {
+    $count = count($bytes);
+    $fmt = str_repeat('C', $count);
+    return pack($fmt, ...$bytes);
+}
 
 // -- Pixel helpers --
 
-function redPixels(): array {
-    return [255, 0, 0, 255];
+function redPixels(): string {
+    return packBytes([255, 0, 0, 255]);
 }
 
-function twoColorPixels(): array {
-    return [255, 0, 0, 255, 0, 0, 255, 255];
+function twoColorPixels(): string {
+    return packBytes([255, 0, 0, 255, 0, 0, 255, 255]);
 }
 
-function greenPixels(): array {
+function greenPixels(): string {
     $green = [0, 255, 0, 255];
     $result = [];
     for ($i = 0; $i < 9; $i++) {
         $result = array_merge($result, $green);
     }
-    return $result;
+    return packBytes($result);
 }
 
-function solidBluePixels(): array {
+function solidBluePixels(): string {
     $blue = [0, 0, 255, 255];
     $result = [];
     for ($i = 0; $i < 9; $i++) {
         $result = array_merge($result, $blue);
     }
-    return $result;
+    return packBytes($result);
 }
 
-function solidWhitePixels(): array {
+function solidWhitePixels(): string {
     $white = [255, 255, 255, 255];
     $result = [];
     for ($i = 0; $i < 9; $i++) {
         $result = array_merge($result, $white);
     }
-    return $result;
+    return packBytes($result);
 }
 
-function gradientPixels(): array {
+function gradientPixels(): string {
     $pixels = [];
     for ($x = 0; $x < 20; $x++) {
         for ($y = 0; $y < 10; $y++) {
@@ -51,10 +57,10 @@ function gradientPixels(): array {
             $pixels[] = 255;
         }
     }
-    return $pixels;
+    return packBytes($pixels);
 }
 
-function checkerboardPixels(): array {
+function checkerboardPixels(): string {
     $pixels = [];
     for ($y = 0; $y < 10; $y++) {
         for ($x = 0; $x < 10; $x++) {
@@ -65,12 +71,12 @@ function checkerboardPixels(): array {
             }
         }
     }
-    return $pixels;
+    return packBytes($pixels);
 }
 
 // -- Image loading --
 
-function imageToPixels(string $path): array {
+function imageToPixels(string $path): string {
     $img = imagecreatefromjpeg($path);
     $w = imagesx($img);
     $h = imagesy($img);
@@ -85,7 +91,7 @@ function imageToPixels(string $path): array {
         }
     }
     imagedestroy($img);
-    return $pixels;
+    return packBytes($pixels);
 }
 
 function testImagePath(): string {
@@ -358,12 +364,12 @@ test('gpu checkerboard returns palette', function () {
 // -- Error handling tests --
 
 test('gpu error on empty pixels', function () {
-    expect(fn () => get_palette([], 1, 1, 5, 1))->toThrow(\Exception::class);
-    expect(fn () => get_color([], 1, 1, 1))->toThrow(\Exception::class);
+    expect(fn () => get_palette("", 1, 1, 5, 1))->toThrow(\Exception::class);
+    expect(fn () => get_color("", 1, 1, 1))->toThrow(\Exception::class);
 });
 
 test('gpu error on mismatched pixel data', function () {
-    $pixels = [255, 0, 0, 255];
+    $pixels = packBytes([255, 0, 0, 255]);
     $result = get_palette($pixels, 2, 2, 5, 1);
     expect($result)->toBeArray();
 });
@@ -403,7 +409,7 @@ test('gpu solid black color detection', function () {
     for ($i = 0; $i < 9; $i++) {
         $black[] = 0; $black[] = 0; $black[] = 0; $black[] = 255;
     }
-    $palette = get_palette($black, 3, 3, 5, 1);
+    $palette = get_palette(packBytes($black), 3, 3, 5, 1);
     expect($palette)->not->toBeEmpty();
     $dominant = $palette[0];
     expect($dominant[0])->toBeLessThan(55);
@@ -421,7 +427,7 @@ test('gpu dominant reflects 90/10 majority', function () {
     for ($i = 0; $i < 10; $i++) {
         $pixels[] = 0; $pixels[] = 0; $pixels[] = 255; $pixels[] = 255;
     }
-    $color = get_color($pixels, 10, 10, 1);
+    $color = get_color(packBytes($pixels), 10, 10, 1);
     expect($color[0])->toBeGreaterThan(200);
 });
 
@@ -440,7 +446,7 @@ test('gpu non-square wide image', function () {
     for ($i = 0; $i < 200; $i++) {
         $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
     }
-    $palette = get_palette($pixels, 20, 10, 5, 1);
+    $palette = get_palette(packBytes($pixels), 20, 10, 5, 1);
     expect($palette)->not->toBeEmpty();
 });
 
@@ -449,6 +455,6 @@ test('gpu non-square tall image', function () {
     for ($i = 0; $i < 200; $i++) {
         $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
     }
-    $palette = get_palette($pixels, 10, 20, 5, 1);
+    $palette = get_palette(packBytes($pixels), 10, 20, 5, 1);
     expect($palette)->not->toBeEmpty();
 });
