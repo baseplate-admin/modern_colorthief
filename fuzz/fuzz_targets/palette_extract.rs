@@ -19,18 +19,12 @@ libfuzzer_sys::fuzz_target!(|data: &[u8]| {
 
     let pixels: Vec<u8> = if data.len() >= expected + 4 {
         data[4..4 + expected].to_vec()
-    } else if data.len() > 4 {
-        let mut buf = Vec::with_capacity(expected);
-        let slice = &data[4..];
-        let mut i = 0;
-        while buf.len() < expected {
-            let end = (i + slice.len()).min(expected);
-            buf.extend_from_slice(&slice[i..end]);
-            i = (i + 1).min(slice.len());
-        }
-        buf
     } else {
-        return;
+        let available = data.len().saturating_sub(4);
+        let mut buf = vec![0u8; expected];
+        let n = available.min(expected);
+        buf[..n].copy_from_slice(&data[4..4 + n]);
+        buf
     };
 
     let cpu_result = modern_colorthief_core_cpu::extract_palette_from_buffer(
