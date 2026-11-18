@@ -9,8 +9,8 @@
 //! errors become `RuntimeException`), and the method returns `null`.
 
 use jni::objects::{JByteArray, JObject};
-use jni::sys::jint;
 use jni::strings::JNIString;
+use jni::sys::jint;
 use jni::{Env, EnvUnowned};
 
 use modern_colorthief_core::ColorthiefError;
@@ -75,7 +75,8 @@ pub extern "system" fn Java_io_baseplate_admin_modern_colorthief_Colorthief_getP
     quality: jint,
 ) -> JObject<'a> {
     env.with_env(|env| -> jni::errors::Result<JObject<'a>> {
-        let colors = extract_palette_jni(env, pixels, width, height, color_count as u8, quality as u8)?;
+        let colors =
+            extract_palette_jni(env, pixels, width, height, color_count as u8, quality as u8)?;
 
         let result_array =
             env.new_object_array(colors.len() as i32, jni::jni_str!("[B"), JObject::null())?;

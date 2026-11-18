@@ -199,7 +199,9 @@ impl VulkanBackend {
     /// the Instance is in use — the Instance resolves function pointers through
     /// the Entry. Using the Instance after Entry drops is UB (segfaults on
     /// Windows SwiftShader CI).
-    fn create_instance_pair(&self) -> Result<(ash::Entry, ash::Instance), modern_colorthief_core::ColorthiefError> {
+    fn create_instance_pair(
+        &self,
+    ) -> Result<(ash::Entry, ash::Instance), modern_colorthief_core::ColorthiefError> {
         let loader_path = Self::find_vulkan_loader().ok_or_else(Self::vulkan_not_found_error)?;
 
         // Use explicit path loading to avoid DLL search path issues on Windows.
@@ -345,7 +347,9 @@ pub fn gpu_extract(
         .unwrap_or_else(|| (0..gpus.len()).collect());
 
     if gpu_indices.is_empty() {
-        return Err(modern_colorthief_core::ColorthiefError::Backend("No GPUs selected".to_string()));
+        return Err(modern_colorthief_core::ColorthiefError::Backend(
+            "No GPUs selected".to_string(),
+        ));
     }
 
     let gpu_count = gpu_indices.len();
@@ -392,7 +396,9 @@ pub fn gpu_extract(
     let all_colors: Vec<(u8, u8, u8)> = chunk_colors.into_iter().flatten().collect();
 
     if all_colors.is_empty() {
-        return Err(modern_colorthief_core::ColorthiefError::Backend("No colors extracted".to_string()));
+        return Err(modern_colorthief_core::ColorthiefError::Backend(
+            "No colors extracted".to_string(),
+        ));
     }
 
     let unique: Vec<(u8, u8, u8)> = all_colors.into_iter().fold(Vec::new(), |mut acc, c| {

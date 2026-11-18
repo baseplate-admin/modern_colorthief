@@ -57,7 +57,9 @@ pub fn validate_buffer(buffer: &[u8], width: u32, height: u32) -> Result<(), Col
     if buffer.len() < 4 {
         return Err(ColorthiefError::NoPixels);
     }
-    let required = (width as usize).saturating_mul(height as usize).saturating_mul(4);
+    let required = (width as usize)
+        .saturating_mul(height as usize)
+        .saturating_mul(4);
     if required > 0 && buffer.len() < required {
         return Err(ColorthiefError::InvalidDimensions);
     }
@@ -142,12 +144,18 @@ mod tests {
 
     #[test]
     fn error_display_empty_buffer() {
-        assert_eq!(ColorthiefError::EmptyBuffer.to_string(), "Empty pixel buffer");
+        assert_eq!(
+            ColorthiefError::EmptyBuffer.to_string(),
+            "Empty pixel buffer"
+        );
     }
 
     #[test]
     fn error_display_no_pixels() {
-        assert_eq!(ColorthiefError::NoPixels.to_string(), "No pixels to process");
+        assert_eq!(
+            ColorthiefError::NoPixels.to_string(),
+            "No pixels to process"
+        );
     }
 
     #[test]
@@ -178,7 +186,10 @@ mod tests {
 
     #[test]
     fn validate_buffer_rules() {
-        assert_eq!(validate_buffer(&[], 10, 10).unwrap_err(), ColorthiefError::EmptyBuffer);
+        assert_eq!(
+            validate_buffer(&[], 10, 10).unwrap_err(),
+            ColorthiefError::EmptyBuffer
+        );
         assert_eq!(
             validate_buffer(&[1, 2, 3], 0, 0).unwrap_err(),
             ColorthiefError::NoPixels
@@ -201,10 +212,7 @@ mod tests {
             palette: vec![(255, 0, 0), (0, 255, 0)],
             err: None,
         };
-        assert_eq!(
-            e.extract_color(&[0; 8], 2, 1, 1).unwrap(),
-            (255, 0, 0)
-        );
+        assert_eq!(e.extract_color(&[0; 8], 2, 1, 1).unwrap(), (255, 0, 0));
     }
 
     #[test]
@@ -214,10 +222,7 @@ mod tests {
             err: None,
         };
         let err = e.extract_color(&[0; 8], 1, 1, 1).unwrap_err();
-        assert_eq!(
-            err,
-            ColorthiefError::Backend("No colors found".to_string())
-        );
+        assert_eq!(err, ColorthiefError::Backend("No colors found".to_string()));
     }
 
     #[test]

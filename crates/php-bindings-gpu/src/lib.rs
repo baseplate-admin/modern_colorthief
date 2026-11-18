@@ -46,11 +46,14 @@ fn get_color(
     quality: Option<u8>,
 ) -> PhpResult<Vec<u8>> {
     let bytes = Vec::from(pixels);
-    let palette =
-        modern_colorthief_core_gpu::extract_palette_from_buffer(
-            &bytes, width, height, 5, quality.unwrap_or(10),
-        )
-        .map_err(|e| PhpException::from_message(e.to_string()))?;
+    let palette = modern_colorthief_core_gpu::extract_palette_from_buffer(
+        &bytes,
+        width,
+        height,
+        5,
+        quality.unwrap_or(10),
+    )
+    .map_err(|e| PhpException::from_message(e.to_string()))?;
 
     palette
         .first()
@@ -87,11 +90,14 @@ fn get_color_compat(
     quality: Option<u8>,
 ) -> PhpResult<Vec<u8>> {
     let bytes = pixels_to_bytes_compat(pixels)?;
-    let palette =
-        modern_colorthief_core_gpu::extract_palette_from_buffer(
-            &bytes, width, height, 5, quality.unwrap_or(10),
-        )
-        .map_err(|e| PhpException::from_message(e.to_string()))?;
+    let palette = modern_colorthief_core_gpu::extract_palette_from_buffer(
+        &bytes,
+        width,
+        height,
+        5,
+        quality.unwrap_or(10),
+    )
+    .map_err(|e| PhpException::from_message(e.to_string()))?;
 
     palette
         .first()

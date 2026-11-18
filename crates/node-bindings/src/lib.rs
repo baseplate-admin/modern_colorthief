@@ -8,14 +8,12 @@ use modern_colorthief_core::ColorthiefError;
 fn invalid_input_or_core_error(err: ColorthiefError) -> Error {
     let msg = err.to_string();
     let lower = msg.to_lowercase();
-    let status = if lower.contains("empty")
-        || lower.contains("dimensions")
-        || lower.contains("pixel")
-    {
-        Status::InvalidArg
-    } else {
-        Status::GenericFailure
-    };
+    let status =
+        if lower.contains("empty") || lower.contains("dimensions") || lower.contains("pixel") {
+            Status::InvalidArg
+        } else {
+            Status::GenericFailure
+        };
     Error::new(status, msg)
 }
 
@@ -84,11 +82,7 @@ pub async fn get_color(
     // Off-thread: the JS event loop stays responsive during the median cut.
     let dominant = napi::tokio::task::spawn_blocking(move || {
         let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(
-            &pixels,
-            width,
-            height,
-            5,
-            quality,
+            &pixels, width, height, 5, quality,
         )
         .map_err(invalid_input_or_core_error)?;
         modern_colorthief_core::bindings::dominant_color(&palette)
@@ -167,17 +161,27 @@ mod tests {
 
     #[test]
     fn sync_solid_red() {
-        let colors =
-            get_palette_sync([255u8, 0, 0, 255].repeat(100).into(), 10, 10, Some(5), Some(1))
-                .unwrap();
+        let colors = get_palette_sync(
+            [255u8, 0, 0, 255].repeat(100).into(),
+            10,
+            10,
+            Some(5),
+            Some(1),
+        )
+        .unwrap();
         assert_eq!(colors.first(), Some(&vec![255, 0, 0]));
     }
 
     #[test]
     fn sync_rejects_truncated_buffer() {
-        let err =
-            get_palette_sync([255u8, 0, 0, 255].repeat(2).into(), 10, 10, Some(5), Some(1))
-                .unwrap_err();
+        let err = get_palette_sync(
+            [255u8, 0, 0, 255].repeat(2).into(),
+            10,
+            10,
+            Some(5),
+            Some(1),
+        )
+        .unwrap_err();
         assert_eq!(err.status, Status::InvalidArg);
     }
 
@@ -188,7 +192,10 @@ mod tests {
         pixels.extend(std::iter::repeat_n([255u8, 0, 0, 255], 90).flatten());
         pixels.extend(std::iter::repeat_n([0u8, 0, 255, 255], 10).flatten());
         let color = get_color_sync(pixels.into(), 10, 10, Some(1)).unwrap();
-        assert!(color[0] > 200, "dominant color should be red, got {color:?}");
+        assert!(
+            color[0] > 200,
+            "dominant color should be red, got {color:?}"
+        );
     }
 
     #[test]

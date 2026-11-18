@@ -1,8 +1,8 @@
-use modern_colorthief_core::bindings::dominant_color;
 use modern_colorthief_core::ColorthiefError;
+use modern_colorthief_core::bindings::dominant_color;
 use modern_colorthief_core_cpu::extract_palette_from_buffer;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::*;
 
 /// Return the package version string (e.g. "0.3.0").
 #[wasm_bindgen(js_name = "__version__")]
@@ -116,10 +116,18 @@ pub fn decode_image_promise(image: &JsValue) -> js_sys::Promise {
             match decode_image_async(&image).await {
                 Ok((pixels, width, height)) => {
                     let obj = js_sys::Object::new();
-                    let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("pixels"), &pixels.into());
-                    let _ = js_sys::Reflect::set(&obj, &JsValue::from_str("width"), &JsValue::from(width));
                     let _ =
-                        js_sys::Reflect::set(&obj, &JsValue::from_str("height"), &JsValue::from(height));
+                        js_sys::Reflect::set(&obj, &JsValue::from_str("pixels"), &pixels.into());
+                    let _ = js_sys::Reflect::set(
+                        &obj,
+                        &JsValue::from_str("width"),
+                        &JsValue::from(width),
+                    );
+                    let _ = js_sys::Reflect::set(
+                        &obj,
+                        &JsValue::from_str("height"),
+                        &JsValue::from(height),
+                    );
                     resolve(&res_fn, &obj);
                 }
                 Err(msg) => reject_str(&rej_fn, &msg),
@@ -181,7 +189,9 @@ pub fn get_color_from_pixels(
 /// Returns a future resolving to `(Uint8Array, width, height)`.
 async fn decode_image_async(image: &JsValue) -> Result<(js_sys::Uint8Array, u32, u32), String> {
     let window = web_sys::window().ok_or("No window available".to_string())?;
-    let document = window.document().ok_or("No document available".to_string())?;
+    let document = window
+        .document()
+        .ok_or("No document available".to_string())?;
     let body = document.body().ok_or("No document body".to_string())?;
 
     let img = document
@@ -216,20 +226,21 @@ async fn decode_image_async(image: &JsValue) -> Result<(js_sys::Uint8Array, u32,
 
     // Wait for image load via onload promise (non-blocking).
     // Closures are leaked to stay alive for the JS event loop.
-    let load_promise = js_sys::Promise::new(&mut |res_fn: js_sys::Function, rej_fn: js_sys::Function| {
-        let onload: Closure<dyn Fn()> = Closure::new(move || {
-            let _ = res_fn.call0(&JsValue::UNDEFINED);
+    let load_promise =
+        js_sys::Promise::new(&mut |res_fn: js_sys::Function, rej_fn: js_sys::Function| {
+            let onload: Closure<dyn Fn()> = Closure::new(move || {
+                let _ = res_fn.call0(&JsValue::UNDEFINED);
+            });
+            let onerror: Closure<dyn Fn()> = Closure::new(move || {
+                let _ = rej_fn.call1(&JsValue::UNDEFINED, &JsValue::from_str("Image load failed"));
+            });
+            // set_onload borrows the Function — pass a reference into the leaked closure
+            img.set_onload(Some(onload.as_ref().unchecked_ref::<js_sys::Function>()));
+            img.set_onerror(Some(onerror.as_ref().unchecked_ref::<js_sys::Function>()));
+            // Leak so the JS event loop can call them later
+            let _ = unsafe { std::ptr::read(&onload) };
+            let _ = unsafe { std::ptr::read(&onerror) };
         });
-        let onerror: Closure<dyn Fn()> = Closure::new(move || {
-            let _ = rej_fn.call1(&JsValue::UNDEFINED, &JsValue::from_str("Image load failed"));
-        });
-        // set_onload borrows the Function — pass a reference into the leaked closure
-        img.set_onload(Some(onload.as_ref().unchecked_ref::<js_sys::Function>()));
-        img.set_onerror(Some(onerror.as_ref().unchecked_ref::<js_sys::Function>()));
-        // Leak so the JS event loop can call them later
-        let _ = unsafe { std::ptr::read(&onload) };
-        let _ = unsafe { std::ptr::read(&onerror) };
-    });
     wasm_bindgen_futures::JsFuture::from(load_promise)
         .await
         .map_err(|_| "Image failed to load".to_string())?;

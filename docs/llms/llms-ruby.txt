@@ -15,6 +15,22 @@ Version: 0.3.0
   Parameters:
   - `msg` (String)
 
+### `compute_callback(data: *mut std::ffi::c_void)` → `void`
+
+  C ABI function pointer — runs with the GVL released.
+
+  Parameters:
+  - `data` (*mut std::ffi::c_void)
+
+### `release_gvl_and_compute(pixel_data: Array<Integer>, width: Integer, height: Integer, color_count: Integer, quality: Integer)` → `Array<Integer>`
+
+  Parameters:
+  - `pixel_data` (Array<Integer>)
+  - `width` (Integer)
+  - `height` (Integer)
+  - `color_count` (Integer)
+  - `quality` (Integer)
+
 ### `get_palette(pixels: String, width: Integer, height: Integer, color_count: Integer, quality: Integer)` → `Array<Integer>`
 
   Parameters:
@@ -30,17 +46,6 @@ Version: 0.3.0
   - `pixels` (String)
   - `width` (Integer)
   - `height` (Integer)
-  - `quality` (Integer)
-
-### `compute_palette(pixel_data: String, width: Integer, height: Integer, color_count: Integer, quality: Integer)` → `Array<Integer>`
-
-  Pure compute function — no Ruby references, safe to call without the GVL.
-
-  Parameters:
-  - `pixel_data` (String)
-  - `width` (Integer)
-  - `height` (Integer)
-  - `color_count` (Integer)
   - `quality` (Integer)
 
 ## Usage Example

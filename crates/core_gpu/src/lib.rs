@@ -103,7 +103,9 @@ mod tests {
             Err(e) => {
                 // GPU may not be available — that's acceptable
                 let msg = e.to_string();
-                assert!(msg.contains("Vulkan") || msg.contains("Empty") || msg.contains("not found"));
+                assert!(
+                    msg.contains("Vulkan") || msg.contains("Empty") || msg.contains("not found")
+                );
             }
         }
     }

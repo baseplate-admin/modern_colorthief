@@ -107,7 +107,10 @@ mod tests {
     #[test]
     fn rows_u8_shape() {
         let colors = vec![(1, 2, 3), (4, 5, 6)];
-        assert_eq!(colors_to_rows_u8(&colors), vec![vec![1, 2, 3], vec![4, 5, 6]]);
+        assert_eq!(
+            colors_to_rows_u8(&colors),
+            vec![vec![1, 2, 3], vec![4, 5, 6]]
+        );
     }
 
     #[test]

@@ -5,12 +5,12 @@ use modern_colorthief_core::ColorthiefError;
 fn err_to_napi(err: ColorthiefError) -> Error {
     let msg = err.to_string();
     let lower = msg.to_lowercase();
-    let status = if lower.contains("empty") || lower.contains("dimensions") || lower.contains("pixel")
-    {
-        Status::InvalidArg
-    } else {
-        Status::GenericFailure
-    };
+    let status =
+        if lower.contains("empty") || lower.contains("dimensions") || lower.contains("pixel") {
+            Status::InvalidArg
+        } else {
+            Status::GenericFailure
+        };
     Error::new(status, msg)
 }
 
@@ -37,7 +37,11 @@ pub async fn get_palette_gpu(
 
     let colors = napi::tokio::task::spawn_blocking(move || {
         modern_colorthief_core_gpu::extract_palette_from_buffer(
-            &pixels, width, height, color_count, quality,
+            &pixels,
+            width,
+            height,
+            color_count,
+            quality,
         )
     })
     .await

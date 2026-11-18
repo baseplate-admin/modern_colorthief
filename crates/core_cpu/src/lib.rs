@@ -1,4 +1,4 @@
-use modern_colorthief_core::{validate_buffer, ColorthiefError, PaletteExtractor, Rgb};
+use modern_colorthief_core::{ColorthiefError, PaletteExtractor, Rgb, validate_buffer};
 use rayon::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -145,14 +145,12 @@ fn median_cut(buckets: &mut Vec<Bucket>, count: usize) {
 }
 
 fn dedup(colors: Vec<Rgb>) -> Vec<Rgb> {
-    colors
-        .into_iter()
-        .fold(Vec::new(), |mut acc, c| {
-            if !acc.contains(&c) {
-                acc.push(c);
-            }
-            acc
-        })
+    colors.into_iter().fold(Vec::new(), |mut acc, c| {
+        if !acc.contains(&c) {
+            acc.push(c);
+        }
+        acc
+    })
 }
 
 /// Extract a deduplicated color palette from raw RGBA pixel data.

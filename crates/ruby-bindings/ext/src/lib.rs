@@ -31,7 +31,11 @@ struct ComputeCtx {
 unsafe extern "C" fn compute_callback(data: *mut std::ffi::c_void) -> *mut std::ffi::c_void {
     let ctx = &mut *(data as *mut ComputeCtx);
     let result = modern_colorthief_core_cpu::extract_palette_from_buffer(
-        &ctx.pixels, ctx.width, ctx.height, ctx.color_count, ctx.quality,
+        &ctx.pixels,
+        ctx.width,
+        ctx.height,
+        ctx.color_count,
+        ctx.quality,
     );
     ctx.result = Some(match result {
         Ok(colors) => Ok(colors),
