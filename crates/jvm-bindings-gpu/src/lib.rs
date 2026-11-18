@@ -36,7 +36,7 @@ fn extract_palette_gpu_jni<'a>(
     color_count: u8,
     quality: u8,
 ) -> jni::errors::Result<Vec<(u8, u8, u8)>> {
-    let len = pixels.len(env)? as usize;
+    let len = pixels.len(env)?;
     let mut pixel_data = vec![0i8; len];
     pixels.get_region(env, 0, &mut pixel_data)?;
     let u8_data: Vec<u8> = pixel_data.iter().copied().map(|b| b as u8).collect();
