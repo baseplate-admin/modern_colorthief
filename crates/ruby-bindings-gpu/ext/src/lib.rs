@@ -5,6 +5,8 @@ fn make_runtime_err(msg: String) -> error::Error {
     error::Error::new(ruby.exception_runtime_error(), msg)
 }
 
+type RgbPalette = Vec<(u8, u8, u8)>;
+
 /// Heap-allocated context passed to the C callback that runs without the GVL.
 struct ComputeCtx {
     pixels: Vec<u8>,
@@ -12,7 +14,7 @@ struct ComputeCtx {
     height: u32,
     color_count: u8,
     quality: u8,
-    result: Option<Result<Vec<(u8, u8, u8)>, String>>,
+    result: Option<Result<RgbPalette, String>>,
 }
 
 /// C ABI function pointer — runs with the GVL released.
@@ -58,7 +60,7 @@ fn release_gvl_and_compute(
     let result = ctx.result.ok_or_else(|| {
         make_runtime_err("rb_thread_call_without_gvl returned without a result".to_string())
     })?;
-    result.map_err(|msg| make_runtime_err(msg))
+    result.map_err(make_runtime_err)
 }
 
 fn get_palette(
