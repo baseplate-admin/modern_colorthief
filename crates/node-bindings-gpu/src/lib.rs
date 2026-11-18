@@ -68,17 +68,13 @@ pub async fn get_color_gpu(
     let pixels = pixels.to_vec();
     let quality = quality.unwrap_or(10);
 
-    let result = napi::tokio::task::spawn_blocking(move || {
+    napi::tokio::task::spawn_blocking(move || {
         let palette = modern_colorthief_core_gpu::extract_palette_from_buffer(
             &pixels, width, height, 5, quality,
-        )
-        .map_err(err_to_napi)?;
-        modern_colorthief_core::bindings::dominant_color(&palette)
-            .map(|(r, g, b)| vec![r, g, b])
-            .map_err(err_to_napi)
+        )?;
+        modern_colorthief_core::bindings::dominant_color(&palette).map(|(r, g, b)| vec![r, g, b])
     })
     .await
-    .map_err(|e| Error::new(Status::GenericFailure, format!("Task panicked: {e}")))?;
-
-    result
+    .map_err(|e| Error::new(Status::GenericFailure, format!("Task panicked: {e}")))?
+    .map_err(err_to_napi)
 }

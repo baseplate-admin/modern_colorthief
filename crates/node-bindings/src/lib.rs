@@ -80,19 +80,15 @@ pub async fn get_color(
     let quality = quality.unwrap_or(10);
 
     // Off-thread: the JS event loop stays responsive during the median cut.
-    let dominant = napi::tokio::task::spawn_blocking(move || {
+    napi::tokio::task::spawn_blocking(move || {
         let palette = modern_colorthief_core_cpu::extract_palette_from_buffer(
             &pixels, width, height, 5, quality,
-        )
-        .map_err(invalid_input_or_core_error)?;
-        modern_colorthief_core::bindings::dominant_color(&palette)
-            .map(|(r, g, b)| vec![r, g, b])
-            .map_err(invalid_input_or_core_error)
+        )?;
+        modern_colorthief_core::bindings::dominant_color(&palette).map(|(r, g, b)| vec![r, g, b])
     })
     .await
-    .map_err(|e| Error::new(Status::GenericFailure, format!("Task panicked: {e}")))?;
-
-    dominant
+    .map_err(|e| Error::new(Status::GenericFailure, format!("Task panicked: {e}")))?
+    .map_err(invalid_input_or_core_error)
 }
 
 /// Synchronous variants for callers that don't want a Promise (e.g.
