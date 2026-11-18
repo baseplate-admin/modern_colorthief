@@ -1,6 +1,6 @@
 #![cfg_attr(windows, feature(abi_vectorcall))]
-use ext_php_rs::prelude::*;
 use ext_php_rs::binary::Binary;
+use ext_php_rs::prelude::*;
 
 /// Convert a PHP binary string (`Binary<u8>`) to a `Vec<u8>`, validating that
 /// every byte is in `[0, 255]` (always true for a `u8`, but the check is kept

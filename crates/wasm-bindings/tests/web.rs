@@ -610,7 +610,8 @@ mod pixels {
         // Core validation (F4) requires buffer.len() >= width * height * 4.
         // A 10-byte buffer is far too short for a 100x100 image — must reject.
         let short = js_sys::Uint8Array::from(&[0xFFu8, 0xD8, 0xFF, 0xE0, 0, 0, 0, 0, 0, 0][..]);
-        let result: Result<JsValue, JsValue> = JsFuture::from(get_palette_from_pixels(short, 100, 100, 5, 10)).await;
+        let result: Result<JsValue, JsValue> =
+            JsFuture::from(get_palette_from_pixels(short, 100, 100, 5, 10)).await;
         assert!(result.is_err(), "truncated pixel buffer should be rejected");
     }
 

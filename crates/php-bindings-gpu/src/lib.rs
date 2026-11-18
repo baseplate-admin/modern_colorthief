@@ -1,6 +1,6 @@
 #![cfg_attr(windows, feature(abi_vectorcall))]
-use ext_php_rs::prelude::*;
 use ext_php_rs::binary::Binary;
+use ext_php_rs::prelude::*;
 
 fn pixels_to_bytes_compat(pixels: Vec<i64>) -> PhpResult<Vec<u8>> {
     pixels

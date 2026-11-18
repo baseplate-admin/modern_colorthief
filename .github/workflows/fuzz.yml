@@ -150,13 +150,20 @@ jobs:
         run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Build fuzz targets
+        if: matrix.os != 'windows-latest'
         run: cargo build --bins
         working-directory: fuzz
 
+      # libfuzzer-sys requires LLVM/Clang to produce a linked binary on Windows
+      # (MSVC cannot link `__llvmfuzz_test_main`). Bounded fuzz sessions run on
+      # Linux and macOS only; Windows is covered by the property-based fuzz
+      # tests in the `fuzz-test` job.
       - name: Run bounded fuzz session (color_extract)
+        if: matrix.os != 'windows-latest'
         working-directory: fuzz
         run: target/debug/color_extract -runs=2000
 
       - name: Run bounded fuzz session (palette_extract)
+        if: matrix.os != 'windows-latest'
         working-directory: fuzz
         run: target/debug/palette_extract -runs=2000
