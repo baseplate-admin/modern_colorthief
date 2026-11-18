@@ -1,13 +1,8 @@
 use magnus::{error, function, Object, RString, Ruby};
 
 fn make_runtime_err(msg: String) -> error::Error {
-    match Ruby::get() {
-        Some(ruby) => error::Error::new(ruby.exception_runtime_error(), msg),
-        None => error::Error::new(
-            magnus::RString::from("no runtime"),
-            "modern_colorthief_gpu: internal error (Ruby runtime unavailable)".to_string(),
-        ),
-    }
+    let ruby = Ruby::get().expect("Ruby runtime must be available (GVL is held)");
+    error::Error::new(ruby.exception_runtime_error(), msg)
 }
 
 /// Heap-allocated context passed to the C callback that runs without the GVL.

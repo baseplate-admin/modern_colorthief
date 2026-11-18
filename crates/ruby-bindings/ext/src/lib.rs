@@ -1,19 +1,11 @@
 use magnus::{error, function, Object, RString, Ruby};
 
-/// Build a magnus runtime error. Returns a placeholder if the Ruby runtime
-/// is unavailable (only possible during interpreter shutdown).
+/// Build a magnus runtime error.
+/// The Ruby runtime is always available here — this function is called with
+/// the GVL held, so `Ruby::get()` cannot be `None` in normal operation.
 fn make_runtime_err(msg: String) -> error::Error {
-    match Ruby::get() {
-        Some(ruby) => error::Error::new(ruby.exception_runtime_error(), msg),
-        None => {
-            // The Ruby VM is shutting down; there is no exception class to
-            // raise. Return an error that will be dropped without a message.
-            error::Error::new(
-                magnus::RString::from("no runtime"),
-                "modern_colorthief: internal error (Ruby runtime unavailable)".to_string(),
-            )
-        }
-    }
+    let ruby = Ruby::get().expect("Ruby runtime must be available (GVL is held)");
+    error::Error::new(ruby.exception_runtime_error(), msg)
 }
 
 /// Heap-allocated context passed to the C callback that runs without the GVL.

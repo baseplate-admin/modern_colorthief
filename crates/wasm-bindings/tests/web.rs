@@ -1,5 +1,5 @@
 #![allow(clippy::needless_range_loop, clippy::redundant_slicing)]
-use wasm_bindgen::JsCast;
+use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 use wasm_bindgen_test::*;
 
@@ -606,14 +606,12 @@ mod pixels {
     }
 
     #[wasm_bindgen_test]
-    async fn accepts_partial_pixel_data() {
-        // The raw pixel API processes whatever bytes are given without validation.
+    async fn rejects_truncated_pixel_data() {
+        // Core validation (F4) requires buffer.len() >= width * height * 4.
+        // A 10-byte buffer is far too short for a 100x100 image — must reject.
         let short = js_sys::Uint8Array::from(&[0xFFu8, 0xD8, 0xFF, 0xE0, 0, 0, 0, 0, 0, 0][..]);
-        let result = JsFuture::from(get_palette_from_pixels(short, 100, 100, 5, 10))
-            .await
-            .unwrap();
-        let palette: js_sys::Array = result.dyn_into().unwrap();
-        let _ = &palette; // result is a valid JS Array
+        let result: Result<JsValue, JsValue> = JsFuture::from(get_palette_from_pixels(short, 100, 100, 5, 10)).await;
+        assert!(result.is_err(), "truncated pixel buffer should be rejected");
     }
 
     #[wasm_bindgen_test]
