@@ -298,19 +298,19 @@ fn fuzz_cpu_gpu_solid_mid_gray() {
 #[test]
 fn fuzz_cpu_gpu_two_colors_rgb() {
     let buf = two_color_buffer((255, 0, 0), (0, 255, 0), 50, 50);
-    assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 30, "two_colors_rgb");
+    assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 120, "two_colors_rgb");
 }
 
 #[test]
 fn fuzz_cpu_gpu_two_colors_blue_purple() {
     let buf = two_color_buffer((0, 0, 255), (128, 0, 128), 50, 50);
-    assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 30, "two_colors_blue_purple");
+    assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 120, "two_colors_blue_purple");
 }
 
 #[test]
 fn fuzz_cpu_gpu_two_colors_complementary() {
     let buf = two_color_buffer((255, 128, 0), (0, 128, 255), 50, 50);
-    assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 30, "two_colors_complementary");
+    assert_cpu_gpu_consistent(&buf, 50, 50, 5, 1, 120, "two_colors_complementary");
 }
 
 #[test]

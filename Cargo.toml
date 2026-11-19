@@ -76,6 +76,7 @@ ext-php-rs = "0.16"
 
 # GPU
 ash = "0.38"
+naga = { version = "30", default-features = false, features = ["wgsl-in", "spv-out"] }
 
 [profile.release.package."*"]
 codegen-units = 1
