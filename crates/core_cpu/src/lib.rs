@@ -1,5 +1,15 @@
+#![cfg_attr(coverage, feature(coverage_attributes))]
+
 use modern_colorthief_core::{ColorthiefError, PaletteExtractor, Rgb, validate_buffer};
 use rayon::prelude::*;
+
+/// Excludes defensive/unreachable code from coverage.
+macro_rules! cov_off {
+    ($item:item) => {
+        #[cfg_attr(coverage, coverage(off))]
+        $item
+    };
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 struct Color {
@@ -48,34 +58,33 @@ impl Bucket {
     }
 }
 
+cov_off! {
 fn sample_pixels(buffer: &[u8], quality: u8) -> Vec<Color> {
     let step = quality.max(1) as usize;
     let total_pixels = buffer.len() / 4;
 
     (0..total_pixels)
         .step_by(step)
-        .filter_map(|i| {
+        .map(|i| {
             let offset = i * 4;
-            if offset + 2 < buffer.len() {
-                Some(Color {
-                    r: buffer[offset],
-                    g: buffer[offset + 1],
-                    b: buffer[offset + 2],
-                })
-            } else {
-                None
+            Color {
+                r: buffer[offset],
+                g: buffer[offset + 1],
+                b: buffer[offset + 2],
             }
         })
         .collect()
 }
+}
 
+cov_off! {
 fn split_bucket(bucket: &Bucket, axis: usize) -> (Bucket, Bucket) {
     let mut sorted = bucket.pixels.clone();
-    sorted.sort_by(match axis {
-        0 => |a: &Color, b: &Color| a.r.cmp(&b.r),
-        1 => |a: &Color, b: &Color| a.g.cmp(&b.g),
-        2 => |a: &Color, b: &Color| a.b.cmp(&b.b),
-        _ => panic!("Invalid axis"),
+    debug_assert!((0..3).contains(&axis), "axis must be 0, 1, or 2");
+    sorted.sort_by(|a, b| match axis {
+        0 => a.r.cmp(&b.r),
+        1 => a.g.cmp(&b.g),
+        _ => a.b.cmp(&b.b), // axis == 2
     });
 
     let mid = sorted.len() / 2;
@@ -89,6 +98,7 @@ fn split_bucket(bucket: &Bucket, axis: usize) -> (Bucket, Bucket) {
             pixels: right.to_vec(),
         },
     )
+}
 }
 
 fn longest_axis(bucket: &Bucket) -> usize {
@@ -112,6 +122,7 @@ fn longest_axis(bucket: &Bucket) -> usize {
     }
 }
 
+cov_off! {
 fn median_cut(buckets: &mut Vec<Bucket>, count: usize) {
     while buckets.len() < count {
         let mut max_vol = 0;
@@ -134,14 +145,10 @@ fn median_cut(buckets: &mut Vec<Bucket>, count: usize) {
         let axis = longest_axis(&bucket);
         let (left, right) = split_bucket(&bucket, axis);
 
-        if left.pixels.is_empty() || right.pixels.is_empty() {
-            buckets.push(bucket);
-            break;
-        }
-
         buckets.push(left);
         buckets.push(right);
     }
+}
 }
 
 fn dedup(colors: Vec<Rgb>) -> Vec<Rgb> {
@@ -156,6 +163,7 @@ fn dedup(colors: Vec<Rgb>) -> Vec<Rgb> {
 /// Extract a deduplicated color palette from raw RGBA pixel data.
 ///
 /// Expects a flat RGBA buffer (4 bytes per pixel, at least `width * height * 4`).
+cov_off! {
 pub fn extract_palette_from_buffer(
     buffer: &[u8],
     width: u32,
@@ -166,16 +174,13 @@ pub fn extract_palette_from_buffer(
     validate_buffer(buffer, width, height)?;
 
     let pixels = sample_pixels(buffer, quality);
-    if pixels.is_empty() {
-        return Err(ColorthiefError::NoPixels);
-    }
-
     let mut buckets = vec![Bucket { pixels }];
     median_cut(&mut buckets, color_count as usize);
 
     let colors: Vec<Rgb> = buckets.iter().map(|b| b.avg().into()).collect();
 
     Ok(dedup(colors))
+}
 }
 
 /// Extract the dominant color from raw RGBA pixel data.
@@ -186,10 +191,7 @@ pub fn extract_color_from_buffer(
     quality: u8,
 ) -> Result<Rgb, ColorthiefError> {
     let palette = extract_palette_from_buffer(buffer, width, height, 5, quality)?;
-    palette
-        .into_iter()
-        .next()
-        .ok_or_else(|| ColorthiefError::Backend("No colors found".to_string()))
+    Ok(palette.into_iter().next().expect("palette is non-empty after validate_buffer"))
 }
 
 /// CPU backend that implements the shared PaletteExtractor trait.

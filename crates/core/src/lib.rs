@@ -37,12 +37,6 @@ impl std::fmt::Display for ColorthiefError {
 
 impl std::error::Error for ColorthiefError {}
 
-impl From<ColorthiefError> for String {
-    fn from(e: ColorthiefError) -> Self {
-        e.to_string()
-    }
-}
-
 /// Validate a pixel buffer against its declared dimensions.
 ///
 /// This is the single validation point for all backends (CPU, Vulkan GPU,
@@ -176,12 +170,6 @@ mod tests {
     fn error_is_std_error() {
         let e: Box<dyn std::error::Error> = Box::new(ColorthiefError::EmptyBuffer);
         assert_eq!(e.to_string(), "Empty pixel buffer");
-    }
-
-    #[test]
-    fn error_into_string() {
-        let s: String = ColorthiefError::NoPixels.into();
-        assert_eq!(s, "No pixels to process");
     }
 
     #[test]
