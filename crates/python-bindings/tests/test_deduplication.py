@@ -1,6 +1,7 @@
-import modern_colorthief
-from pathlib import Path
 import os
+from pathlib import Path
+
+import modern_colorthief
 
 BASE_DIR = Path(__file__).resolve().parent
 

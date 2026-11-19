@@ -1,0 +1,7 @@
+dist
+artifacts
+node_modules
+pkg
+package-lock.json
+index.d.ts
+deno.json

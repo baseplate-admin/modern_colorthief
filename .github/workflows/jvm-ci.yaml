@@ -32,6 +32,29 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
+  lint:
+    name: Lint (ktlint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '26'
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '9.9.1'
+      - name: ktlint (JVM CPU)
+        working-directory: crates/jvm-bindings/tests
+        run: |
+          gradle wrapper
+          ./gradlew ktlintCheck --info
+      - name: ktlint (JVM GPU)
+        working-directory: crates/jvm-bindings-gpu/tests
+        run: |
+          gradle wrapper
+          ./gradlew ktlintCheck --info
+
   cpu-build:
     name: "cpu-build — ${{ matrix.target }}"
     runs-on: ${{ matrix.runner }}

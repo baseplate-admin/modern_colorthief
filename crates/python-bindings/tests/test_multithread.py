@@ -58,7 +58,7 @@ def test_concurrent_calls_complete_faster_than_sequential_sum():
     # Measure single-call time
     start = time.perf_counter()
     modern_colorthief.get_color(str(TEST_IMAGE), quality=10)
-    single_time = time.perf_counter() - start
+    time.perf_counter() - start
 
     # Run NUM_CALLS concurrently
     results = []

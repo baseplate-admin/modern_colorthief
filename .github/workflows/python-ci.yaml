@@ -32,6 +32,17 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+      - name: Lint python-bindings (CPU)
+        run: uvx --with 'ruff>=0.9.0' ruff check crates/python-bindings --config crates/python-bindings/pyproject.toml
+      - name: Lint python-bindings-gpu (GPU)
+        run: uvx --with 'ruff>=0.9.0' ruff check crates/python-bindings-gpu --config crates/python-bindings-gpu/pyproject.toml
+
   cpu-linux:
     runs-on: ubuntu-26.04
     strategy:

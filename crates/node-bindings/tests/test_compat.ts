@@ -4,7 +4,13 @@
 const isDeno = typeof (globalThis as any).Deno !== 'undefined';
 const isBun = typeof (globalThis as any).Bun !== 'undefined';
 const isVitest = typeof (globalThis as any).__vitest_worker__ !== 'undefined';
-const runtime: 'deno' | 'bun' | 'vitest' | 'node' = isDeno ? 'deno' : isBun ? 'bun' : isVitest ? 'vitest' : 'node';
+const runtime: 'deno' | 'bun' | 'vitest' | 'node' = isDeno
+    ? 'deno'
+    : isBun
+      ? 'bun'
+      : isVitest
+        ? 'vitest'
+        : 'node';
 
 // Load vitest module at module init time (top-level await)
 // This only runs when NOT in Deno (Deno doesn't have vitest)
@@ -90,13 +96,20 @@ class ChainedAssertion<T> {
     // Sync matchers (for non-promise values)
     toBe(expected: unknown): void {
         const val = this.actual;
-        this.check(Object.is(val, expected), `toBe ${JSON.stringify(expected)}`, JSON.stringify(val));
+        this.check(
+            Object.is(val, expected),
+            `toBe ${JSON.stringify(expected)}`,
+            JSON.stringify(val)
+        );
     }
 
     toEqual(expected: unknown): void {
         const val = this.actual;
-        this.check(JSON.stringify(val) === JSON.stringify(expected),
-            `toEqual ${JSON.stringify(expected)}`, JSON.stringify(val));
+        this.check(
+            JSON.stringify(val) === JSON.stringify(expected),
+            `toEqual ${JSON.stringify(expected)}`,
+            JSON.stringify(val)
+        );
     }
 
     toStrictEqual(expected: unknown): void {
@@ -158,7 +171,10 @@ class ChainedAssertion<T> {
 
     toContain(expected: unknown): void {
         const val = this.actual as unknown as unknown[];
-        this.check((val as unknown[]).includes(expected as any), `to contain ${JSON.stringify(expected)}`);
+        this.check(
+            (val as unknown[]).includes(expected as any),
+            `to contain ${JSON.stringify(expected)}`
+        );
     }
 
     toBeInstanceOf(expected: any): void {
@@ -187,13 +203,20 @@ class ChainedAssertion<T> {
     // Async versions
     async toBeAsync(expected: unknown): Promise<void> {
         const val = await this.unwrap();
-        await this.asyncCheck(Object.is(val, expected), `toBe ${JSON.stringify(expected)}`, JSON.stringify(val));
+        await this.asyncCheck(
+            Object.is(val, expected),
+            `toBe ${JSON.stringify(expected)}`,
+            JSON.stringify(val)
+        );
     }
 
     async toEqualAsync(expected: unknown): Promise<void> {
         const val = await this.unwrap();
-        await this.asyncCheck(JSON.stringify(val) === JSON.stringify(expected),
-            `toEqual ${JSON.stringify(expected)}`, JSON.stringify(val));
+        await this.asyncCheck(
+            JSON.stringify(val) === JSON.stringify(expected),
+            `toEqual ${JSON.stringify(expected)}`,
+            JSON.stringify(val)
+        );
     }
 
     async toBeTruthyAsync(): Promise<void> {
@@ -222,28 +245,31 @@ class ChainedAssertion<T> {
     }
 
     async toBeGreaterThanAsync(expected: number): Promise<void> {
-        const val = await this.unwrap() as unknown as number;
+        const val = (await this.unwrap()) as unknown as number;
         await this.asyncCheck((val as number) > expected, `toBe greater than ${expected}`);
     }
 
     async toBeLessThanAsync(expected: number): Promise<void> {
-        const val = await this.unwrap() as unknown as number;
+        const val = (await this.unwrap()) as unknown as number;
         await this.asyncCheck((val as number) < expected, `toBe less than ${expected}`);
     }
 
     async toBeGreaterThanOrEqualAsync(expected: number): Promise<void> {
-        const val = await this.unwrap() as unknown as number;
+        const val = (await this.unwrap()) as unknown as number;
         await this.asyncCheck((val as number) >= expected, `toBe >= ${expected}`);
     }
 
     async toBeLessThanOrEqualAsync(expected: number): Promise<void> {
-        const val = await this.unwrap() as unknown as number;
+        const val = (await this.unwrap()) as unknown as number;
         await this.asyncCheck((val as number) <= expected, `toBe <= ${expected}`);
     }
 
     async toHaveLengthAsync(expected: number): Promise<void> {
-        const val = await this.unwrap() as unknown as { length: number };
-        await this.asyncCheck((val as { length: number }).length === expected, `to have length ${expected}`);
+        const val = (await this.unwrap()) as unknown as { length: number };
+        await this.asyncCheck(
+            (val as { length: number }).length === expected,
+            `to have length ${expected}`
+        );
     }
 
     async toHaveSizeAsync(expected: number): Promise<void> {
@@ -251,8 +277,11 @@ class ChainedAssertion<T> {
     }
 
     async toContainAsync(expected: unknown): Promise<void> {
-        const val = await this.unwrap() as unknown as unknown[];
-        await this.asyncCheck((val as unknown[]).includes(expected as any), `to contain ${JSON.stringify(expected)}`);
+        const val = (await this.unwrap()) as unknown as unknown[];
+        await this.asyncCheck(
+            (val as unknown[]).includes(expected as any),
+            `to contain ${JSON.stringify(expected)}`
+        );
     }
 
     async toThrowAsync(expected?: any): Promise<void> {
@@ -288,25 +317,63 @@ class SmartAssertion<T> {
     }
 
     // Sync matchers
-    toBe(expected: unknown): void { this.chained.toBe(expected); }
-    toEqual(expected: unknown): void { this.chained.toEqual(expected); }
-    toStrictEqual(expected: unknown): void { this.chained.toStrictEqual(expected); }
-    toBeTruthy(): void { this.chained.toBeTruthy(); }
-    toBeFalsy(): void { this.chained.toBeFalsy(); }
-    toBeDefined(): void { this.chained.toBeDefined(); }
-    toBeUndefined(): void { this.chained.toBeUndefined(); }
-    toBeNull(): void { this.chained.toBeNull(); }
-    toBeNaN(): void { this.chained.toBeNaN(); }
-    toBeGreaterThan(expected: number): void { this.chained.toBeGreaterThan(expected); }
-    toBeLessThan(expected: number): void { this.chained.toBeLessThan(expected); }
-    toBeGreaterThanOrEqual(expected: number): void { this.chained.toBeGreaterThanOrEqual(expected); }
-    toBeLessThanOrEqual(expected: number): void { this.chained.toBeLessThanOrEqual(expected); }
-    toHaveLength(expected: number): void { this.chained.toHaveLength(expected); }
-    toHaveSize(expected: number): void { this.chained.toHaveSize(expected); }
-    toContain(expected: unknown): void { this.chained.toContain(expected); }
-    toBeInstanceOf(expected: any): void { this.chained.toBeInstanceOf(expected); }
-    toThrow(expected?: any): void { this.chained.toThrow(expected); }
-    toThrowError(expected?: any): void { this.chained.toThrowError(expected); }
+    toBe(expected: unknown): void {
+        this.chained.toBe(expected);
+    }
+    toEqual(expected: unknown): void {
+        this.chained.toEqual(expected);
+    }
+    toStrictEqual(expected: unknown): void {
+        this.chained.toStrictEqual(expected);
+    }
+    toBeTruthy(): void {
+        this.chained.toBeTruthy();
+    }
+    toBeFalsy(): void {
+        this.chained.toBeFalsy();
+    }
+    toBeDefined(): void {
+        this.chained.toBeDefined();
+    }
+    toBeUndefined(): void {
+        this.chained.toBeUndefined();
+    }
+    toBeNull(): void {
+        this.chained.toBeNull();
+    }
+    toBeNaN(): void {
+        this.chained.toBeNaN();
+    }
+    toBeGreaterThan(expected: number): void {
+        this.chained.toBeGreaterThan(expected);
+    }
+    toBeLessThan(expected: number): void {
+        this.chained.toBeLessThan(expected);
+    }
+    toBeGreaterThanOrEqual(expected: number): void {
+        this.chained.toBeGreaterThanOrEqual(expected);
+    }
+    toBeLessThanOrEqual(expected: number): void {
+        this.chained.toBeLessThanOrEqual(expected);
+    }
+    toHaveLength(expected: number): void {
+        this.chained.toHaveLength(expected);
+    }
+    toHaveSize(expected: number): void {
+        this.chained.toHaveSize(expected);
+    }
+    toContain(expected: unknown): void {
+        this.chained.toContain(expected);
+    }
+    toBeInstanceOf(expected: any): void {
+        this.chained.toBeInstanceOf(expected);
+    }
+    toThrow(expected?: any): void {
+        this.chained.toThrow(expected);
+    }
+    toThrowError(expected?: any): void {
+        this.chained.toThrowError(expected);
+    }
 
     get not(): SmartAssertion<T> {
         return new NotAssertion(this.chained);

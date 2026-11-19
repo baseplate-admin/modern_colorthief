@@ -23,7 +23,18 @@ modern-colorthief = "modern_colorthief.cli:main"
 
 [dependency-groups]
 dev = ["maturin>=1.11.5"]
-test = ["pytest>=8.2.1"]
+test = ["pytest>=8.2.1", "ruff>=0.9.0"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4"]
+ignore = ["E501"]  # line-length handled by formatter
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["B011"]
 
 [build-system]
 requires = ["maturin>=1.4"]

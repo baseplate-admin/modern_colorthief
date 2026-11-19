@@ -1,5 +1,6 @@
-from modern_colorthief import get_color, get_palette
 from pathlib import Path
+
+from modern_colorthief import get_color, get_palette
 
 BASE_DIR = Path(__file__).resolve().parent
 path = BASE_DIR / "test.jpg"

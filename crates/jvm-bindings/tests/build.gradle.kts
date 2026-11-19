@@ -4,6 +4,7 @@ plugins {
     signing
     kotlin("jvm") version "2.4.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 
 group = "modern.colorthief"
@@ -122,6 +123,13 @@ publishing {
             sign(publishing.publications["maven"])
         }
     }
+}
+
+ktlint {
+    version.set("1.5.0")
+    android.set(false)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
 }
 
 nexusPublishing {

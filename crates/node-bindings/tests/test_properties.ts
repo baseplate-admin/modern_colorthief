@@ -9,7 +9,7 @@ describe('Properties', () => {
         const color = await getColor(testImagePath());
         expect(Array.isArray(color)).toBe(true);
         expect(color.length).toBe(3);
-        color.forEach(v => {
+        color.forEach((v) => {
             expect(typeof v).toBe('number');
             expect(v).toBeGreaterThanOrEqual(0);
             expect(v).toBeLessThanOrEqual(255);
@@ -19,10 +19,10 @@ describe('Properties', () => {
     it('getPalette returns array of 3-element RGB arrays', async () => {
         const palette = await getPalette(testImagePath());
         expect(Array.isArray(palette)).toBe(true);
-        palette.forEach(color => {
+        palette.forEach((color) => {
             expect(Array.isArray(color)).toBe(true);
             expect(color.length).toBe(3);
-            color.forEach(v => {
+            color.forEach((v) => {
                 expect(typeof v).toBe('number');
                 expect(v).toBeGreaterThanOrEqual(0);
                 expect(v).toBeLessThanOrEqual(255);

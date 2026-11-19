@@ -1,11 +1,12 @@
 import argparse
 import sys
+
 from modern_colorthief import get_color, get_palette
 
 
 def rgb_to_hex(rgb: tuple[int, int, int]) -> str:
     """Convert RGB tuple to hex string."""
-    return "#{:02x}{:02x}{:02x}".format(rgb[0], rgb[1], rgb[2])
+    return f"#{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}"
 
 
 def main():

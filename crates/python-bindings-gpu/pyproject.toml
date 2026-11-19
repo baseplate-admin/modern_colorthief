@@ -7,6 +7,21 @@ name = "modern_colorthief_gpu"
 version = "0.3.0"
 requires-python = ">=3.9"
 dependencies = ["Pillow>=10.0"]
+
+[dependency-groups]
+test = ["pytest>=8.2.1", "ruff>=0.9.0"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4"]
+ignore = ["E501"]  # line-length handled by formatter
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["B011"]
+
 [tool.maturin]
 manifest-path = "Cargo.toml"
 module-name = "modern_colorthief_gpu"

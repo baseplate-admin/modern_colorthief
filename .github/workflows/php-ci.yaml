@@ -32,6 +32,25 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
+  lint:
+    name: Lint (phpcs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: phpcs (PHP CPU)
+        working-directory: crates/php-bindings
+        run: |
+          composer require --dev squizlabs/php_codesniffer:^4.0 slevomat/coding-standard:^8.25 --no-interaction
+          vendor/bin/phpcs --standard=phpcs.xml
+      - name: phpcs (PHP GPU)
+        working-directory: crates/php-bindings-gpu
+        run: |
+          composer require --dev squizlabs/php_codesniffer:^4.0 slevomat/coding-standard:^8.25 --no-interaction
+          vendor/bin/phpcs --standard=phpcs.xml
+
   cpu-build:
     name: "cpu-build — ${{ matrix.target }} — PHP ${{ matrix.php-version }}"
     runs-on: ${{ matrix.runner }}

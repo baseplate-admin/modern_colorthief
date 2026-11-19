@@ -38,9 +38,13 @@ describe('Edge cases', () => {
 
     it('deterministic across repeated calls', async () => {
         const results = await Promise.all(
-            Array.from({ length: 5 }, () => getColor(testImagePath())),
+            Array.from({ length: 5 }, () => getColor(testImagePath()))
         );
-        expect(results.every(r => r[0] === results[0][0] && r[1] === results[0][1] && r[2] === results[0][2])).toBe(true);
+        expect(
+            results.every(
+                (r) => r[0] === results[0][0] && r[1] === results[0][1] && r[2] === results[0][2]
+            )
+        ).toBe(true);
     });
 
     // -- Consistent across input types --

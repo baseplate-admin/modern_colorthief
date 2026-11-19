@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2026-06-04
 
 ### Changed
+
 - Lock file maintenance ([#123](https://github.com/baseplate-admin/modern_colorthief/pull/123))
 - Update all dependencies to v8.2.0 ([#124](https://github.com/baseplate-admin/modern_colorthief/pull/124))
 
@@ -18,9 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.1] - 2026-05-20
 
 ### Added
+
 - @OzGav made their first contribution
 
 ### Changed
+
 - Refactor image processing functions for better handling of non-RGB images ([#122](https://github.com/baseplate-admin/modern_colorthief/pull/122))
 - Update softprops/action-gh-release action to v3 ([#114](https://github.com/baseplate-admin/modern_colorthief/pull/114))
 - Update astral-sh/setup-uv action to v8 ([#116](https://github.com/baseplate-admin/modern_colorthief/pull/116))
@@ -31,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2026-04-11
 
 ### Changed
+
 - Update to new maturin action ([#111](https://github.com/baseplate-admin/modern_colorthief/pull/111))
 - Update all dependencies (major) ([#113](https://github.com/baseplate-admin/modern_colorthief/pull/113))
 - Update dependency Python to 3.14 ([#112](https://github.com/baseplate-admin/modern_colorthief/pull/112))
@@ -40,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.14] - 2026-04-10
 
 ### Added
+
 - Support for GIL-less Python
 
 ---
@@ -47,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.13] - 2026-04-06
 
 ### Changed
+
 - Refactor image handling in `get_palette` and `get_color` ([#110](https://github.com/baseplate-admin/modern_colorthief/pull/110))
 - Migrate Renovate config ([#101](https://github.com/baseplate-admin/modern_colorthief/pull/101))
 - Update Rust crate `image` to v0.25.10 ([#103](https://github.com/baseplate-admin/modern_colorthief/pull/103))
@@ -56,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Lock file maintenance ([#100](https://github.com/baseplate-admin/modern_colorthief/pull/100), [#102](https://github.com/baseplate-admin/modern_colorthief/pull/102), [#104](https://github.com/baseplate-admin/modern_colorthief/pull/104), [#105](https://github.com/baseplate-admin/modern_colorthief/pull/105), [#106](https://github.com/baseplate-admin/modern_colorthief/pull/106), [#108](https://github.com/baseplate-admin/modern_colorthief/pull/108))
 
 ### Dependencies
+
 - Bump `pyo3` from 0.27.2 to 0.28.2 ([#92](https://github.com/baseplate-admin/modern_colorthief/pull/92), [#93](https://github.com/baseplate-admin/modern_colorthief/pull/93), [#94](https://github.com/baseplate-admin/modern_colorthief/pull/94))
 
 ---
@@ -63,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.12] - 2026-01-11
 
 ### Changed
+
 - No release notes provided
 
 ---
@@ -70,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.11] - 2026-01-11
 
 ### Changed
+
 - No release notes provided
 
 ---
@@ -77,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.10] - 2026-01-11
 
 ### Fixed
+
 - Fix Rust wheel naming
 
 ---
@@ -84,10 +94,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.9] - 2026-01-11
 
 ### Added
+
 - CLI support ([#90](https://github.com/baseplate-admin/modern_colorthief/pull/90))
 - AUR package support ([#91](https://github.com/baseplate-admin/modern_colorthief/pull/91))
 
 ### Dependencies
+
 - Bump `shibuya` from 2024.12.21 to 2025.10.21 ([#89](https://github.com/baseplate-admin/modern_colorthief/pull/89))
 
 ---
@@ -95,9 +107,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.8] - 2025-12-09
 
 ### Changed
+
 - Update CI configuration ([#81](https://github.com/baseplate-admin/modern_colorthief/pull/81))
 
 ### Dependencies
+
 - Bump `pyo3` from 0.22.5 to 0.27.2 ([#69](https://github.com/baseplate-admin/modern_colorthief/pull/69), [#70](https://github.com/baseplate-admin/modern_colorthief/pull/70), [#77](https://github.com/baseplate-admin/modern_colorthief/pull/77), [#78](https://github.com/baseplate-admin/modern_colorthief/pull/78), [#80](https://github.com/baseplate-admin/modern_colorthief/pull/80), [#82](https://github.com/baseplate-admin/modern_colorthief/pull/82), [#83](https://github.com/baseplate-admin/modern_colorthief/pull/83), [#84](https://github.com/baseplate-admin/modern_colorthief/pull/84), [#87](https://github.com/baseplate-admin/modern_colorthief/pull/87))
 - Bump `image` from 0.25.4 to 0.25.9 ([#68](https://github.com/baseplate-admin/modern_colorthief/pull/68), [#79](https://github.com/baseplate-admin/modern_colorthief/pull/79), [#86](https://github.com/baseplate-admin/modern_colorthief/pull/86))
 - Bump `pytest` from 8.3.3 to 8.4.2 ([#71](https://github.com/baseplate-admin/modern_colorthief/pull/71), [#88](https://github.com/baseplate-admin/modern_colorthief/pull/88))
@@ -109,9 +123,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.7] - 2024-11-26
 
 ### Changed
+
 - Change theme ([#54](https://github.com/baseplate-admin/modern_colorthief/pull/54))
 
 ### Dependencies
+
 - Bump `pyo3` from 0.21.2 to 0.22.5 ([#53](https://github.com/baseplate-admin/modern_colorthief/pull/53), [#59](https://github.com/baseplate-admin/modern_colorthief/pull/59), [#63](https://github.com/baseplate-admin/modern_colorthief/pull/63), [#64](https://github.com/baseplate-admin/modern_colorthief/pull/64), [#66](https://github.com/baseplate-admin/modern_colorthief/pull/66))
 - Bump `image` from 0.25.1 to 0.25.4 ([#60](https://github.com/baseplate-admin/modern_colorthief/pull/60), [#67](https://github.com/baseplate-admin/modern_colorthief/pull/67))
 - Bump `pytest` from 8.2.1 to 8.3.3 ([#51](https://github.com/baseplate-admin/modern_colorthief/pull/51), [#58](https://github.com/baseplate-admin/modern_colorthief/pull/58), [#62](https://github.com/baseplate-admin/modern_colorthief/pull/62))
@@ -125,9 +141,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.6] - 2024-05-22
 
 ### Added
+
 - Remove duplicate colors from palette results ([#50](https://github.com/baseplate-admin/modern_colorthief/pull/50))
 
 ### Dependencies
+
 - Bump `requests` from 2.31.0 to 2.32.0 ([#49](https://github.com/baseplate-admin/modern_colorthief/pull/49))
 
 ---
@@ -135,6 +153,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.5] - 2024-05-20
 
 ### Fixed
+
 - Fix URLs ([#46](https://github.com/baseplate-admin/modern_colorthief/issues/46))
 
 ---
@@ -142,9 +161,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.4] - 2024-05-20
 
 ### Added
+
 - Initial support for `BytesIO` input ([#47](https://github.com/baseplate-admin/modern_colorthief/pull/47)) Closes [#45](https://github.com/baseplate-admin/modern_colorthief/issues/45)
 
 ### Fixed
+
 - Fix flaky tests ([#48](https://github.com/baseplate-admin/modern_colorthief/pull/48))
 
 ---
@@ -152,10 +173,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.3] - 2024-05-13
 
 ### Changed
+
 - **Rust rewrite** of the core library ([#41](https://github.com/baseplate-admin/modern_colorthief/pull/41)) Closes [#40](https://github.com/baseplate-admin/modern_colorthief/issues/40)
 - Add more examples ([#43](https://github.com/baseplate-admin/modern_colorthief/pull/43))
 
 ### Dependencies
+
 - Bump `pyo3` from 0.20.3 to 0.21.2 ([#42](https://github.com/baseplate-admin/modern_colorthief/pull/42))
 - Bump `actions/setup-python` from v4 to v5 ([#15](https://github.com/baseplate-admin/modern_colorthief/pull/15))
 - Bump `black` through versions 23.10.1 to 24.4.2 ([#11](https://github.com/baseplate-admin/modern_colorthief/pull/11), [#16](https://github.com/baseplate-admin/modern_colorthief/pull/16), [#17](https://github.com/baseplate-admin/modern_colorthief/pull/17), [#21](https://github.com/baseplate-admin/modern_colorthief/pull/21), [#22](https://github.com/baseplate-admin/modern_colorthief/pull/22), [#25](https://github.com/baseplate-admin/modern_colorthief/pull/25), [#31](https://github.com/baseplate-admin/modern_colorthief/pull/31), [#36](https://github.com/baseplate-admin/modern_colorthief/pull/36))
@@ -169,6 +192,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.2] - 2023-11-06
 
 ### Fixed
+
 - Fix wording in documentation ([#8](https://github.com/baseplate-admin/modern_colorthief/pull/8))
 - Fix README formatting ([#9](https://github.com/baseplate-admin/modern_colorthief/pull/9))
 - Fix `pyproject.toml` configuration ([#10](https://github.com/baseplate-admin/modern_colorthief/pull/10))
@@ -178,15 +202,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.1] - 2023-11-06
 
 ### Added
+
 - First release of `modern_colorthief` using GitHub Actions for publishing
 
 ---
 
 ### Legend
 
-| Category   | Description                                      |
-|------------|--------------------------------------------------|
-| Added      | New features                                     |
-| Changed    | Changes in existing functionality                |
-| Fixed      | Bug fixes                                        |
-| Dependencies | Version updates of package dependencies        |
+| Category     | Description                             |
+| ------------ | --------------------------------------- |
+| Added        | New features                            |
+| Changed      | Changes in existing functionality       |
+| Fixed        | Bug fixes                               |
+| Dependencies | Version updates of package dependencies |

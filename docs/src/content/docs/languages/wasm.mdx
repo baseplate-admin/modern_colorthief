@@ -13,48 +13,48 @@ The WASM binding is compiled with `wasm-bindgen` and runs anywhere WebAssembly r
 
 All functions return a `Promise`:
 
-| Function | Signature |
-|---|---|
-| `getPalette(image, colorCount?, quality?)` | `Promise<[number, number, number][]>` |
-| `getColor(image, quality?)` | `Promise<[number, number, number]>` |
-| `decodeImage(image)` | `Promise<{ pixels: Uint8Array, width: number, height: number }>` |
-| `getPaletteFromPixels(pixels, width, height, colorCount?, quality?)` | `Promise<[number, number, number][]>` |
-| `getColorFromPixels(pixels, width, height, quality?)` | `Promise<[number, number, number]>` |
-| `__version__()` | `string` (sync) |
+| Function                                                             | Signature                                                        |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `getPalette(image, colorCount?, quality?)`                           | `Promise<[number, number, number][]>`                            |
+| `getColor(image, quality?)`                                          | `Promise<[number, number, number]>`                              |
+| `decodeImage(image)`                                                 | `Promise<{ pixels: Uint8Array, width: number, height: number }>` |
+| `getPaletteFromPixels(pixels, width, height, colorCount?, quality?)` | `Promise<[number, number, number][]>`                            |
+| `getColorFromPixels(pixels, width, height, quality?)`                | `Promise<[number, number, number]>`                              |
+| `__version__()`                                                      | `string` (sync)                                                  |
 
 `image` accepts a URL string, an `Image` element, a `Blob`, or a `File`. `pixels` is a raw RGBA `Uint8Array` (4 bytes per pixel).
 
 ## From a URL or file
 
 ```js
-import { getPalette } from "@modern_colorthief/wasm";
+import { getPalette } from '@modern_colorthief/wasm';
 
 // URL
-const palette = await getPalette("https://example.com/photo.jpg", 10, 10);
+const palette = await getPalette('https://example.com/photo.jpg', 10, 10);
 
 // <input type="file"> File object
-const file = document.querySelector("input[type=file]").files[0];
+const file = document.querySelector('input[type=file]').files[0];
 const palette2 = await getPalette(file, 10, 10);
 ```
 
 ## From raw pixels
 
 ```js
-import { getPaletteFromPixels, decodeImage } from "@modern_colorthief/wasm";
+import { getPaletteFromPixels, decodeImage } from '@modern_colorthief/wasm';
 
-const { pixels, width, height } = await decodeImage("photo.jpg");
+const { pixels, width, height } = await decodeImage('photo.jpg');
 const palette = await getPaletteFromPixels(pixels, width, height, 10, 10);
-const color   = await getColorFromPixels(pixels, width, height, 10);
+const color = await getColorFromPixels(pixels, width, height, 10);
 ```
 
 ## 10×10 solid red
 
 ```js
-import { getPaletteFromPixels } from "@modern_colorthief/wasm";
+import { getPaletteFromPixels } from '@modern_colorthief/wasm';
 
 const pixels = new Uint8Array(400);
 for (let i = 0; i < 100; i++) {
-  pixels[i * 4]     = 255;
+  pixels[i * 4] = 255;
   pixels[i * 4 + 1] = 0;
   pixels[i * 4 + 2] = 0;
   pixels[i * 4 + 3] = 255;

@@ -32,6 +32,24 @@ env:
   VULKAN_VERSION: 1.4.304.1
 
 jobs:
+  lint:
+    name: Lint (rubocop)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+      - name: Lint ruby-bindings (CPU)
+        working-directory: crates/ruby-bindings
+        run: |
+          gem install rubocop:1
+          rubocop --config .rubocop.yml
+      - name: Lint ruby-bindings-gpu (GPU)
+        working-directory: crates/ruby-bindings-gpu
+        run: |
+          rubocop --config .rubocop.yml
+
   cpu-build:
     name: "cpu-build — ${{ matrix.os }} / ruby ${{ matrix.ruby }}"
     runs-on: ${{ matrix.os }}

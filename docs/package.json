@@ -20,9 +20,13 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@eslint/js": "^9.39.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "typescript": "^6.0.3"
+    "eslint": "^9.39.0",
+    "prettier": "^3.7.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.49.0"
   }
 }

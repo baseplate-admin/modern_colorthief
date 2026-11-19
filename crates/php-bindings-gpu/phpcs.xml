@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="ModernColorthiefGPU">
+    <description>PHP coding standards for modern_colorthief GPU bindings.</description>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <!-- PSR-12 base -->
+    <rule ref="PSR12">
+        <exclude name="PSR12.Files.FileHeader"/>
+    </rule>
+
+    <!-- Sensible relaxations -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="100"/>
+            <property name="absoluteLineLimit" value="120"/>
+        </properties>
+    </rule>
+    <rule ref="Squiz.Functions.MultiLineFunctionDeclaration"/>
+    <rule ref="PSR1.Methods.CamelCapsMethodName">
+        <properties>
+            <property name="exclude" value="packBytes,testImagePath,kaijuImagePath"/>
+        </properties>
+    </rule>
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="indent" value="4"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint"/>
+</ruleset>

@@ -34,6 +34,12 @@ jobs:
         working-directory: docs
         run: npm ci
 
+      - name: Lint (ESLint + Prettier)
+        working-directory: docs
+        run: |
+          npx eslint . --max-warnings 0
+          npx prettier --check .
+
       - name: Type-check (astro check)
         working-directory: docs
         run: npx astro check

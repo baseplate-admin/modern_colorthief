@@ -1,15 +1,13 @@
 """Modern color palette extraction from images using GPU acceleration (Vulkan)."""
 
-from typing import List, Tuple, Union
-
 from . import modern_colorthief_gpu as _lib
 
 __version__ = _lib.__version__
 
 
 def extract_palette(
-    image: Union[str, bytes], size: int = 5, quality: int = 10
-) -> List[Tuple[int, int, int]]:
+    image: str | bytes, size: int = 5, quality: int = 10
+) -> list[tuple[int, int, int]]:
     """Extract color palette from an image using GPU acceleration.
 
     Args:
@@ -37,7 +35,7 @@ def extract_palette(
 
 def extract_palette_from_buffer(
     pixels: bytes, width: int, height: int, size: int = 5, quality: int = 10
-) -> List[Tuple[int, int, int]]:
+) -> list[tuple[int, int, int]]:
     """Extract color palette from raw RGBA pixel buffer using GPU acceleration.
 
     Args:
@@ -54,8 +52,8 @@ def extract_palette_from_buffer(
 
 
 def extract_dominant_color(
-    image: Union[str, bytes], quality: int = 10
-) -> Tuple[int, int, int]:
+    image: str | bytes, quality: int = 10
+) -> tuple[int, int, int]:
     """Extract the dominant color from an image using GPU acceleration.
 
     Args:
@@ -73,7 +71,7 @@ def extract_dominant_color(
 
 def extract_dominant_color_from_buffer(
     pixels: bytes, width: int, height: int, quality: int = 10
-) -> Tuple[int, int, int]:
+) -> tuple[int, int, int]:
     """Extract the dominant color from raw RGBA pixel buffer using GPU acceleration.
 
     Args:
@@ -88,7 +86,7 @@ def extract_dominant_color_from_buffer(
     return _lib.extract_dominant_color_from_buffer_py(pixels, width, height, quality)
 
 
-def list_gpus() -> List[dict]:
+def list_gpus() -> list[dict]:
     """List available GPUs with Vulkan compute support.
 
     Returns:

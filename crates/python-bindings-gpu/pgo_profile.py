@@ -1,13 +1,12 @@
 import tempfile
 
-from PIL import Image
-
 from modern_colorthief_gpu import (
     extract_dominant_color,
     extract_dominant_color_from_buffer,
     extract_palette,
     extract_palette_from_buffer,
 )
+from PIL import Image
 
 img = Image.new("RGB", (100, 100), color=(200, 100, 50))
 

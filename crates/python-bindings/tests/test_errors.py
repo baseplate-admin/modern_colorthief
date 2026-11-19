@@ -3,9 +3,8 @@
 import io
 from pathlib import Path
 
-import pytest
-
 import modern_colorthief
+import pytest
 
 BASE_DIR = Path(__file__).resolve().parent
 

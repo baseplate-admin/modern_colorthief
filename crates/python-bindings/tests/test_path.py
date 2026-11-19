@@ -1,7 +1,8 @@
-import modern_colorthief
-from pathlib import Path
-import os
 import io
+import os
+from pathlib import Path
+
+import modern_colorthief
 from PIL import Image
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -53,11 +54,11 @@ def test_consistent_across_inputs():
     """Path, bytesio, and bytes should produce same dominant color."""
     color_path = modern_colorthief.get_color(path)
     bio = _get_from_png()
-    color_bio = modern_colorthief.get_color(bio)
+    modern_colorthief.get_color(bio)
     color_bytes = modern_colorthief.get_color(bio.getvalue())
 
     # Colors may differ slightly due to JPEG→PNG conversion, but should be close
     def color_distance(a, b):
-        return sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5
+        return sum((x - y) ** 2 for x, y in zip(a, b, strict=False)) ** 0.5
 
     assert color_distance(color_path, color_bytes) < 30

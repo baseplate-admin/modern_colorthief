@@ -1,17 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "preserve",
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "outDir": "dist",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "isolatedDeclarations": true
-  },
-  "include": ["index.ts", "native.ts"],
-  "exclude": ["node_modules", "dist", "examples"]
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "outDir": "dist",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "isolatedDeclarations": true
+    },
+    "include": ["index.ts", "native.ts"],
+    "exclude": ["node_modules", "dist", "examples"]
 }

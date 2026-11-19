@@ -1,0 +1,11 @@
+dist
+node_modules
+public/wasm
+public/wasm-webgpu
+public/pdfs
+astro.config.ts
+src/content/docs/*.mdx
+src/content/config.ts
+src/content.config.ts
+package-lock.json
+.netlify

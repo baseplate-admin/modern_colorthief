@@ -10,7 +10,9 @@
         "php": ">=8.3"
     },
     "require-dev": {
-        "pestphp/pest": "^4.0 || ^5.0"
+        "pestphp/pest": "^4.0 || ^5.0",
+        "squizlabs/php_codesniffer": "^4.0",
+        "slevomat/coding-standard": "^8.25"
     },
     "config": {
         "allow-plugins": {

@@ -12,7 +12,7 @@ import sharp from 'sharp';
 export async function getPalette(
     image: string | Buffer,
     colorCount = 10,
-    quality = 10,
+    quality = 10
 ): Promise<number[][]> {
     const { data, info } = await sharp(image)
         .raw()
@@ -28,10 +28,7 @@ export async function getPalette(
  * @param quality - Sampling quality (default: 10)
  * @returns [R, G, B] color tuple
  */
-export async function getColor(
-    image: string | Buffer,
-    quality = 10,
-): Promise<number[]> {
+export async function getColor(image: string | Buffer, quality = 10): Promise<number[]> {
     const { data, info } = await sharp(image)
         .raw()
         .ensureAlpha()

@@ -1,9 +1,10 @@
+import os
 import sys
+from pathlib import Path
 from unittest.mock import patch
+
 import pytest
 from modern_colorthief.cli import main
-from pathlib import Path
-import os
 
 BASE_DIR = Path(__file__).resolve().parent
 TEST_IMAGE = os.path.join(BASE_DIR, "kaiju_no_8.jpg")
@@ -43,9 +44,8 @@ def test_cli_palette(capsys):
 def test_cli_invalid_file(capsys):
     """Test the CLI handles invalid files gracefully."""
     test_args = ["modern_colorthief", "non_existent_file.jpg"]
-    with patch.object(sys, "argv", test_args):
-        with pytest.raises(SystemExit) as e:
-            main()
+    with patch.object(sys, "argv", test_args), pytest.raises(SystemExit) as e:
+        main()
 
     assert e.value.code == 1
     captured = capsys.readouterr()

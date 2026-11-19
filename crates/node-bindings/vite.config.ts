@@ -4,14 +4,11 @@ import { resolve } from 'node:path';
 
 export default defineConfig({
     plugins: dts({ generator: 'tsgo' }).map((plugin) =>
-        plugin.name.endsWith('fake-js') ? { ...plugin, enforce: 'pre' } : plugin,
+        plugin.name.endsWith('fake-js') ? { ...plugin, enforce: 'pre' } : plugin
     ),
     build: {
         lib: {
-            entry: [
-                resolve(__dirname, 'index.ts'),
-                resolve(__dirname, 'native.ts'),
-            ],
+            entry: [resolve(__dirname, 'index.ts'), resolve(__dirname, 'native.ts')],
             formats: ['es'],
             fileName: (format, entryName) => `${entryName}.js`,
         },

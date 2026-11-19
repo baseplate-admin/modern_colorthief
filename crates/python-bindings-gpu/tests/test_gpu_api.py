@@ -6,10 +6,10 @@ import pytest
 # Try importing the GPU module; skip all tests if unavailable
 try:
     from modern_colorthief_gpu import (
-        extract_palette_from_buffer,
+        extract_dominant_color,
         extract_dominant_color_from_buffer,
         extract_palette,
-        extract_dominant_color,
+        extract_palette_from_buffer,
         list_gpus,
     )
     gpu_available = True
