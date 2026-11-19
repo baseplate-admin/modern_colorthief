@@ -1,12 +1,18 @@
 ---
 title: Live Demo
-description: Extract a dominant color palette from any image in your browser — no server, no install.
+description: Extract a dominant color palette from any image in your browser - no server, no install.
 ---
 
 import PaletteDemo from '../../components/PaletteDemo.tsx';
 
-Drop an image below, or paste an image URL. The WebAssembly binding decodes the
-image and runs the same median-cut core as the native bindings — entirely in
-your browser, with nothing uploaded anywhere.
+Drop an image below, or paste an image URL. The demo runs the Rust core
+entirely in your browser, with nothing uploaded anywhere:
+
+- **Auto** (default): uses the **WebGPU** compute binding when your browser
+  supports it, and falls back to the **WASM** CPU binding otherwise.
+- **WebGPU** / **WASM**: force a specific engine from the selector below the
+  drop zone.
+
+Both engines decode the image in your browser and run the same core algorithm.
 
 <PaletteDemo client:load />

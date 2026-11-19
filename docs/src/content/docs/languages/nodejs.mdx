@@ -7,7 +7,7 @@ description: 'Use Modern Colorthief from Node.js, Deno, or Bun.'
 Package: `@modern_colorthief/native` · Install: `npm install @modern_colorthief/native`
 :::
 
-Node.js bindings use [napi-rs](https://napi.rs/). The binding accepts raw RGBA pixel buffers — use [Sharp](https://sharp.pixelplumbing.com/) (or any other decoder) to read the image first. Works on Node.js, Deno, and Bun.
+Node.js bindings use [napi-rs](https://napi.rs/). The binding accepts raw RGBA pixel buffers - use [Sharp](https://sharp.pixelplumbing.com/) (or any other decoder) to read the image first. Works on Node.js, Deno, and Bun.
 
 ## Functions
 
@@ -20,7 +20,7 @@ All async functions return a `Promise` (compute runs off the main thread via the
 | `getPaletteSync(pixels, width, height, colorCount?, quality?)` | `number[][]` (blocks the calling thread) |
 | `getColorSync(pixels, width, height, quality?)`                | `number[]` (blocks the calling thread)   |
 
-`pixels` is a `Buffer` or `Uint8Array` of raw RGBA bytes — 4 bytes per pixel, row-major. `colorCount` defaults to 5; `quality` defaults to 1.
+`pixels` is a `Buffer` or `Uint8Array` of raw RGBA bytes - 4 bytes per pixel, row-major. `colorCount` defaults to 5; `quality` defaults to 1.
 
 ## Basic usage with Sharp
 

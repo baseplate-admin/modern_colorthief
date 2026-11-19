@@ -35,11 +35,11 @@ Every binding exposes the same two functions with the same parameter names and t
 - **`getPalette(image, colorCount?, quality?)`** → an array of `[R, G, B]` colors
 - **`getColor(image, quality?)`** → the single dominant `[R, G, B]` color
 
-Image decoding is handled by the host language (Pillow, Sharp, Canvas, AWT, `image_processing`, GD). The Rust core always receives raw RGBA bytes, so the algorithm — and its results — are identical no matter which language you call from.
+Image decoding is handled by the host language (Pillow, Sharp, Canvas, AWT, `image_processing`, GD). The Rust core always receives raw RGBA bytes, so the algorithm - and its results - are identical no matter which language you call from.
 
 ## Why Rust
 
-A median-cut quantizer sounds simple, but the hot loop is pure arithmetic over every pixel. In Rust, with rayon splitting the work across cores and release LTO inlining the inner loop, `modern_colorthief` is roughly **100× faster** than the original pure-Python `colorthief` and on par with or faster than the C++ `fast_colorthief` — see the [benchmarks](benchmarks/) for reproducible numbers.
+A median-cut quantizer sounds simple, but the hot loop is pure arithmetic over every pixel. In Rust, with rayon splitting the work across cores and release LTO inlining the inner loop, `modern_colorthief` is roughly **100× faster** than the original pure-Python `colorthief` and on par with or faster than the C++ `fast_colorthief` - see the [benchmarks](benchmarks/) for reproducible numbers.
 
 ## Try it
 
@@ -47,4 +47,4 @@ The WebAssembly binding runs entirely in the browser. Drop an image and get a pa
 
 [**Open the live demo →**](demo/)
 
-The demo loads the WASM bundle directly in your browser — no Node, no Python, no native binary required.
+The demo loads the WASM bundle directly in your browser - no Node, no Python, no native binary required.

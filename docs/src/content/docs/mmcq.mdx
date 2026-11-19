@@ -11,13 +11,13 @@ Median Cut Color Quantization (MMCQ) reduces the number of colors in an image wh
 
 The algorithm recursively divides the RGB color space into smaller "boxes" and selects a representative color from each box.
 
-1. **Collect pixels** — Gather all (or a sampled subset) of pixels from the image.
-2. **Initial box** — Place all pixels into a single 3D RGB box.
-3. **Find longest channel** — Identify the color channel (R, G, or B) with the largest range within the current box.
-4. **Sort** — Sort pixels along that channel.
-5. **Split** — Divide the box at the median point into two sub-boxes.
-6. **Recurse** — Repeat steps 3–5 until the desired number of color boxes is reached.
-7. **Compute averages** — Calculate the average color of each box to form the final palette.
+1. **Collect pixels** - Gather all (or a sampled subset) of pixels from the image.
+2. **Initial box** - Place all pixels into a single 3D RGB box.
+3. **Find longest channel** - Identify the color channel (R, G, or B) with the largest range within the current box.
+4. **Sort** - Sort pixels along that channel.
+5. **Split** - Divide the box at the median point into two sub-boxes.
+6. **Recurse** - Repeat steps 3–5 until the desired number of color boxes is reached.
+7. **Compute averages** - Calculate the average color of each box to form the final palette.
 
 ## Visual intuition
 
@@ -34,9 +34,9 @@ The `quality` parameter controls `n` by sampling every `quality`-th pixel, tradi
 
 ## Advantages
 
-- **Simple and efficient** — O(n log k), no iterative refinement.
-- **Visually good palettes** — Produces colors that well represent the image's dominant hues.
-- **Widely used** — Industry-standard algorithm for color quantization.
+- **Simple and efficient** - O(n log k), no iterative refinement.
+- **Visually good palettes** - Produces colors that well represent the image's dominant hues.
+- **Widely used** - Industry-standard algorithm for color quantization.
 
 ## Reference
 
@@ -44,5 +44,5 @@ The implementation follows [Dan S. Bloomberg, *Color quantization using modified
 
 <PdfEmbed
     src="pdfs/mediancut.pdf"
-    title="Color quantization using modified median cut — Dan S. Bloomberg (Leptonica)"
+    title="Color quantization using modified median cut - Dan S. Bloomberg (Leptonica)"
 />

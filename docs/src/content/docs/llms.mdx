@@ -1,0 +1,54 @@
+---
+title: 'LLMs & AI Assistants'
+description: 'Machine-readable API docs (llms.txt) for LLMs, AI coding assistants, and agent frameworks.'
+---
+
+Modern Colorthief publishes [`llms.txt`](https://llmstxt.org/) files so that LLMs and AI coding assistants can get accurate, up-to-date API reference without scraping the full docs site.
+
+## What is llms.txt?
+
+`llms.txt` is a plain-text file that summarizes a project's API for machine consumption. Each binding has its own file with the exact function signatures, parameter names, return types, and install commands.
+
+## Files
+
+| File | Contents |
+| ---- | -------- |
+| [`llms.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms.txt) | Index and common API across all bindings |
+| [`llms-full.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-full.txt) | Full API reference for every binding |
+| [`llms-python.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-python.txt) | Python API |
+| [`llms-nodejs.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-nodejs.txt) | Node.js API |
+| [`llms-wasm.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-wasm.txt) | WebAssembly API |
+| [`llms-java.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-java.txt) | JVM (Java/Kotlin) API |
+| [`llms-ruby.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-ruby.txt) | Ruby API |
+| [`llms-php.txt`](https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-php.txt) | PHP API |
+
+## How to use
+
+### In a system prompt
+
+```text
+You are helping a developer use the modern_colorthief library.
+Read the API reference here before answering:
+https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms.txt
+```
+
+### In Cursor / Windsurf rules
+
+Add to `.cursorrules` or `.windsurfrules`:
+
+```text
+For modern_colorthief API details, fetch:
+https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-python.txt
+```
+
+### In a RAG pipeline
+
+```python
+import requests
+resp = requests.get("https://raw.githubusercontent.com/baseplate-admin/modern_colorthief/main/docs/llms/llms-full.txt")
+docs_text = resp.text  # use as context
+```
+
+## Regeneration
+
+The `llms.txt` files are auto-regenerated whenever the public API changes. The source of truth is the Rust crate docs and the binding `Cargo.toml` / `package.json` manifests.

@@ -10,27 +10,74 @@ type WasmGlue = {
     width: number,
     height: number,
     colorCount?: number,
-    quality?: number
+    quality?: number,
   ) => Promise<Rgb[]>;
 };
 
-const WASM_MODULE = import.meta.env.BASE_URL + 'wasm/modern_colorthief_wasm.js';
+type WasmGpuGlue = {
+  default?: () => Promise<unknown>;
+  getPaletteGpu?: (
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    colorCount?: number,
+    quality?: number,
+  ) => Promise<Rgb[]>;
+  getPaletteFromPixels?: (
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    colorCount?: number,
+    quality?: number,
+  ) => Promise<Rgb[]>;
+};
 
-let glue: Promise<WasmGlue> | undefined;
+type Engine = 'wasm' | 'webgpu' | 'auto';
 
-function loadGlue(): Promise<WasmGlue> {
-  glue ??= import(/* @vite-ignore */ WASM_MODULE).then(async (mod: WasmGlue) => {
+const BASE = import.meta.env.BASE_URL;
+const WASM_MODULE = BASE + 'wasm/modern_colorthief_wasm.js';
+const WASM_GPU_MODULE = BASE + 'wasm-webgpu/modern_colorthief_wasm_webgpu.js';
+
+let cpuGlue: Promise<WasmGlue> | undefined;
+let gpuGlue: Promise<WasmGpuGlue> | undefined;
+let webgpuAvailable: boolean | undefined;
+
+function loadCpu(): Promise<WasmGlue> {
+  cpuGlue ??= import(/* @vite-ignore */ WASM_MODULE).then(async (mod: WasmGlue) => {
     await mod.default?.();
     return mod;
   });
-  return glue;
+  return cpuGlue;
+}
+
+function loadGpu(): Promise<WasmGpuGlue> {
+  gpuGlue ??= import(/* @vite-ignore */ WASM_GPU_MODULE).then(async (mod: WasmGpuGlue) => {
+    await mod.default?.();
+    return mod;
+  });
+  return gpuGlue;
+}
+
+async function detectWebGpu(): Promise<boolean> {
+  if (webgpuAvailable !== undefined) return webgpuAvailable;
+  if (typeof navigator === 'undefined' || !navigator.gpu) {
+    webgpuAvailable = false;
+    return false;
+  }
+  try {
+    const adapter = await navigator.gpu.requestAdapter();
+    webgpuAvailable = adapter !== null;
+  } catch {
+    webgpuAvailable = false;
+  }
+  return webgpuAvailable;
 }
 
 // Decoding happens here rather than in `getPalette()`: the WASM image decoder
 // polls `img.complete` on the main thread, which deadlocks because the image's
 // load event can never run while the poll loop holds the thread.
 async function decodeImage(
-  source: string | File
+  source: string | File,
 ): Promise<{ pixels: Uint8Array; width: number; height: number }> {
   let blob: Blob;
   if (typeof source === 'string') {
@@ -73,6 +120,8 @@ export default function PaletteDemo() {
     kind: 'idle',
     message: 'Loading WebAssembly…',
   });
+  const [engine, setEngine] = useState<Engine>('auto');
+  const [gpuSupported, setGpuSupported] = useState<boolean | undefined>(undefined);
   const [colors, setColors] = useState<Rgb[]>([]);
   const [copied, setCopied] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -81,42 +130,75 @@ export default function PaletteDemo() {
 
   useEffect(() => {
     let cancelled = false;
-    loadGlue().then(
-      () => {
-        if (!cancelled) {
-          setStatus({
-            kind: 'idle',
-            message: 'Ready — drop an image or paste a URL.',
-          });
-        }
-      },
-      (error: unknown) => {
-        if (!cancelled) {
-          setStatus({ kind: 'error', message: `Failed to load WASM: ${error}` });
-        }
+    (async () => {
+      const [cpu, gpu] = await Promise.allSettled([loadCpu(), detectWebGpu()]);
+      if (cancelled) return;
+      if (cpu.status === 'fulfilled') {
+        setStatus({ kind: 'idle', message: 'Ready - drop an image or paste a URL.' });
+      } else {
+        setStatus({ kind: 'error', message: `Failed to load WASM: ${cpu.reason}` });
       }
-    );
+      setGpuSupported(gpu.status === 'fulfilled' ? gpu.value : false);
+    })();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const extract = useCallback(async (image: string | File) => {
-    setStatus({ kind: 'busy', message: 'Extracting palette…' });
-    setColors([]);
-    try {
-      const { getPaletteFromPixels } = await loadGlue();
-      const { pixels, width, height } = await decodeImage(image);
-      const palette = await getPaletteFromPixels(pixels, width, height, 10, 10);
-      setColors(palette);
-      setStatus({
-        kind: 'idle',
-        message: `${palette.length} colors — click a swatch to copy its hex.`,
-      });
-    } catch (error) {
-      setStatus({ kind: 'error', message: `Failed: ${error}` });
-    }
-  }, []);
+  const effectiveEngine: Engine =
+    engine === 'webgpu' && gpuSupported === false ? 'wasm' : engine;
+
+  const extract = useCallback(
+    async (image: string | File) => {
+      setStatus({ kind: 'busy', message: 'Extracting palette…' });
+      setColors([]);
+      try {
+        const { pixels, width, height } = await decodeImage(image);
+        let palette: Rgb[];
+        let usedEngine: 'wasm' | 'webgpu';
+
+        if (effectiveEngine === 'webgpu') {
+          const glue = await loadGpu();
+          const fn = glue.getPaletteGpu ?? glue.getPaletteFromPixels;
+          if (!fn) throw new Error('WebGPU bundle does not expose getPaletteGpu');
+          palette = await fn.call(glue, pixels, width, height, 10, 10);
+          usedEngine = 'webgpu';
+        } else if (effectiveEngine === 'wasm') {
+          const glue = await loadCpu();
+          palette = await glue.getPaletteFromPixels(pixels, width, height, 10, 10);
+          usedEngine = 'wasm';
+        } else {
+          // auto: prefer WebGPU when available, fall back to WASM
+          if (gpuSupported) {
+            try {
+              const glue = await loadGpu();
+              const fn = glue.getPaletteGpu ?? glue.getPaletteFromPixels;
+              if (fn) {
+                palette = await fn.call(glue, pixels, width, height, 10, 10);
+                usedEngine = 'webgpu';
+              }
+            } catch {
+              // fall through to WASM
+            }
+          }
+          if (!palette) {
+            const glue = await loadCpu();
+            palette = await glue.getPaletteFromPixels(pixels, width, height, 10, 10);
+            usedEngine = 'wasm';
+          }
+        }
+
+        setColors(palette);
+        setStatus({
+          kind: 'idle',
+          message: `${palette.length} colors (${usedEngine}) - click a swatch to copy its hex.`,
+        });
+      } catch (error) {
+        setStatus({ kind: 'error', message: `Failed: ${error}` });
+      }
+    },
+    [effectiveEngine, gpuSupported],
+  );
 
   const copy = useCallback(async (index: number, hex: string) => {
     try {
@@ -127,6 +209,9 @@ export default function PaletteDemo() {
       setStatus({ kind: 'error', message: `Could not copy ${hex}` });
     }
   }, []);
+
+  const engineLabel =
+    effectiveEngine === 'webgpu' ? 'WebGPU (GPU)' : effectiveEngine === 'wasm' ? 'WASM (CPU)' : 'Auto';
 
   return (
     <div className={styles.root}>
@@ -184,6 +269,30 @@ export default function PaletteDemo() {
         />
         <button type="submit">Extract</button>
       </form>
+
+      <div className={styles.engine}>
+        <label>
+          Engine:{' '}
+          <select
+            value={engine}
+            onChange={(event) => setEngine(event.target.value as Engine)}
+            disabled={engine === 'webgpu' && gpuSupported === false}
+          >
+            <option value="auto">Auto (WebGPU first)</option>
+            <option value="webgpu" disabled={gpuSupported === false}>
+              WebGPU {gpuSupported === false ? '(unavailable)' : ''}
+            </option>
+            <option value="wasm">WASM (CPU)</option>
+          </select>
+        </label>
+        <span className={styles.engineNote} title={engineLabel}>
+          {gpuSupported === undefined
+            ? 'Checking WebGPU…'
+            : gpuSupported
+              ? 'WebGPU available'
+              : 'WebGPU unavailable - using WASM'}
+        </span>
+      </div>
 
       <p
         className={styles.status}

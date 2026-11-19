@@ -14,9 +14,9 @@ JVM bindings use JNI. Targets Java 26 and is Android-compatible. Java AWT handle
 - **`Colorthief.getColor(pixels, width, height, quality)`** → `byte[]` of 3 (R, G, B)
 - **`Colorthief.getPalette(pixels, width, height, colorCount, quality)`** → `byte[][]` of [R, G, B] rows
 
-`pixels` is a `byte[]` of raw RGBA bytes (4 bytes per pixel, row-major). Java bytes are signed, so values above 127 appear as negatives — mask with `& 0xFF` when reading.
+`pixels` is a `byte[]` of raw RGBA bytes (4 bytes per pixel, row-major). Java bytes are signed, so values above 127 appear as negatives - mask with `& 0xFF` when reading.
 
-## Raw RGBA pixels — Java
+## Raw RGBA pixels - Java
 
 ```java
 import io.baseplate_admin.modern_colorthief.Colorthief;
@@ -35,7 +35,7 @@ byte[][] palette = Colorthief.getPalette(pixels, 10, 10, 5, 1);
 System.out.printf("%d, %d, %d%n", color[0] & 0xFF, color[1] & 0xFF, color[2] & 0xFF);
 ```
 
-## Raw RGBA pixels — Kotlin
+## Raw RGBA pixels - Kotlin
 
 ```kotlin
 import io.baseplate_admin.modern_colorthief.Colorthief

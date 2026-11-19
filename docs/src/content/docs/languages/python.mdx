@@ -7,12 +7,12 @@ description: 'Use Modern Colorthief from Python: file paths, bytes, BytesIO, and
 Package: `modern_colorthief` · Install: `pip install modern_colorthief`
 :::
 
-Python is the reference binding. Pillow handles image decoding transparently at the Python layer — Rust always receives raw RGBA bytes.
+Python is the reference binding. Pillow handles image decoding transparently at the Python layer - Rust always receives raw RGBA bytes.
 
 ## Functions
 
-- **`get_color(image, quality=10)`** → `tuple[int, int, int]` — the dominant color
-- **`get_palette(image, color_count=10, quality=10)`** → `list[tuple[int, int, int]]` — the palette
+- **`get_color(image, quality=10)`** → `tuple[int, int, int]` - the dominant color
+- **`get_palette(image, color_count=10, quality=10)`** → `list[tuple[int, int, int]]` - the palette
 
 `image` accepts a file path (`str`), raw bytes (`bytes`), an `io.BytesIO`, or a `PIL.Image`.
 
