@@ -21,13 +21,13 @@
         "@napi-rs/cli": "^3.0.0"
     },
     "devDependencies": {
-        "@eslint/js": "^9.39.0",
+        "@eslint/js": "^10.0.0",
         "@types/node": "^26.0.0",
-        "eslint": "^9.39.0",
+        "eslint": "^10.0.0",
         "prettier": "^3.7.4",
         "rolldown-plugin-dts": "^0.30.0",
         "sharp": ">=0.33.0",
-        "typescript": "^6.0.3",
+        "typescript": "^7.0.0",
         "typescript-eslint": "^8.49.0",
         "vite": "^8.0.0",
         "vitest": "^5.0.0"
