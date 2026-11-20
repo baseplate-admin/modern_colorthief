@@ -43,7 +43,7 @@ jobs:
           java-version: '26'
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.9.1'
+          gradle-version: '9.9.2'
       - name: ktlint (JVM CPU)
         working-directory: crates/jvm-bindings/tests
         run: |
@@ -160,7 +160,7 @@ jobs:
         run: test -f crates/jvm-bindings/tests/native/${{ matrix.lib }}
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.9.1'
+          gradle-version: '9.9.2'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings/tests
         run: gradle wrapper
@@ -427,7 +427,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.9.1'
+          gradle-version: '9.9.2'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings-gpu/tests
         run: gradle wrapper
@@ -480,7 +480,7 @@ jobs:
         shell: bash
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.9.1'
+          gradle-version: '9.9.2'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings/tests
         run: gradle wrapper
@@ -524,7 +524,7 @@ jobs:
         shell: bash
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.9.1'
+          gradle-version: '9.9.2'
       - name: Generate Gradle wrapper
         working-directory: crates/jvm-bindings-gpu/tests
         run: gradle wrapper

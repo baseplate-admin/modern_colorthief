@@ -367,7 +367,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "4.0.9"
+          ruby-version: "4.0.10"
           bundler: latest
           bundler-cache: true
 
@@ -401,7 +401,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "4.0.9"
+          ruby-version: "4.0.10"
           bundler: latest
           bundler-cache: true
 
@@ -438,7 +438,7 @@ jobs:
       - name: Publish to RubyGems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "4.0.9"
+          ruby-version: "4.0.10"
           rubygems: latest
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
@@ -462,7 +462,7 @@ jobs:
       - name: Publish to RubyGems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "4.0.9"
+          ruby-version: "4.0.10"
           rubygems: latest
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
