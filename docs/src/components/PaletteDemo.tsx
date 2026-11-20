@@ -10,7 +10,7 @@ type WasmGlue = {
     width: number,
     height: number,
     colorCount?: number,
-    quality?: number,
+    quality?: number
   ) => Promise<Rgb[]>;
 };
 
@@ -21,14 +21,14 @@ type WasmGpuGlue = {
     width: number,
     height: number,
     colorCount?: number,
-    quality?: number,
+    quality?: number
   ) => Promise<Rgb[]>;
   getPaletteFromPixels?: (
     pixels: Uint8Array,
     width: number,
     height: number,
     colorCount?: number,
-    quality?: number,
+    quality?: number
   ) => Promise<Rgb[]>;
 };
 
@@ -77,7 +77,7 @@ async function detectWebGpu(): Promise<boolean> {
 // polls `img.complete` on the main thread, which deadlocks because the image's
 // load event can never run while the poll loop holds the thread.
 async function decodeImage(
-  source: string | File,
+  source: string | File
 ): Promise<{ pixels: Uint8Array; width: number; height: number }> {
   let blob: Blob;
   if (typeof source === 'string') {
@@ -145,8 +145,7 @@ export default function PaletteDemo() {
     };
   }, []);
 
-  const effectiveEngine: Engine =
-    engine === 'webgpu' && gpuSupported === false ? 'wasm' : engine;
+  const effectiveEngine: Engine = engine === 'webgpu' && gpuSupported === false ? 'wasm' : engine;
 
   const extract = useCallback(
     async (image: string | File) => {
@@ -197,7 +196,7 @@ export default function PaletteDemo() {
         setStatus({ kind: 'error', message: `Failed: ${error}` });
       }
     },
-    [effectiveEngine, gpuSupported],
+    [effectiveEngine, gpuSupported]
   );
 
   const copy = useCallback(async (index: number, hex: string) => {
@@ -211,7 +210,11 @@ export default function PaletteDemo() {
   }, []);
 
   const engineLabel =
-    effectiveEngine === 'webgpu' ? 'WebGPU (GPU)' : effectiveEngine === 'wasm' ? 'WASM (CPU)' : 'Auto';
+    effectiveEngine === 'webgpu'
+      ? 'WebGPU (GPU)'
+      : effectiveEngine === 'wasm'
+        ? 'WASM (CPU)'
+        : 'Auto';
 
   return (
     <div className={styles.root}>
