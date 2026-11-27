@@ -153,8 +153,8 @@ export default function PaletteDemo() {
       setColors([]);
       try {
         const { pixels, width, height } = await decodeImage(image);
-        let palette: Rgb[];
-        let usedEngine: 'wasm' | 'webgpu';
+        let palette: Rgb[] = [];
+        let usedEngine: 'wasm' | 'webgpu' = 'wasm';
 
         if (effectiveEngine === 'webgpu') {
           const glue = await loadGpu();
@@ -180,7 +180,7 @@ export default function PaletteDemo() {
               // fall through to WASM
             }
           }
-          if (!palette) {
+          if (palette.length === 0) {
             const glue = await loadCpu();
             palette = await glue.getPaletteFromPixels(pixels, width, height, 10, 10);
             usedEngine = 'wasm';

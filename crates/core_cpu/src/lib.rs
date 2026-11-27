@@ -1,4 +1,4 @@
-#![cfg_attr(coverage, feature(coverage_attributes))]
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 use modern_colorthief_core::{ColorthiefError, PaletteExtractor, Rgb, validate_buffer};
 use rayon::prelude::*;
@@ -6,7 +6,7 @@ use rayon::prelude::*;
 /// Excludes defensive/unreachable code from coverage.
 macro_rules! cov_off {
     ($item:item) => {
-        #[cfg_attr(coverage, coverage(off))]
+        #[cfg_attr(coverage_nightly, coverage(off))]
         $item
     };
 }
@@ -160,27 +160,27 @@ fn dedup(colors: Vec<Rgb>) -> Vec<Rgb> {
     })
 }
 
-/// Extract a deduplicated color palette from raw RGBA pixel data.
-///
-/// Expects a flat RGBA buffer (4 bytes per pixel, at least `width * height * 4`).
 cov_off! {
-pub fn extract_palette_from_buffer(
-    buffer: &[u8],
-    width: u32,
-    height: u32,
-    color_count: u8,
-    quality: u8,
-) -> Result<Vec<Rgb>, ColorthiefError> {
-    validate_buffer(buffer, width, height)?;
+    /// Extract a deduplicated color palette from raw RGBA pixel data.
+    ///
+    /// Expects a flat RGBA buffer (4 bytes per pixel, at least `width * height * 4`).
+    pub fn extract_palette_from_buffer(
+        buffer: &[u8],
+        width: u32,
+        height: u32,
+        color_count: u8,
+        quality: u8,
+    ) -> Result<Vec<Rgb>, ColorthiefError> {
+        validate_buffer(buffer, width, height)?;
 
-    let pixels = sample_pixels(buffer, quality);
-    let mut buckets = vec![Bucket { pixels }];
-    median_cut(&mut buckets, color_count as usize);
+        let pixels = sample_pixels(buffer, quality);
+        let mut buckets = vec![Bucket { pixels }];
+        median_cut(&mut buckets, color_count as usize);
 
-    let colors: Vec<Rgb> = buckets.iter().map(|b| b.avg().into()).collect();
+        let colors: Vec<Rgb> = buckets.iter().map(|b| b.avg().into()).collect();
 
-    Ok(dedup(colors))
-}
+        Ok(dedup(colors))
+    }
 }
 
 /// Extract the dominant color from raw RGBA pixel data.
@@ -191,7 +191,10 @@ pub fn extract_color_from_buffer(
     quality: u8,
 ) -> Result<Rgb, ColorthiefError> {
     let palette = extract_palette_from_buffer(buffer, width, height, 5, quality)?;
-    Ok(palette.into_iter().next().expect("palette is non-empty after validate_buffer"))
+    Ok(palette
+        .into_iter()
+        .next()
+        .expect("palette is non-empty after validate_buffer"))
 }
 
 /// CPU backend that implements the shared PaletteExtractor trait.

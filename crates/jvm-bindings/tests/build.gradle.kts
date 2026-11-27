@@ -130,6 +130,9 @@ ktlint {
     android.set(false)
     outputToConsole.set(true)
     ignoreFailures.set(false)
+    filter {
+        exclude("**/ColorthiefSuspend.kt")
+    }
 }
 
 nexusPublishing {

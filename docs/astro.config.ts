@@ -46,7 +46,7 @@ export default defineConfig({
             ],
             favicon: '/favicon.svg',
             editLink: {
-                base: 'https://github.com/baseplate-admin/modern_colorthief',
+                baseUrl: 'https://github.com/baseplate-admin/modern_colorthief',
                 label: 'Edit this page',
             },
             sidebar: [

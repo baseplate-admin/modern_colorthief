@@ -106,24 +106,78 @@ if ! dyld "$MOLTENVK/libMoltenVK.dylib" >/dev/null 2>&1; then
   fi
 fi
 
-# --- Verify Vulkan ICDs are discoverable ---
-# The Vulkan loader discovers ICDs from VK_ICD_FILENAMES or standard locations.
-# Show what ICDs are available for debugging.
+# --- Locate and export Vulkan ICD manifests ---
+# The Vulkan loader discovers ICDs from VK_ICD_FILENAMES/VK_DRIVER_FILES or
+# standard locations. Without a discoverable ICD, instance creation fails with
+# "Found no drivers!" even when libMoltenVK.dylib is present.
 echo "Vulkan ICD search paths:"
+ICD_CANDIDATES=()
 for icd_dir in \
-  "${VULKAN_SDK:-}/etc/vulkan/icd.d" \
   "${VULKAN_SDK:-}/share/vulkan/icd.d" \
+  "${VULKAN_SDK:-}/etc/vulkan/icd.d" \
+  "${VULKAN_SDK:-}/macOS/share/vulkan/icd.d" \
+  "${VULKAN_SDK:-}/macOS/etc/vulkan/icd.d" \
   "/etc/vulkan/icd.d" \
   "/usr/share/vulkan/icd.d" \
+  "/usr/local/share/vulkan/icd.d" \
+  "/opt/homebrew/share/vulkan/icd.d" \
   "$HOME/lavapipe/share/vulkan/icd.d" \
   "$HOME/swiftshader"; do
   if [ -d "$icd_dir" ]; then
     echo "  $icd_dir:"
-    ls "$icd_dir"/*.json 2>/dev/null | while read -r f; do
+    while IFS= read -r -d '' f; do
       echo "    - $f"
-    done
+      ICD_CANDIDATES+=("$f")
+    done < <(find "$icd_dir" -maxdepth 1 -name '*.json' -print0 2>/dev/null || true)
   fi
 done
+
+# Prefer MoltenVK ICDs when available.
+SELECTED_ICDS=()
+for icd in "${ICD_CANDIDATES[@]+"${ICD_CANDIDATES[@]}"}"; do
+  if grep -qi "MoltenVK" "$icd" 2>/dev/null; then
+    SELECTED_ICDS+=("$icd")
+  fi
+done
+# Fall back to any discovered ICD (SwiftShader/lavapipe/software).
+if [ ${#SELECTED_ICDS[@]} -eq 0 ] && [ ${#ICD_CANDIDATES[@]} -gt 0 ]; then
+  SELECTED_ICDS=("${ICD_CANDIDATES[@]}")
+fi
+
+# If no ICD manifest is present, generate one for the discovered libMoltenVK.
+if [ ${#SELECTED_ICDS[@]} -eq 0 ] && [ -n "$MOLTENVK" ]; then
+  MOLTENVK_DYLIB="$MOLTENVK/libMoltenVK.dylib"
+  if [ -f "$MOLTENVK_DYLIB" ]; then
+    ICD_DIR="${RUNNER_TEMP:-$HOME}/vulkan-icd"
+    mkdir -p "$ICD_DIR"
+    ICD_JSON="$ICD_DIR/MoltenVK_icd.json"
+    cat > "$ICD_JSON" <<JSON
+{
+  "file": "$MOLTENVK_DYLIB",
+  "ICD": {
+    "api_version": "1.2.0",
+    "library_path": "$MOLTENVK_DYLIB"
+  },
+  "is_portability_driver": true
+}
+JSON
+    echo "Generated MoltenVK ICD manifest: $ICD_JSON"
+    SELECTED_ICDS+=("$ICD_JSON")
+  fi
+fi
+
+if [ ${#SELECTED_ICDS[@]} -gt 0 ]; then
+  VK_ICD_FILES_JOINED="$(IFS=:; echo "${SELECTED_ICDS[*]}")"
+  export VK_ICD_FILENAMES="$VK_ICD_FILES_JOINED"
+  export VK_DRIVER_FILES="$VK_ICD_FILES_JOINED"
+  echo "Exported VK_ICD_FILENAMES=$VK_ICD_FILENAMES"
+  if [ -n "${GITHUB_ENV:-}" ]; then
+    echo "VK_ICD_FILENAMES=$VK_ICD_FILES_JOINED" >> "$GITHUB_ENV"
+    echo "VK_DRIVER_FILES=$VK_ICD_FILES_JOINED" >> "$GITHUB_ENV"
+  fi
+else
+  echo "::warning::No Vulkan ICD manifests found; GPU tests may fail with 'Found no drivers!'"
+fi
 
 # --- Optional: run vulkaninfo if available ---
 vulkaninfo_cmd=""

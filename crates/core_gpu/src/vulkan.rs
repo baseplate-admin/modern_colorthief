@@ -439,7 +439,11 @@ fn create_buffer_with_memory(
         // fall back to any HV|HC.
         for (i, mt) in mem_props.memory_types.iter().enumerate() {
             if ((reqs.memory_type_bits >> i as u32) & 1 == 1)
-                && mt.property_flags.contains(vk::MemoryPropertyFlags::DEVICE_LOCAL | vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT)
+                && mt.property_flags.contains(
+                    vk::MemoryPropertyFlags::DEVICE_LOCAL
+                        | vk::MemoryPropertyFlags::HOST_VISIBLE
+                        | vk::MemoryPropertyFlags::HOST_COHERENT,
+                )
             {
                 memory_type_index = Some(i as u32);
                 break;
@@ -448,7 +452,10 @@ fn create_buffer_with_memory(
         if memory_type_index.is_none() {
             for (i, mt) in mem_props.memory_types.iter().enumerate() {
                 if ((reqs.memory_type_bits >> i as u32) & 1 == 1)
-                    && mt.property_flags.contains(vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT)
+                    && mt.property_flags.contains(
+                        vk::MemoryPropertyFlags::HOST_VISIBLE
+                            | vk::MemoryPropertyFlags::HOST_COHERENT,
+                    )
                 {
                     memory_type_index = Some(i as u32);
                     break;
@@ -459,8 +466,12 @@ fn create_buffer_with_memory(
         // Pure DEVICE_LOCAL (no HOST_VISIBLE) — reliable for shader I/O.
         for (i, mt) in mem_props.memory_types.iter().enumerate() {
             if ((reqs.memory_type_bits >> i as u32) & 1 == 1)
-                && mt.property_flags.contains(vk::MemoryPropertyFlags::DEVICE_LOCAL)
-                && !mt.property_flags.contains(vk::MemoryPropertyFlags::HOST_VISIBLE)
+                && mt
+                    .property_flags
+                    .contains(vk::MemoryPropertyFlags::DEVICE_LOCAL)
+                && !mt
+                    .property_flags
+                    .contains(vk::MemoryPropertyFlags::HOST_VISIBLE)
             {
                 memory_type_index = Some(i as u32);
                 break;
@@ -470,7 +481,9 @@ fn create_buffer_with_memory(
         if memory_type_index.is_none() {
             for (i, mt) in mem_props.memory_types.iter().enumerate() {
                 if ((reqs.memory_type_bits >> i as u32) & 1 == 1)
-                    && mt.property_flags.contains(vk::MemoryPropertyFlags::DEVICE_LOCAL)
+                    && mt
+                        .property_flags
+                        .contains(vk::MemoryPropertyFlags::DEVICE_LOCAL)
                 {
                     memory_type_index = Some(i as u32);
                     break;
@@ -480,7 +493,10 @@ fn create_buffer_with_memory(
         if memory_type_index.is_none() {
             for (i, mt) in mem_props.memory_types.iter().enumerate() {
                 if ((reqs.memory_type_bits >> i as u32) & 1 == 1)
-                    && mt.property_flags.contains(vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT)
+                    && mt.property_flags.contains(
+                        vk::MemoryPropertyFlags::HOST_VISIBLE
+                            | vk::MemoryPropertyFlags::HOST_COHERENT,
+                    )
                 {
                     memory_type_index = Some(i as u32);
                     break;
@@ -520,8 +536,25 @@ fn dispatch_chunk_means(
 ) -> Result<Vec<(u8, u8, u8)>, modern_colorthief_core::ColorthiefError> {
     let (entry, instance) = VulkanBackend::new().create_instance_pair()?;
 
-    let physical_devices = unsafe { instance.enumerate_physical_devices() }
-        .map_err(|e| backend_err(e.to_string()))?;
+    let result = dispatch_chunk_means_inner(&instance, buffer, width, height, color_count, quality);
+
+    unsafe {
+        instance.destroy_instance(None);
+    }
+    drop(entry);
+    result
+}
+
+fn dispatch_chunk_means_inner(
+    instance: &ash::Instance,
+    buffer: &[u8],
+    width: u32,
+    height: u32,
+    color_count: u8,
+    quality: u8,
+) -> Result<Vec<(u8, u8, u8)>, modern_colorthief_core::ColorthiefError> {
+    let physical_devices =
+        unsafe { instance.enumerate_physical_devices() }.map_err(|e| backend_err(e.to_string()))?;
 
     // Prefer a DISCRETE_GPU (e.g. RTX 5090); fall back to the first
     // compute-capable device (e.g. AMD iGPU).
@@ -529,7 +562,7 @@ fn dispatch_chunk_means(
     let mut fallback: Option<(vk::PhysicalDevice, u32)> = None;
     for pd in &physical_devices {
         let props = unsafe { instance.get_physical_device_properties(*pd) };
-        if let Some(family) = pick_queue_family(&instance, *pd) {
+        if let Some(family) = pick_queue_family(instance, *pd) {
             if props.device_type == vk::PhysicalDeviceType::DISCRETE_GPU {
                 chosen = Some((*pd, family));
                 break;
@@ -541,7 +574,11 @@ fn dispatch_chunk_means(
     }
     let (physical_device, family_index) = match chosen.or(fallback) {
         Some(c) => c,
-        None => return Err(backend_err("No Vulkan GPU with compute support found".to_string())),
+        None => {
+            return Err(backend_err(
+                "No Vulkan GPU with compute support found".to_string(),
+            ));
+        }
     };
 
     // Warn if the only available device is CPU-type (matches previous behavior).
@@ -552,406 +589,511 @@ fn dispatch_chunk_means(
         );
     }
 
-    let device = create_logical_device(&instance, physical_device, family_index)?;
+    let device = create_logical_device(instance, physical_device, family_index)?;
     let queue = unsafe { device.get_device_queue(family_index, 0) };
 
-    // --- Shader module + pipeline layout (with descriptor set) + pipeline ---
-    let spirv = shader_spirv()?;
-    let shader_info = vk::ShaderModuleCreateInfo {
-        code_size: spirv.len() * 4,
-        p_code: spirv.as_ptr(),
-        ..Default::default()
-    };
-    let shader_module = unsafe { device.create_shader_module(&shader_info, None) }
-        .map_err(|e| backend_err(e.to_string()))?;
+    // Vulkan handles are Copy; track everything for unconditional cleanup.
+    let mut shader_module = vk::ShaderModule::null();
+    let mut set_layout = vk::DescriptorSetLayout::null();
+    let mut pipeline_layout = vk::PipelineLayout::null();
+    let mut pipeline = vk::Pipeline::null();
+    let mut pixel_buffer = vk::Buffer::null();
+    let mut pixel_memory = vk::DeviceMemory::null();
+    let mut uniform_buffer = vk::Buffer::null();
+    let mut uniform_memory = vk::DeviceMemory::null();
+    let mut chunk_buffer = vk::Buffer::null();
+    let mut chunk_memory = vk::DeviceMemory::null();
+    let mut staging_buffer = vk::Buffer::null();
+    let mut staging_memory = vk::DeviceMemory::null();
+    let mut descriptor_pool = vk::DescriptorPool::null();
+    let mut command_pool = vk::CommandPool::null();
+    let mut fence = vk::Fence::null();
+    let mut pixel_src_buffer = vk::Buffer::null();
+    let mut pixel_src_memory = vk::DeviceMemory::null();
 
-    // Descriptor set layout matching the WGSL bindings:
-    //   0: storage buffer (read)       — pixels
-    //   1: uniform buffer              — params
-    //   2: storage buffer (read_write) — chunk_colors
-    let binding_layouts = [
-        vk::DescriptorSetLayoutBinding {
-            binding: 0,
-            descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
-            descriptor_count: 1,
-            stage_flags: vk::ShaderStageFlags::COMPUTE,
+    let result = (|| -> Result<Vec<(u8, u8, u8)>, modern_colorthief_core::ColorthiefError> {
+        // --- Shader module + pipeline layout (with descriptor set) + pipeline ---
+        let spirv = shader_spirv()?;
+        let shader_info = vk::ShaderModuleCreateInfo {
+            code_size: spirv.len() * 4,
+            p_code: spirv.as_ptr(),
             ..Default::default()
-        },
-        vk::DescriptorSetLayoutBinding {
-            binding: 1,
-            descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
-            descriptor_count: 1,
-            stage_flags: vk::ShaderStageFlags::COMPUTE,
+        };
+        shader_module = unsafe { device.create_shader_module(&shader_info, None) }
+            .map_err(|e| backend_err(e.to_string()))?;
+
+        // Descriptor set layout matching the WGSL bindings:
+        //   0: storage buffer (read)       — pixels
+        //   1: uniform buffer              — params
+        //   2: storage buffer (read_write) — chunk_colors
+        let binding_layouts = [
+            vk::DescriptorSetLayoutBinding {
+                binding: 0,
+                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
+                descriptor_count: 1,
+                stage_flags: vk::ShaderStageFlags::COMPUTE,
+                ..Default::default()
+            },
+            vk::DescriptorSetLayoutBinding {
+                binding: 1,
+                descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
+                descriptor_count: 1,
+                stage_flags: vk::ShaderStageFlags::COMPUTE,
+                ..Default::default()
+            },
+            vk::DescriptorSetLayoutBinding {
+                binding: 2,
+                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
+                descriptor_count: 1,
+                stage_flags: vk::ShaderStageFlags::COMPUTE,
+                ..Default::default()
+            },
+        ];
+        let set_layout_info = vk::DescriptorSetLayoutCreateInfo {
+            binding_count: binding_layouts.len() as u32,
+            p_bindings: binding_layouts.as_ptr(),
             ..Default::default()
-        },
-        vk::DescriptorSetLayoutBinding {
-            binding: 2,
-            descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
-            descriptor_count: 1,
-            stage_flags: vk::ShaderStageFlags::COMPUTE,
+        };
+        set_layout = unsafe { device.create_descriptor_set_layout(&set_layout_info, None) }
+            .map_err(|e| backend_err(e.to_string()))?;
+
+        let pipeline_layout_info = vk::PipelineLayoutCreateInfo {
+            set_layout_count: 1,
+            p_set_layouts: &set_layout,
             ..Default::default()
-        },
-    ];
-    let set_layout_info = vk::DescriptorSetLayoutCreateInfo {
-        binding_count: binding_layouts.len() as u32,
-        p_bindings: binding_layouts.as_ptr(),
-        ..Default::default()
-    };
-    let set_layout = unsafe { device.create_descriptor_set_layout(&set_layout_info, None) }
-        .map_err(|e| backend_err(e.to_string()))?;
+        };
+        pipeline_layout = unsafe { device.create_pipeline_layout(&pipeline_layout_info, None) }
+            .map_err(|e| backend_err(e.to_string()))?;
 
-    let pipeline_layout_info = vk::PipelineLayoutCreateInfo {
-        set_layout_count: 1,
-        p_set_layouts: &set_layout,
-        ..Default::default()
-    };
-    let pipeline_layout = unsafe { device.create_pipeline_layout(&pipeline_layout_info, None) }
-        .map_err(|e| backend_err(e.to_string()))?;
-
-    let stage_info = vk::PipelineShaderStageCreateInfo {
-        stage: vk::ShaderStageFlags::COMPUTE,
-        module: shader_module,
-        p_name: c"main".as_ptr() as *const _,
-        ..Default::default()
-    };
-    let compute_info = vk::ComputePipelineCreateInfo {
-        stage: stage_info,
-        layout: pipeline_layout,
-        ..Default::default()
-    };
-    let pipelines = unsafe {
-        device.create_compute_pipelines(vk::PipelineCache::default(), &[compute_info], None)
-    }
-    .map_err(|(_pipelines, err)| backend_err(format!("Compute pipeline creation failed: {err:?}")))?;
-    let pipeline = match pipelines.into_iter().next() {
-        Some(p) => p,
-        None => return Err(backend_err("Compute pipeline creation returned no pipeline".to_string())),
-    };
-
-    // --- Buffers ---
-    let total_pixels = (buffer.len() / 4) as u32;
-    let num_chunks = ((total_pixels as f64).sqrt().ceil() as u32).max(1) * 4;
-    // Mirrors core_webgpu/src/helper.ts: Math.ceil(Math.sqrt(totalPixels)) * 4
-
-    // Convert RGBA u8 to vec4<f32> in [0,1] for the shader.
-    let float_pixels: Vec<f32> = buffer
-        .chunks_exact(4)
-        .flat_map(|px| [px[0], px[1], px[2], px[3]].map(|v| v as f32 / 255.0))
-        .collect();
-
-    let params: [u32; 6] = [
-        width,
-        height,
-        color_count as u32,
-        quality.max(1) as u32,
-        total_pixels,
-        num_chunks,
-    ];
-
-    let pixel_size = (float_pixels.len() * 4).max(1) as u64;
-    // In a Vulkan storage buffer, vec3<f32> has a stride of 16 bytes
-    // (4 × 4-byte slots, one padding slot), not 12.
-    let chunk_size = ((num_chunks as usize) * 16).max(1) as u64;
-    let params_size = (params.len() * 4) as u64;
-
-    // Pixel buffer: device-local + vkCmdUpdateBuffer (STORAGE_BUFFER-only
-    // upload path, verified working on the RTX 5090).
-    let (pixel_buffer, _pixel_memory) = create_buffer_with_memory(
-        &instance,
-        physical_device,
-        &device,
-        pixel_size,
-        vk::BufferUsageFlags::STORAGE_BUFFER,
-    )?;
-    // Uniform buffer: host-visible so the params are uploaded via
-    // map/write/unmap. vkCmdUpdateBuffer into host-visible memory left the
-    // buffer stale from the GPU's perspective (verified: CPU readback correct,
-    // shader echo all zeros), while map-based writes are GPU-visible.
-    // (create_buffer_with_memory picks a HOST_VISIBLE type for any usage that
-    // is not TRANSFER_DST; UNIFORM_BUFFER is host-visible by that rule.)
-    let (uniform_buffer, uniform_memory) = create_buffer_with_memory(
-        &instance,
-        physical_device,
-        &device,
-        params_size,
-        vk::BufferUsageFlags::UNIFORM_BUFFER,
-    )?;
-    let (chunk_buffer, _chunk_memory) = create_buffer_with_memory(
-        &instance,
-        physical_device,
-        &device,
-        chunk_size,
-        vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::TRANSFER_SRC,
-    )?;
-    let (_staging_buffer, staging_memory) = create_buffer_with_memory(
-        &instance,
-        physical_device,
-        &device,
-        chunk_size,
-        vk::BufferUsageFlags::TRANSFER_SRC | vk::BufferUsageFlags::TRANSFER_DST,
-    )?;
-
-    // --- Descriptor set ---
-    let pool_sizes = [
-        vk::DescriptorPoolSize {
-            ty: vk::DescriptorType::STORAGE_BUFFER,
-            descriptor_count: 2,
-        },
-        vk::DescriptorPoolSize {
-            ty: vk::DescriptorType::UNIFORM_BUFFER,
-            descriptor_count: 1,
-        },
-    ];
-    let pool_info = vk::DescriptorPoolCreateInfo {
-        max_sets: 1,
-        pool_size_count: pool_sizes.len() as u32,
-        p_pool_sizes: pool_sizes.as_ptr(),
-        ..Default::default()
-    };
-    let descriptor_pool = unsafe { device.create_descriptor_pool(&pool_info, None) }
-        .map_err(|e| backend_err(e.to_string()))?;
-
-    let alloc_sets_info = vk::DescriptorSetAllocateInfo {
-        descriptor_pool,
-        descriptor_set_count: 1,
-        p_set_layouts: &set_layout,
-        ..Default::default()
-    };
-    let descriptor_sets = unsafe { device.allocate_descriptor_sets(&alloc_sets_info) }
-        .map_err(|e| backend_err(e.to_string()))?;
-    let descriptor_set = match descriptor_sets.into_iter().next() {
-        Some(s) => s,
-        None => return Err(backend_err("Descriptor set allocation returned no sets".to_string())),
-    };
-
-    let buffer_infos = [
-        vk::DescriptorBufferInfo {
-            buffer: pixel_buffer,
-            offset: 0,
-            range: vk::WHOLE_SIZE,
-        },
-        vk::DescriptorBufferInfo {
-            buffer: uniform_buffer,
-            offset: 0,
-            range: vk::WHOLE_SIZE,
-        },
-        vk::DescriptorBufferInfo {
-            buffer: chunk_buffer,
-            offset: 0,
-            range: vk::WHOLE_SIZE,
-        },
-    ];
-    let write_descs = [
-        vk::WriteDescriptorSet {
-            dst_set: descriptor_set,
-            dst_binding: 0,
-            descriptor_count: 1,
-            descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
-            p_buffer_info: &buffer_infos[0],
+        let stage_info = vk::PipelineShaderStageCreateInfo {
+            stage: vk::ShaderStageFlags::COMPUTE,
+            module: shader_module,
+            p_name: c"main".as_ptr() as *const _,
             ..Default::default()
-        },
-        vk::WriteDescriptorSet {
-            dst_set: descriptor_set,
-            dst_binding: 1,
-            descriptor_count: 1,
-            descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
-            p_buffer_info: &buffer_infos[1],
+        };
+        let compute_info = vk::ComputePipelineCreateInfo {
+            stage: stage_info,
+            layout: pipeline_layout,
             ..Default::default()
-        },
-        vk::WriteDescriptorSet {
-            dst_set: descriptor_set,
-            dst_binding: 2,
-            descriptor_count: 1,
-            descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
-            p_buffer_info: &buffer_infos[2],
+        };
+        let pipelines = unsafe {
+            device.create_compute_pipelines(vk::PipelineCache::default(), &[compute_info], None)
+        }
+        .map_err(|(_pipelines, err)| {
+            backend_err(format!("Compute pipeline creation failed: {err:?}"))
+        })?;
+        pipeline = match pipelines.into_iter().next() {
+            Some(p) => p,
+            None => {
+                return Err(backend_err(
+                    "Compute pipeline creation returned no pipeline".to_string(),
+                ));
+            }
+        };
+
+        // --- Buffers ---
+        let total_pixels = (buffer.len() / 4) as u32;
+        let num_chunks = ((total_pixels as f64).sqrt().ceil() as u32).max(1) * 4;
+        // Mirrors core_webgpu/src/helper.ts: Math.ceil(Math.sqrt(totalPixels)) * 4
+
+        // Convert RGBA u8 to vec4<f32> in [0,1] for the shader.
+        #[allow(clippy::chunks_exact_to_as_chunks)] // `array_chunks` is not yet stable
+        let float_pixels: Vec<f32> = buffer
+            .chunks_exact(4)
+            .flat_map(|px| [px[0], px[1], px[2], px[3]].map(|v| v as f32 / 255.0))
+            .collect();
+
+        let params: [u32; 6] = [
+            width,
+            height,
+            color_count as u32,
+            quality.max(1) as u32,
+            total_pixels,
+            num_chunks,
+        ];
+
+        let pixel_size = (float_pixels.len() * 4).max(1) as u64;
+        // In a Vulkan storage buffer, vec3<f32> has a stride of 16 bytes
+        // (4 × 4-byte slots, one padding slot), not 12.
+        let chunk_size = ((num_chunks as usize) * 16).max(1) as u64;
+        let params_size = (params.len() * 4) as u64;
+
+        // Pixel buffer: device-local + vkCmdUpdateBuffer (STORAGE_BUFFER-only
+        // upload path, verified working on the RTX 5090).
+        let (pb, pm) = create_buffer_with_memory(
+            instance,
+            physical_device,
+            &device,
+            pixel_size,
+            vk::BufferUsageFlags::STORAGE_BUFFER,
+        )?;
+        pixel_buffer = pb;
+        pixel_memory = pm;
+        // Uniform buffer: host-visible so the params are uploaded via
+        // map/write/unmap. vkCmdUpdateBuffer into host-visible memory left the
+        // buffer stale from the GPU's perspective (verified: CPU readback correct,
+        // shader echo all zeros), while map-based writes are GPU-visible.
+        // (create_buffer_with_memory picks a HOST_VISIBLE type for any usage that
+        // is not TRANSFER_DST; UNIFORM_BUFFER is host-visible by that rule.)
+        let (ub, um) = create_buffer_with_memory(
+            instance,
+            physical_device,
+            &device,
+            params_size,
+            vk::BufferUsageFlags::UNIFORM_BUFFER,
+        )?;
+        uniform_buffer = ub;
+        uniform_memory = um;
+        let (cb, cm) = create_buffer_with_memory(
+            instance,
+            physical_device,
+            &device,
+            chunk_size,
+            vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::TRANSFER_SRC,
+        )?;
+        chunk_buffer = cb;
+        chunk_memory = cm;
+        let (sb, sm) = create_buffer_with_memory(
+            instance,
+            physical_device,
+            &device,
+            chunk_size,
+            vk::BufferUsageFlags::TRANSFER_SRC | vk::BufferUsageFlags::TRANSFER_DST,
+        )?;
+        staging_buffer = sb;
+        staging_memory = sm;
+
+        // --- Descriptor set ---
+        let pool_sizes = [
+            vk::DescriptorPoolSize {
+                ty: vk::DescriptorType::STORAGE_BUFFER,
+                descriptor_count: 2,
+            },
+            vk::DescriptorPoolSize {
+                ty: vk::DescriptorType::UNIFORM_BUFFER,
+                descriptor_count: 1,
+            },
+        ];
+        let pool_info = vk::DescriptorPoolCreateInfo {
+            max_sets: 1,
+            pool_size_count: pool_sizes.len() as u32,
+            p_pool_sizes: pool_sizes.as_ptr(),
             ..Default::default()
-        },
-    ];
-    unsafe { device.update_descriptor_sets(&write_descs, &[]) };
+        };
+        descriptor_pool = unsafe { device.create_descriptor_pool(&pool_info, None) }
+            .map_err(|e| backend_err(e.to_string()))?;
 
-    // --- Command pool + fence ---
-    let cmd_pool_info = vk::CommandPoolCreateInfo {
-        flags: vk::CommandPoolCreateFlags::RESET_COMMAND_BUFFER,
-        queue_family_index: family_index,
-        ..Default::default()
-    };
-    let command_pool = unsafe { device.create_command_pool(&cmd_pool_info, None) }
-        .map_err(|e| backend_err(e.to_string()))?;
+        let alloc_sets_info = vk::DescriptorSetAllocateInfo {
+            descriptor_pool,
+            descriptor_set_count: 1,
+            p_set_layouts: &set_layout,
+            ..Default::default()
+        };
+        let descriptor_sets = unsafe { device.allocate_descriptor_sets(&alloc_sets_info) }
+            .map_err(|e| backend_err(e.to_string()))?;
+        let descriptor_set = match descriptor_sets.into_iter().next() {
+            Some(s) => s,
+            None => {
+                return Err(backend_err(
+                    "Descriptor set allocation returned no sets".to_string(),
+                ));
+            }
+        };
 
-    // Fence is passed to `queue_submit` for GPU-side completion tracking.
-    // We synchronise on the CPU side with `device_wait_idle()` (which blocks
-    // until all previously submitted commands finish) rather than
-    // `wait_for_fences`, which has been observed to time out on this
-    // platform even for a fence that should have been signalled.
-    let fence_info = vk::FenceCreateInfo {
-        flags: vk::FenceCreateFlags::empty(),
-        ..Default::default()
-    };
-    let fence = unsafe { device.create_fence(&fence_info, None) }
-        .map_err(|e| backend_err(e.to_string()))?;
+        let buffer_infos = [
+            vk::DescriptorBufferInfo {
+                buffer: pixel_buffer,
+                offset: 0,
+                range: vk::WHOLE_SIZE,
+            },
+            vk::DescriptorBufferInfo {
+                buffer: uniform_buffer,
+                offset: 0,
+                range: vk::WHOLE_SIZE,
+            },
+            vk::DescriptorBufferInfo {
+                buffer: chunk_buffer,
+                offset: 0,
+                range: vk::WHOLE_SIZE,
+            },
+        ];
+        let write_descs = [
+            vk::WriteDescriptorSet {
+                dst_set: descriptor_set,
+                dst_binding: 0,
+                descriptor_count: 1,
+                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
+                p_buffer_info: &buffer_infos[0],
+                ..Default::default()
+            },
+            vk::WriteDescriptorSet {
+                dst_set: descriptor_set,
+                dst_binding: 1,
+                descriptor_count: 1,
+                descriptor_type: vk::DescriptorType::UNIFORM_BUFFER,
+                p_buffer_info: &buffer_infos[1],
+                ..Default::default()
+            },
+            vk::WriteDescriptorSet {
+                dst_set: descriptor_set,
+                dst_binding: 2,
+                descriptor_count: 1,
+                descriptor_type: vk::DescriptorType::STORAGE_BUFFER,
+                p_buffer_info: &buffer_infos[2],
+                ..Default::default()
+            },
+        ];
+        unsafe { device.update_descriptor_sets(&write_descs, &[]) };
 
-    let alloc_info = vk::CommandBufferAllocateInfo {
-        command_pool,
-        level: vk::CommandBufferLevel::PRIMARY,
-        command_buffer_count: 1,
-        ..Default::default()
-    };
-    let begin_info = vk::CommandBufferBeginInfo {
-        flags: vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT,
-        ..Default::default()
-    };
+        // --- Command pool + fence ---
+        let cmd_pool_info = vk::CommandPoolCreateInfo {
+            flags: vk::CommandPoolCreateFlags::RESET_COMMAND_BUFFER,
+            queue_family_index: family_index,
+            ..Default::default()
+        };
+        command_pool = unsafe { device.create_command_pool(&cmd_pool_info, None) }
+            .map_err(|e| backend_err(e.to_string()))?;
 
-    let pixel_bytes: Vec<u8> = float_pixels
-        .iter()
-        .flat_map(|f| f.to_le_bytes())
-        .collect();
+        // Fence is passed to `queue_submit` for GPU-side completion tracking.
+        // We synchronise on the CPU side with `device_wait_idle()` (which blocks
+        // until all previously submitted commands finish) rather than
+        // `wait_for_fences`, which has been observed to time out on this
+        // platform even for a fence that should have been signalled.
+        let fence_info = vk::FenceCreateInfo {
+            flags: vk::FenceCreateFlags::empty(),
+            ..Default::default()
+        };
+        fence = unsafe { device.create_fence(&fence_info, None) }
+            .map_err(|e| backend_err(e.to_string()))?;
 
-    // --- Dispatch the compute pass (upload + dispatch in one command buffer) ---
-    let cmd_buffers2 = unsafe { device.allocate_command_buffers(&alloc_info) }
-        .map_err(|e| backend_err(e.to_string()))?;
-    let cmd2 = match cmd_buffers2.into_iter().next() {
-        Some(c) => c,
-        None => return Err(backend_err("Command buffer allocation failed".to_string())),
-    };
+        let alloc_info = vk::CommandBufferAllocateInfo {
+            command_pool,
+            level: vk::CommandBufferLevel::PRIMARY,
+            command_buffer_count: 1,
+            ..Default::default()
+        };
+        let begin_info = vk::CommandBufferBeginInfo {
+            flags: vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT,
+            ..Default::default()
+        };
 
-    // Upload the 24-byte params via map/write/unmap into the host-visible
-    // uniform buffer BEFORE recording the command buffer (see comment at
-    // buffer creation for why vkCmdUpdateBuffer is not used here).
-    {
-        let params_bytes: Vec<u8> = params.iter().flat_map(|v| v.to_le_bytes()).collect();
-        let ptr = unsafe { device.map_memory(uniform_memory, 0, params_size, vk::MemoryMapFlags::empty()) }
+        let pixel_bytes: Vec<u8> = float_pixels.iter().flat_map(|f| f.to_le_bytes()).collect();
+
+        // --- Dispatch the compute pass (upload + dispatch in one command buffer) ---
+        let cmd_buffers2 = unsafe { device.allocate_command_buffers(&alloc_info) }
+            .map_err(|e| backend_err(e.to_string()))?;
+        let cmd2 = match cmd_buffers2.into_iter().next() {
+            Some(c) => c,
+            None => return Err(backend_err("Command buffer allocation failed".to_string())),
+        };
+
+        // Upload the 24-byte params via map/write/unmap into the host-visible
+        // uniform buffer BEFORE recording the command buffer (see comment at
+        // buffer creation for why vkCmdUpdateBuffer is not used here).
+        {
+            let params_bytes: Vec<u8> = params.iter().flat_map(|v| v.to_le_bytes()).collect();
+            let ptr = unsafe {
+                device.map_memory(uniform_memory, 0, params_size, vk::MemoryMapFlags::empty())
+            }
             .map_err(|e| backend_err(format!("map_memory (uniform) failed: {e:?}")))?;
-        unsafe {
-            std::ptr::copy_nonoverlapping(params_bytes.as_ptr(), ptr as *mut u8, params_bytes.len());
+            unsafe {
+                std::ptr::copy_nonoverlapping(
+                    params_bytes.as_ptr(),
+                    ptr as *mut u8,
+                    params_bytes.len(),
+                );
+            }
+            unsafe { device.unmap_memory(uniform_memory) };
         }
-        unsafe { device.unmap_memory(uniform_memory) };
-    }
 
-    // Upload the pixels into a host-visible source buffer via map/write,
-    // then transfer to the device-local pixel buffer with vkCmdCopyBuffer
-    // (in the same command buffer, before dispatch, so ordering is
-    // guaranteed). This replaces vkCmdUpdateBuffer, which is flaky on this
-    // platform — some dispatches read stale (all-zero) pixel data, which
-    // is the root cause of the flaky all-zero palettes observed in tests.
-    let (pixel_src_buffer, pixel_src_memory) = create_buffer_with_memory(
-        &instance,
-        physical_device,
-        &device,
-        pixel_size,
-        vk::BufferUsageFlags::TRANSFER_SRC | vk::BufferUsageFlags::TRANSFER_DST,
-    )?;
-    {
-        let ptr = unsafe { device.map_memory(pixel_src_memory, 0, pixel_size, vk::MemoryMapFlags::empty()) }
+        // Upload the pixels into a host-visible source buffer via map/write,
+        // then transfer to the device-local pixel buffer with vkCmdCopyBuffer
+        // (in the same command buffer, before dispatch, so ordering is
+        // guaranteed). This replaces vkCmdUpdateBuffer, which is flaky on this
+        // platform — some dispatches read stale (all-zero) pixel data, which
+        // is the root cause of the flaky all-zero palettes observed in tests.
+        let (psb, psm) = create_buffer_with_memory(
+            instance,
+            physical_device,
+            &device,
+            pixel_size,
+            vk::BufferUsageFlags::TRANSFER_SRC | vk::BufferUsageFlags::TRANSFER_DST,
+        )?;
+        pixel_src_buffer = psb;
+        pixel_src_memory = psm;
+        {
+            let ptr = unsafe {
+                device.map_memory(pixel_src_memory, 0, pixel_size, vk::MemoryMapFlags::empty())
+            }
             .map_err(|e| backend_err(format!("map_memory (pixel src) failed: {e:?}")))?;
-        unsafe {
-            std::ptr::copy_nonoverlapping(pixel_bytes.as_ptr(), ptr as *mut u8, pixel_bytes.len());
+            unsafe {
+                std::ptr::copy_nonoverlapping(
+                    pixel_bytes.as_ptr(),
+                    ptr as *mut u8,
+                    pixel_bytes.len(),
+                );
+            }
+            unsafe { device.unmap_memory(pixel_src_memory) };
         }
-        unsafe { device.unmap_memory(pixel_src_memory) };
-    }
 
-    unsafe { device.begin_command_buffer(cmd2, &begin_info) }
-        .map_err(|e| backend_err(e.to_string()))?;
+        unsafe { device.begin_command_buffer(cmd2, &begin_info) }
+            .map_err(|e| backend_err(e.to_string()))?;
 
-    unsafe {
-        // Transfer uploaded pixels into the device-local pixel buffer, then
-        // dispatch — all in the same command buffer so the GPU sees the data
-        // in-order on the same queue.
-        let pixel_copy = vk::BufferCopy {
+        unsafe {
+            // Transfer uploaded pixels into the device-local pixel buffer, then
+            // dispatch — all in the same command buffer so the GPU sees the data
+            // in-order on the same queue.
+            let pixel_copy = vk::BufferCopy {
+                src_offset: 0,
+                dst_offset: 0,
+                size: pixel_bytes.len() as u64,
+            };
+            device.cmd_copy_buffer(cmd2, pixel_src_buffer, pixel_buffer, &[pixel_copy]);
+            // Barrier: TRANSFER write → SHADER read of the pixel buffer.
+            // Without this the compute shader may read stale (un-copied) pixels.
+            device.cmd_pipeline_barrier(
+                cmd2,
+                vk::PipelineStageFlags::TRANSFER,
+                vk::PipelineStageFlags::COMPUTE_SHADER,
+                vk::DependencyFlags::empty(),
+                &[vk::MemoryBarrier {
+                    src_access_mask: vk::AccessFlags::TRANSFER_WRITE,
+                    dst_access_mask: vk::AccessFlags::SHADER_READ,
+                    ..Default::default()
+                }],
+                &[],
+                &[],
+            );
+            // Zero the output buffer so chunks whose workgroup never runs read
+            // back as black; the black entries are filtered on CPU before dedup.
+            device.cmd_fill_buffer(cmd2, chunk_buffer, 0, vk::WHOLE_SIZE, 0);
+            device.cmd_bind_pipeline(cmd2, vk::PipelineBindPoint::COMPUTE, pipeline);
+            device.cmd_bind_descriptor_sets(
+                cmd2,
+                vk::PipelineBindPoint::COMPUTE,
+                pipeline_layout,
+                0,
+                &[descriptor_set],
+                &[],
+            );
+            device.cmd_dispatch(cmd2, num_chunks.div_ceil(64), 1, 1);
+            // Barrier: SHADER write → TRANSFER read of the chunk-color results.
+            device.cmd_pipeline_barrier(
+                cmd2,
+                vk::PipelineStageFlags::COMPUTE_SHADER,
+                vk::PipelineStageFlags::TRANSFER,
+                vk::DependencyFlags::empty(),
+                &[vk::MemoryBarrier {
+                    src_access_mask: vk::AccessFlags::SHADER_WRITE,
+                    dst_access_mask: vk::AccessFlags::TRANSFER_READ,
+                    ..Default::default()
+                }],
+                &[],
+                &[],
+            );
+        }
+
+        // Copy the chunk-color results to the host-visible staging buffer so the
+        // CPU can map it back after the compute pass.
+        let copy_region = vk::BufferCopy {
             src_offset: 0,
             dst_offset: 0,
-            size: pixel_bytes.len() as u64,
+            size: (num_chunks as u64) * 16,
         };
-        device.cmd_copy_buffer(cmd2, pixel_src_buffer, pixel_buffer, &[pixel_copy]);
-        // Barrier: TRANSFER write → SHADER read of the pixel buffer.
-        // Without this the compute shader may read stale (un-copied) pixels.
-        device.cmd_pipeline_barrier(
-            cmd2,
-            vk::PipelineStageFlags::TRANSFER,
-            vk::PipelineStageFlags::COMPUTE_SHADER,
-            vk::DependencyFlags::empty(),
-            &[vk::MemoryBarrier {
-                src_access_mask: vk::AccessFlags::TRANSFER_WRITE,
-                dst_access_mask: vk::AccessFlags::SHADER_READ,
-                ..Default::default()
-            }],
-            &[],
-            &[],
-        );
-        // Zero the output buffer so chunks whose workgroup never runs read
-        // back as black; the black entries are filtered on CPU before dedup.
-        device.cmd_fill_buffer(cmd2, chunk_buffer, 0, vk::WHOLE_SIZE, 0);
-        device.cmd_bind_pipeline(cmd2, vk::PipelineBindPoint::COMPUTE, pipeline);
-        device.cmd_bind_descriptor_sets(
-            cmd2,
-            vk::PipelineBindPoint::COMPUTE,
-            pipeline_layout,
-            0,
-            &[descriptor_set],
-            &[],
-        );
-        device.cmd_dispatch(cmd2, (num_chunks + 63) / 64, 1, 1);
-        // Barrier: SHADER write → TRANSFER read of the chunk-color results.
-        device.cmd_pipeline_barrier(
-            cmd2,
-            vk::PipelineStageFlags::COMPUTE_SHADER,
-            vk::PipelineStageFlags::TRANSFER,
-            vk::DependencyFlags::empty(),
-            &[vk::MemoryBarrier {
-                src_access_mask: vk::AccessFlags::SHADER_WRITE,
-                dst_access_mask: vk::AccessFlags::TRANSFER_READ,
-                ..Default::default()
-            }],
-            &[],
-            &[],
-        );
+        unsafe { device.cmd_copy_buffer(cmd2, chunk_buffer, staging_buffer, &[copy_region]) };
+
+        unsafe { device.end_command_buffer(cmd2) }.map_err(|e| backend_err(e.to_string()))?;
+
+        let submit_info2 = vk::SubmitInfo {
+            command_buffer_count: 1,
+            p_command_buffers: &cmd2,
+            ..Default::default()
+        };
+        unsafe { device.queue_submit(queue, &[submit_info2], fence) }
+            .map_err(|e| backend_err(e.to_string()))?;
+        // Block until all previously submitted commands complete.
+        unsafe { device.device_wait_idle() }
+            .map_err(|e| backend_err(format!("Dispatch wait_idle failed: {e:?}")))?;
+
+        // --- Read back chunk colors from the staging buffer (memory handle from creation) ---
+        let read_size = (num_chunks as u64) * 16;
+        let mapped_ptr =
+            unsafe { device.map_memory(staging_memory, 0, read_size, vk::MemoryMapFlags::empty()) }
+                .map_err(|e| backend_err(format!("map_memory failed: {e:?}")))?;
+
+        let floats = unsafe {
+            std::slice::from_raw_parts(mapped_ptr.cast::<f32>(), (num_chunks as usize) * 4)
+        };
+
+        let mut colors = Vec::with_capacity(num_chunks as usize);
+        for i in 0..num_chunks as usize {
+            let r = (floats[i * 4] * 255.0).round().clamp(0.0, 255.0) as u8;
+            let g = (floats[i * 4 + 1] * 255.0).round().clamp(0.0, 255.0) as u8;
+            let b = (floats[i * 4 + 2] * 255.0).round().clamp(0.0, 255.0) as u8;
+            colors.push((r, g, b));
+        }
+
+        unsafe { device.unmap_memory(staging_memory) };
+        Ok(colors)
+    })();
+
+    unsafe {
+        device.device_wait_idle().ok();
+        if pixel_src_buffer != vk::Buffer::null() {
+            device.destroy_buffer(pixel_src_buffer, None);
+        }
+        if pixel_src_memory != vk::DeviceMemory::null() {
+            device.free_memory(pixel_src_memory, None);
+        }
+        if fence != vk::Fence::null() {
+            device.destroy_fence(fence, None);
+        }
+        if command_pool != vk::CommandPool::null() {
+            device.destroy_command_pool(command_pool, None);
+        }
+        if descriptor_pool != vk::DescriptorPool::null() {
+            device.destroy_descriptor_pool(descriptor_pool, None);
+        }
+        if staging_buffer != vk::Buffer::null() {
+            device.destroy_buffer(staging_buffer, None);
+        }
+        if staging_memory != vk::DeviceMemory::null() {
+            device.free_memory(staging_memory, None);
+        }
+        if chunk_buffer != vk::Buffer::null() {
+            device.destroy_buffer(chunk_buffer, None);
+        }
+        if chunk_memory != vk::DeviceMemory::null() {
+            device.free_memory(chunk_memory, None);
+        }
+        if uniform_buffer != vk::Buffer::null() {
+            device.destroy_buffer(uniform_buffer, None);
+        }
+        if uniform_memory != vk::DeviceMemory::null() {
+            device.free_memory(uniform_memory, None);
+        }
+        if pixel_buffer != vk::Buffer::null() {
+            device.destroy_buffer(pixel_buffer, None);
+        }
+        if pixel_memory != vk::DeviceMemory::null() {
+            device.free_memory(pixel_memory, None);
+        }
+        if pipeline != vk::Pipeline::null() {
+            device.destroy_pipeline(pipeline, None);
+        }
+        if pipeline_layout != vk::PipelineLayout::null() {
+            device.destroy_pipeline_layout(pipeline_layout, None);
+        }
+        if set_layout != vk::DescriptorSetLayout::null() {
+            device.destroy_descriptor_set_layout(set_layout, None);
+        }
+        if shader_module != vk::ShaderModule::null() {
+            device.destroy_shader_module(shader_module, None);
+        }
+        device.destroy_device(None);
     }
 
-    // Copy the chunk-color results to the host-visible staging buffer so the
-    // CPU can map it back after the compute pass.
-    let copy_region = vk::BufferCopy {
-        src_offset: 0,
-        dst_offset: 0,
-        size: (num_chunks as u64) * 16,
-    };
-    unsafe { device.cmd_copy_buffer(cmd2, chunk_buffer, _staging_buffer, &[copy_region]) };
-
-
-    unsafe { device.end_command_buffer(cmd2) }.map_err(|e| backend_err(e.to_string()))?;
-
-    let submit_info2 = vk::SubmitInfo {
-        command_buffer_count: 1,
-        p_command_buffers: &cmd2,
-        ..Default::default()
-    };
-    unsafe { device.queue_submit(queue, &[submit_info2], fence) }
-        .map_err(|e| backend_err(e.to_string()))?;
-    // Block until all previously submitted commands complete.
-    unsafe { device.device_wait_idle() }
-        .map_err(|e| backend_err(format!("Dispatch wait_idle failed: {e:?}")))?;
-
-    // --- Read back chunk colors from the staging buffer (memory handle from creation) ---
-    let read_size = (num_chunks as u64) * 16;
-    let mapped_ptr = unsafe {
-        device.map_memory(staging_memory, 0, read_size, vk::MemoryMapFlags::empty())
-    }
-    .map_err(|e| backend_err(format!("map_memory failed: {e:?}")))?;
-
-    let floats =
-        unsafe { std::slice::from_raw_parts(mapped_ptr.cast::<f32>(), (num_chunks as usize) * 4) };
-
-    let mut colors = Vec::with_capacity(num_chunks as usize);
-    for i in 0..num_chunks as usize {
-        let r = (floats[i * 4] * 255.0).round().clamp(0.0, 255.0) as u8;
-        let g = (floats[i * 4 + 1] * 255.0).round().clamp(0.0, 255.0) as u8;
-        let b = (floats[i * 4 + 2] * 255.0).round().clamp(0.0, 255.0) as u8;
-        colors.push((r, g, b));
-    }
-
-    unsafe { device.unmap_memory(staging_memory) };
-
-    // Entry must outlive the instance/device until all operations complete.
-    drop(entry);
-    Ok(colors)
+    result
 }
 
 pub fn gpu_extract(
@@ -965,7 +1107,9 @@ pub fn gpu_extract(
 
     let gpus = list_gpus()?;
     if gpus.is_empty() {
-        return Err(backend_err("No Vulkan GPU with compute support found".to_string()));
+        return Err(backend_err(
+            "No Vulkan GPU with compute support found".to_string(),
+        ));
     }
 
     // Check if all selected GPUs are CPU-type and warn
@@ -1128,7 +1272,10 @@ mod tests {
 
     #[test]
     fn test_gpu_device_cpu() {
-        assert_eq!(device_type_from_vk(vk::PhysicalDeviceType::CPU), GpuDevice::CPU);
+        assert_eq!(
+            device_type_from_vk(vk::PhysicalDeviceType::CPU),
+            GpuDevice::CPU
+        );
     }
 
     #[test]
@@ -1177,16 +1324,13 @@ mod tests {
             px[3] = 255;
         }
         let result = gpu_extract(&buf, 4, 4, 5, 1);
-        match result {
-            Ok(colors) => {
-                assert!(!colors.is_empty());
-                // The dominant color of a solid red image must be (close to) red.
-                let (r, g, b) = colors[0];
-                assert!(r > 200);
-                assert!(g < 60);
-                assert!(b < 60);
-            }
-            Err(_) => {} // No GPU available — acceptable in CI without Vulkan.
+        if let Ok(colors) = result {
+            assert!(!colors.is_empty());
+            // The dominant color of a solid red image must be (close to) red.
+            let (r, g, b) = colors[0];
+            assert!(r > 200);
+            assert!(g < 60);
+            assert!(b < 60);
         }
     }
 }

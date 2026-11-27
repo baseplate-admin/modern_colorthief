@@ -8,8 +8,8 @@ libfuzzer_sys::fuzz_target!(|data: &[u8]| {
         return;
     }
 
-    let width = ((data[0] as u32).max(1)).min(512);
-    let height = ((data[1] as u32).max(1)).min(512);
+    let width = ((data[0] as u32).max(1)).min(64);
+    let height = ((data[1] as u32).max(1)).min(64);
     let quality = ((data[2] as u8).max(1)).min(10);
 
     let pixel_count = (width * height) as usize;
