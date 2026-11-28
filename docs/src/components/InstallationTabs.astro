@@ -1,0 +1,37 @@
+---
+const logoUrl = (logo: string) => `url("${import.meta.env.BASE_URL}language-logos/${logo}.svg")`;
+---
+
+<div class="installation-tabs">
+  <slot />
+</div>
+
+<style define:vars={{
+  python: logoUrl('python'),
+  ruby: logoUrl('ruby'),
+  nodejs: logoUrl('nodejs'),
+  java: logoUrl('java'),
+  kotlin: logoUrl('kotlin'),
+  php: logoUrl('php'),
+  wasm: logoUrl('wasm'),
+}}>
+  .installation-tabs :global([role='tab'])::before {
+    content: '';
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+    background: var(--tab-logo) center / contain no-repeat;
+  }
+
+  /* Keep this order in sync with the installation panels. */
+  .installation-tabs :global(.tab:nth-child(1) [role='tab']) { --tab-logo: var(--python); }
+  .installation-tabs :global(.tab:nth-child(2) [role='tab']) { --tab-logo: var(--ruby); }
+  .installation-tabs :global(.tab:nth-child(3) [role='tab']) { --tab-logo: var(--nodejs); }
+  .installation-tabs :global(.tab:nth-child(4) [role='tab'])::before {
+    width: 2.75rem;
+    background: var(--java) left center / 1.25rem no-repeat,
+      var(--kotlin) right center / 1.25rem no-repeat;
+  }
+  .installation-tabs :global(.tab:nth-child(5) [role='tab']) { --tab-logo: var(--php); }
+  .installation-tabs :global(.tab:nth-child(6) [role='tab']) { --tab-logo: var(--wasm); }
+</style>

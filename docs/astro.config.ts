@@ -43,6 +43,9 @@ export default defineConfig({
                 'High-performance color palette extraction from images. Rust core with bindings for Python, Node.js, WASM, JVM, Ruby, and PHP.',
             defaultLocale: 'en',
             lastUpdated: true,
+            expressiveCode: {
+                styleOverrides: { borderRadius: '0.5rem' },
+            },
             head: [
                 {
                     tag: 'meta',

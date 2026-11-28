@@ -3,29 +3,30 @@ title: 'Modern Colorthief'
 description: 'High-performance color palette extraction from images. Rust core with bindings for Python, Node.js, WASM, JVM, Ruby, and PHP.'
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { CardGrid } from '@astrojs/starlight/components';
+import LanguageCard from '../../components/LanguageCard.astro';
 
 **Modern Colorthief** extracts dominant color palettes from images at high speed. The core is a hand-rolled median-cut algorithm in Rust with rayon parallelism, and the same API is exposed across six language bindings.
 
 <CardGrid stagger>
-	<Card title="Python" icon="python" href="languages/python/">
+	<LanguageCard title="Python" href="languages/python/" logos={['python']}>
 		`pip install modern_colorthief`
-	</Card>
-	<Card title="Node.js" icon="nodejs" href="languages/nodejs/">
+	</LanguageCard>
+	<LanguageCard title="Node.js" href="languages/nodejs/" logos={['nodejs']}>
 		`npm install @modern_colorthief/native`
-	</Card>
-	<Card title="WebAssembly" icon="wasm" href="languages/wasm/">
+	</LanguageCard>
+	<LanguageCard title="WebAssembly" href="languages/wasm/" logos={['wasm']}>
 		Runs entirely in the browser.
-	</Card>
-	<Card title="Java / Kotlin" icon="java" href="languages/java/">
+	</LanguageCard>
+	<LanguageCard title="Java / Kotlin" href="languages/java/" logos={['java', 'kotlin']}>
 		JNI bindings, Android-compatible.
-	</Card>
-	<Card title="Ruby" icon="ruby" href="languages/ruby/">
+	</LanguageCard>
+	<LanguageCard title="Ruby" href="languages/ruby/" logos={['ruby']}>
 		`gem install modern_colorthief`
-	</Card>
-	<Card title="PHP" icon="php" href="languages/php/">
+	</LanguageCard>
+	<LanguageCard title="PHP" href="languages/php/" logos={['php']}>
 		PHP extension via FFI.
-	</Card>
+	</LanguageCard>
 </CardGrid>
 
 ## Two functions, everywhere
