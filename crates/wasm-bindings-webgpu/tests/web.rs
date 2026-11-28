@@ -100,16 +100,7 @@ mod gpu {
             .await
             .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
-        let colors = palette_to_vec(&palette);
-        assert!(!colors.is_empty());
-        let (r, g, b) = colors[0];
-        assert!(
-            r > 200 && g < 55 && b < 55,
-            "expected red, got ({},{},{})",
-            r,
-            g,
-            b
-        );
+        assert_eq!(palette_to_vec(&palette), vec![(255, 0, 0)]);
     }
 
     #[wasm_bindgen_test]
@@ -411,12 +402,19 @@ mod gpu {
 
     #[wasm_bindgen_test]
     async fn edge_large_image() {
-        let buf = solid_pixels(100, 200, 150, 500, 500);
-        let result = JsFuture::from(get_palette_gpu_promise(pixels_view(&buf), 500, 500, 5, 10))
-            .await
-            .unwrap();
+        let (width, height) = (4096, 3072);
+        let buf = solid_pixels(100, 200, 150, width, height);
+        let result = JsFuture::from(get_palette_gpu_promise(
+            pixels_view(&buf),
+            width,
+            height,
+            5,
+            10,
+        ))
+        .await
+        .unwrap();
         let palette: js_sys::Array = result.dyn_into().unwrap();
-        assert!(palette.length() > 0);
+        assert_eq!(palette_to_vec(&palette), vec![(100, 200, 150)]);
     }
 
     #[wasm_bindgen_test]

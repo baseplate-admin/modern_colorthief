@@ -57,25 +57,22 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
     const maxColors: number = input.maxC;
     const samplingQuality: number = input.quality;
 
-    // Derived dimensions for the compute shaders
-    const totalPixels: number = imageWidth * imageHeight;
-    const numberOfChunks: number = Math.ceil(Math.sqrt(totalPixels)) * 4;
-    const uniformBufferSize: number = 24; // 6 u32 values x 4 bytes
-
-    // Validate dimensions
     if (imageWidth <= 0 || imageHeight <= 0) {
         throw new Error("Image dimensions must be positive");
     }
 
-   // Convert RGBA u8 (0-255) to vec4<f32> (0.0-1.0) for the shader
-    const pixelData: ArrayBuffer = new ArrayBuffer(totalPixels * 16);
-    const pixelView: DataView = new DataView(pixelData);
-    for (let i = 0; i < totalPixels; i++) {
-        pixelView.setFloat32(i * 16,     rawPixels[i * 4]     / 255.0, true);
-        pixelView.setFloat32(i * 16 + 4, rawPixels[i * 4 + 1] / 255.0, true);
-        pixelView.setFloat32(i * 16 + 8, rawPixels[i * 4 + 2] / 255.0, true);
-        pixelView.setFloat32(i * 16 + 12, rawPixels[i * 4 + 3] / 255.0, true);
+    const totalPixels = imageWidth * imageHeight;
+    const inputBytes = totalPixels * 4;
+    const storageLimit = Math.min(device.limits.maxBufferSize, device.limits.maxStorageBufferBindingSize);
+    if (inputBytes > storageLimit) {
+        throw new Error(`Image needs ${inputBytes} bytes of WebGPU storage; this device supports ${storageLimit}. Use the CPU engine or choose a smaller image.`);
     }
+
+    const numberOfChunks = Math.ceil(Math.sqrt(totalPixels)) * 4;
+    const chunkStride = 16; // RGB plus a flag marking chunks that contain pixels.
+    const chunkBytes = numberOfChunks * chunkStride;
+    const uniformBufferSize = 24; // 6 u32 values.
+    const pixelData = rawPixels.subarray(0, inputBytes);
 
     // Allocate the uniform buffer for shader parameters
     const uniformBuffer: GPUBuffer = device.createBuffer({
@@ -85,19 +82,19 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
 
     // Allocate the input pixel buffer
     const pixelBuffer: GPUBuffer = device.createBuffer({
-        size: totalPixels * 16, // vec4<f32> per pixel = 16 bytes
+        size: inputBytes, // One packed RGBA u32 per pixel
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
 
     // Intermediate buffer for per-chunk average colors
     const chunkColorBuffer: GPUBuffer = device.createBuffer({
-        size: numberOfChunks * 12, // vec3<f32> per chunk = 12 bytes
+        size: chunkBytes,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
 
     // Staging buffer to read chunk colors back from GPU to CPU
     const stagingChunkBuffer: GPUBuffer = device.createBuffer({
-        size: numberOfChunks * 12,
+        size: chunkBytes,
         usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
     });
 
@@ -155,34 +152,37 @@ async function extractPaletteOnGpu(gpu: GPU, input: ExtractPaletteInput): Promis
         0,
         stagingChunkBuffer,
         0,
-        numberOfChunks * 12,
+        chunkBytes,
     );
 
     // Submit sampling + copy and wait for GPU completion
     device.queue.submit([samplingEncoder.finish(), copyEncoder.finish()]);
 
-    // Map staging buffer and read chunk colors back to CPU
-    await stagingChunkBuffer.mapAsync(GPUMapMode.READ);
-    const chunkArrayBuffer: ArrayBuffer = stagingChunkBuffer.getMappedRange();
-    const chunkView: DataView = new DataView(chunkArrayBuffer);
+    try {
+        await stagingChunkBuffer.mapAsync(GPUMapMode.READ);
+        const chunkView = new DataView(stagingChunkBuffer.getMappedRange());
+        const seen = new Set<string>();
+        const unique: number[] = [];
 
-    // Convert float32 color data (0.0-1.0) to uint8 (0-255) and deduplicate
-    const seen = new Set<string>();
-    const unique: number[] = [];
+        for (let i = 0; i < numberOfChunks && unique.length / 3 < maxColors; i++) {
+            const offset = i * chunkStride;
+            if (chunkView.getFloat32(offset + 12, true) === 0) continue;
 
-    for (let i = 0; i < numberOfChunks && unique.length < maxColors; i++) {
-        const r = Math.round(chunkView.getFloat32(i * 12, true) * 255);
-        const g = Math.round(chunkView.getFloat32(i * 12 + 4, true) * 255);
-        const b = Math.round(chunkView.getFloat32(i * 12 + 8, true) * 255);
-        const key = `${r},${g},${b}`;
-        if (!seen.has(key)) {
-            seen.add(key);
-            unique.push(r, g, b);
+            const r = Math.round(chunkView.getFloat32(offset, true) * 255);
+            const g = Math.round(chunkView.getFloat32(offset + 4, true) * 255);
+            const b = Math.round(chunkView.getFloat32(offset + 8, true) * 255);
+            const key = `${r},${g},${b}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push(r, g, b);
+            }
         }
+
+        return new Uint8Array(unique);
+    } finally {
+        stagingChunkBuffer.destroy();
+        chunkColorBuffer.destroy();
+        pixelBuffer.destroy();
+        uniformBuffer.destroy();
     }
-
-    // Clean up: unmap and release staging buffer
-    stagingChunkBuffer.unmap();
-
-    return new Uint8Array(unique);
 }

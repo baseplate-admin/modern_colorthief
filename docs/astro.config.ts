@@ -1,7 +1,8 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import starlight from '@astrojs/starlight';
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -15,10 +16,25 @@ const base = process.env.DOCS_BASE_PATH || '/';
 
 const customCss = readFileSync(join(__dirname, 'public/custom.css'), 'utf-8');
 
+// Version the JS and WASM together so a cached copy of either file cannot be
+// paired with a different build after Read the Docs publishes an update.
+const webgpuBundle = join(__dirname, 'public/wasm-webgpu/modern_colorthief_webgpu');
+const webgpuFiles = [webgpuBundle + '.js', webgpuBundle + '_bg.wasm'];
+const webgpuHash = createHash('sha256');
+for (const file of webgpuFiles) {
+    if (existsSync(file)) webgpuHash.update(readFileSync(file));
+}
+const webgpuRevision = webgpuHash.digest('hex').slice(0, 16);
+
 // https://astro.build/config
 export default defineConfig({
     site: 'https://modern-colorthief.readthedocs.io/',
     base,
+    vite: {
+        define: {
+            'import.meta.env.PUBLIC_WEBGPU_REVISION': JSON.stringify(webgpuRevision),
+        },
+    },
     integrations: [
         react(),
         starlight({
@@ -44,6 +60,7 @@ export default defineConfig({
                     href: 'https://github.com/baseplate-admin/modern_colorthief',
                 },
             ],
+            logo: { src: './public/favicon.svg', alt: '' },
             favicon: '/favicon.svg',
             editLink: {
                 baseUrl: 'https://github.com/baseplate-admin/modern_colorthief',

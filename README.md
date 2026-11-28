@@ -1,3 +1,8 @@
+<h1>
+  <img src="docs/public/favicon.svg" alt="" width="40" height="40" />
+  Modern Colorthief
+</h1>
+
 [![Documentation Status](https://readthedocs.org/projects/modern-colorthief/badge/?version=latest)](https://modern-colorthief.readthedocs.io/en/latest/?badge=latest) [![Downloads](https://static.pepy.tech/badge/modern_colorthief)](https://pepy.tech/project/modern_colorthief) [![Pypi Badge](https://img.shields.io/pypi/v/modern_colorthief.svg)](https://pypi.org/project/modern_colorthief/)
 
 # Introduction :
