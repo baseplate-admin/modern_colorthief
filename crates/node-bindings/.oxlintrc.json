@@ -1,0 +1,30 @@
+{
+    "plugins": ["typescript"],
+    "ignorePatterns": ["dist/**", "node_modules/**", "artifacts/**", "pkg/**"],
+    "rules": {
+        "no-console": [
+            "error",
+            {
+                "allow": ["warn", "error"]
+            }
+        ],
+        "no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ],
+        "typescript/no-explicit-any": "error",
+        "prefer-const": "error"
+    },
+    "overrides": [
+        {
+            "files": ["tests/*.ts", "examples/**"],
+            "rules": {
+                "no-console": "off",
+                "no-unused-vars": "off",
+                "typescript/no-explicit-any": "off"
+            }
+        }
+    ]
+}

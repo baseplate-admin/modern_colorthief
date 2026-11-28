@@ -81,14 +81,14 @@ jobs:
       - name: Npm install
         working-directory: crates/node-bindings
         run: npm install --legacy-peer-deps
-      - name: Lint (ESLint + Prettier)
+      - name: Lint (Oxlint + Prettier)
         working-directory: crates/node-bindings
         run: |
-          npx eslint . --max-warnings 0
+          npx --no-install oxlint --deny-warnings
           npx prettier --check .
       - name: Type-check (TypeScript 7)
         working-directory: crates/node-bindings
-        run: npm run typecheck
+        run: npx --no-install tsc --noEmit
       - name: PGO profile generation
         if: ${{ matrix.target != 'aarch64-unknown-linux-gnu' }}
         run: cargo pgo test -- --target ${{ matrix.target }} -p modern-colorthief-core -p modern-colorthief-core-cpu
