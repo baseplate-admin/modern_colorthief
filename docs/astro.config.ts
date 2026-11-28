@@ -30,9 +30,16 @@ const webgpuRevision = webgpuHash.digest('hex').slice(0, 16);
 export default defineConfig({
     site: 'https://modern-colorthief.readthedocs.io/',
     base,
+    prefetch: {
+        prefetchAll: true,
+        defaultStrategy: 'viewport',
+    },
     vite: {
         define: {
             'import.meta.env.PUBLIC_WEBGPU_REVISION': JSON.stringify(webgpuRevision),
+        },
+        build: {
+            sourcemap: true,
         },
     },
     integrations: [
@@ -65,6 +72,9 @@ export default defineConfig({
             ],
             logo: { src: './public/favicon.svg', alt: '' },
             favicon: '/favicon.svg',
+            components: {
+                Head: './src/components/Head.astro',
+            },
             editLink: {
                 baseUrl: 'https://github.com/baseplate-admin/modern_colorthief',
             },
