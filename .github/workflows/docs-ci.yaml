@@ -34,15 +34,17 @@ jobs:
         working-directory: docs
         run: npm ci
 
-      - name: Lint (ESLint + Prettier)
+      - name: Lint (Oxlint + Prettier)
         working-directory: docs
         run: |
-          npx eslint . --max-warnings 0
+          npx --no-install oxlint --deny-warnings
           npx prettier --check .
 
-      - name: Type-check (astro check)
+      - name: Type-check (TypeScript 7)
         working-directory: docs
-        run: npx astro check
+        run: |
+          npx --no-install astro sync
+          npx --no-install tsc --noEmit
 
       - name: Build site
         working-directory: docs

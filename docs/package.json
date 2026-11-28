@@ -19,14 +19,11 @@
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.12",
-    "@eslint/js": "^10.0.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "eslint": "^10.0.0",
+    "oxlint": "^1.95.0",
     "prettier": "^3.7.4",
-    "typescript": "^7.0.0",
-    "typescript-eslint": "^8.49.0"
+    "typescript": "^7.0.2"
   }
 }

@@ -6,15 +6,8 @@
     "main": "native.ts",
     "types": "index.d.ts",
     "scripts": {
-        "build": "napi build --platform --release",
+        "build": "node build.mjs",
         "test": "vitest run"
-    },
-    "napi": {
-        "binaryName": "modern_colorthief_gpu",
-        "triples": {}
-    },
-    "dependencies": {
-        "@napi-rs/cli": "^3.0.0"
     },
     "devDependencies": {
         "@types/node": "^26.0.0",
