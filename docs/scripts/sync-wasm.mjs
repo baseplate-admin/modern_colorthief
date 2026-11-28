@@ -11,8 +11,8 @@
  *   crates/wasm-bindings         → docs/public/wasm/
  *   crates/wasm-bindings-webgpu  → docs/public/wasm-webgpu/
  */
-import { execSync } from 'node:child_process';
-import { existsSync, cpSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, copyFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,30 +23,24 @@ const CRATES = [
   {
     dir: 'crates/wasm-bindings',
     out: 'docs/public/wasm',
+    name: 'modern_colorthief_wasm',
     pkg: 'pkg',
   },
   {
     dir: 'crates/wasm-bindings-webgpu',
     out: 'docs/public/wasm-webgpu',
+    name: 'modern_colorthief_webgpu',
     pkg: 'pkg',
   },
 ];
 
-function run(cmd, opts = {}) {
-  console.log(`  $ ${cmd}`);
-  execSync(cmd, { stdio: 'inherit', cwd: REPO_ROOT, ...opts });
-}
-
-function copyBundle(src, dest) {
-  const files = readdirSync(src);
-  console.log(`  copy ${src} → ${dest}`);
-  cpSync(src, dest, { recursive: true, force: true });
-  return files.length;
+function bundleFiles(name) {
+  return [`${name}.js`, `${name}_bg.wasm`];
 }
 
 function checkSync() {
   let ok = true;
-  for (const { dir, out, pkg } of CRATES) {
+  for (const { dir, out, name, pkg } of CRATES) {
     const srcDir = join(REPO_ROOT, dir, pkg);
     const destDir = join(REPO_ROOT, out);
     if (!existsSync(srcDir)) {
@@ -59,16 +53,17 @@ function checkSync() {
       ok = false;
       continue;
     }
-    // Compare file lists
-    const srcFiles = readdirSync(srcDir).sort();
-    const destFiles = readdirSync(destDir).sort();
-    if (JSON.stringify(srcFiles) !== JSON.stringify(destFiles)) {
-      console.error(`✗ ${out} is out of sync with ${dir}/${pkg}`);
-      console.error(`  source: ${srcFiles.join(', ')}`);
-      console.error(`  dest:   ${destFiles.join(', ')}`);
-      ok = false;
-    } else {
-      console.log(`✓ ${out} is in sync (${srcFiles.length} files)`);
+    for (const file of bundleFiles(name)) {
+      const source = join(srcDir, file);
+      const destination = join(destDir, file);
+      if (
+        !existsSync(source) ||
+        !existsSync(destination) ||
+        !readFileSync(source).equals(readFileSync(destination))
+      ) {
+        console.error(`${out}/${file} is missing or out of sync with ${dir}/${pkg}`);
+        ok = false;
+      }
     }
   }
   return ok;
@@ -82,12 +77,18 @@ if (check) {
 }
 
 console.log('Building WASM bundles for docs…\n');
-for (const { dir, out, pkg } of CRATES) {
+for (const { dir, out, name, pkg } of CRATES) {
   console.log(`${dir}:`);
-  run(`cd ${dir} && npx wasm-pack build --release --target web`);
+  execFileSync('wasm-pack', ['build', '--release', '--target', 'web', '--out-name', name], {
+    cwd: join(REPO_ROOT, dir),
+    stdio: 'inherit',
+  });
   const src = join(REPO_ROOT, dir, pkg);
   const dest = join(REPO_ROOT, out);
-  copyBundle(src, dest);
+  mkdirSync(dest, { recursive: true });
+  for (const file of bundleFiles(name)) {
+    copyFileSync(join(src, file), join(dest, file));
+  }
   console.log('');
 }
 console.log('Done. Docs bundles are up to date.');
