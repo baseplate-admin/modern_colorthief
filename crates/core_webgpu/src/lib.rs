@@ -82,7 +82,7 @@ async fn extract_palette_async(
         colors.push((raw[i], raw[i + 1], raw[i + 2]));
         i += 3;
     }
-    Ok(dedup_colors(colors, color_count as usize))
+    Ok(dedup_colors(colors, color_count.max(1) as usize))
 }
 
 async fn extract_color_async(

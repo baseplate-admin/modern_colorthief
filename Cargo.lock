@@ -1982,6 +1982,7 @@ version = "0.3.0"
 dependencies = [
  "js-sys",
  "modern-colorthief-core",
+ "modern-colorthief-core-cpu",
  "modern-colorthief-core-webgpu",
  "wasm-bindgen",
  "wasm-bindgen-futures",

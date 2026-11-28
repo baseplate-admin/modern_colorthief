@@ -36,7 +36,7 @@ Every binding exposes the same two functions with the same parameter names and t
 - **`getPalette(image, colorCount?, quality?)`** → an array of `[R, G, B]` colors
 - **`getColor(image, quality?)`** → the single dominant `[R, G, B]` color
 
-Image decoding is handled by the host language (Pillow, Sharp, Canvas, AWT, `image_processing`, GD). The Rust core always receives raw RGBA bytes, so the algorithm - and its results - are identical no matter which language you call from.
+Image decoding is handled by the host language (Pillow, Sharp, Canvas, AWT, `image_processing`, GD). The CPU bindings share the same Rust median-cut implementation. The browser?s WebGPU engine follows the same sampling and median-cut rules as CPU WASM.
 
 ## Why Rust
 

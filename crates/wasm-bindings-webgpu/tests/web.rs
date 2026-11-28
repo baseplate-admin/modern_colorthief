@@ -135,6 +135,39 @@ mod gpu {
         assert!(r < 55 && g < 55 && b < 55);
     }
 
+    #[wasm_bindgen_test]
+    async fn median_cut_matches_cpu_for_mixed_pixels() {
+        let (width, height) = (71, 67);
+        let mut pixels = gradient_pixels(width, height);
+        // Repeated channel values exercise stable ordering across tile boundaries.
+        for (index, pixel) in pixels.chunks_exact_mut(4).enumerate() {
+            pixel[0] = (index % 5) as u8 * 50;
+        }
+
+        for (count, quality) in [(0, 0), (1, 1), (7, 1), (7, 3), (10, 11)] {
+            let expected = modern_colorthief_core_cpu::extract_palette_from_buffer(
+                &pixels, width, height, count, quality,
+            )
+            .unwrap();
+            let actual = JsFuture::from(get_palette_gpu_promise(
+                pixels_view(&pixels),
+                width,
+                height,
+                count,
+                quality,
+            ))
+            .await
+            .unwrap()
+            .dyn_into::<js_sys::Array>()
+            .unwrap();
+            assert_eq!(
+                palette_to_vec(&actual),
+                expected,
+                "count={count}, quality={quality}"
+            );
+        }
+    }
+
     // ---- Properties (ported from test_properties.py) ----
 
     #[wasm_bindgen_test]
