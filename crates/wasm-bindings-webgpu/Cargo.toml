@@ -18,6 +18,7 @@ web-sys.workspace = true
 browser-tests = []
 
 [dev-dependencies]
+modern-colorthief-core-cpu.workspace = true
 wasm-bindgen-test = { workspace = true }
 wasm-bindgen-futures = { workspace = true }
 

@@ -31,11 +31,11 @@ struct Bucket {
 
 impl Bucket {
     fn avg(&self) -> Color {
-        let count = self.pixels.len() as u32;
-        let sum: (u32, u32, u32) = self
+        let count = self.pixels.len() as u64;
+        let sum: (u64, u64, u64) = self
             .pixels
             .par_iter()
-            .map(|p| (p.r as u32, p.g as u32, p.b as u32))
+            .map(|p| (p.r as u64, p.g as u64, p.b as u64))
             .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2));
         Color {
             r: (sum.0 / count) as u8,

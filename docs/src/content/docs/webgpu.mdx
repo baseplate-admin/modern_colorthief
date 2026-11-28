@@ -5,8 +5,10 @@ description: GPU-accelerated color extraction using WebGPU compute shaders.
 
 The `@modern_colorthief/wasm-gpu` package uses **WebGPU compute shaders** to perform
 palette extraction on the GPU. The WGSL shader (`crates/core_webgpu/src/shader.wgsl`)
-computes per-chunk color means on the GPU; median-cut clustering and deduplication
-still run on the CPU.
+samples packed pixels, measures color buckets, and stably sorts them for median
+splits. The browser coordinates the GPU passes, combines bucket summaries, and
+deduplicates the resulting palette. For the same RGBA input and settings, the
+WebGPU and CPU WASM paths use the same median-cut rules and palette order.
 
 ## Browser support
 
@@ -59,8 +61,7 @@ async function detectWebGPU() {
 
 ## Limitations
 
-- The shader computes **chunk means**, not a full median-cut on the GPU. Median-cut
-  and dedup still run on the CPU thread after the GPU pass.
+- Images that exceed the device?s WebGPU buffer limits can use the CPU WASM engine.
 - WebGPU is not available in Node.js without the `@webgpu` / `node-webgpu` (Dawn)
   polyfill.
 - The package exposes `getPaletteGpu` / `getColorGpu` (async) and `getVersion()`

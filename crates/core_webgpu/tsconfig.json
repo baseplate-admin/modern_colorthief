@@ -2,10 +2,14 @@
     "compilerOptions": {
         "target": "ES2022",
         "module": "ESNext",
-        "lib": ["ES2022", "DOM"],
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
         "strict": true,
-        "noEmit": true,
-        "types": ["@webgpu/types"]
+        "noEmit": true
     },
-    "include": ["src/*.ts"]
+    "include": [
+        "src/*.ts"
+    ]
 }
