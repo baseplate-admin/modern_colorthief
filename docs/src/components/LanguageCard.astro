@@ -1,0 +1,56 @@
+---
+interface Props {
+  title: string;
+  href: string;
+  logos: string[];
+}
+
+const { title, href, logos } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<a class="card language-card" href={base + href}>
+  <span class="language-title">
+    <span class="language-logos">
+      {logos.map((logo) => (
+        <img src={base + 'language-logos/' + logo + '.svg'} alt="" width="24" height="24" />
+      ))}
+    </span>
+    <strong>{title}</strong>
+  </span>
+  <div class="language-description"><slot /></div>
+</a>
+
+<style>
+  .language-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: var(--sl-color-text);
+  }
+
+  .language-card:hover {
+    background: var(--docs-hover);
+    border-color: var(--sl-color-gray-4);
+  }
+
+  .language-title,
+  .language-logos {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .language-title {
+    gap: 0.75rem;
+    font-size: var(--sl-text-h4);
+    color: var(--sl-color-white);
+  }
+
+  .language-logos img {
+    object-fit: contain;
+    margin: 0;
+  }
+</style>

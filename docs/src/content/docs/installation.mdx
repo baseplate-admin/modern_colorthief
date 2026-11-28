@@ -3,6 +3,9 @@ title: 'Installation'
 description: 'Install Modern Colorthief for Python, Ruby, Node.js, Java, PHP, or WebAssembly.'
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import InstallationTabs from '../../components/InstallationTabs.astro';
+
 Modern Colorthief ships a binding for six languages. Each one installs through the host language's normal package manager.
 
 ## Requirements
@@ -10,7 +13,12 @@ Modern Colorthief ships a binding for six languages. Each one installs through t
 - **Python** - 3.10 or newer
 - **Operating System** - Linux, macOS, Windows (prebuilt wheels available for Python)
 
-## Python
+## Install by language
+
+<InstallationTabs>
+<Tabs>
+
+<TabItem label="Python">
 
 :::tip
 `uv` resolves and installs dependencies up to 10× faster than pip.
@@ -35,13 +43,17 @@ import modern_colorthief
 print(modern_colorthief.__version__)
 ```
 
-## Ruby
+</TabItem>
+
+<TabItem label="Ruby">
 
 ```bash
 gem install modern_colorthief
 ```
 
-## Node.js
+</TabItem>
+
+<TabItem label="Node.js">
 
 ```bash
 npm install @modern_colorthief/native
@@ -49,11 +61,15 @@ npm install @modern_colorthief/native
 
 The npm package ships prebuilt native libraries, so installation requires no local Rust build.
 
-## Java / Kotlin
+</TabItem>
+
+<TabItem label="Java / Kotlin">
 
 Download the JAR from the [GitHub Releases](https://github.com/baseplate-admin/modern_colorthief/releases) and add it to your classpath, or declare it as a Maven / Gradle dependency. Targets Java 26 and is Android-compatible.
 
-## PHP
+</TabItem>
+
+<TabItem label="PHP">
 
 Build and install as a PHP extension, then enable it in `php.ini`:
 
@@ -61,13 +77,20 @@ Build and install as a PHP extension, then enable it in `php.ini`:
 extension=modern_colorthief.so
 ```
 
-## WebAssembly
+</TabItem>
+
+<TabItem label="WebAssembly">
 
 ```bash
 npm install @modern_colorthief/wasm
 ```
 
 The WASM binding runs entirely in the browser or on a WASM runtime - no native toolchain required.
+
+</TabItem>
+
+</Tabs>
+</InstallationTabs>
 
 :::note
 If you hit platform-specific build errors when installing from source, make sure you have a C compiler and the latest Rust toolchain installed. Prebuilt wheels and binaries cover most common platforms.
