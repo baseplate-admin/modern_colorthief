@@ -120,6 +120,12 @@ jobs:
         env:
           NODE_OPTIONS: "--require ${{ github.workspace }}/crates/wasm-bindings-webgpu/test-webgpu-setup.cjs"
 
+      - name: Test WebGPU web bundle without Node globals
+        working-directory: crates/wasm-bindings-webgpu
+        run: |
+          wasm-pack build --release --target web
+          node test-web-bundle.mjs
+
   cpu-chrome-tests:
     name: CPU Chrome tests
     runs-on: ubuntu-latest
