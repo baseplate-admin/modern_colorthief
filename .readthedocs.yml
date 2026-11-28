@@ -9,6 +9,9 @@ build:
     tools:
         # Read the Docs installs these itself (asdf/managed toolchains) and puts
         # them on PATH for every build command -- no rustup bootstrap needed.
+        # `latest` currently resolves to 3.14; it will pick up 3.15 once RTD
+        # adds that tool version.
+        python: "latest"
         nodejs: "latest"
         rust: "latest"
     commands:
@@ -28,6 +31,8 @@ build:
         #    base path is baked into asset and link URLs at build time.
         - |
             set -e
+            python docs/scripts/generate_llms.py
+            python docs/scripts/generate_llms_per_lang.py
             export DOCS_BASE_PATH="/${READTHEDOCS_LANGUAGE}/${READTHEDOCS_VERSION}/"
             cd docs
             npm run build

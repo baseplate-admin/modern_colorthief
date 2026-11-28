@@ -1,0 +1,78 @@
+name: Corpus
+
+on:
+  schedule:
+    # Weekly, Monday 03:00 UTC.
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      image_count:
+        description: "Number of Open Images to download"
+        required: false
+        default: "5000"
+  pull_request:
+    paths:
+      - "crates/core/**"
+      - "crates/core_cpu/**"
+      - "crates/core_gpu/**"
+      - "corpus/**"
+      - ".github/workflows/corpus.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  open-images:
+    name: "Open Images corpus"
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Vulkan runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+
+      - name: Cache cargo registry
+        uses: actions/cache@v6
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-corpus-cargo-registry-${{ hashFiles('corpus/Cargo.lock', 'Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-corpus-cargo-registry-
+
+      - name: Cache corpus build
+        uses: actions/cache@v6
+        with:
+          path: corpus/target
+          key: ${{ runner.os }}-corpus-target-${{ hashFiles('corpus/Cargo.lock', 'Cargo.lock', 'corpus/src/**', 'crates/core*/src/**') }}
+          restore-keys: |
+            ${{ runner.os }}-corpus-target-
+
+      - name: Resolve image count
+        id: count
+        shell: bash
+        run: |
+          count="${{ github.event.inputs.image_count }}"
+          if [ -z "$count" ]; then
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              count=1000
+            else
+              count=5000
+            fi
+          fi
+          echo "value=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch Open Images sample
+        env:
+          COUNT: ${{ steps.count.outputs.value }}
+        run: python3 corpus/fetch_open_images.py --count "$COUNT" --out "$RUNNER_TEMP/open-images"
+
+      - name: Run corpus test
+        env:
+          CORPUS_DIR: ${{ runner.temp }}/open-images
+          CORPUS_GPU: "1"
+        run: cargo run --release --manifest-path corpus/Cargo.toml
