@@ -10,27 +10,16 @@
         "artifacts"
     ],
     "scripts": {
-        "typecheck": "node node_modules/typescript-native/bin/tsc --noEmit",
         "build": "vite build",
         "prepublishOnly": "npm run build"
     },
-    "napi": {
-        "binaryName": "modern_colorthief",
-        "triples": {}
-    },
-    "dependencies": {
-        "@napi-rs/cli": "^3.0.0"
-    },
     "devDependencies": {
-        "@eslint/js": "^9.39.0",
         "@types/node": "^26.0.0",
-        "typescript-native": "npm:typescript@^7.0.2",
-        "eslint": "^9.39.0",
+        "oxlint": "^1.95.0",
         "prettier": "^3.7.4",
         "rolldown-plugin-dts": "^0.30.0",
         "sharp": ">=0.33.0",
-        "typescript": "^6.0.3",
-        "typescript-eslint": "^8.49.0",
+        "typescript": "^7.0.2",
         "vite": "^8.0.0",
         "vitest": "^5.0.0"
     },
