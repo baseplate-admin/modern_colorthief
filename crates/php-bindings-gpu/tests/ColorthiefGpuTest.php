@@ -4,7 +4,9 @@
 // from the "modern_colorthief_gpu" extension module.
 // Pixels are passed as binary strings (one byte per channel, RGBA).
 
-function packBytes(array $bytes): string {
+/** @param list<int> $bytes */
+function packBytes(array $bytes): string
+{
     $count = count($bytes);
     $fmt = str_repeat('C', $count);
     return pack($fmt, ...$bytes);
@@ -12,15 +14,18 @@ function packBytes(array $bytes): string {
 
 // -- Pixel helpers --
 
-function redPixels(): string {
+function redPixels(): string
+{
     return packBytes([255, 0, 0, 255]);
 }
 
-function twoColorPixels(): string {
+function twoColorPixels(): string
+{
     return packBytes([255, 0, 0, 255, 0, 0, 255, 255]);
 }
 
-function greenPixels(): string {
+function greenPixels(): string
+{
     $green = [0, 255, 0, 255];
     $result = [];
     for ($i = 0; $i < 9; $i++) {
@@ -29,7 +34,8 @@ function greenPixels(): string {
     return packBytes($result);
 }
 
-function solidBluePixels(): string {
+function solidBluePixels(): string
+{
     $blue = [0, 0, 255, 255];
     $result = [];
     for ($i = 0; $i < 9; $i++) {
@@ -38,7 +44,8 @@ function solidBluePixels(): string {
     return packBytes($result);
 }
 
-function solidWhitePixels(): string {
+function solidWhitePixels(): string
+{
     $white = [255, 255, 255, 255];
     $result = [];
     for ($i = 0; $i < 9; $i++) {
@@ -47,7 +54,8 @@ function solidWhitePixels(): string {
     return packBytes($result);
 }
 
-function gradientPixels(): string {
+function gradientPixels(): string
+{
     $pixels = [];
     for ($x = 0; $x < 20; $x++) {
         for ($y = 0; $y < 10; $y++) {
@@ -60,14 +68,21 @@ function gradientPixels(): string {
     return packBytes($pixels);
 }
 
-function checkerboardPixels(): string {
+function checkerboardPixels(): string
+{
     $pixels = [];
     for ($y = 0; $y < 10; $y++) {
         for ($x = 0; $x < 10; $x++) {
             if (($x + $y) % 2 === 0) {
-                $pixels[] = 200; $pixels[] = 50; $pixels[] = 50; $pixels[] = 255;
+                $pixels[] = 200;
+                $pixels[] = 50;
+                $pixels[] = 50;
+                $pixels[] = 255;
             } else {
-                $pixels[] = 50; $pixels[] = 50; $pixels[] = 200; $pixels[] = 255;
+                $pixels[] = 50;
+                $pixels[] = 50;
+                $pixels[] = 200;
+                $pixels[] = 255;
             }
         }
     }
@@ -76,7 +91,8 @@ function checkerboardPixels(): string {
 
 // -- Image loading --
 
-function imageToPixels(string $path): string {
+function imageToPixels(string $path): string
+{
     $img = imagecreatefromjpeg($path);
     $w = imagesx($img);
     $h = imagesy($img);
@@ -94,41 +110,43 @@ function imageToPixels(string $path): string {
     return packBytes($pixels);
 }
 
-function testImagePath(): string {
+function testImagePath(): string
+{
     return __DIR__ . '/test.jpg';
 }
 
-function kaijuImagePath(): string {
+function kaijuImagePath(): string
+{
     return __DIR__ . '/kaiju_no_8.jpg';
 }
 
 // -- Solid color tests --
 
-test('gpu solid red color detection', function () {
+test('gpu solid red color detection', function (): void {
     $palette = get_palette(redPixels(), 1, 1, 5, 1);
     expect($palette)->not->toBeEmpty();
     expect($palette[0])->toBe([255, 0, 0]);
 });
 
-test('gpu solid green color detection', function () {
+test('gpu solid green color detection', function (): void {
     $palette = get_palette(greenPixels(), 3, 3, 5, 1);
     expect($palette)->not->toBeEmpty();
     expect($palette[0])->toBe([0, 255, 0]);
 });
 
-test('gpu solid blue color detection', function () {
+test('gpu solid blue color detection', function (): void {
     $palette = get_palette(solidBluePixels(), 3, 3, 5, 1);
     expect($palette)->not->toBeEmpty();
     expect($palette[0])->toBe([0, 0, 255]);
 });
 
-test('gpu solid white color detection', function () {
+test('gpu solid white color detection', function (): void {
     $palette = get_palette(solidWhitePixels(), 3, 3, 5, 1);
     expect($palette)->not->toBeEmpty();
     expect($palette[0])->toBe([255, 255, 255]);
 });
 
-test('gpu two-color detection returns both colors', function () {
+test('gpu two-color detection returns both colors', function (): void {
     $palette = get_palette(twoColorPixels(), 1, 2, 10, 1);
     expect($palette)->toHaveCount(2);
     $foundRed = false;
@@ -145,19 +163,19 @@ test('gpu two-color detection returns both colors', function () {
     expect($foundBlue)->toBeTrue();
 });
 
-test('gpu palette length respects color_count', function () {
+test('gpu palette length respects color_count', function (): void {
     $palette = get_palette(greenPixels(), 3, 3, 3, 1);
     expect(count($palette))->toBeLessThanOrEqual(3);
 });
 
-test('gpu palette length respects high color_count', function () {
+test('gpu palette length respects high color_count', function (): void {
     $palette = get_palette(greenPixels(), 3, 3, 50, 1);
     expect(count($palette))->toBeLessThanOrEqual(50);
 });
 
 // -- Deduplication tests --
 
-test('gpu deduplication returns unique colors', function () {
+test('gpu deduplication returns unique colors', function (): void {
     $palette = get_palette(greenPixels(), 3, 3, 10, 1);
     $unique = array_map(function ($color) {
         return implode(',', $color);
@@ -165,7 +183,7 @@ test('gpu deduplication returns unique colors', function () {
     expect(count($palette))->toEqual(count(array_unique($unique)));
 });
 
-test('gpu deduplication on real image with large palette', function () {
+test('gpu deduplication on real image with large palette', function (): void {
     $pixels = imageToPixels(testImagePath());
     $img = imagecreatefromjpeg(testImagePath());
     $w = imagesx($img);
@@ -174,7 +192,9 @@ test('gpu deduplication on real image with large palette', function () {
 
     $palette = get_palette($pixels, $w, $h, 255, 10);
 
-    $strings = array_map(function ($c) { return implode(',', $c); }, $palette);
+    $strings = array_map(function ($c) {
+        return implode(',', $c);
+    }, $palette);
     expect(count($palette))->toEqual(count(array_unique($strings)));
     expect(count($palette))->toBeGreaterThan(0);
     expect(count($palette))->toBeLessThanOrEqual(255);
@@ -182,7 +202,7 @@ test('gpu deduplication on real image with large palette', function () {
 
 // -- Property tests --
 
-test('gpu get_color returns valid RGB from real image', function () {
+test('gpu get_color returns valid RGB from real image', function (): void {
     $pixels = imageToPixels(testImagePath());
     $img = imagecreatefromjpeg(testImagePath());
     $w = imagesx($img);
@@ -196,7 +216,7 @@ test('gpu get_color returns valid RGB from real image', function () {
     }
 });
 
-test('gpu get_palette returns valid RGB list from real image', function () {
+test('gpu get_palette returns valid RGB list from real image', function (): void {
     $pixels = imageToPixels(testImagePath());
     $img = imagecreatefromjpeg(testImagePath());
     $w = imagesx($img);
@@ -213,7 +233,7 @@ test('gpu get_palette returns valid RGB list from real image', function () {
     }
 });
 
-test('gpu palette count bounded by requested color_count on real image', function () {
+test('gpu palette count bounded by requested color_count on real image', function (): void {
     $pixels = imageToPixels(testImagePath());
     $img = imagecreatefromjpeg(testImagePath());
     $w = imagesx($img);
@@ -228,12 +248,12 @@ test('gpu palette count bounded by requested color_count on real image', functio
 
 // -- Dominant color tests --
 
-test('gpu get_color returns dominant color', function () {
+test('gpu get_color returns dominant color', function (): void {
     $color = get_color(redPixels(), 1, 1, 1);
     expect($color)->toBe([255, 0, 0]);
 });
 
-test('gpu get_color returns valid RGB values', function () {
+test('gpu get_color returns valid RGB values', function (): void {
     $color = get_color(greenPixels(), 3, 3, 1);
     expect(count($color))->toBe(3);
     foreach ($color as $channel) {
@@ -243,19 +263,19 @@ test('gpu get_color returns valid RGB values', function () {
 
 // -- Edge case tests --
 
-test('gpu deterministic results for same input', function () {
+test('gpu deterministic results for same input', function (): void {
     $result1 = get_palette(greenPixels(), 3, 3, 5, 1);
     $result2 = get_palette(greenPixels(), 3, 3, 5, 1);
     expect($result1)->toEqual($result2);
 });
 
-test('gpu deterministic get_color results', function () {
+test('gpu deterministic get_color results', function (): void {
     $color1 = get_color(redPixels(), 1, 1, 1);
     $color2 = get_color(redPixels(), 1, 1, 1);
     expect($color1)->toEqual($color2);
 });
 
-test('gpu deterministic results on real image', function () {
+test('gpu deterministic results on real image', function (): void {
     $pixels = imageToPixels(testImagePath());
     $img = imagecreatefromjpeg(testImagePath());
     $w = imagesx($img);
@@ -267,13 +287,13 @@ test('gpu deterministic results on real image', function () {
     expect($c1)->toEqual($c2);
 });
 
-test('gpu different images produce different dominant colors', function () {
+test('gpu different images produce different dominant colors', function (): void {
     $redColor = get_color(redPixels(), 1, 1, 1);
     $greenColor = get_color(greenPixels(), 3, 3, 1);
     expect($redColor)->not->toEqual($greenColor);
 });
 
-test('gpu different real images produce different dominant colors', function () {
+test('gpu different real images produce different dominant colors', function (): void {
     $p1 = imageToPixels(testImagePath());
     $img1 = imagecreatefromjpeg(testImagePath());
     $w1 = imagesx($img1);
@@ -293,7 +313,7 @@ test('gpu different real images produce different dominant colors', function () 
 
 // -- Dominant color in palette consistency --
 
-test('gpu dominant color appears in palette', function () {
+test('gpu dominant color appears in palette', function (): void {
     $color = get_color(twoColorPixels(), 1, 2, 1);
     $palette = get_palette(twoColorPixels(), 1, 2, 5, 1);
     $found = false;
@@ -307,7 +327,7 @@ test('gpu dominant color appears in palette', function () {
 
 // -- Quality tests --
 
-test('gpu quality min valid', function () {
+test('gpu quality min valid', function (): void {
     $pixels = imageToPixels(testImagePath());
     $img = imagecreatefromjpeg(testImagePath());
     $w = imagesx($img);
@@ -318,7 +338,7 @@ test('gpu quality min valid', function () {
     expect(count($color))->toBe(3);
 });
 
-test('gpu quality max valid', function () {
+test('gpu quality max valid', function (): void {
     $pixels = imageToPixels(testImagePath());
     $img = imagecreatefromjpeg(testImagePath());
     $w = imagesx($img);
@@ -329,25 +349,25 @@ test('gpu quality max valid', function () {
     expect(count($color))->toBe(3);
 });
 
-test('gpu quality middle valid', function () {
+test('gpu quality middle valid', function (): void {
     $pixels = greenPixels();
     $color = get_color($pixels, 3, 3, 5);
     expect(count($color))->toBe(3);
 });
 
-test('gpu quality zero clamped', function () {
+test('gpu quality zero clamped', function (): void {
     $color = get_color(redPixels(), 1, 1, 0);
     expect(count($color))->toBe(3);
 });
 
-test('gpu quality 100 works', function () {
+test('gpu quality 100 works', function (): void {
     $color = get_color(redPixels(), 1, 1, 100);
     expect(count($color))->toBe(3);
 });
 
 // -- Gradient image --
 
-test('gpu gradient returns multiple colors', function () {
+test('gpu gradient returns multiple colors', function (): void {
     $pixels = gradientPixels();
     $palette = get_palette($pixels, 20, 10, 10, 1);
     expect(count($palette))->toBeGreaterThan(1);
@@ -355,7 +375,7 @@ test('gpu gradient returns multiple colors', function () {
 
 // -- Checkerboard --
 
-test('gpu checkerboard returns palette', function () {
+test('gpu checkerboard returns palette', function (): void {
     $pixels = checkerboardPixels();
     $palette = get_palette($pixels, 10, 10, 5, 1);
     expect($palette)->not->toBeEmpty();
@@ -363,12 +383,12 @@ test('gpu checkerboard returns palette', function () {
 
 // -- Error handling tests --
 
-test('gpu error on empty pixels', function () {
+test('gpu error on empty pixels', function (): void {
     expect(fn () => get_palette("", 1, 1, 5, 1))->toThrow(\Exception::class);
     expect(fn () => get_color("", 1, 1, 1))->toThrow(\Exception::class);
 });
 
-test('gpu error on mismatched pixel data', function () {
+test('gpu error on mismatched pixel data', function (): void {
     // 4 bytes is 1 pixel, but we declare 2x2 (4 pixels = 16 bytes).
     // Core validation (F4) rejects this dimension mismatch.
     $pixels = packBytes([255, 0, 0, 255]);
@@ -377,7 +397,7 @@ test('gpu error on mismatched pixel data', function () {
 
 // -- GC stress --
 
-test('gpu gc stress palette', function () {
+test('gpu gc stress palette', function (): void {
     $pixels = redPixels();
     for ($i = 0; $i < 50; $i++) {
         $palette = get_palette($pixels, 1, 1, 5, 1);
@@ -385,7 +405,7 @@ test('gpu gc stress palette', function () {
     }
 });
 
-test('gpu gc stress color', function () {
+test('gpu gc stress color', function (): void {
     $pixels = redPixels();
     for ($i = 0; $i < 50; $i++) {
         $color = get_color($pixels, 1, 1, 1);
@@ -393,7 +413,7 @@ test('gpu gc stress color', function () {
     }
 });
 
-test('gpu gc stress mixed', function () {
+test('gpu gc stress mixed', function (): void {
     $pixels = redPixels();
     for ($i = 0; $i < 25; $i++) {
         $palette = get_palette($pixels, 1, 1, 5, 1);
@@ -405,10 +425,13 @@ test('gpu gc stress mixed', function () {
 
 // -- Solid black detection --
 
-test('gpu solid black color detection', function () {
+test('gpu solid black color detection', function (): void {
     $black = [];
     for ($i = 0; $i < 9; $i++) {
-        $black[] = 0; $black[] = 0; $black[] = 0; $black[] = 255;
+        $black[] = 0;
+        $black[] = 0;
+        $black[] = 0;
+        $black[] = 255;
     }
     $palette = get_palette(packBytes($black), 3, 3, 5, 1);
     expect($palette)->not->toBeEmpty();
@@ -420,13 +443,19 @@ test('gpu solid black color detection', function () {
 
 // -- Dominant reflects majority --
 
-test('gpu dominant reflects 90/10 majority', function () {
+test('gpu dominant reflects 90/10 majority', function (): void {
     $pixels = [];
     for ($i = 0; $i < 90; $i++) {
-        $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
+        $pixels[] = 255;
+        $pixels[] = 0;
+        $pixels[] = 0;
+        $pixels[] = 255;
     }
     for ($i = 0; $i < 10; $i++) {
-        $pixels[] = 0; $pixels[] = 0; $pixels[] = 255; $pixels[] = 255;
+        $pixels[] = 0;
+        $pixels[] = 0;
+        $pixels[] = 255;
+        $pixels[] = 255;
     }
     $color = get_color(packBytes($pixels), 10, 10, 1);
     expect($color[0])->toBeGreaterThan(200);
@@ -434,7 +463,7 @@ test('gpu dominant reflects 90/10 majority', function () {
 
 // -- Color count=0 edge case --
 
-test('gpu color_count zero returns empty', function () {
+test('gpu color_count zero returns empty', function (): void {
     $palette = get_palette(redPixels(), 1, 1, 0, 1);
     expect($palette)->toBeArray();
     expect(count($palette))->toBe(0);
@@ -442,19 +471,25 @@ test('gpu color_count zero returns empty', function () {
 
 // -- Non-square wide/tall --
 
-test('gpu non-square wide image', function () {
+test('gpu non-square wide image', function (): void {
     $pixels = [];
     for ($i = 0; $i < 200; $i++) {
-        $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
+        $pixels[] = 255;
+        $pixels[] = 0;
+        $pixels[] = 0;
+        $pixels[] = 255;
     }
     $palette = get_palette(packBytes($pixels), 20, 10, 5, 1);
     expect($palette)->not->toBeEmpty();
 });
 
-test('gpu non-square tall image', function () {
+test('gpu non-square tall image', function (): void {
     $pixels = [];
     for ($i = 0; $i < 200; $i++) {
-        $pixels[] = 255; $pixels[] = 0; $pixels[] = 0; $pixels[] = 255;
+        $pixels[] = 255;
+        $pixels[] = 0;
+        $pixels[] = 0;
+        $pixels[] = 255;
     }
     $palette = get_palette(packBytes($pixels), 10, 20, 5, 1);
     expect($palette)->not->toBeEmpty();

@@ -319,10 +319,6 @@ jobs:
           install_swiftshader: true
           cache: true
           github_token: ${{ github.token }}
-      - name: Setup Vulkan environment (macOS)
-        if: ${{ contains(matrix.target, '-apple-darwin') }}
-        shell: bash
-        run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Setup LLVM (Linux x86_64)
         if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
         uses: KyleMayes/install-llvm-action@v2.0.9
@@ -436,10 +432,6 @@ jobs:
           install_swiftshader: true
           cache: true
           github_token: ${{ github.token }}
-      - name: Setup Vulkan environment (macOS)
-        if: ${{ startsWith(matrix.os, 'macos') }}
-        shell: bash
-        run: bash .github/scripts/setup_vulkan_macos.sh
       - name: Download GPU native extension
         uses: actions/download-artifact@v8
         with:

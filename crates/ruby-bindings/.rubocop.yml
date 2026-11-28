@@ -26,3 +26,11 @@ Lint/RaiseException:
 
 Lint/StructNewOverride:
   Enabled: false
+
+# RubyGems releases use an API key in GitHub Actions.
+Gemspec/RequireMFA:
+  Enabled: false
+
+# The gem supports older Ruby versions than the lint tool.
+Gemspec/RequiredRubyVersion:
+  Enabled: false

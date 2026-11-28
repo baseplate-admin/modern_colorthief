@@ -7,6 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 private val classLoader = ClassLoader.getSystemClassLoader()
+
 private fun loadResource(name: String) = classLoader.getResource(name)
 
 @Test

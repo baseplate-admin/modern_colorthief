@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require_relative 'spec_helper'
 
-RSpec.describe "ColorthiefGpu" do
-  skip "GPU extension not available" unless $gpu_available
+RSpec.describe 'ColorthiefGpu' do
+  before { skip 'GPU extension not available' unless GPU_AVAILABLE }
 
   let(:colorthief_gpu) { ColorthiefGpu }
 
@@ -64,7 +64,7 @@ RSpec.describe "ColorthiefGpu" do
   # 30x30 horizontal gradient
   let(:gradient_pixels) do
     pixels = []
-    30.times do |y|
+    30.times do |_y|
       30.times do |x|
         pixels.push((x * 8) % 256, 128, 64, 255)
       end
@@ -77,7 +77,7 @@ RSpec.describe "ColorthiefGpu" do
     pixels = []
     50.times do |y|
       50.times do |x|
-        if (x + y) % 2 == 0
+        if (x + y).even?
           pixels.push(200, 50, 50, 255)
         else
           pixels.push(50, 50, 200, 255)
@@ -90,7 +90,7 @@ RSpec.describe "ColorthiefGpu" do
   # 10x2 wide non-square
   let(:wide_pixels) do
     pixels = []
-    2.times do |y|
+    2.times do |_y|
       10.times do |x|
         if x < 5
           pixels.push(255, 0, 0, 255)
@@ -106,7 +106,7 @@ RSpec.describe "ColorthiefGpu" do
   let(:tall_pixels) do
     pixels = []
     10.times do |y|
-      2.times do |x|
+      2.times do |_x|
         if y < 5
           pixels.push(200, 100, 50, 255)
         else
@@ -123,7 +123,7 @@ RSpec.describe "ColorthiefGpu" do
 
   def with_gpu
     yield
-  rescue Exception => e
+  rescue StandardError => e
     skip "GPU unavailable: #{e.class} - #{e.message}"
   end
 

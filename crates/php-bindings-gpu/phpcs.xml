@@ -10,6 +10,11 @@
         <exclude name="PSR12.Files.FileHeader"/>
     </rule>
 
+    <!-- Standalone test runners declare helpers and execute tests. -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>*/tests/*Test.php</exclude-pattern>
+    </rule>
+
     <!-- Sensible relaxations -->
     <rule ref="Generic.Files.LineLength">
         <properties>
@@ -18,11 +23,6 @@
         </properties>
     </rule>
     <rule ref="Squiz.Functions.MultiLineFunctionDeclaration"/>
-    <rule ref="PSR1.Methods.CamelCapsMethodName">
-        <properties>
-            <property name="exclude" value="packBytes,testImagePath,kaijuImagePath"/>
-        </properties>
-    </rule>
     <rule ref="Generic.WhiteSpace.ScopeIndent">
         <properties>
             <property name="indent" value="4"/>

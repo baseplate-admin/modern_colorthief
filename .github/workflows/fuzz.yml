@@ -71,11 +71,6 @@ jobs:
           cache: true
           github_token: ${{ github.token }}
 
-      - name: Setup Vulkan environment (macOS)
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: bash .github/scripts/setup_vulkan_macos.sh
-
       - name: Cache cargo registry
         uses: actions/cache@v6
         with:
@@ -143,11 +138,6 @@ jobs:
           install_swiftshader: true
           cache: true
           github_token: ${{ github.token }}
-
-      - name: Setup Vulkan environment (macOS)
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: bash .github/scripts/setup_vulkan_macos.sh
 
       - name: Build fuzz targets
         if: matrix.os != 'windows-latest'

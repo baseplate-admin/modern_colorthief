@@ -17,7 +17,10 @@ fun testHigherQualityMoreAccurate() {
         val actualLow = colorLow[channel].toInt() and 0xFF
         val actualHigh = colorHigh[channel].toInt() and 0xFF
         assertTrue(kotlin.math.abs(actualLow - expected) < 30, "Low quality should be close: diff=${kotlin.math.abs(actualLow - expected)}")
-        assertTrue(kotlin.math.abs(actualHigh - expected) < 30, "High quality should be close: diff=${kotlin.math.abs(actualHigh - expected)}")
+        assertTrue(
+            kotlin.math.abs(actualHigh - expected) < 30,
+            "High quality should be close: diff=${kotlin.math.abs(actualHigh - expected)}",
+        )
     }
 }
 
