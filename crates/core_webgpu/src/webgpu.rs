@@ -4,10 +4,10 @@ use wasm_bindgen::prelude::*;
 const JS_HELPER: &str = include_str!(concat!(env!("OUT_DIR"), "/helper.min.js"));
 
 /// Bind to `globalThis.eval` so JS code runs in the global scope.
-#[wasm_bindgen(js_namespace = global)]
+#[wasm_bindgen(js_namespace = globalThis)]
 extern "C" {
-    #[wasm_bindgen(js_name = "eval")]
-    fn js_eval_global(code: &str) -> JsValue;
+    #[wasm_bindgen(catch, js_name = "eval")]
+    fn js_eval_global(code: &str) -> Result<JsValue, JsValue>;
 }
 
 /// Evaluate a JavaScript string in the global scope.
