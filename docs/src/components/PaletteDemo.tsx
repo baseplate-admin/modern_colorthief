@@ -36,7 +36,7 @@ type Engine = 'wasm' | 'webgpu' | 'auto';
 
 const BASE = import.meta.env.BASE_URL;
 const WASM_MODULE = BASE + 'wasm/modern_colorthief_wasm.js';
-const WASM_GPU_MODULE = BASE + 'wasm-webgpu/modern_colorthief_wasm_webgpu.js';
+const WASM_GPU_MODULE = BASE + 'wasm-webgpu/modern_colorthief_webgpu.js';
 
 let cpuGlue: Promise<WasmGlue> | undefined;
 let gpuGlue: Promise<WasmGpuGlue> | undefined;

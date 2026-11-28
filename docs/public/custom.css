@@ -1,85 +1,96 @@
-/* Vercel-inspired theme: black / white, minimal, sharp.
-   Starlight exposes --sl-* custom properties; we override the palette
-   so both light and dark modes read like vercel.com. */
+/* Neutral surfaces keep the extracted colors in the demo visually distinct. */
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --sl-color-white: #fafafa;
+  --sl-color-gray-1: #ededed;
+  --sl-color-gray-2: #d4d4d4;
+  --sl-color-gray-3: #a1a1a1;
+  --sl-color-gray-4: #858585;
+  --sl-color-gray-5: #525252;
+  --sl-color-gray-6: #303030;
+  --sl-color-black: #080808;
+  --docs-surface: #111111;
+  --docs-hover: #1c1c1c;
+  --docs-selected: #242424;
+  --docs-link: #8ab8ff;
+  --docs-border: #303030;
+}
 
-:root {
-  --sl-color-accent-low: #f4f4f5;
-  --sl-color-accent: #18181b;
-  --sl-color-accent-high: #27272a;
+:root[data-theme='light'] {
+  color-scheme: light;
+  --sl-color-white: #171717;
+  --sl-color-gray-1: #262626;
+  --sl-color-gray-2: #404040;
+  --sl-color-gray-3: #575757;
+  --sl-color-gray-4: #666666;
+  --sl-color-gray-5: #a3a3a3;
+  --sl-color-gray-6: #e5e5e5;
+  --sl-color-gray-7: #fafafa;
+  --sl-color-black: #ffffff;
+  --docs-surface: #fafafa;
+  --docs-hover: #f0f0f0;
+  --docs-selected: #e9e9e9;
+  --docs-link: #1759b0;
+  --docs-border: #dedede;
+}
 
-  --sl-color-white: #ffffff;
-  --sl-color-gray-white: #fafafa;
-  --sl-color-gray-1: #f4f4f5;
-  --sl-color-gray-2: #e4e4e7;
-  --sl-color-gray-3: #d4d4d8;
-  --sl-color-gray-4: #a1a1aa;
-  --sl-color-gray-5: #71717a;
-  --sl-color-gray-6: #52525b;
-  --sl-color-gray-7: #3f3f46;
-  --sl-color-gray-8: #27272a;
-  --sl-color-gray-9: #18181b;
-  --sl-color-gray-black: #0a0a0a;
-
-  --sl-color-button-primary: #18181b;
-  --sl-color-button-primary-hover: #27272a;
-  --sl-color-button-primary-text: #ffffff;
-
-  --sl-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+:root,
+:root[data-theme] {
+  --sl-color-bg: var(--sl-color-black);
+  --sl-color-bg-nav: var(--sl-color-bg);
+  --sl-color-bg-sidebar: var(--sl-color-bg);
+  --sl-color-bg-inline-code: var(--docs-hover);
+  --sl-color-hairline: var(--docs-border);
+  --sl-color-hairline-light: var(--docs-border);
+  --sl-color-hairline-shade: var(--docs-border);
+  --sl-color-accent-low: var(--docs-selected);
+  --sl-color-accent: var(--sl-color-white);
+  --sl-color-accent-high: var(--sl-color-white);
+  --sl-color-text-accent: var(--docs-link);
+  --sl-font: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --sl-font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
-/* Dark mode: near-black surfaces, white text, subtle gray borders. */
-:root[data-theme='dark'] {
-  --sl-color-accent-low: #27272a;
-  --sl-color-accent: #fafafa;
-  --sl-color-accent-high: #ffffff;
-
-  --sl-color-white: #fafafa;
-  --sl-color-gray-white: #f4f4f5;
-  --sl-color-gray-1: #e4e4e7;
-  --sl-color-gray-2: #d4d4d8;
-  --sl-color-gray-3: #a1a1aa;
-  --sl-color-gray-4: #71717a;
-  --sl-color-gray-5: #52525b;
-  --sl-color-gray-6: #3f3f46;
-  --sl-color-gray-7: #27272a;
-  --sl-color-gray-8: #18181b;
-  --sl-color-gray-9: #111113;
-  --sl-color-gray-black: #0a0a0a;
-
-  --sl-color-button-primary: #fafafa;
-  --sl-color-button-primary-hover: #ffffff;
-  --sl-color-button-primary-text: #0a0a0a;
-}
-
-/* Crisp 1px borders, no heavy shadows. */
-.sl-aside,
-.starlight-aside {
-  border-left-width: 1px;
-  border-left-color: var(--sl-color-gray-3);
-}
-
-a {
+.sl-markdown-content a:not(:where(.not-content *)) {
   text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+  text-underline-offset: 0.18em;
 }
 
-/* Hero: tighten the default Starlight hero to read like vercel.com. */
-.hero {
-  padding-block: 3rem 2.5rem;
-}
-.hero h1 {
-  font-weight: 700;
-  letter-spacing: -0.02em;
+:focus-visible {
+  outline: 2px solid var(--docs-link);
+  outline-offset: 3px;
 }
 
-/* Code blocks: tighter, darker surface. */
-pre {
-  font-size: 0.85rem;
-  line-height: 1.6;
+.sidebar-content a[aria-current='page'] {
+  background: var(--docs-selected);
+  color: var(--sl-color-white);
+  font-weight: 600;
 }
 
-/* Sidebar: quiet. */
-.starlight-sidebar-content {
-  font-size: 0.85rem;
+.sidebar-content a:not([aria-current='page']):hover {
+  background: var(--docs-hover);
+  color: var(--sl-color-white);
+}
+
+.sl-markdown-content .card,
+.pagination-links a {
+  border: 1px solid var(--docs-border);
+  border-radius: 0.625rem;
+  background: var(--docs-surface);
+  box-shadow: none;
+}
+
+.pagination-links a:hover {
+  background: var(--docs-hover);
+  border-color: var(--sl-color-gray-4);
+}
+
+.content-panel h1 {
+  letter-spacing: -0.035em;
+}
+
+.sl-markdown-content .card .icon {
+  border-color: var(--docs-border);
+  background: var(--docs-hover);
 }
