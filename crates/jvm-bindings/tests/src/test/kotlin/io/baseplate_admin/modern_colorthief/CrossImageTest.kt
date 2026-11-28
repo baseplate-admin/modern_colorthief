@@ -1,7 +1,6 @@
 package io.baseplate_admin.modern_colorthief
 
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -19,7 +18,8 @@ fun testCrossImagePaletteDiffer() {
     val firstBlue = paletteBlue[0]
     if ((firstRed[0].toInt() and 0xFF) == (firstBlue[0].toInt() and 0xFF) &&
         (firstRed[1].toInt() and 0xFF) == (firstBlue[1].toInt() and 0xFF) &&
-        (firstRed[2].toInt() and 0xFF) == (firstBlue[2].toInt() and 0xFF)) {
+        (firstRed[2].toInt() and 0xFF) == (firstBlue[2].toInt() and 0xFF)
+    ) {
         throw AssertionError("Different images should produce different palettes")
     }
 }

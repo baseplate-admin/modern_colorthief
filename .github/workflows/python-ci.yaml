@@ -406,12 +406,6 @@ jobs:
           cache: true
           github_token: ${{ github.token }}
 
-      - name: Setup Vulkan environment (macOS)
-        if: startsWith(matrix.os, 'macos')
-        shell: bash
-        working-directory: .
-        run: bash .github/scripts/setup_vulkan_macos.sh
-
       - uses: dtolnay/rust-toolchain@stable
       - name: Cache cargo registry
         uses: actions/cache@v6
@@ -499,11 +493,6 @@ jobs:
           cache: true
           github_token: ${{ github.token }}
 
-      - name: Setup Vulkan environment (macOS)
-        if: startsWith(matrix.os, 'macos')
-        shell: bash
-        run: bash .github/scripts/setup_vulkan_macos.sh
-
       - name: Run Rust GPU unit tests
         run: cargo test -p modern-colorthief-core -p modern-colorthief-core-cpu -p modern-colorthief-core-gpu
         working-directory: .
@@ -567,12 +556,6 @@ jobs:
           cache: true
           github_token: ${{ github.token }}
 
-      - name: Setup Vulkan environment (macOS)
-        if: startsWith(matrix.os, 'macos')
-        shell: bash
-        working-directory: .
-        run: bash .github/scripts/setup_vulkan_macos.sh
-
       - name: Install uv
         uses: astral-sh/setup-uv@v10.3.3
         with:
@@ -621,11 +604,6 @@ jobs:
           install_swiftshader: true
           cache: true
           github_token: ${{ github.token }}
-
-      - name: Setup Vulkan environment
-        shell: bash
-        working-directory: .
-        run: bash .github/scripts/setup_vulkan_macos.sh || true
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -690,7 +668,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: wheels-cpu-*
-          merge-mappings: true
+          merge-multiple: true
           path: wheels-cpu
 
       - name: Generate artifact attestation
@@ -721,7 +699,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: wheel-gpu-*
-          merge-mappings: true
+          merge-multiple: true
           path: wheels-gpu
 
       - name: Install uv

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require "rbconfig"
+require 'rbconfig'
 
 # Determine expected library base name
-lib_base = "modern_colorthief_gpu"
+lib_base = 'modern_colorthief_gpu'
 
 # Search for the library file in lib/, handling lib-prefixed and non-prefixed names
 lib_dir = __dir__
-lib_ext = RbConfig::CONFIG["DLEXT"]
+lib_ext = RbConfig::CONFIG['DLEXT']
 lib_candidates = [
   "#{lib_base}.#{lib_ext}",       # modern_colorthief_gpu.so, .bundle, .dylib
   "lib#{lib_base}.#{lib_ext}",    # libmodern_colorthief_gpu.so, .dylib

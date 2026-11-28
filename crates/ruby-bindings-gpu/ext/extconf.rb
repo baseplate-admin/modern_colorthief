@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "mkmf"
-require "rb_sys/mkmf"
+require 'mkmf'
+require 'rb_sys/mkmf'
 
-create_rust_makefile("modern_colorthief_gpu/modern_colorthief_gpu")
+create_rust_makefile('modern_colorthief_gpu/modern_colorthief_gpu')

@@ -211,7 +211,7 @@ jobs:
           # Linux x86_64
           if [ -f crates/node-bindings/artifacts/node-native-x86_64-unknown-linux-gnu/modern_colorthief.node ]; then
             mv crates/node-bindings/artifacts/node-native-x86_64-unknown-linux-gnu/modern_colorthief.node \
-               crates/node-bindings/artifacts/modern_colorthief.linux-x86_64-gnu.node
+               crates/node-bindings/artifacts/modern_colorthief.linux-x64-gnu.node
           fi
           # Linux aarch64
           if [ -f crates/node-bindings/artifacts/node-native-aarch64-unknown-linux-gnu/modern_colorthief.node ]; then
@@ -221,7 +221,7 @@ jobs:
           # macOS x86_64
           if [ -f crates/node-bindings/artifacts/node-native-x86_64-apple-darwin/modern_colorthief.node ]; then
             mv crates/node-bindings/artifacts/node-native-x86_64-apple-darwin/modern_colorthief.node \
-               crates/node-bindings/artifacts/modern_colorthief.darwin-x86_64.node
+               crates/node-bindings/artifacts/modern_colorthief.darwin-x64.node
           fi
           # macOS aarch64
           if [ -f crates/node-bindings/artifacts/node-native-aarch64-apple-darwin/modern_colorthief.node ]; then

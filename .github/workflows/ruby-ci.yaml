@@ -225,11 +225,6 @@ jobs:
             }
           }
 
-      - name: Setup Vulkan environment (macOS)
-        if: startsWith(matrix.os, 'macos')
-        shell: bash
-        run: bash .github/scripts/setup_vulkan_macos.sh
-
       - name: Build native extension (non-Windows)
         if: matrix.os != 'windows-latest'
         shell: bash
@@ -336,11 +331,6 @@ jobs:
             }
           }
 
-      - name: Setup Vulkan environment (macOS)
-        if: startsWith(matrix.os, 'macos')
-        shell: bash
-        run: bash .github/scripts/setup_vulkan_macos.sh
-
       - name: Download built extension
         uses: actions/download-artifact@v8
         with:
@@ -436,14 +426,17 @@ jobs:
           name: ruby-bindings-gems
           path: gems/
 
-      - name: Publish to RubyGems
-        uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "4.0.9"
           rubygems: latest
+      - name: Publish to RubyGems
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-      - run: gem push gems/*.gem
+        run: |
+          for artifact in gems/*.gem; do
+            gem push "$artifact"
+          done
 
   publish-gpu:
     name: Publish GPU gem
@@ -460,11 +453,14 @@ jobs:
           name: ruby-bindings-gpu-gems
           path: gems/
 
-      - name: Publish to RubyGems
-        uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "4.0.9"
           rubygems: latest
+      - name: Publish to RubyGems
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-      - run: gem push gems/*.gem
+        run: |
+          for artifact in gems/*.gem; do
+            gem push "$artifact"
+          done

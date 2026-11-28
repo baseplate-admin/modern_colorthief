@@ -115,7 +115,7 @@ publishing {
         signing {
             useInMemoryPgpKeys(
                 findProperty("signingInMemoryKey") as String,
-                findProperty("signingInMemoryPassword") as String
+                findProperty("signingInMemoryPassword") as String,
             )
             sign(publishing.publications["maven"])
         }

@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe "Colorthief" do
-  skip "CPU extension not available" unless defined?(Colorthief)
+RSpec.describe 'Colorthief' do
+  skip 'CPU extension not available' unless defined?(Colorthief)
 
   let(:colorthief) { Colorthief }
 
@@ -11,17 +11,12 @@ RSpec.describe "Colorthief" do
   # Pixel helpers  (RGBA -> binary blob, matching the Rust &[u8] contract)
   # ---------------------------------------------------------------------------
 
-  def solid_pixels(r, g, b, count)
-    pixels = []
-    count.times { pixels.push(r, g, b, 255) }
-    pixels.pack('C*')
+  def solid_pixels(rgb, count)
+    (rgb + [255]).pack('C*') * count
   end
 
-  def two_color_pixels(r1, g1, b1, r2, g2, b2, count1: 50, count2: 50)
-    pixels = []
-    count1.times { pixels.push(r1, g1, b1, 255) }
-    count2.times { pixels.push(r2, g2, b2, 255) }
-    pixels.pack('C*')
+  def two_color_pixels(first_rgb, second_rgb)
+    solid_pixels(first_rgb, 50) + solid_pixels(second_rgb, 50)
   end
 
   def build_image(width, height, &pixel_fn)
@@ -36,23 +31,27 @@ RSpec.describe "Colorthief" do
   end
 
   # 10x10 solid red
-  let(:solid_red_pixels) { solid_pixels(255, 0, 0, 100) }
+  let(:solid_red_pixels) { solid_pixels([255, 0, 0], 100) }
   # 10x10 solid green
-  let(:solid_green_pixels) { solid_pixels(0, 255, 0, 100) }
+  let(:solid_green_pixels) { solid_pixels([0, 255, 0], 100) }
   # 10x10 solid blue
-  let(:solid_blue_pixels) { solid_pixels(0, 0, 255, 100) }
+  let(:solid_blue_pixels) { solid_pixels([0, 0, 255], 100) }
   # 10x10 solid white
-  let(:solid_white_pixels) { solid_pixels(255, 255, 255, 100) }
+  let(:solid_white_pixels) { solid_pixels([255, 255, 255], 100) }
   # 10x10 split red / blue
-  let(:red_blue_pixels) { two_color_pixels(255, 0, 0, 0, 0, 255) }
+  let(:red_blue_pixels) { two_color_pixels([255, 0, 0], [0, 0, 255]) }
   # 10x10 split red / green
-  let(:red_green_pixels) { two_color_pixels(255, 0, 0, 0, 255, 0) }
+  let(:red_green_pixels) { two_color_pixels([255, 0, 0], [0, 255, 0]) }
   # 100x100 solid purple
-  let(:large_solid_pixels) { solid_pixels(170, 85, 220, 10_000) }
+  let(:large_solid_pixels) { solid_pixels([170, 85, 220], 10_000) }
   # 30x30 horizontal gradient
   let(:gradient_pixels) { build_image(30, 30) { |x, _| [(x * 8) % 256, 128, 64] } }
   # 50x50 checkerboard
-  let(:checkerboard_pixels) { build_image(50, 50) { |x, y| ((x + y) % 2 == 0) ? [200, 50, 50] : [50, 50, 200] } }
+  let(:checkerboard_pixels) do
+    build_image(50, 50) do |x, y|
+      (x + y).even? ? [200, 50, 50] : [50, 50, 200]
+    end
+  end
   # 10x2 wide non-square
   let(:wide_pixels) { build_image(10, 2) { |x, _| x < 5 ? [255, 0, 0] : [0, 0, 255] } }
   # 2x10 tall non-square

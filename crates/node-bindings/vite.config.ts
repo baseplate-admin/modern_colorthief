@@ -3,7 +3,7 @@ import { dts } from 'rolldown-plugin-dts';
 import { resolve } from 'node:path';
 
 export default defineConfig({
-    plugins: dts({ generator: 'tsgo' }).map((plugin) =>
+    plugins: dts({ generator: 'tsc' }).map((plugin) =>
         plugin.name.endsWith('fake-js') ? { ...plugin, enforce: 'pre' } : plugin
     ),
     build: {

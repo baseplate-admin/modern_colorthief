@@ -9,8 +9,9 @@ Version: 0.3.0
 
 ### `make_runtime_err(msg: String)` → `error`
 
-  Build a magnus runtime error. Returns a placeholder if the Ruby runtime
-  is unavailable (only possible during interpreter shutdown).
+  Build a magnus runtime error.
+  The Ruby runtime is always available here — this function is called with
+  the GVL held, so `Ruby::get()` cannot be `None` in normal operation.
 
   Parameters:
   - `msg` (String)

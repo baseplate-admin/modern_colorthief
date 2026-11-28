@@ -23,3 +23,7 @@ max_line_length = 100
 
 [Makefile]
 indent_style = tab
+
+# These tests use the JVM binding package name.
+[crates/jvm-bindings/tests/src/test/kotlin/io/baseplate_admin/modern_colorthief/*.kt]
+ktlint_standard_package-name = disabled

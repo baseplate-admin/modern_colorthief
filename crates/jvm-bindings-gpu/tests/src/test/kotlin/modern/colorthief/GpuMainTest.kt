@@ -7,7 +7,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class GpuMainTest {
-
     companion object {
         init {
             try {
@@ -71,9 +70,17 @@ class GpuMainTest {
 
     @Test
     fun gpuTwoColorsRedBlue() {
-        val pixels = createTwoColorPixels(50, 50,
-            255.toByte(), 0.toByte(), 0.toByte(),
-            0.toByte(), 0.toByte(), 255.toByte())
+        val pixels =
+            createTwoColorPixels(
+                50,
+                50,
+                255.toByte(),
+                0.toByte(),
+                0.toByte(),
+                0.toByte(),
+                0.toByte(),
+                255.toByte(),
+            )
         val palette = ColorthiefGpu.getPalette(pixels, 10, 10, 5, 1)
         assertTrue(paletteContains(palette, 255, 0, 0), "Should detect red")
         assertTrue(paletteContains(palette, 0, 0, 255), "Should detect blue")
@@ -301,9 +308,17 @@ class GpuMainTest {
 
     @Test
     fun gpuDominantInPalette() {
-        val pixels = createTwoColorPixels(50, 50,
-            255.toByte(), 0.toByte(), 0.toByte(),
-            0.toByte(), 0.toByte(), 255.toByte())
+        val pixels =
+            createTwoColorPixels(
+                50,
+                50,
+                255.toByte(),
+                0.toByte(),
+                0.toByte(),
+                0.toByte(),
+                0.toByte(),
+                255.toByte(),
+            )
         val color = ColorthiefGpu.getColor(pixels, 10, 10, 1)
         val palette = ColorthiefGpu.getPalette(pixels, 10, 10, 5, 1)
         assertTrue(palette.any { it.contentEquals(color) }, "Dominant color should be in palette")
@@ -387,9 +402,17 @@ class GpuMainTest {
 
     @Test
     fun gpuDominantReflectsMajority() {
-        val pixels = createTwoColorPixels(90, 10,
-            255.toByte(), 0.toByte(), 0.toByte(),
-            0.toByte(), 0.toByte(), 255.toByte())
+        val pixels =
+            createTwoColorPixels(
+                90,
+                10,
+                255.toByte(),
+                0.toByte(),
+                0.toByte(),
+                0.toByte(),
+                0.toByte(),
+                255.toByte(),
+            )
         val color = ColorthiefGpu.getColor(pixels, 10, 10, 1)
         assertNotNull(color)
         assertTrue(color[0].toInt() and 0xFF > 200, "dominant should be red for 90/10 split")
@@ -441,7 +464,13 @@ class GpuMainTest {
 // Helpers
 // ---------------------------------------------------------------------------
 
-fun createSolidColorPixels(width: Int, height: Int, r: Byte, g: Byte, b: Byte): ByteArray {
+fun createSolidColorPixels(
+    width: Int,
+    height: Int,
+    r: Byte,
+    g: Byte,
+    b: Byte,
+): ByteArray {
     val pixelCount = width * height
     val pixels = ByteArray(pixelCount * 4)
     for (i in 0 until pixelCount) {
@@ -454,9 +483,14 @@ fun createSolidColorPixels(width: Int, height: Int, r: Byte, g: Byte, b: Byte): 
 }
 
 fun createTwoColorPixels(
-    firstCount: Int, secondCount: Int,
-    r1: Byte, g1: Byte, b1: Byte,
-    r2: Byte, g2: Byte, b2: Byte
+    firstCount: Int,
+    secondCount: Int,
+    r1: Byte,
+    g1: Byte,
+    b1: Byte,
+    r2: Byte,
+    g2: Byte,
+    b2: Byte,
 ): ByteArray {
     val pixels = ByteArray((firstCount + secondCount) * 4)
     for (i in 0 until firstCount) {
@@ -475,7 +509,12 @@ fun createTwoColorPixels(
     return pixels
 }
 
-fun paletteContains(palette: Array<ByteArray>, r: Int, g: Int, b: Int): Boolean {
+fun paletteContains(
+    palette: Array<ByteArray>,
+    r: Int,
+    g: Int,
+    b: Int,
+): Boolean {
     for (c in palette) {
         if ((c[0].toInt() and 0xFF) == r && (c[1].toInt() and 0xFF) == g && (c[2].toInt() and 0xFF) == b) {
             return true
@@ -484,7 +523,10 @@ fun paletteContains(palette: Array<ByteArray>, r: Int, g: Int, b: Int): Boolean 
     return false
 }
 
-fun createGradientPixels(width: Int, height: Int): ByteArray {
+fun createGradientPixels(
+    width: Int,
+    height: Int,
+): ByteArray {
     val pixels = ByteArray(width * height * 4)
     for (y in 0 until height) {
         for (x in 0 until width) {
@@ -498,7 +540,10 @@ fun createGradientPixels(width: Int, height: Int): ByteArray {
     return pixels
 }
 
-fun createCheckerboardPixels(width: Int, height: Int): ByteArray {
+fun createCheckerboardPixels(
+    width: Int,
+    height: Int,
+): ByteArray {
     val pixels = ByteArray(width * height * 4)
     for (y in 0 until height) {
         for (x in 0 until width) {

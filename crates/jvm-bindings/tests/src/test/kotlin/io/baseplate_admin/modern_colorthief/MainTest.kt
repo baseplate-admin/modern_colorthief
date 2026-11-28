@@ -1,8 +1,8 @@
 package io.baseplate_admin.modern_colorthief
 
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -11,7 +11,13 @@ import kotlin.test.assertTrue
 // Solid color detection
 // ---------------------------------------------------------------------------
 
-fun createSolidColorPixels(width: Int, height: Int, r: Byte, g: Byte, b: Byte): ByteArray {
+fun createSolidColorPixels(
+    width: Int,
+    height: Int,
+    r: Byte,
+    g: Byte,
+    b: Byte,
+): ByteArray {
     val pixelCount = width * height
     val pixels = ByteArray(pixelCount * 4)
     for (i in 0 until pixelCount) {
@@ -24,9 +30,14 @@ fun createSolidColorPixels(width: Int, height: Int, r: Byte, g: Byte, b: Byte): 
 }
 
 fun createTwoColorPixels(
-    firstCount: Int, secondCount: Int,
-    r1: Byte, g1: Byte, b1: Byte,
-    r2: Byte, g2: Byte, b2: Byte
+    firstCount: Int,
+    secondCount: Int,
+    r1: Byte,
+    g1: Byte,
+    b1: Byte,
+    r2: Byte,
+    g2: Byte,
+    b2: Byte,
 ): ByteArray {
     val pixels = ByteArray((firstCount + secondCount) * 4)
     for (i in 0 until firstCount) {
@@ -45,7 +56,12 @@ fun createTwoColorPixels(
     return pixels
 }
 
-fun paletteContains(palette: Array<ByteArray>, r: Int, g: Int, b: Int): Boolean {
+fun paletteContains(
+    palette: Array<ByteArray>,
+    r: Int,
+    g: Int,
+    b: Int,
+): Boolean {
     for (c in palette) {
         if ((c[0].toInt() and 0xFF) == r && (c[1].toInt() and 0xFF) == g && (c[2].toInt() and 0xFF) == b) {
             return true
@@ -117,9 +133,17 @@ fun testSolidPaletteReturnsOnlyThatColor() {
 
 @Test
 fun testTwoColorsRedBlue() {
-    val pixels = createTwoColorPixels(50, 50,
-        255.toByte(), 0.toByte(), 0.toByte(),
-        0.toByte(), 0.toByte(), 255.toByte())
+    val pixels =
+        createTwoColorPixels(
+            50,
+            50,
+            255.toByte(),
+            0.toByte(),
+            0.toByte(),
+            0.toByte(),
+            0.toByte(),
+            255.toByte(),
+        )
     val palette = Colorthief.getPalette(pixels, 10, 10, 5, 1)
     assertTrue(paletteContains(palette, 255, 0, 0), "Should detect red")
     assertTrue(paletteContains(palette, 0, 0, 255), "Should detect blue")
@@ -127,9 +151,17 @@ fun testTwoColorsRedBlue() {
 
 @Test
 fun testTwoColorsGreenYellow() {
-    val pixels = createTwoColorPixels(50, 50,
-        0.toByte(), 255.toByte(), 0.toByte(),
-        255.toByte(), 255.toByte(), 0.toByte())
+    val pixels =
+        createTwoColorPixels(
+            50,
+            50,
+            0.toByte(),
+            255.toByte(),
+            0.toByte(),
+            255.toByte(),
+            255.toByte(),
+            0.toByte(),
+        )
     val palette = Colorthief.getPalette(pixels, 10, 10, 5, 1)
     assertTrue(paletteContains(palette, 0, 255, 0), "Should detect green")
     assertTrue(paletteContains(palette, 255, 255, 0), "Should detect yellow")
@@ -137,9 +169,17 @@ fun testTwoColorsGreenYellow() {
 
 @Test
 fun testDominantColorReflectsMajority() {
-    val pixels = createTwoColorPixels(90, 10,
-        255.toByte(), 0.toByte(), 0.toByte(),
-        0.toByte(), 0.toByte(), 255.toByte())
+    val pixels =
+        createTwoColorPixels(
+            90,
+            10,
+            255.toByte(),
+            0.toByte(),
+            0.toByte(),
+            0.toByte(),
+            0.toByte(),
+            255.toByte(),
+        )
     val color = Colorthief.getColor(pixels, 10, 10, 1)
     assertEquals(255, color[0].toInt() and 0xFF)
     assertEquals(0, color[1].toInt() and 0xFF)

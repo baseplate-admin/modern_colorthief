@@ -185,6 +185,15 @@ impl VulkanBackend {
                     return Some(std::path::PathBuf::from(&moltenvk_path));
                 }
             }
+            if let Some(sdk) = std::env::var_os("VULKAN_SDK") {
+                let sdk = std::path::Path::new(&sdk);
+                for relative_path in ["lib/libMoltenVK.dylib", "macOS/lib/libMoltenVK.dylib"] {
+                    let library = sdk.join(relative_path);
+                    if library.is_file() {
+                        return Some(library);
+                    }
+                }
+            }
             None
         }
         #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]

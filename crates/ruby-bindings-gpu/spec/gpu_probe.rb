@@ -15,5 +15,5 @@ pixels = pixels.pack('C*')
 # This triggers Vulkan init — if it segfaults, the process crashes.
 ColorthiefGpu.get_palette(pixels, 2, 2, 5, 1)
 
-puts "GPU probe: OK"
+puts 'GPU probe: OK'
 exit(0)
