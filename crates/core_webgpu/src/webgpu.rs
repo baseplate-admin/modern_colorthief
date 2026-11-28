@@ -12,8 +12,8 @@ extern "C" {
 
 /// Evaluate a JavaScript string in the global scope.
 fn js_eval(code: &str) -> Result<JsValue, String> {
-    let result = js_eval_global(&format!("({})", code));
-    Ok(result)
+    js_eval_global(&format!("({code})"))
+        .map_err(|error| format!("WebGPU helper evaluation failed: {error:?}"))
 }
 
 /// Read `navigator.gpu` from the global object via js_sys.
