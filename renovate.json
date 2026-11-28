@@ -14,6 +14,13 @@
             "matchPackageNames": [
                 "*"
             ]
+        },
+        {
+            "description": "Astro check and typescript-eslint require the TypeScript 6 JavaScript API",
+            "matchManagers": ["npm"],
+            "matchFileNames": ["docs/package.json", "crates/node-bindings/package.json"],
+            "matchDepNames": ["typescript"],
+            "allowedVersions": "<6.1.0"
         }
     ]
 }

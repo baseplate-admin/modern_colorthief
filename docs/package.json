@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "typecheck": "node node_modules/typescript-native/bin/tsc --noEmit",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
@@ -24,6 +25,7 @@
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "typescript-native": "npm:typescript@^7.0.2",
     "eslint": "^9.39.0",
     "prettier": "^3.7.4",
     "typescript": "^6.0.3",

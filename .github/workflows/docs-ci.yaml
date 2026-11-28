@@ -44,6 +44,10 @@ jobs:
         working-directory: docs
         run: npx astro check
 
+      - name: Type-check (TypeScript 7)
+        working-directory: docs
+        run: npm run typecheck
+
       - name: Build site
         working-directory: docs
         run: npm run build
