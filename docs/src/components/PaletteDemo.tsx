@@ -15,7 +15,7 @@ type WasmGlue = {
 };
 
 type WasmGpuGlue = {
-  default?: () => Promise<unknown>;
+  default?: (options: { module_or_path: string }) => Promise<unknown>;
   getPaletteGpu?: (
     pixels: Uint8Array,
     width: number,
@@ -36,7 +36,10 @@ type Engine = 'wasm' | 'webgpu' | 'auto';
 
 const BASE = import.meta.env.BASE_URL;
 const WASM_MODULE = BASE + 'wasm/modern_colorthief_wasm.js';
-const WASM_GPU_MODULE = BASE + 'wasm-webgpu/modern_colorthief_webgpu.js';
+const WEBGPU_BUNDLE = BASE + 'wasm-webgpu/modern_colorthief_webgpu';
+const WEBGPU_REVISION = '?v=' + import.meta.env.PUBLIC_WEBGPU_REVISION;
+const WASM_GPU_MODULE = WEBGPU_BUNDLE + '.js' + WEBGPU_REVISION;
+const WASM_GPU_BINARY = WEBGPU_BUNDLE + '_bg.wasm' + WEBGPU_REVISION;
 
 let cpuGlue: Promise<WasmGlue> | undefined;
 let gpuGlue: Promise<WasmGpuGlue> | undefined;
@@ -52,7 +55,7 @@ function loadCpu(): Promise<WasmGlue> {
 
 function loadGpu(): Promise<WasmGpuGlue> {
   gpuGlue ??= import(/* @vite-ignore */ WASM_GPU_MODULE).then(async (mod: WasmGpuGlue) => {
-    await mod.default?.();
+    await mod.default?.({ module_or_path: WASM_GPU_BINARY });
     return mod;
   });
   return gpuGlue;

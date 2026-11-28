@@ -41,7 +41,9 @@ pub async fn extract_palette_webgpu(
     color_count: u8,
     quality: u8,
 ) -> Result<Vec<u8>, String> {
-    let expected_size = (width * height * 4) as usize;
+    let expected_size = (width as usize)
+        .saturating_mul(height as usize)
+        .saturating_mul(4);
     if pixels.len() < expected_size {
         return Err(format!(
             "Buffer too small: expected {} bytes for {}x{} RGBA image, got {}",
